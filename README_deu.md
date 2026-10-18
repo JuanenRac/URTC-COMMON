@@ -43,6 +43,8 @@ Das CAN-Protokoll des Werkzeugkopfs, einmal als Daten geschrieben, und alles, wa
 * [Spezifikationsformat](docs/SPEC_FORMAT.md): die Schlüssel der Datei und wie ein Identifier hinzugefügt oder geändert wird.
 * [Migration](docs/MIGRATION.md): die Reihenfolge, in der jedes Repository sie übernehmen kann, und wie eine Prüfung die Kopien gleich hält.
 * [Protokolltabelle](docs/PROTOCOL_TABLE.md): alle Identifier in einer Tabelle, aus der Spezifikation erzeugt.
+* [Mehrere Werkzeugköpfe an einem Bus](docs/MULTINODE.md): ein Entwurf für Adressierung, Erkennung und Sicherheitsregeln; in der Firmware nicht umgesetzt und nicht an Hardware erprobt.
+* Oberflächen-Hilfen: `src/urtc_ui`: die Sprachliste, Statusabzeichen und die Formatierung von Identifiern, Bitraten und Frames, die die Desktop-Programme gemeinsam nutzen können (ohne Qt; die Programme verwenden es noch nicht).
 * [Konformitätsvektoren](conformance/can_vectors.json): die Bytes, die jede Implementierung reproduzieren muss: jeder Aufbau, die Ablehnungen und die SLCAN-Datenströme.
 * **Werkzeuge:** `generate_constants.py` schreibt den C-Header, das TypeScript-Modul, das Python-Modul und die Tabelle (`--check` vergleicht), `make_conformance.py` schreibt die Vektoren (`--check`), `vendor_copy.py` kopiert Teile mit einer Sperrdatei in ein anderes Repository und prüft die Kopie, und `ci_validate.py` ist die gemeinsame Repository-Prüfung. `make_glance.py` von URTC-DOCS schreibt die Tabelle Auf einen Blick.
 
@@ -102,6 +104,7 @@ Wo man mehr liest:
 * [Spezifikationsformat und wie man es ändert](docs/SPEC_FORMAT.md)
 * [Migration: wie jedes Repository sie übernimmt](docs/MIGRATION.md)
 * [Protokolltabelle: jeder Identifier und wer ihn implementiert](docs/PROTOCOL_TABLE.md)
+* [Mehrere Werkzeugköpfe an einem Bus](docs/MULTINODE.md)
 * [Änderungsprotokoll dieses Repositories](CHANGELOG.md)
 * [Lizenz (GPL-3.0-or-later)](LICENSE)
 * Fragen, Ideen und Meldungen: electrohobby3d@gmail.com

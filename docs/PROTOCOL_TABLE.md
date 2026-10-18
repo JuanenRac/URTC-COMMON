@@ -98,3 +98,17 @@ Every identifier of `spec/can_protocol.json`, one row each. **Dir**: H>B host to
 | `0x7FF` | READBACK_PAGE_ACK | H>B | 4 | any | `F L . W` |  |
 
 88 identifiers, 26 tool values, 23 slave registers, 4 magic payloads.
+
+## Multinode extension
+
+Several tool heads on one bus. Status: **designed not implemented in firmware**. These identifiers are not in the table above; the firmware does not implement them and no hardware test exists. See `docs/MULTINODE.md`.
+
+| ID | Name | Dir | DLC | Notes |
+|---|---|---|---|---|
+| `0x400` | MN_DISCOVER | H>N | 2 | Ask every node to announce itself |
+| `0x401` | MN_SELECT | H>N | 3 | Select the one node that the single-head frames address |
+| `0x402` | MN_SAFE_STOP | H>N | 1 | Ask every node to enter its safe state |
+| `0x420`-0x43F | MN_NODE_INFO | N>H | 8 | A node announces itself (identifier plus the node address) |
+| `0x440`-0x45F | MN_NODE_STATUS | N>H | 4 | Periodic status of one node |
+| `0x460`-0x47F | MN_NODE_CMD | H>N | 2-8 | One command to one node without selecting it |
+| `0x480`-0x49F | MN_NODE_RESP | N>H | 2-8 | The answer of one node to NODE_CMD |

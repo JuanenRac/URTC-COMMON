@@ -6878,5 +6878,434 @@
         "web_studio": "CAN_ID_READBACK_PAGE_ACK"
       }
     }
-  ]
+  ],
+  "multinode": {
+    "status": "designed_not_implemented_in_firmware",
+    "title": "Several tool heads on one bus",
+    "about": "A backward-compatible extension that lets several tool heads share one CAN bus. It is a design: the firmware does not implement any of it, no host uses it, and nothing here has been tried on hardware. The frames of the single-head protocol keep their identifiers and meaning; the extension only uses identifiers that nothing else uses (0x400-0x49F). See docs/MULTINODE.md.",
+    "node_address": {
+      "bits": 5,
+      "mask": 31,
+      "source": "The five identity jumpers ID0-ID4 that the firmware reads once at boot (the tool address, 0 to 31). Two heads of the same tool type on one bus need a different instance number or are refused as a conflict."
+    },
+    "constants": [
+      {
+        "name": "MN_VERSION",
+        "value": 1,
+        "title": "Multinode extension version carried by the discovery frames"
+      },
+      {
+        "name": "MN_ADDRESS_BITS",
+        "value": 5,
+        "title": "Bits of the node address"
+      },
+      {
+        "name": "MN_ADDRESS_MASK",
+        "value": 31,
+        "title": "Mask of the node address"
+      },
+      {
+        "name": "MN_NODE_MAX",
+        "value": 32,
+        "title": "Highest number of nodes on one bus"
+      },
+      {
+        "name": "MN_STATUS_PERIOD_MS",
+        "value": 1000,
+        "title": "Period of the per-node status frame",
+        "unit": "ms"
+      },
+      {
+        "name": "MN_DISCOVER_SLOT_MS",
+        "value": 2,
+        "title": "Default spacing of the discovery answers: a node answers after its address times this",
+        "unit": "ms"
+      },
+      {
+        "name": "MN_NODE_TIMEOUT_MS",
+        "value": 3500,
+        "title": "A node that sent no status frame for this long is treated as gone",
+        "unit": "ms"
+      },
+      {
+        "name": "MN_SELECT_TIMEOUT_MS",
+        "value": 2000,
+        "title": "A selection lapses unless the host repeats it within this time",
+        "unit": "ms"
+      },
+      {
+        "name": "MN_CMD_ARGS_MAX",
+        "value": 6,
+        "title": "Argument bytes that fit in a node-addressed command",
+        "unit": "bytes"
+      }
+    ],
+    "state_flags": [
+      {
+        "name": "SELECTED",
+        "bit": 0,
+        "title": "This node is the selected (active) node"
+      },
+      {
+        "name": "FAULT",
+        "bit": 1,
+        "title": "A fault is latched on this node"
+      },
+      {
+        "name": "CONFLICT",
+        "bit": 2,
+        "title": "Another node answered with the same address: this node ignores commands"
+      },
+      {
+        "name": "BOOTLOADER",
+        "bit": 3,
+        "title": "The node runs its bootloader"
+      }
+    ],
+    "select_actions": [
+      {
+        "value": 0,
+        "name": "DESELECT_ALL",
+        "title": "No node is selected"
+      },
+      {
+        "value": 1,
+        "name": "SELECT",
+        "title": "Select one node"
+      }
+    ],
+    "frames": [
+      {
+        "id": "0x400",
+        "name": "DISCOVER",
+        "title": "Ask every node to announce itself",
+        "direction": "host_to_node",
+        "span": 1,
+        "layout": {
+          "role": "request",
+          "dlc": {
+            "exact": 2
+          },
+          "fields": [
+            {
+              "name": "mn_version",
+              "type": "u8",
+              "offset": 0,
+              "width": 1
+            },
+            {
+              "name": "slot_ms",
+              "type": "u8",
+              "range": [
+                1,
+                50
+              ],
+              "offset": 1,
+              "width": 1
+            }
+          ],
+          "examples": [
+            {
+              "name": "default spacing",
+              "fields": {
+                "mn_version": 1,
+                "slot_ms": 2
+              },
+              "data": "0102"
+            }
+          ]
+        },
+        "notes": [
+          "Every node answers with MN_NODE_INFO after address times slot_ms, so the answers never collide."
+        ]
+      },
+      {
+        "id": "0x401",
+        "name": "SELECT",
+        "title": "Select the one node that the single-head frames address",
+        "direction": "host_to_node",
+        "span": 1,
+        "layout": {
+          "role": "request",
+          "dlc": {
+            "exact": 3
+          },
+          "fields": [
+            {
+              "name": "action",
+              "type": "u8",
+              "range": [
+                0,
+                1
+              ],
+              "offset": 0,
+              "width": 1
+            },
+            {
+              "name": "node",
+              "type": "u8",
+              "range": [
+                0,
+                31
+              ],
+              "offset": 1,
+              "width": 1
+            },
+            {
+              "name": "seq",
+              "type": "u8",
+              "offset": 2,
+              "width": 1
+            }
+          ],
+          "examples": [
+            {
+              "name": "select node 4",
+              "fields": {
+                "action": 1,
+                "node": 4,
+                "seq": 7
+              },
+              "data": "010407"
+            },
+            {
+              "name": "deselect all",
+              "fields": {
+                "action": 0,
+                "node": 0,
+                "seq": 8
+              },
+              "data": "000008"
+            }
+          ]
+        },
+        "notes": [
+          "Only the selected node obeys the identifiers of the single-head protocol; the others stay silent on them. A selection lapses after MN_SELECT_TIMEOUT_MS unless it is repeated."
+        ]
+      },
+      {
+        "id": "0x402",
+        "name": "SAFE_STOP",
+        "title": "Ask every node to enter its safe state",
+        "direction": "host_to_node",
+        "span": 1,
+        "layout": {
+          "role": "request",
+          "dlc": {
+            "exact": 1
+          },
+          "fields": [
+            {
+              "name": "reason",
+              "type": "u8",
+              "offset": 0,
+              "width": 1
+            }
+          ],
+          "examples": [
+            {
+              "name": "operator stop",
+              "fields": {
+                "reason": 1
+              },
+              "data": "01"
+            }
+          ]
+        },
+        "notes": [
+          "A request to move toward safety, never away from it: a node always obeys it and leaves the safe state only through its own conditions."
+        ]
+      },
+      {
+        "id": "0x420",
+        "name": "NODE_INFO",
+        "title": "A node announces itself (identifier plus the node address)",
+        "direction": "node_to_host",
+        "span": 32,
+        "layout": {
+          "role": "response",
+          "dlc": {
+            "exact": 8
+          },
+          "fields": [
+            {
+              "name": "tool",
+              "type": "u8",
+              "offset": 0,
+              "width": 1
+            },
+            {
+              "name": "state",
+              "type": "u8",
+              "offset": 1,
+              "width": 1
+            },
+            {
+              "name": "instance",
+              "type": "u8",
+              "offset": 2,
+              "width": 1
+            },
+            {
+              "name": "mn_version",
+              "type": "u8",
+              "offset": 3,
+              "width": 1
+            },
+            {
+              "name": "serial",
+              "type": "u32",
+              "offset": 4,
+              "width": 4
+            }
+          ],
+          "examples": [
+            {
+              "name": "soldering iron, selected",
+              "fields": {
+                "tool": 0,
+                "state": 1,
+                "instance": 0,
+                "mn_version": 1,
+                "serial": 16909060
+              },
+              "data": "0001000101020304"
+            }
+          ]
+        },
+        "notes": [
+          "Sent after DISCOVER and once at start. Two nodes that send the same identifier with different data cause a bus error on the data bits; both then set CONFLICT."
+        ]
+      },
+      {
+        "id": "0x440",
+        "name": "NODE_STATUS",
+        "title": "Periodic status of one node",
+        "direction": "node_to_host",
+        "span": 32,
+        "layout": {
+          "role": "response",
+          "dlc": {
+            "exact": 4
+          },
+          "fields": [
+            {
+              "name": "state",
+              "type": "u8",
+              "offset": 0,
+              "width": 1
+            },
+            {
+              "name": "error",
+              "type": "u8",
+              "offset": 1,
+              "width": 1
+            },
+            {
+              "name": "uptime_s",
+              "type": "u16",
+              "offset": 2,
+              "width": 2
+            }
+          ],
+          "examples": [
+            {
+              "name": "selected, no error, five minutes",
+              "fields": {
+                "state": 1,
+                "error": 0,
+                "uptime_s": 300
+              },
+              "data": "0100012C"
+            }
+          ]
+        },
+        "notes": [
+          "Sent every MN_STATUS_PERIOD_MS by every node, selected or not. This is the heartbeat the host uses to notice a node that is gone."
+        ]
+      },
+      {
+        "id": "0x460",
+        "name": "NODE_CMD",
+        "title": "One command to one node without selecting it",
+        "direction": "host_to_node",
+        "span": 32,
+        "layout": {
+          "role": "request",
+          "dlc": {
+            "min": 2,
+            "max": 8
+          },
+          "fields": [
+            {
+              "name": "func",
+              "type": "u16",
+              "offset": 0,
+              "width": 2
+            },
+            {
+              "name": "args",
+              "type": "bytes",
+              "rest": true,
+              "offset": 2
+            }
+          ],
+          "examples": [
+            {
+              "name": "global status, two bytes of arguments",
+              "fields": {
+                "func": 256,
+                "args": "FF00"
+              },
+              "data": "0100FF00"
+            }
+          ]
+        },
+        "notes": [
+          "func is the identifier of a single-head command. Commands whose payload is longer than MN_CMD_ARGS_MAX bytes use SELECT and the single-head frames instead."
+        ]
+      },
+      {
+        "id": "0x480",
+        "name": "NODE_RESP",
+        "title": "The answer of one node to NODE_CMD",
+        "direction": "node_to_host",
+        "span": 32,
+        "layout": {
+          "role": "response",
+          "dlc": {
+            "min": 2,
+            "max": 8
+          },
+          "fields": [
+            {
+              "name": "func",
+              "type": "u16",
+              "offset": 0,
+              "width": 2
+            },
+            {
+              "name": "data",
+              "type": "bytes",
+              "rest": true,
+              "offset": 2
+            }
+          ],
+          "examples": [
+            {
+              "name": "answer with one byte",
+              "fields": {
+                "func": 256,
+                "data": "01"
+              },
+              "data": "010001"
+            }
+          ]
+        },
+        "notes": [
+          "func repeats the identifier of the command that is answered."
+        ]
+      }
+    ]
+  }
 }

@@ -5,6 +5,15 @@ version number follows this ecosystem's "odometer" scheme: PATCH +1 on
 every real build, rolling into MINOR past 9 (`0.0.9` -> `0.1.0`); MAJOR is
 bumped manually only. See `bump_version.py`.
 
+## [0.0.3] - Multinode design and shared interface helpers
+
+- docs/MULTINODE.md designs several tool heads on one CAN bus: the node address from the five identity jumpers, a new identifier block 0x400-0x49F that clashes with nothing, discovery, selecting the one active node, per-node status and command frames, bus load at every supported bitrate, failure modes, safety rules and the impact on each repository. It is a design: the firmware does not implement it and nothing was tried on hardware.
+- spec/can_protocol.json gains an optional multinode section (backward compatible, marked designed and not implemented in firmware); the schema, the C header, the TypeScript module, the Python module and docs/PROTOCOL_TABLE.md are regenerated from it.
+- New conformance/multinode_vectors.json, written by tools/make_multinode_vectors.py with an independent packer, and tests that reproduce every vector, check that no identifier clashes with the single-head protocol and refuse out-of-range node addresses.
+- New urtc_common.multinode: node address from the jumpers, frame length and worst-case bus load, discovery timing and a node table that tracks liveness, selection and address conflicts.
+- New urtc_ui package with logic the desktop programs can share and that needs no Qt: the eight-language list and a selector model, status badges, and formatting of identifiers, bitrates, frames, sizes and durations, with tests. The programs do not use it yet.
+- The READMEs in eight languages list the multinode design and the interface helpers.
+
 ## [0.0.2] - Generated module adopted by the clients
 
 - The generated TypeScript module passes the strict type check: versionCompare no longer indexes a tuple with a loop variable.

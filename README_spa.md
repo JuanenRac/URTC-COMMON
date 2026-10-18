@@ -43,6 +43,8 @@ El protocolo CAN del cabezal de herramienta, escrito una sola vez como datos, y 
 * [Formato de la especificación](docs/SPEC_FORMAT.md): las claves del archivo y cómo añadir o cambiar un identificador.
 * [Migración](docs/MIGRATION.md): el orden en que cada repositorio puede adoptarlo y cómo una comprobación mantiene iguales las copias.
 * [Tabla del protocolo](docs/PROTOCOL_TABLE.md): todos los identificadores en una tabla, generada a partir de la especificación.
+* [Varias cabezas de herramienta en un bus](docs/MULTINODE.md): un diseño de direccionamiento, descubrimiento y reglas de seguridad; no implementado en el firmware ni probado en hardware.
+* Ayudas de interfaz: `src/urtc_ui`: la lista de idiomas, las insignias de estado y el formato de identificadores, velocidades y tramas que los programas de escritorio pueden compartir (sin Qt; los programas todavía no lo usan).
 * [Vectores de conformidad](conformance/can_vectors.json): los bytes que toda implementación debe reproducir: cada formato, los rechazos y los flujos SLCAN.
 * **Herramientas:** `generate_constants.py` escribe la cabecera C, el módulo TypeScript, el módulo Python y la tabla (`--check` compara), `make_conformance.py` escribe los vectores (`--check`), `vendor_copy.py` copia partes a otro repositorio con un archivo de bloqueo y comprueba la copia, y `ci_validate.py` es la comprobación compartida de los repositorios. `make_glance.py` de URTC-DOCS escribe la tabla De un vistazo.
 
@@ -102,6 +104,7 @@ Dónde leer más:
 * [Formato de la especificación y cómo cambiarla](docs/SPEC_FORMAT.md)
 * [Migración: cómo la adopta cada repositorio](docs/MIGRATION.md)
 * [Tabla del protocolo: cada identificador y quién lo implementa](docs/PROTOCOL_TABLE.md)
+* [Varias cabezas de herramienta en un bus](docs/MULTINODE.md)
 * [Registro de cambios de este repositorio](CHANGELOG.md)
 * [Licencia (GPL-3.0-or-later)](LICENSE)
 * Preguntas, ideas e informes: electrohobby3d@gmail.com

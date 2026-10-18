@@ -89,6 +89,19 @@ def dlc_min_max(rule: dict) -> tuple[int, int]:
     return 0, 8
 
 
+def mn_key(frame: dict) -> str:
+    return "mn_" + frame["name"].lower()
+
+
+def mn_base_name(frame: dict) -> str:
+    return "MN_ID_" + frame["name"] + ("_BASE" if frame["span"] > 1 else "")
+
+
+def mn_params(frame: dict) -> list[tuple[str, str]]:
+    """(name, kind) of the values a multinode builder takes, kind being 'int' or 'bytes'."""
+    return [(f["name"], "bytes" if f["type"] == "bytes" else "int") for f in frame["layout"]["fields"]]
+
+
 def runtime_field(field: dict) -> dict:
     """The part of a field the encoder and the decoder need, as plain data."""
     data = {"name": field["name"], "type": field["type"], "offset": field["offset"]}
@@ -128,6 +141,14 @@ def runtime_layouts(spec: dict) -> dict[str, dict]:
                 "dlc": layout["dlc"],
                 "fields": fields,
             }
+    for frame in spec.get("multinode", {}).get("frames", []):
+        layout = frame["layout"]
+        out[mn_key(frame)] = {
+            "id": int(frame["id"], 16),
+            "role": layout["role"],
+            "dlc": layout["dlc"],
+            "fields": [runtime_field(field) for field in layout["fields"]],
+        }
     return out
 
 
@@ -360,6 +381,64 @@ def version_compare(installed, candidate):
 '''
 
 
+def render_python_multinode(spec: dict) -> list[str]:
+    mn = spec.get("multinode")
+    if not mn:
+        return []
+    lines: list[str] = []
+    add = lines.append
+    add("# ---------------------------------------------------------------------------")
+    add("# multinode extension (" + mn["status"].replace("_", " ") + "): see docs/MULTINODE.md")
+    add("# ---------------------------------------------------------------------------")
+    for const in mn["constants"]:
+        add(f"{const['name']} = {const_value(const['value'])}  # {const['title']}" + (f" ({const['unit']})" if const.get("unit") else ""))
+    for flag in mn["state_flags"]:
+        add(f"MN_STATE_{flag['name']} = 0x{1 << flag['bit']:02X}  # {flag['title']}")
+    for action in mn["select_actions"]:
+        add(f"MN_SELECT_{action['name']} = {action['value']}  # {action['title']}")
+    for frame in mn["frames"]:
+        add(f"{mn_base_name(frame)} = {hex_id(int(frame['id'], 16))}  # {frame['title']}" + (f" (+ node address, {frame['span']} identifiers)" if frame["span"] > 1 else ""))
+    add("MN_RANGES = " + pyrepr({int(f["id"], 16): f["span"] for f in mn["frames"]}))
+    add("MN_NAMES = " + pyrepr({int(f["id"], 16): f["name"] for f in mn["frames"]}))
+    add("")
+    add("")
+    add("def mn_node_id(base: int, node: int) -> int:")
+    add('    """The identifier of a node-addressed frame: the base of its range plus the node address."""')
+    add("    if MN_RANGES.get(base, 1) == 1:")
+    add('        raise ValueError(f"0x{base:03X} is not the base of an addressed range")')
+    add("    if not isinstance(node, int) or isinstance(node, bool) or not 0 <= node <= MN_ADDRESS_MASK:")
+    add('        raise ValueError(f"node address {node!r} is outside 0..{MN_ADDRESS_MASK}")')
+    add("    return base + node")
+    add("")
+    add("")
+    add("def mn_split_id(can_id: int):")
+    add('    """(name, node) for an identifier of the extension (node is None for a broadcast frame), or None for any other identifier."""')
+    add("    for base, span in MN_RANGES.items():")
+    add("        if base <= can_id < base + span:")
+    add("            return MN_NAMES[base], (can_id - base if span > 1 else None)")
+    add("    return None")
+    add("")
+    add("")
+    for frame in mn["frames"]:
+        key = mn_key(frame)
+        ranged = frame["span"] > 1
+        params = mn_params(frame)
+        sig = ", ".join((["node: int"] if ranged else []) + [f"{n}: {'bytes' if k == 'bytes' else 'int'}" for n, k in params])
+        call = ", ".join(f"{n}={n}" for n, _ in params)
+        add(f"def encode_{key}({sig}) -> tuple[int, bytes]:")
+        add(f'    """{frame["title"]} ({hex_id(int(frame["id"], 16))}{" + node" if ranged else ""}, {frame["layout"]["role"]})."""')
+        add(f'    can_id, data = encode("{key}", {call})')
+        add("    return " + ("mn_node_id(can_id, node), data" if ranged else "can_id, data"))
+        add("")
+        add("")
+        add(f"def decode_{key}(data: bytes, strict: bool = False) -> dict | None:")
+        add(f'    """Fields of {hex_id(int(frame["id"], 16))}, or None when the payload is too short."""')
+        add(f'    return decode("{key}", data, strict)')
+        add("")
+        add("")
+    return lines
+
+
 def render_python(spec: dict) -> str:
     enums = spec["enums"]
     layouts = runtime_layouts(spec)
@@ -470,6 +549,7 @@ def render_python(spec: dict) -> str:
             add(f'    return decode("{key}", data, strict)')
             add("")
             add("")
+    lines.extend(render_python_multinode(spec))
     return "\n".join(lines).rstrip("\n") + "\n"
 
 
@@ -659,6 +739,62 @@ export function versionCompare(installed: [number, number, number | null], candi
 '''
 
 
+def render_typescript_multinode(spec: dict) -> list[str]:
+    mn = spec.get("multinode")
+    if not mn:
+        return []
+    lines: list[str] = []
+    add = lines.append
+    add("// ---------------------------------------------------------------------------")
+    add("// multinode extension (" + mn["status"].replace("_", " ") + "): see docs/MULTINODE.md")
+    add("// ---------------------------------------------------------------------------")
+    for const in mn["constants"]:
+        add(f"export const {const['name']} = {const_value(const['value'])}; // {const['title']}" + (f" ({const['unit']})" if const.get("unit") else ""))
+    for flag in mn["state_flags"]:
+        add(f"export const MN_STATE_{flag['name']} = 0x{1 << flag['bit']:02X}; // {flag['title']}")
+    for action in mn["select_actions"]:
+        add(f"export const MN_SELECT_{action['name']} = {action['value']}; // {action['title']}")
+    for frame in mn["frames"]:
+        add(f"export const {mn_base_name(frame)} = {hex_id(int(frame['id'], 16))}; // {frame['title']}" + (f" (+ node address, {frame['span']} identifiers)" if frame["span"] > 1 else ""))
+    add("export const MN_RANGES: Record<number, number> = " + jsrepr({str(int(f["id"], 16)): f["span"] for f in mn["frames"]}) + ";")
+    add("export const MN_NAMES: Record<number, string> = " + jsrepr({str(int(f["id"], 16)): f["name"] for f in mn["frames"]}) + ";")
+    add("")
+    add("/** The identifier of a node-addressed frame: the base of its range plus the node address. */")
+    add("export function mnNodeId(base: number, node: number): number {")
+    add("  if ((MN_RANGES[base] ?? 1) === 1) throw new Error(`0x${base.toString(16)} is not the base of an addressed range`);")
+    add("  if (!Number.isInteger(node) || node < 0 || node > MN_ADDRESS_MASK) throw new Error(`node address ${node} is outside 0..${MN_ADDRESS_MASK}`);")
+    add("  return base + node;")
+    add("}")
+    add("")
+    add("/** [name, node] for an identifier of the extension (node is null for a broadcast frame), or null for any other identifier. */")
+    add("export function mnSplitId(canId: number): [string, number | null] | null {")
+    add("  for (const [key, span] of Object.entries(MN_RANGES)) {")
+    add("    const base = Number(key);")
+    add("    if (canId >= base && canId < base + span) return [MN_NAMES[base], span > 1 ? canId - base : null];")
+    add("  }")
+    add("  return null;")
+    add("}")
+    add("")
+    for frame in mn["frames"]:
+        key = mn_key(frame)
+        cname = camel(key)
+        cname = cname[0].upper() + cname[1:]
+        ranged = frame["span"] > 1
+        params = (["node: number"] if ranged else []) + [f"{camel(n)}: {'number[] | Uint8Array' if k == 'bytes' else 'number'}" for n, k in mn_params(frame)]
+        inner = ", ".join(f"{n}: {camel(n)}" for n, _ in mn_params(frame))
+        add(f"/** {frame['title']} ({hex_id(int(frame['id'], 16))}{' + node' if ranged else ''}, {frame['layout']['role']}). */")
+        add(f"export function encode{cname}({', '.join(params)}): {{ id: number; data: number[] }} {{")
+        add(f"  const frame = encode('{key}', {{ {inner} }});")
+        add("  return " + ("{ id: mnNodeId(frame.id, node), data: frame.data };" if ranged else "frame;"))
+        add("}")
+        add(f"/** Fields of {hex_id(int(frame['id'], 16))}, or null when the payload is too short. */")
+        add(f"export function decode{cname}(data: ArrayLike<number>, strict = false): Fields | null {{")
+        add(f"  return decode('{key}', data, strict);")
+        add("}")
+        add("")
+    return lines
+
+
 def render_typescript(spec: dict) -> str:
     enums = spec["enums"]
     layouts = runtime_layouts(spec)
@@ -748,6 +884,7 @@ def render_typescript(spec: dict) -> str:
             add(f"  return decode('{key}', data, strict);")
             add("}")
             add("")
+    lines.extend(render_typescript_multinode(spec))
     return "\n".join(lines).rstrip("\n") + "\n"
 
 
@@ -808,6 +945,25 @@ def render_c(spec: dict) -> str:
         for entry in block["entries"]:
             add(f"#define {prefixes[key]}{entry['name']} 0x{entry['id']:02X}u")
     add("")
+    mn = spec.get("multinode")
+    if mn:
+        add("/* --- multinode extension (" + mn["status"].replace("_", " ") + "): see docs/MULTINODE.md --- */")
+        for const in mn["constants"]:
+            add(f"#define URTC_{const['name']} 0x{const['value']:X}u  /* {const['title']} */")
+        for flag in mn["state_flags"]:
+            add(f"#define URTC_MN_STATE_{flag['name']} 0x{1 << flag['bit']:02X}u  /* {flag['title']} */")
+        for action in mn["select_actions"]:
+            add(f"#define URTC_MN_SELECT_{action['name']} {action['value']}u  /* {action['title']} */")
+        for frame in mn["frames"]:
+            add(f"#define URTC_{mn_base_name(frame)} 0x{int(frame['id'], 16):03X}u  /* {frame['title']}" + (f" (+ node address, {frame['span']} identifiers)" if frame["span"] > 1 else "") + " */")
+            key = mn_key(frame).upper()
+            low, high = dlc_min_max(frame["layout"]["dlc"])
+            add(f"#define URTC_DLC_{key}_MIN {low}u")
+            add(f"#define URTC_DLC_{key}_MAX {high}u")
+            for field in frame["layout"]["fields"]:
+                add(f"#define URTC_{key}_{field['name'].upper()}_OFFSET {field['offset']}u")
+        add("#define URTC_MN_NODE_ID(base, node) ((uint16_t)((base) + ((node) & URTC_MN_ADDRESS_MASK)))")
+        add("")
     add("#endif /* URTC_CAN_IDS_H */")
     return "\n".join(lines) + "\n"
 
@@ -863,6 +1019,20 @@ def render_table(spec: dict) -> str:
         )
     lines += ["", f"{len(spec['messages'])} identifiers, {len(spec['tools'])} tool values, "
               f"{sum(len(b['entries']) for b in spec['registers'].values())} slave registers, {len(spec['magic_payloads'])} magic payloads.", ""]
+    mn = spec.get("multinode")
+    if mn:
+        lines += [
+            "## Multinode extension",
+            "",
+            f"{mn['title']}. Status: **{mn['status'].replace('_', ' ')}**. These identifiers are not in the table above; the firmware does not implement them and no hardware test exists. See `docs/MULTINODE.md`.",
+            "",
+            "| ID | Name | Dir | DLC | Notes |",
+            "|---|---|---|---|---|",
+        ]
+        for frame in mn["frames"]:
+            end = f"-0x{int(frame['id'], 16) + frame['span'] - 1:03X}" if frame["span"] > 1 else ""
+            lines.append(f"| `{frame['id']}`{end} | MN_{frame['name']} | {'H>N' if frame['direction'] == 'host_to_node' else 'N>H'} | {dlc_text(frame['layout']['dlc'])} | {frame['title']} |")
+        lines.append("")
     return "\n".join(lines)
 
 

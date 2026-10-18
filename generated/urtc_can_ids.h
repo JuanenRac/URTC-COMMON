@@ -638,4 +638,61 @@
 #define URTC_SLAVE_APP_REG_PWM_PULSE 0x31u
 #define URTC_SLAVE_APP_REG_PWM_STOP 0x32u
 
+/* --- multinode extension (designed not implemented in firmware): see docs/MULTINODE.md --- */
+#define URTC_MN_VERSION 0x1u  /* Multinode extension version carried by the discovery frames */
+#define URTC_MN_ADDRESS_BITS 0x5u  /* Bits of the node address */
+#define URTC_MN_ADDRESS_MASK 0x1Fu  /* Mask of the node address */
+#define URTC_MN_NODE_MAX 0x20u  /* Highest number of nodes on one bus */
+#define URTC_MN_STATUS_PERIOD_MS 0x3E8u  /* Period of the per-node status frame */
+#define URTC_MN_DISCOVER_SLOT_MS 0x2u  /* Default spacing of the discovery answers: a node answers after its address times this */
+#define URTC_MN_NODE_TIMEOUT_MS 0xDACu  /* A node that sent no status frame for this long is treated as gone */
+#define URTC_MN_SELECT_TIMEOUT_MS 0x7D0u  /* A selection lapses unless the host repeats it within this time */
+#define URTC_MN_CMD_ARGS_MAX 0x6u  /* Argument bytes that fit in a node-addressed command */
+#define URTC_MN_STATE_SELECTED 0x01u  /* This node is the selected (active) node */
+#define URTC_MN_STATE_FAULT 0x02u  /* A fault is latched on this node */
+#define URTC_MN_STATE_CONFLICT 0x04u  /* Another node answered with the same address: this node ignores commands */
+#define URTC_MN_STATE_BOOTLOADER 0x08u  /* The node runs its bootloader */
+#define URTC_MN_SELECT_DESELECT_ALL 0u  /* No node is selected */
+#define URTC_MN_SELECT_SELECT 1u  /* Select one node */
+#define URTC_MN_ID_DISCOVER 0x400u  /* Ask every node to announce itself */
+#define URTC_DLC_MN_DISCOVER_MIN 2u
+#define URTC_DLC_MN_DISCOVER_MAX 2u
+#define URTC_MN_DISCOVER_MN_VERSION_OFFSET 0u
+#define URTC_MN_DISCOVER_SLOT_MS_OFFSET 1u
+#define URTC_MN_ID_SELECT 0x401u  /* Select the one node that the single-head frames address */
+#define URTC_DLC_MN_SELECT_MIN 3u
+#define URTC_DLC_MN_SELECT_MAX 3u
+#define URTC_MN_SELECT_ACTION_OFFSET 0u
+#define URTC_MN_SELECT_NODE_OFFSET 1u
+#define URTC_MN_SELECT_SEQ_OFFSET 2u
+#define URTC_MN_ID_SAFE_STOP 0x402u  /* Ask every node to enter its safe state */
+#define URTC_DLC_MN_SAFE_STOP_MIN 1u
+#define URTC_DLC_MN_SAFE_STOP_MAX 1u
+#define URTC_MN_SAFE_STOP_REASON_OFFSET 0u
+#define URTC_MN_ID_NODE_INFO_BASE 0x420u  /* A node announces itself (identifier plus the node address) (+ node address, 32 identifiers) */
+#define URTC_DLC_MN_NODE_INFO_MIN 8u
+#define URTC_DLC_MN_NODE_INFO_MAX 8u
+#define URTC_MN_NODE_INFO_TOOL_OFFSET 0u
+#define URTC_MN_NODE_INFO_STATE_OFFSET 1u
+#define URTC_MN_NODE_INFO_INSTANCE_OFFSET 2u
+#define URTC_MN_NODE_INFO_MN_VERSION_OFFSET 3u
+#define URTC_MN_NODE_INFO_SERIAL_OFFSET 4u
+#define URTC_MN_ID_NODE_STATUS_BASE 0x440u  /* Periodic status of one node (+ node address, 32 identifiers) */
+#define URTC_DLC_MN_NODE_STATUS_MIN 4u
+#define URTC_DLC_MN_NODE_STATUS_MAX 4u
+#define URTC_MN_NODE_STATUS_STATE_OFFSET 0u
+#define URTC_MN_NODE_STATUS_ERROR_OFFSET 1u
+#define URTC_MN_NODE_STATUS_UPTIME_S_OFFSET 2u
+#define URTC_MN_ID_NODE_CMD_BASE 0x460u  /* One command to one node without selecting it (+ node address, 32 identifiers) */
+#define URTC_DLC_MN_NODE_CMD_MIN 2u
+#define URTC_DLC_MN_NODE_CMD_MAX 8u
+#define URTC_MN_NODE_CMD_FUNC_OFFSET 0u
+#define URTC_MN_NODE_CMD_ARGS_OFFSET 2u
+#define URTC_MN_ID_NODE_RESP_BASE 0x480u  /* The answer of one node to NODE_CMD (+ node address, 32 identifiers) */
+#define URTC_DLC_MN_NODE_RESP_MIN 2u
+#define URTC_DLC_MN_NODE_RESP_MAX 8u
+#define URTC_MN_NODE_RESP_FUNC_OFFSET 0u
+#define URTC_MN_NODE_RESP_DATA_OFFSET 2u
+#define URTC_MN_NODE_ID(base, node) ((uint16_t)((base) + ((node) & URTC_MN_ADDRESS_MASK)))
+
 #endif /* URTC_CAN_IDS_H */

@@ -1,0 +1,422 @@
+{
+  "format": 1,
+  "about": "Vectors of the multinode extension (several tool heads on one bus). A design: the firmware does not implement these frames. Hex strings have no separators; ids are written 0xNNN; 'node' is the node address added to the base identifier of a ranged frame.",
+  "protocol_version": 1,
+  "status": "designed_not_implemented_in_firmware",
+  "encode": [
+    {
+      "name": "DISCOVER default spacing",
+      "frame": "DISCOVER",
+      "id": "0x400",
+      "data": "0102",
+      "fields": {
+        "mn_version": 1,
+        "slot_ms": 2
+      }
+    },
+    {
+      "name": "SELECT select node 4",
+      "frame": "SELECT",
+      "id": "0x401",
+      "data": "010407",
+      "fields": {
+        "action": 1,
+        "node": 4,
+        "seq": 7
+      }
+    },
+    {
+      "name": "SELECT deselect all",
+      "frame": "SELECT",
+      "id": "0x401",
+      "data": "000008",
+      "fields": {
+        "action": 0,
+        "node": 0,
+        "seq": 8
+      }
+    },
+    {
+      "name": "SAFE_STOP operator stop",
+      "frame": "SAFE_STOP",
+      "id": "0x402",
+      "data": "01",
+      "fields": {
+        "reason": 1
+      }
+    },
+    {
+      "name": "NODE_INFO soldering iron, selected node 0",
+      "frame": "NODE_INFO",
+      "id": "0x420",
+      "data": "0001000101020304",
+      "fields": {
+        "tool": 0,
+        "state": 1,
+        "instance": 0,
+        "mn_version": 1,
+        "serial": 16909060
+      },
+      "node": 0
+    },
+    {
+      "name": "NODE_INFO soldering iron, selected node 5",
+      "frame": "NODE_INFO",
+      "id": "0x425",
+      "data": "0001000101020304",
+      "fields": {
+        "tool": 0,
+        "state": 1,
+        "instance": 0,
+        "mn_version": 1,
+        "serial": 16909060
+      },
+      "node": 5
+    },
+    {
+      "name": "NODE_INFO soldering iron, selected node 31",
+      "frame": "NODE_INFO",
+      "id": "0x43F",
+      "data": "0001000101020304",
+      "fields": {
+        "tool": 0,
+        "state": 1,
+        "instance": 0,
+        "mn_version": 1,
+        "serial": 16909060
+      },
+      "node": 31
+    },
+    {
+      "name": "NODE_STATUS selected, no error, five minutes node 0",
+      "frame": "NODE_STATUS",
+      "id": "0x440",
+      "data": "0100012C",
+      "fields": {
+        "state": 1,
+        "error": 0,
+        "uptime_s": 300
+      },
+      "node": 0
+    },
+    {
+      "name": "NODE_STATUS selected, no error, five minutes node 5",
+      "frame": "NODE_STATUS",
+      "id": "0x445",
+      "data": "0100012C",
+      "fields": {
+        "state": 1,
+        "error": 0,
+        "uptime_s": 300
+      },
+      "node": 5
+    },
+    {
+      "name": "NODE_STATUS selected, no error, five minutes node 31",
+      "frame": "NODE_STATUS",
+      "id": "0x45F",
+      "data": "0100012C",
+      "fields": {
+        "state": 1,
+        "error": 0,
+        "uptime_s": 300
+      },
+      "node": 31
+    },
+    {
+      "name": "NODE_CMD global status, two bytes of arguments node 0",
+      "frame": "NODE_CMD",
+      "id": "0x460",
+      "data": "0100FF00",
+      "fields": {
+        "func": 256,
+        "args": "FF00"
+      },
+      "node": 0
+    },
+    {
+      "name": "NODE_CMD global status, two bytes of arguments node 5",
+      "frame": "NODE_CMD",
+      "id": "0x465",
+      "data": "0100FF00",
+      "fields": {
+        "func": 256,
+        "args": "FF00"
+      },
+      "node": 5
+    },
+    {
+      "name": "NODE_CMD global status, two bytes of arguments node 31",
+      "frame": "NODE_CMD",
+      "id": "0x47F",
+      "data": "0100FF00",
+      "fields": {
+        "func": 256,
+        "args": "FF00"
+      },
+      "node": 31
+    },
+    {
+      "name": "NODE_RESP answer with one byte node 0",
+      "frame": "NODE_RESP",
+      "id": "0x480",
+      "data": "010001",
+      "fields": {
+        "func": 256,
+        "data": "01"
+      },
+      "node": 0
+    },
+    {
+      "name": "NODE_RESP answer with one byte node 5",
+      "frame": "NODE_RESP",
+      "id": "0x485",
+      "data": "010001",
+      "fields": {
+        "func": 256,
+        "data": "01"
+      },
+      "node": 5
+    },
+    {
+      "name": "NODE_RESP answer with one byte node 31",
+      "frame": "NODE_RESP",
+      "id": "0x49F",
+      "data": "010001",
+      "fields": {
+        "func": 256,
+        "data": "01"
+      },
+      "node": 31
+    }
+  ],
+  "decode": [
+    {
+      "name": "DISCOVER default spacing",
+      "frame": "DISCOVER",
+      "id": "0x400",
+      "data": "0102",
+      "fields": {
+        "mn_version": 1,
+        "slot_ms": 2
+      }
+    },
+    {
+      "name": "SELECT select node 4",
+      "frame": "SELECT",
+      "id": "0x401",
+      "data": "010407",
+      "fields": {
+        "action": 1,
+        "node": 4,
+        "seq": 7
+      }
+    },
+    {
+      "name": "SELECT deselect all",
+      "frame": "SELECT",
+      "id": "0x401",
+      "data": "000008",
+      "fields": {
+        "action": 0,
+        "node": 0,
+        "seq": 8
+      }
+    },
+    {
+      "name": "SAFE_STOP operator stop",
+      "frame": "SAFE_STOP",
+      "id": "0x402",
+      "data": "01",
+      "fields": {
+        "reason": 1
+      }
+    },
+    {
+      "name": "NODE_INFO soldering iron, selected node 0",
+      "frame": "NODE_INFO",
+      "id": "0x420",
+      "data": "0001000101020304",
+      "fields": {
+        "tool": 0,
+        "state": 1,
+        "instance": 0,
+        "mn_version": 1,
+        "serial": 16909060
+      },
+      "node": 0
+    },
+    {
+      "name": "NODE_INFO soldering iron, selected node 5",
+      "frame": "NODE_INFO",
+      "id": "0x425",
+      "data": "0001000101020304",
+      "fields": {
+        "tool": 0,
+        "state": 1,
+        "instance": 0,
+        "mn_version": 1,
+        "serial": 16909060
+      },
+      "node": 5
+    },
+    {
+      "name": "NODE_INFO soldering iron, selected node 31",
+      "frame": "NODE_INFO",
+      "id": "0x43F",
+      "data": "0001000101020304",
+      "fields": {
+        "tool": 0,
+        "state": 1,
+        "instance": 0,
+        "mn_version": 1,
+        "serial": 16909060
+      },
+      "node": 31
+    },
+    {
+      "name": "NODE_STATUS selected, no error, five minutes node 0",
+      "frame": "NODE_STATUS",
+      "id": "0x440",
+      "data": "0100012C",
+      "fields": {
+        "state": 1,
+        "error": 0,
+        "uptime_s": 300
+      },
+      "node": 0
+    },
+    {
+      "name": "NODE_STATUS selected, no error, five minutes node 5",
+      "frame": "NODE_STATUS",
+      "id": "0x445",
+      "data": "0100012C",
+      "fields": {
+        "state": 1,
+        "error": 0,
+        "uptime_s": 300
+      },
+      "node": 5
+    },
+    {
+      "name": "NODE_STATUS selected, no error, five minutes node 31",
+      "frame": "NODE_STATUS",
+      "id": "0x45F",
+      "data": "0100012C",
+      "fields": {
+        "state": 1,
+        "error": 0,
+        "uptime_s": 300
+      },
+      "node": 31
+    },
+    {
+      "name": "NODE_CMD global status, two bytes of arguments node 0",
+      "frame": "NODE_CMD",
+      "id": "0x460",
+      "data": "0100FF00",
+      "fields": {
+        "func": 256,
+        "args": "FF00"
+      },
+      "node": 0
+    },
+    {
+      "name": "NODE_CMD global status, two bytes of arguments node 5",
+      "frame": "NODE_CMD",
+      "id": "0x465",
+      "data": "0100FF00",
+      "fields": {
+        "func": 256,
+        "args": "FF00"
+      },
+      "node": 5
+    },
+    {
+      "name": "NODE_CMD global status, two bytes of arguments node 31",
+      "frame": "NODE_CMD",
+      "id": "0x47F",
+      "data": "0100FF00",
+      "fields": {
+        "func": 256,
+        "args": "FF00"
+      },
+      "node": 31
+    },
+    {
+      "name": "NODE_RESP answer with one byte node 0",
+      "frame": "NODE_RESP",
+      "id": "0x480",
+      "data": "010001",
+      "fields": {
+        "func": 256,
+        "data": "01"
+      },
+      "node": 0
+    },
+    {
+      "name": "NODE_RESP answer with one byte node 5",
+      "frame": "NODE_RESP",
+      "id": "0x485",
+      "data": "010001",
+      "fields": {
+        "func": 256,
+        "data": "01"
+      },
+      "node": 5
+    },
+    {
+      "name": "NODE_RESP answer with one byte node 31",
+      "frame": "NODE_RESP",
+      "id": "0x49F",
+      "data": "010001",
+      "fields": {
+        "func": 256,
+        "data": "01"
+      },
+      "node": 31
+    }
+  ],
+  "rejected": [
+    {
+      "name": "NODE_INFO node 32",
+      "frame": "NODE_INFO",
+      "node": 32
+    },
+    {
+      "name": "NODE_INFO node -1",
+      "frame": "NODE_INFO",
+      "node": -1
+    },
+    {
+      "name": "NODE_STATUS node 32",
+      "frame": "NODE_STATUS",
+      "node": 32
+    },
+    {
+      "name": "NODE_STATUS node -1",
+      "frame": "NODE_STATUS",
+      "node": -1
+    },
+    {
+      "name": "NODE_CMD node 32",
+      "frame": "NODE_CMD",
+      "node": 32
+    },
+    {
+      "name": "NODE_CMD node -1",
+      "frame": "NODE_CMD",
+      "node": -1
+    },
+    {
+      "name": "NODE_RESP node 32",
+      "frame": "NODE_RESP",
+      "node": 32
+    },
+    {
+      "name": "NODE_RESP node -1",
+      "frame": "NODE_RESP",
+      "node": -1
+    }
+  ]
+}
