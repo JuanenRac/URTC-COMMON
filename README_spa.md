@@ -1,0 +1,113 @@
+<p align="center">
+  <img src="images/URTC_COMMON_BANNER.svg" alt="URTC-COMMON banner" width="100%">
+</p>
+
+# 🧩 URTC-COMMON
+
+<p align="center"><a href="README.md">🇺🇸 English</a> | 🇪🇸 <b>Español</b> | <a href="README_fra.md">🇫🇷 Français</a> | <a href="README_ita.md">🇮🇹 Italiano</a> | <a href="README_deu.md">🇩🇪 Deutsch</a> | <a href="README_zho.md">🇨🇳 简体中文</a> | <a href="README_jpn.md">🇯🇵 日本語</a> | <a href="README_por.md">🇵🇹 Português</a></p>
+
+### El protocolo CAN como datos: especificación, códecs generados, vectores de conformidad y transportes compartidos
+
+<p align="center">
+  <img src="https://img.shields.io/badge/License-GPL%203.0--or--later-blue.svg" alt="GPL 3.0 or later">
+  <img src="https://img.shields.io/badge/Format-JSON%20%2B%20Python-083fa1.svg" alt="Format">
+  <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
+  <img src="https://img.shields.io/badge/Version-0.0.1-0f6cbd.svg" alt="Version">
+  <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
+</p>
+
+---
+
+**Comprobación de honestidad - qué funciona hoy de verdad:** este repositorio contiene una especificación, generadores, vectores de prueba y una pequeña biblioteca Python. Todo se ejecuta y se prueba en CI, pero nada de los demás repositorios de URTC lo usa todavía: URTC-FLASHER, URTC-TESTER, URTC-WEB-STUDIO y el firmware conservan su propia copia del protocolo hasta que cada uno migre. Las pruebas que comparan la especificación con esas copias leen su texto cuando los repositorios están clonados junto a este, y se omiten cuando no lo están. Nada de esto se ha ejecutado contra una placa ni un adaptador CAN: los transportes se prueban con simulaciones, y la especificación indica para cada identificador qué implementaciones lo definen, de modo que las lagunas se ven en lugar de darse por resueltas.
+
+---
+
+## 📋 De un vistazo
+
+| | |
+|---|---|
+| Versión | `0.0.1` |
+| Madurez | Andamiaje |
+| Tests | 217 |
+| Tecnología | JSON / Python |
+| En hardware real | Solo simulado: probado con emuladores, dobles de prueba o simuladores; no consta ninguna ejecución en hardware real para esta versión |
+
+## 🎯 Descripción general
+
+El protocolo CAN del cabezal de herramienta, escrito una sola vez como datos, y todo lo que se deriva de él:
+
+* [Especificación](spec/can_protocol.json): cada identificador con su dirección, regla de longitud, formato, herramientas y puertas, las cargas mágicas, los registros del esclavo y el subconjunto SLCAN, y qué implementaciones definen cada uno.
+* [Contratos](docs/CONTRACTS.md): qué debe hacer una implementación, quién implementa qué hoy, y las lagunas y diferencias conocidas.
+* [Formato de la especificación](docs/SPEC_FORMAT.md): las claves del archivo y cómo añadir o cambiar un identificador.
+* [Migración](docs/MIGRATION.md): el orden en que cada repositorio puede adoptarlo y cómo una comprobación mantiene iguales las copias.
+* [Tabla del protocolo](docs/PROTOCOL_TABLE.md): todos los identificadores en una tabla, generada a partir de la especificación.
+* [Vectores de conformidad](conformance/can_vectors.json): los bytes que toda implementación debe reproducir: cada formato, los rechazos y los flujos SLCAN.
+* **Herramientas:** `generate_constants.py` escribe la cabecera C, el módulo TypeScript, el módulo Python y la tabla (`--check` compara), `make_conformance.py` escribe los vectores (`--check`), `vendor_copy.py` copia partes a otro repositorio con un archivo de bloqueo y comprueba la copia, y `ci_validate.py` es la comprobación compartida de los repositorios. `make_glance.py` de URTC-DOCS escribe la tabla De un vistazo.
+
+## 🧩 Papel en URTC
+
+URTC-COMMON es el lugar donde el protocolo CAN del cabezal de herramienta se escribe una sola vez, como datos, para que el firmware, URTC-FLASHER, URTC-TESTER y URTC-WEB-STUDIO dejen de mantener cuatro lecturas distintas de la misma prosa. Contiene la especificación, lo que se genera a partir de ella, los vectores que toda implementación debe reproducir y la capa de transporte que comparten las dos herramientas Python. Por sí solo no cambia el comportamiento de ninguna: cada repositorio lo adopta paso a paso (véase docs/MIGRATION.md).
+
+## 📂 Estructura del repositorio
+
+```text
+URTC-COMMON/
+├── docs/         contratos, formato de la especificación, guía de migración, tabla del protocolo generada
+├── spec/         la especificación (can_protocol.json) y su esquema JSON
+├── generated/    la cabecera C y el módulo TypeScript, escritos a partir de la especificación
+├── conformance/  los vectores compartidos
+├── src/          el paquete Python: protocolo generado, tramas, códec SLCAN, transportes, versiones, ejecutor de vectores
+├── tools/        generadores con --check, vendor_copy.py y las comprobaciones de CI compartidas del ecosistema
+├── tests/        pruebas unitarias, la comparación con los repositorios junto a este y la ejecución de los vectores en TypeScript
+├── images/       el banner
+├── build.sh / build.bat, build-test.sh / build-test.bat, run.sh / run.bat
+└── urtc.project.json, pyproject.toml, CHANGELOG.md, LICENSE
+```
+
+## 🛠️ COMPILACIÓN Y EJECUCIÓN
+
+**Requisitos:** Python 3.10 o superior; pytest y jsonschema para las pruebas; Node 22.18 o superior para ejecutar el TypeScript generado contra los vectores (opcional)
+
+```bash
+python tools/generate_constants.py --check           # los archivos C, TypeScript y Python y la tabla están al día
+python tools/make_conformance.py --check             # los vectores están al día
+python -m urtc_common.cli conformance                # este paquete reproduce todos los vectores
+python tools/vendor_copy.py check TARGET --source .  # una copia en otro repositorio no se ha editado a mano ni se ha quedado atrás
+python -m pytest tests -q                            # las pruebas unitarias y la comparación con los repositorios junto a este
+```
+
+`build.sh` / `build.bat` suben la versión un paso (el cuentakilómetros del ecosistema), instalan el paquete y ejecutan las pruebas; `build-test.sh` / `build-test.bat` comprueban sin cambiar ninguna versión; `run.sh` / `run.bat` inician la línea de comandos (`conformance`, `describe`, `decode`, `slcan`).
+
+## 🔗 Proyectos relacionados
+
+URTC se compone de repositorios independientes, cada uno con su versión, sus pruebas y su README. Esta es la familia, por grupos:
+
+* **URTC Tool Platform:** [URTC](https://github.com/JuanenRac/URTC), **URTC-COMMON** (este repositorio), [URTC-FLASHER](https://github.com/JuanenRac/URTC-FLASHER), [URTC-SMART-RACK](https://github.com/JuanenRac/URTC-SMART-RACK), [URTC-TESTER](https://github.com/JuanenRac/URTC-TESTER), [URTC-VISION-TOOL](https://github.com/JuanenRac/URTC-VISION-TOOL), [URTC-WEB-STUDIO](https://github.com/JuanenRac/URTC-WEB-STUDIO)
+* **Ecosystem Operations:** [URTC-DOCS](https://github.com/JuanenRac/URTC-DOCS), [URTC-UPDATER](https://github.com/JuanenRac/URTC-UPDATER)
+
+**Más allá de URTC:**
+
+* **[HYDRA-UMC](https://github.com/JuanenRac/HYDRA-UMC)** - la placa base del brazo robótico, cuyo relé CAN está documentado como el bus en el que se conecta la cabeza de herramienta
+* **[HYDRA-UMC-DOCS](https://github.com/JuanenRac/HYDRA-UMC-DOCS)** - la misma idea para el ecosistema HYDRA-UMC
+* **[ARMOR-DOCS](https://github.com/JuanenRac/ARMOR-DOCS)** - la misma idea para el ecosistema de seguridad A.R.M.O.R.
+* **[JuanenRac](https://github.com/JuanenRac/JuanenRac)** - el perfil y el panel de estado de todos los ecosistemas
+
+## 📚 Documentación y comunidad
+
+Dónde leer más:
+
+* [Contratos: qué debe hacer cada implementación y las lagunas conocidas](docs/CONTRACTS.md)
+* [Formato de la especificación y cómo cambiarla](docs/SPEC_FORMAT.md)
+* [Migración: cómo la adopta cada repositorio](docs/MIGRATION.md)
+* [Tabla del protocolo: cada identificador y quién lo implementa](docs/PROTOCOL_TABLE.md)
+* [Registro de cambios de este repositorio](CHANGELOG.md)
+* [Licencia (GPL-3.0-or-later)](LICENSE)
+* Preguntas, ideas e informes: electrohobby3d@gmail.com
+
+## 👤 AUTOR
+
+**JuanenRac (Electro Hobby 3D)** · electrohobby3d@gmail.com
+
+## 📜 LICENCIA
+
+GPL-3.0-or-later - véase [LICENSE](LICENSE).

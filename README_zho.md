@@ -1,0 +1,113 @@
+<p align="center">
+  <img src="images/URTC_COMMON_BANNER.svg" alt="URTC-COMMON banner" width="100%">
+</p>
+
+# 🧩 URTC-COMMON
+
+<p align="center"><a href="README.md">🇺🇸 English</a> | <a href="README_spa.md">🇪🇸 Español</a> | <a href="README_fra.md">🇫🇷 Français</a> | <a href="README_ita.md">🇮🇹 Italiano</a> | <a href="README_deu.md">🇩🇪 Deutsch</a> | 🇨🇳 <b>简体中文</b> | <a href="README_jpn.md">🇯🇵 日本語</a> | <a href="README_por.md">🇵🇹 Português</a></p>
+
+### 作为数据的 CAN 协议：规范、生成的编解码器、一致性向量和共享传输层
+
+<p align="center">
+  <img src="https://img.shields.io/badge/License-GPL%203.0--or--later-blue.svg" alt="GPL 3.0 or later">
+  <img src="https://img.shields.io/badge/Format-JSON%20%2B%20Python-083fa1.svg" alt="Format">
+  <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
+  <img src="https://img.shields.io/badge/Version-0.0.1-0f6cbd.svg" alt="Version">
+  <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
+</p>
+
+---
+
+**诚实性检查 - 今天真正能运行的部分：** 本仓库包含一份规范、若干生成器、测试向量和一个小型 Python 库。所有内容都在 CI 中运行并经过测试，但其他 URTC 仓库目前都没有使用它：URTC-FLASHER、URTC-TESTER、URTC-WEB-STUDIO 和固件在各自迁移之前仍保留自己的协议副本。将规范与这些副本进行比较的测试，会在这些仓库与本仓库并排检出时读取它们的文本，否则跳过。这里的任何内容都没有在电路板或 CAN 适配器上运行过：传输层用模拟对象测试，规范则为每个标识符标明哪些实现定义了它，因此缺口是可见的，而不是被默认为已解决。
+
+---
+
+## 📋 速览
+
+| | |
+|---|---|
+| 版本 | `0.0.1` |
+| 成熟度 | 雏形 |
+| 测试 | 217 |
+| 技术栈 | JSON / Python |
+| 真实硬件 | 仅模拟：使用模拟器、替身或仿真测试；此版本没有在真实硬件上运行的记录 |
+
+## 🎯 简介
+
+工具头的 CAN 协议只写一次，以数据形式保存，并由它派生出所有内容：
+
+* [规范](spec/can_protocol.json): 每个标识符的方向、长度规则、布局、适用工具和限制条件，魔术载荷、从机寄存器和 SLCAN 子集，以及哪些实现定义了每一项。
+* [契约](docs/CONTRACTS.md): 实现必须做到的事、目前谁实现了什么，以及已知的缺口和差异。
+* [规范格式](docs/SPEC_FORMAT.md): 文件的键，以及如何添加或修改标识符。
+* [迁移](docs/MIGRATION.md): 各仓库采用它的顺序，以及检查如何保持副本一致。
+* [协议表](docs/PROTOCOL_TABLE.md): 由规范生成的、包含全部标识符的一张表。
+* [一致性向量](conformance/can_vectors.json): 每个实现都必须重现的字节：每种布局、被拒绝的输入和 SLCAN 数据流。
+* **工具：** `generate_constants.py` 写出 C 头文件、TypeScript 模块、Python 模块和协议表（`--check` 用于比对），`make_conformance.py` 写出向量（`--check`），`vendor_copy.py` 带锁文件把部分内容复制到其他仓库并检查副本，`ci_validate.py` 是通用的仓库检查。URTC-DOCS 的 `make_glance.py` 负责写出“速览”表。
+
+## 🧩 在 URTC 中的角色
+
+URTC-COMMON 是工具头 CAN 协议以数据形式只写一次的地方，这样固件、URTC-FLASHER、URTC-TESTER 和 URTC-WEB-STUDIO 就不必再各自维护同一份文字的四种解读。它包含规范、由规范生成的内容、每个实现都必须重现的向量，以及两个 Python 工具共用的传输层。它本身不会改变其中任何一个的行为：各仓库逐步采用它（参见 docs/MIGRATION.md）。
+
+## 📂 仓库结构
+
+```text
+URTC-COMMON/
+├── docs/         契约、规范格式、迁移指南、生成的协议表
+├── spec/         规范（can_protocol.json）及其 JSON Schema
+├── generated/    由规范生成的 C 头文件和 TypeScript 模块
+├── conformance/  共享向量
+├── src/          Python 包：生成的协议、帧、SLCAN 编解码、传输层、版本、向量运行器
+├── tools/        带 --check 的生成器、vendor_copy.py 以及生态系统通用的 CI 检查
+├── tests/        单元测试、与相邻仓库的比较，以及向量的 TypeScript 运行
+├── images/       横幅
+├── build.sh / build.bat, build-test.sh / build-test.bat, run.sh / run.bat
+└── urtc.project.json, pyproject.toml, CHANGELOG.md, LICENSE
+```
+
+## 🛠️ 构建与运行
+
+**要求：** Python 3.10 或更高版本；测试需要 pytest 和 jsonschema；用生成的 TypeScript 运行向量需要 Node 22.18 或更高版本（可选）
+
+```bash
+python tools/generate_constants.py --check           # C、TypeScript 和 Python 文件以及协议表都是最新的
+python tools/make_conformance.py --check             # 向量是最新的
+python -m urtc_common.cli conformance                # 本包重现每一个向量
+python tools/vendor_copy.py check TARGET --source .  # 其他仓库中的副本没有被手工修改，也没有落后
+python -m pytest tests -q                            # 单元测试以及与相邻仓库的比较
+```
+
+`build.sh` / `build.bat` 把版本提升一步（生态系统的里程表方案），安装软件包并运行测试；`build-test.sh` / `build-test.bat` 在不更改任何版本的情况下检查；`run.sh` / `run.bat` 启动命令行（`conformance`、`describe`、`decode`、`slcan`）。
+
+## 🔗 相关项目
+
+URTC 由相互独立的仓库组成，每个仓库都有自己的版本、测试和 README。以下是按组划分的家族：
+
+* **URTC Tool Platform:** [URTC](https://github.com/JuanenRac/URTC), **URTC-COMMON** (本仓库), [URTC-FLASHER](https://github.com/JuanenRac/URTC-FLASHER), [URTC-SMART-RACK](https://github.com/JuanenRac/URTC-SMART-RACK), [URTC-TESTER](https://github.com/JuanenRac/URTC-TESTER), [URTC-VISION-TOOL](https://github.com/JuanenRac/URTC-VISION-TOOL), [URTC-WEB-STUDIO](https://github.com/JuanenRac/URTC-WEB-STUDIO)
+* **Ecosystem Operations:** [URTC-DOCS](https://github.com/JuanenRac/URTC-DOCS), [URTC-UPDATER](https://github.com/JuanenRac/URTC-UPDATER)
+
+**URTC 之外：**
+
+* **[HYDRA-UMC](https://github.com/JuanenRac/HYDRA-UMC)** - 机械臂主板，其 CAN 中继在文档中被记载为工具头所接入的总线
+* **[HYDRA-UMC-DOCS](https://github.com/JuanenRac/HYDRA-UMC-DOCS)** - 同样的思路，用于 HYDRA-UMC 生态
+* **[ARMOR-DOCS](https://github.com/JuanenRac/ARMOR-DOCS)** - 同样的思路，用于 A.R.M.O.R. 安防生态
+* **[JuanenRac](https://github.com/JuanenRac/JuanenRac)** - 所有生态的个人主页和状态面板
+
+## 📚 文档与社区
+
+更多阅读：
+
+* [契约：每个实现必须做到的事和已知缺口](docs/CONTRACTS.md)
+* [规范格式及修改方法](docs/SPEC_FORMAT.md)
+* [迁移：各仓库如何采用](docs/MIGRATION.md)
+* [协议表：每个标识符及其实现者](docs/PROTOCOL_TABLE.md)
+* [本仓库的变更日志](CHANGELOG.md)
+* [许可证（GPL-3.0-or-later）](LICENSE)
+* 问题、想法和报告：electrohobby3d@gmail.com
+
+## 👤 作者
+
+**JuanenRac (Electro Hobby 3D)** · electrohobby3d@gmail.com
+
+## 📜 许可证
+
+GPL-3.0-or-later - 参见 [LICENSE](LICENSE)。

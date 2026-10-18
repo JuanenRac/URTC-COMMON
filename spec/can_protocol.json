@@ -1,0 +1,6883 @@
+{
+  "format": 1,
+  "protocol_version": 1,
+  "title": "URTC CAN protocol",
+  "about": "Machine-readable specification of the CAN bus protocol of the URTC tool head: every identifier with its direction, length rule and payload layout, the magic payloads, the registers of the expansion slave, the version procedures and the SLCAN subset the host tools rely on. All multi-byte fields are big-endian.",
+  "byte_order": "big",
+  "clients": [
+    {
+      "key": "firmware",
+      "title": "URTC firmware (C)",
+      "repository": "URTC"
+    },
+    {
+      "key": "flasher",
+      "title": "URTC-FLASHER (Python)",
+      "repository": "URTC-FLASHER"
+    },
+    {
+      "key": "tester",
+      "title": "URTC-TESTER (Python)",
+      "repository": "URTC-TESTER"
+    },
+    {
+      "key": "web_studio",
+      "title": "URTC-WEB-STUDIO (TypeScript)",
+      "repository": "URTC-WEB-STUDIO"
+    }
+  ],
+  "groups": [
+    [
+      "impact",
+      "Impact register"
+    ],
+    [
+      "global",
+      "Global commands"
+    ],
+    [
+      "configuration",
+      "Configuration registers"
+    ],
+    [
+      "diagnostics",
+      "Diagnostics"
+    ],
+    [
+      "motion",
+      "Plain stepper tools"
+    ],
+    [
+      "soldering",
+      "Soldering iron"
+    ],
+    [
+      "drill",
+      "Drill"
+    ],
+    [
+      "vacuum",
+      "Vacuum pickup"
+    ],
+    [
+      "aoi",
+      "AOI inspection"
+    ],
+    [
+      "laser",
+      "Laser engraver"
+    ],
+    [
+      "printer",
+      "3D printer"
+    ],
+    [
+      "electromagnet",
+      "Electromagnet"
+    ],
+    [
+      "welding",
+      "Spot and ultrasonic welders"
+    ],
+    [
+      "uv",
+      "UV curing"
+    ],
+    [
+      "hotair",
+      "Hot-air rework"
+    ],
+    [
+      "crimping",
+      "Crimping actuator"
+    ],
+    [
+      "slave_bridge",
+      "Expansion slave bridge"
+    ],
+    [
+      "pastejetting",
+      "Paste jetting"
+    ],
+    [
+      "functionaltest",
+      "Functional testing head"
+    ],
+    [
+      "thermal",
+      "Thermal inspection"
+    ],
+    [
+      "bootloader",
+      "Bootloader and version"
+    ]
+  ],
+  "tools": [
+    {
+      "id": 0,
+      "name": "SOLDERING_IRON",
+      "title": "Soldering Iron"
+    },
+    {
+      "id": 1,
+      "name": "PASTE_DISPENSER",
+      "title": "Paste Dispenser"
+    },
+    {
+      "id": 2,
+      "name": "LIQUID_DISPENSER",
+      "title": "Liquid Dispenser"
+    },
+    {
+      "id": 3,
+      "name": "SCREWDRIVER",
+      "title": "Screwdriver"
+    },
+    {
+      "id": 4,
+      "name": "VACUUM_PICKUP",
+      "title": "Vacuum Pickup"
+    },
+    {
+      "id": 5,
+      "name": "DRILL",
+      "title": "Drill"
+    },
+    {
+      "id": 6,
+      "name": "GRIPPER_GIMBAL",
+      "title": "Gripper (Gimbal)"
+    },
+    {
+      "id": 7,
+      "name": "GRIPPER_NEMA",
+      "title": "Gripper (NEMA)"
+    },
+    {
+      "id": 8,
+      "name": "AOI_INSPECTION",
+      "title": "AOI Inspection"
+    },
+    {
+      "id": 9,
+      "name": "LASER_ENGRAVER",
+      "title": "Laser Engraver"
+    },
+    {
+      "id": 10,
+      "name": "PRINTER_3D",
+      "title": "3D Printer"
+    },
+    {
+      "id": 11,
+      "name": "SCAN_PROBE",
+      "title": "Scan Probe"
+    },
+    {
+      "id": 12,
+      "name": "SMT_PICKPLACE",
+      "title": "SMT Pick & Place"
+    },
+    {
+      "id": 13,
+      "name": "ELECTROMAGNET",
+      "title": "Electromagnet"
+    },
+    {
+      "id": 14,
+      "name": "SPOT_WELDER",
+      "title": "Spot Welder"
+    },
+    {
+      "id": 15,
+      "name": "CONFORMAL_COATING",
+      "title": "Conformal Coating"
+    },
+    {
+      "id": 16,
+      "name": "VACUUM_GRIPPER_LG",
+      "title": "Vacuum Gripper (LG)"
+    },
+    {
+      "id": 17,
+      "name": "FLYING_PROBE",
+      "title": "Flying Probe"
+    },
+    {
+      "id": 18,
+      "name": "UV_CURING",
+      "title": "UV Curing"
+    },
+    {
+      "id": 19,
+      "name": "HOTAIR_REWORK",
+      "title": "Hot Air Rework"
+    },
+    {
+      "id": 20,
+      "name": "PRESSFIT_INSERTER",
+      "title": "Press-Fit Inserter"
+    },
+    {
+      "id": 21,
+      "name": "CRIMPING_ACTUATOR",
+      "title": "Crimping Actuator"
+    },
+    {
+      "id": 22,
+      "name": "THERMAL_INSPECTION",
+      "title": "Thermal Inspection"
+    },
+    {
+      "id": 23,
+      "name": "PASTE_JETTING",
+      "title": "Paste Jetting"
+    },
+    {
+      "id": 24,
+      "name": "ULTRASONIC_WELDER",
+      "title": "Ultrasonic Welder"
+    },
+    {
+      "id": 25,
+      "name": "INVALID",
+      "title": "No tool assigned"
+    }
+  ],
+  "enums": [
+    {
+      "name": "tool",
+      "title": "Tool profile",
+      "prefix": "TOOL_",
+      "kind": "value",
+      "values": [
+        {
+          "value": 0,
+          "name": "SOLDERING_IRON",
+          "title": "Soldering Iron"
+        },
+        {
+          "value": 1,
+          "name": "PASTE_DISPENSER",
+          "title": "Paste Dispenser"
+        },
+        {
+          "value": 2,
+          "name": "LIQUID_DISPENSER",
+          "title": "Liquid Dispenser"
+        },
+        {
+          "value": 3,
+          "name": "SCREWDRIVER",
+          "title": "Screwdriver"
+        },
+        {
+          "value": 4,
+          "name": "VACUUM_PICKUP",
+          "title": "Vacuum Pickup"
+        },
+        {
+          "value": 5,
+          "name": "DRILL",
+          "title": "Drill"
+        },
+        {
+          "value": 6,
+          "name": "GRIPPER_GIMBAL",
+          "title": "Gripper (Gimbal)"
+        },
+        {
+          "value": 7,
+          "name": "GRIPPER_NEMA",
+          "title": "Gripper (NEMA)"
+        },
+        {
+          "value": 8,
+          "name": "AOI_INSPECTION",
+          "title": "AOI Inspection"
+        },
+        {
+          "value": 9,
+          "name": "LASER_ENGRAVER",
+          "title": "Laser Engraver"
+        },
+        {
+          "value": 10,
+          "name": "PRINTER_3D",
+          "title": "3D Printer"
+        },
+        {
+          "value": 11,
+          "name": "SCAN_PROBE",
+          "title": "Scan Probe"
+        },
+        {
+          "value": 12,
+          "name": "SMT_PICKPLACE",
+          "title": "SMT Pick & Place"
+        },
+        {
+          "value": 13,
+          "name": "ELECTROMAGNET",
+          "title": "Electromagnet"
+        },
+        {
+          "value": 14,
+          "name": "SPOT_WELDER",
+          "title": "Spot Welder"
+        },
+        {
+          "value": 15,
+          "name": "CONFORMAL_COATING",
+          "title": "Conformal Coating"
+        },
+        {
+          "value": 16,
+          "name": "VACUUM_GRIPPER_LG",
+          "title": "Vacuum Gripper (LG)"
+        },
+        {
+          "value": 17,
+          "name": "FLYING_PROBE",
+          "title": "Flying Probe"
+        },
+        {
+          "value": 18,
+          "name": "UV_CURING",
+          "title": "UV Curing"
+        },
+        {
+          "value": 19,
+          "name": "HOTAIR_REWORK",
+          "title": "Hot Air Rework"
+        },
+        {
+          "value": 20,
+          "name": "PRESSFIT_INSERTER",
+          "title": "Press-Fit Inserter"
+        },
+        {
+          "value": 21,
+          "name": "CRIMPING_ACTUATOR",
+          "title": "Crimping Actuator"
+        },
+        {
+          "value": 22,
+          "name": "THERMAL_INSPECTION",
+          "title": "Thermal Inspection"
+        },
+        {
+          "value": 23,
+          "name": "PASTE_JETTING",
+          "title": "Paste Jetting"
+        },
+        {
+          "value": 24,
+          "name": "ULTRASONIC_WELDER",
+          "title": "Ultrasonic Welder"
+        },
+        {
+          "value": 25,
+          "name": "INVALID",
+          "title": "No tool assigned"
+        }
+      ]
+    },
+    {
+      "name": "bootloader_status",
+      "title": "Bootloader status",
+      "prefix": "STATUS_",
+      "kind": "value",
+      "values": [
+        {
+          "value": 1,
+          "name": "LISTENING",
+          "title": "Listening"
+        },
+        {
+          "value": 2,
+          "name": "ERASING",
+          "title": "Erasing backup slot"
+        },
+        {
+          "value": 3,
+          "name": "RECEIVING",
+          "title": "Receiving firmware data"
+        },
+        {
+          "value": 6,
+          "name": "VERIFYING",
+          "title": "Verifying (size/CRC32/HMAC/HardwareID)"
+        },
+        {
+          "value": 7,
+          "name": "COPYING",
+          "title": "Copying backup into main slot"
+        },
+        {
+          "value": 4,
+          "name": "VERIFY_OK",
+          "title": "Verify OK - jumping to new firmware"
+        },
+        {
+          "value": 5,
+          "name": "VERIFY_FAIL",
+          "title": "Verify failed - main slot untouched"
+        },
+        {
+          "value": 255,
+          "name": "ERROR",
+          "title": "Error"
+        }
+      ]
+    },
+    {
+      "name": "verify_fail_reason",
+      "title": "Verify-fail reason",
+      "prefix": "VERIFY_FAIL_REASON_",
+      "kind": "value",
+      "values": [
+        {
+          "value": 1,
+          "name": "INCOMPLETE",
+          "title": "Incomplete transfer"
+        },
+        {
+          "value": 2,
+          "name": "CRC32",
+          "title": "CRC32 mismatch"
+        },
+        {
+          "value": 3,
+          "name": "HMAC",
+          "title": "HMAC signature mismatch"
+        },
+        {
+          "value": 4,
+          "name": "HARDWARE_ID",
+          "title": "HardwareID mismatch"
+        },
+        {
+          "value": 5,
+          "name": "ROLLBACK",
+          "title": "Rollback rejected"
+        }
+      ]
+    },
+    {
+      "name": "responder",
+      "title": "Answering side",
+      "prefix": "RESPONDER_",
+      "kind": "value",
+      "values": [
+        {
+          "value": 0,
+          "name": "APPLICATION",
+          "title": "The running application"
+        },
+        {
+          "value": 1,
+          "name": "BOOTLOADER",
+          "title": "The bootloader"
+        }
+      ]
+    },
+    {
+      "name": "thermal_fault",
+      "title": "Thermal fault code",
+      "prefix": "THERMAL_FAULT_",
+      "kind": "value",
+      "values": [
+        {
+          "value": 0,
+          "name": "NONE",
+          "title": "None"
+        },
+        {
+          "value": 1,
+          "name": "MAXTEMP",
+          "title": "Temperature above the hard ceiling"
+        },
+        {
+          "value": 2,
+          "name": "HEATING_NO_RISE",
+          "title": "Heater on, no temperature rise"
+        },
+        {
+          "value": 3,
+          "name": "DROPPED_AT_TARGET",
+          "title": "Dropped far below the target at the target"
+        }
+      ]
+    },
+    {
+      "name": "reset_cause",
+      "title": "Reset cause flags",
+      "prefix": "RESET_CAUSE_",
+      "kind": "flags",
+      "values": [
+        {
+          "value": 1,
+          "name": "IWDG",
+          "title": "Hardware watchdog"
+        },
+        {
+          "value": 2,
+          "name": "WWDG",
+          "title": "Window watchdog"
+        },
+        {
+          "value": 4,
+          "name": "SOFTWARE",
+          "title": "Software reset"
+        },
+        {
+          "value": 8,
+          "name": "POWER_ON",
+          "title": "Power-on or brown-out"
+        },
+        {
+          "value": 16,
+          "name": "PIN",
+          "title": "NRST pin"
+        },
+        {
+          "value": 32,
+          "name": "LOW_POWER",
+          "title": "Low-power reset"
+        },
+        {
+          "value": 64,
+          "name": "OPTION_BYTES",
+          "title": "Option-byte load"
+        }
+      ]
+    },
+    {
+      "name": "expansion_board_type",
+      "title": "Expansion board type",
+      "prefix": "EXPANSION_BOARD_",
+      "kind": "value",
+      "values": [
+        {
+          "value": 0,
+          "name": "NONE",
+          "title": "None installed"
+        },
+        {
+          "value": 1,
+          "name": "BASIC_TMC2209",
+          "title": "Basic, TMC2209"
+        },
+        {
+          "value": 2,
+          "name": "BASIC_TMC5160A",
+          "title": "Basic, TMC5160A"
+        },
+        {
+          "value": 3,
+          "name": "ADVANCED_TMC2209",
+          "title": "Advanced, TMC2209 + STM32F303CBT6"
+        },
+        {
+          "value": 4,
+          "name": "ADVANCED_TMC5160A",
+          "title": "Advanced, TMC5160A + STM32F303CBT6"
+        },
+        {
+          "value": 5,
+          "name": "BASIC_ADS1115",
+          "title": "Basic, ADS1115 only (direct connection)"
+        },
+        {
+          "value": 6,
+          "name": "BASIC_MLX9064X",
+          "title": "Basic, MLX9064x only (direct connection)"
+        }
+      ]
+    },
+    {
+      "name": "mlx_sensor_variant",
+      "title": "MLX9064x sensor variant",
+      "prefix": "MLX_VARIANT_",
+      "kind": "value",
+      "values": [
+        {
+          "value": 0,
+          "name": "NONE",
+          "title": "None installed"
+        },
+        {
+          "value": 1,
+          "name": "MLX90640",
+          "title": "MLX90640 (32x24)"
+        },
+        {
+          "value": 2,
+          "name": "MLX90641",
+          "title": "MLX90641 (16x12)"
+        },
+        {
+          "value": 3,
+          "name": "MLX90642",
+          "title": "MLX90642 (32x24, onboard calculation)"
+        }
+      ]
+    },
+    {
+      "name": "display_mode",
+      "title": "OLED mode",
+      "prefix": "DISPLAY_MODE_",
+      "kind": "value",
+      "values": [
+        {
+          "value": 0,
+          "name": "STANDARD",
+          "title": "Standard"
+        },
+        {
+          "value": 1,
+          "name": "NIGHT",
+          "title": "Night mode"
+        },
+        {
+          "value": 15,
+          "name": "STANDBY",
+          "title": "Standby (display off)"
+        }
+      ]
+    },
+    {
+      "name": "aoi_ring_mode",
+      "title": "AOI ring light mode",
+      "prefix": "AOI_RING_",
+      "kind": "value",
+      "values": [
+        {
+          "value": 0,
+          "name": "OFF",
+          "title": "Ring off"
+        },
+        {
+          "value": 1,
+          "name": "STROBE",
+          "title": "Synchronous strobe"
+        },
+        {
+          "value": 2,
+          "name": "CONTINUOUS",
+          "title": "Continuous illumination"
+        }
+      ]
+    },
+    {
+      "name": "thermal_capture_status",
+      "title": "Thermal capture status",
+      "prefix": "THERMAL_CAPTURE_",
+      "kind": "value",
+      "values": [
+        {
+          "value": 0,
+          "name": "IDLE",
+          "title": "Idle"
+        },
+        {
+          "value": 1,
+          "name": "BUSY",
+          "title": "Capture in progress"
+        },
+        {
+          "value": 2,
+          "name": "READY",
+          "title": "Frame available"
+        },
+        {
+          "value": 255,
+          "name": "ERROR",
+          "title": "Sensor or I2C error"
+        }
+      ]
+    },
+    {
+      "name": "motion_direction",
+      "title": "Plain stepper direction",
+      "prefix": "MOTION_DIR_",
+      "kind": "value",
+      "values": [
+        {
+          "value": 1,
+          "name": "FORWARD",
+          "title": "Clockwise or forward"
+        },
+        {
+          "value": 0,
+          "name": "REVERSE",
+          "title": "Counter-clockwise or reverse"
+        }
+      ]
+    },
+    {
+      "name": "drill_direction",
+      "title": "Drill direction",
+      "prefix": "DRILL_DIR_",
+      "kind": "value",
+      "values": [
+        {
+          "value": 1,
+          "name": "COUNTER_CLOCKWISE",
+          "title": "Counter-clockwise (FRIN high)"
+        },
+        {
+          "value": 0,
+          "name": "CLOCKWISE",
+          "title": "Clockwise (FRIN low)"
+        }
+      ]
+    },
+    {
+      "name": "extruder_direction",
+      "title": "Extruder direction",
+      "prefix": "EXTRUDER_DIR_",
+      "kind": "value",
+      "values": [
+        {
+          "value": 1,
+          "name": "FORWARD",
+          "title": "Forward"
+        },
+        {
+          "value": 0,
+          "name": "RETRACT",
+          "title": "Retract"
+        }
+      ]
+    },
+    {
+      "name": "version_flags",
+      "title": "Flags of the version patch frame",
+      "prefix": "VERSION_FLAG_",
+      "kind": "flags",
+      "values": [
+        {
+          "value": 1,
+          "name": "END_UPDATE_PATCH",
+          "title": "This bootloader reads the patch from the minor field of the end-of-update frame"
+        }
+      ]
+    },
+    {
+      "name": "impact_event",
+      "title": "Impact register",
+      "prefix": "IMPACT_",
+      "kind": "value",
+      "values": [
+        {
+          "value": 1,
+          "name": "IMPACT",
+          "title": "Impact detected"
+        }
+      ]
+    }
+  ],
+  "constants": [
+    {
+      "name": "BITRATE",
+      "value": 500000,
+      "title": "Fixed bus bitrate",
+      "group": "protocol",
+      "unit": "bit/s"
+    },
+    {
+      "name": "STANDARD_ID_MAX",
+      "value": 2047,
+      "title": "Highest standard 11-bit identifier",
+      "group": "protocol"
+    },
+    {
+      "name": "DLC_MAX",
+      "value": 8,
+      "title": "Classic CAN payload limit",
+      "group": "protocol",
+      "unit": "bytes"
+    },
+    {
+      "name": "HARDWARE_ID_MAIN",
+      "value": 50580481,
+      "title": "HardwareID of the tool-head board (STM32F303CCT6, revision 1)",
+      "group": "protocol"
+    },
+    {
+      "name": "HARDWARE_ID_SLAVE",
+      "value": 50580225,
+      "title": "HardwareID of the expansion slave (STM32F303CBT6)",
+      "group": "protocol"
+    },
+    {
+      "name": "FLASH_PAGE_SIZE",
+      "value": 2048,
+      "title": "Flash page of the bootloader",
+      "group": "protocol",
+      "unit": "bytes"
+    },
+    {
+      "name": "HMAC_LENGTH",
+      "value": 32,
+      "title": "HMAC-SHA256 signature length",
+      "group": "protocol",
+      "unit": "bytes"
+    },
+    {
+      "name": "HMAC_CHUNK_COUNT",
+      "value": 4,
+      "title": "Frames of 8 bytes that carry the signature",
+      "group": "protocol"
+    },
+    {
+      "name": "PATCH_UNKNOWN",
+      "value": 255,
+      "title": "Patch value meaning not known",
+      "group": "protocol"
+    },
+    {
+      "name": "PATCH_FLAG",
+      "value": 128,
+      "title": "High byte of the minor field: a patch follows in bits 6..0",
+      "group": "protocol"
+    },
+    {
+      "name": "PATCH_MAX",
+      "value": 127,
+      "title": "Highest patch that fits the minor field",
+      "group": "protocol"
+    },
+    {
+      "name": "PATCH_FLAG_ACCEPTS_IN_END_UPDATE",
+      "value": 1,
+      "title": "Flag of 0x7E9: the bootloader reads the patch from the end-of-update frame",
+      "group": "protocol"
+    },
+    {
+      "name": "SLAVE_VERSION_EXT_MARKER",
+      "value": 225,
+      "title": "First byte of the slave extended version register; never a status code",
+      "group": "protocol"
+    },
+    {
+      "name": "SLAVE_I2C_ADDRESS",
+      "value": 66,
+      "title": "7-bit address of the expansion slave on the link bus",
+      "group": "protocol"
+    },
+    {
+      "name": "TELEMETRY_PERIOD_MS",
+      "value": 150,
+      "title": "Period of automatic telemetry",
+      "group": "timing",
+      "unit": "ms"
+    },
+    {
+      "name": "WATCHDOG_MS",
+      "value": 250,
+      "title": "Communication watchdog of heaters, laser, drill and UV",
+      "group": "timing",
+      "unit": "ms"
+    },
+    {
+      "name": "LAYER_FAN_WATCHDOG_MS",
+      "value": 1000,
+      "title": "Communication watchdog of the layer fan",
+      "group": "timing",
+      "unit": "ms"
+    },
+    {
+      "name": "KEEPALIVE_INTERVAL_MS",
+      "value": 150,
+      "title": "Resend interval hosts use under every 250 ms watchdog",
+      "group": "timing",
+      "unit": "ms",
+      "source": "hosts"
+    },
+    {
+      "name": "LAYER_FAN_KEEPALIVE_INTERVAL_MS",
+      "value": 400,
+      "title": "Resend interval hosts use under the layer fan watchdog",
+      "group": "timing",
+      "unit": "ms",
+      "source": "hosts"
+    },
+    {
+      "name": "LED_OVERRIDE_HOLD_MS",
+      "value": 10000,
+      "title": "How long a 0x100 override holds",
+      "group": "timing",
+      "unit": "ms"
+    },
+    {
+      "name": "ACTIVITY_WINDOW_MS",
+      "value": 1500,
+      "title": "A frame of any ID within this window turns the status LED blue",
+      "group": "timing",
+      "unit": "ms"
+    },
+    {
+      "name": "BOOT_SPLASH_MS",
+      "value": 5000,
+      "title": "Approximate boot splash window; movement commands are deferred",
+      "group": "timing",
+      "unit": "ms"
+    },
+    {
+      "name": "HEARTBEAT_PERIOD_MS",
+      "value": 1000,
+      "title": "Bootloader heartbeat period",
+      "group": "timing",
+      "unit": "ms"
+    },
+    {
+      "name": "VERSION_QUERY_TIMEOUT_S",
+      "value": 1.5,
+      "title": "Reference timeout of a version query",
+      "group": "timing",
+      "unit": "s"
+    },
+    {
+      "name": "VERSION_PATCH_GRACE_MS",
+      "value": 300,
+      "title": "Grace window for 0x7E9 after 0x7F9",
+      "group": "timing",
+      "unit": "ms"
+    },
+    {
+      "name": "READBACK_PAGE_BYTES",
+      "value": 2048,
+      "title": "Bytes per read-back page",
+      "group": "protocol",
+      "unit": "bytes"
+    },
+    {
+      "name": "READBACK_ACK_TIMEOUT_MS",
+      "value": 3000,
+      "title": "The bootloader gives up on a read-back page not acknowledged in this time",
+      "group": "timing",
+      "unit": "ms"
+    },
+    {
+      "name": "HOTEND_FAN_STALL_MS",
+      "value": 3000,
+      "title": "Hotend fan at duty above 0 with 0 RPM for this long is a critical error",
+      "group": "timing",
+      "unit": "ms"
+    },
+    {
+      "name": "HEATER_SETPOINT_MAX_C",
+      "value": 445,
+      "title": "Highest heater setpoint the firmware accepts (soldering iron and hot air)",
+      "group": "protocol",
+      "unit": "C"
+    },
+    {
+      "name": "NOZZLE_SETPOINT_MAX_C",
+      "value": 300,
+      "title": "Highest nozzle setpoint the hosts offer (hard ceiling in the firmware: 310)",
+      "group": "protocol",
+      "unit": "C",
+      "source": "hosts"
+    },
+    {
+      "name": "AOI_STROBE_MAX_MS",
+      "value": 500,
+      "title": "Highest strobe period the hosts offer",
+      "group": "protocol",
+      "unit": "ms",
+      "source": "hosts"
+    },
+    {
+      "name": "WELD_PULSE_MAX_MS",
+      "value": 2000,
+      "title": "Longest weld pulse; the firmware clamps to it",
+      "group": "protocol",
+      "unit": "ms"
+    },
+    {
+      "name": "PASTE_PULSE_MAX_MS",
+      "value": 255,
+      "title": "Longest paste-jetting pulse that fits the byte",
+      "group": "protocol",
+      "unit": "ms"
+    },
+    {
+      "name": "THERMAL_CHUNK_BYTES",
+      "value": 32,
+      "title": "Bytes per thermal chunk (4 frames of 8)",
+      "group": "protocol",
+      "unit": "bytes"
+    },
+    {
+      "name": "THERMAL_CHUNK_COUNT_MLX90640",
+      "value": 48,
+      "title": "Chunks of a 32x24 frame (MLX90640 and MLX90642)",
+      "group": "protocol"
+    },
+    {
+      "name": "THERMAL_CHUNK_COUNT_MLX90641",
+      "value": 12,
+      "title": "Chunks of a 16x12 frame (MLX90641)",
+      "group": "protocol"
+    },
+    {
+      "name": "BLACKBOX_CHUNK_COUNT",
+      "value": 22,
+      "title": "Chunks of the fault recorder record read by 0x1A8",
+      "group": "protocol"
+    }
+  ],
+  "magic_payloads": [
+    {
+      "name": "enter_bootloader",
+      "id": "0x7F0",
+      "data": "B0071D5A",
+      "also_on": [
+        "0x210"
+      ],
+      "title": "Reset the board (or the slave) into its bootloader"
+    },
+    {
+      "name": "authorize_downgrade",
+      "id": "0x7FD",
+      "data": "D09E12AD",
+      "title": "Allow one older, validly signed image"
+    },
+    {
+      "name": "erase_fram",
+      "id": "0x192",
+      "data": "E3A5E0FF",
+      "title": "Erase the recovered persisted state"
+    },
+    {
+      "name": "solder_feeder_reset",
+      "id": "0x131",
+      "data": "52535030",
+      "title": "Reset the solder wire feeder position (ASCII RSP0)"
+    }
+  ],
+  "registers": {
+    "slave_bootloader": {
+      "title": "Registers of the expansion slave bootloader (I2C link bus, address 0x42)",
+      "entries": [
+        {
+          "id": 0,
+          "name": "STATUS",
+          "access": "read",
+          "length": 1,
+          "title": "Status code",
+          "can": "0x215"
+        },
+        {
+          "id": 1,
+          "name": "START_UPDATE",
+          "access": "write",
+          "length": 8,
+          "title": "Total size (4) and HardwareID (4), big-endian",
+          "can": "0x211"
+        },
+        {
+          "id": 2,
+          "name": "HMAC_EXPECTED",
+          "access": "write",
+          "length": 32,
+          "title": "Expected HMAC-SHA256 of the image",
+          "can": "0x212"
+        },
+        {
+          "id": 3,
+          "name": "DATA",
+          "access": "write",
+          "length": "up to 32",
+          "title": "Image bytes, to the backup slot",
+          "can": "0x213"
+        },
+        {
+          "id": 4,
+          "name": "END_UPDATE",
+          "access": "write",
+          "length": 8,
+          "title": "CRC32 (4), major (2), minor (2), big-endian",
+          "can": "0x214"
+        },
+        {
+          "id": 5,
+          "name": "PROGRESS",
+          "access": "read",
+          "length": 1,
+          "title": "Progress 0-100, 0xFF if not updating",
+          "can": "0x216"
+        },
+        {
+          "id": 6,
+          "name": "QUERY_VERSION",
+          "access": "read",
+          "length": 10,
+          "title": "Responder (1), HardwareID (4), major (2), minor (2)",
+          "can": "0x217"
+        },
+        {
+          "id": 7,
+          "name": "VERIFY_FAIL_REASON",
+          "access": "read",
+          "length": 1,
+          "title": "Verify-fail reason",
+          "can": "0x219"
+        },
+        {
+          "id": 8,
+          "name": "QUERY_VERSION_EXT",
+          "access": "read",
+          "length": 4,
+          "title": "Marker 0xE1, application patch, bootloader minor, bootloader patch",
+          "can": "0x218"
+        }
+      ]
+    },
+    "slave_application": {
+      "title": "Registers of the expansion slave application (I2C link bus, address 0x42)",
+      "entries": [
+        {
+          "id": 0,
+          "name": "APP_STATUS",
+          "access": "read",
+          "length": 1,
+          "title": "0 idle, 1 busy"
+        },
+        {
+          "id": 1,
+          "name": "APP_VERSION",
+          "access": "read",
+          "length": 10,
+          "title": "Same layout as the bootloader version register, responder 0"
+        },
+        {
+          "id": 2,
+          "name": "ENTER_BOOTLOADER",
+          "access": "write",
+          "length": 4,
+          "title": "Magic payload B0 07 1D 5A",
+          "magic": "enter_bootloader"
+        },
+        {
+          "id": 16,
+          "name": "MLX_TRIGGER_CAPTURE",
+          "access": "write",
+          "length": 0,
+          "title": "Start a capture",
+          "can": "0x250"
+        },
+        {
+          "id": 17,
+          "name": "MLX_CAPTURE_STATUS",
+          "access": "read",
+          "length": 1,
+          "title": "Capture status",
+          "can": "0x251"
+        },
+        {
+          "id": 18,
+          "name": "MLX_RAW_CHUNK",
+          "access": "write+read",
+          "length": 32,
+          "title": "Chunk index, then 32 bytes of raw pixels",
+          "can": "0x253"
+        },
+        {
+          "id": 19,
+          "name": "MLX_CALIBRATED_CHUNK",
+          "access": "write+read",
+          "length": 32,
+          "title": "Chunk index, then 32 bytes of centi-degrees",
+          "can": "0x255"
+        },
+        {
+          "id": 20,
+          "name": "MLX_SENSOR_VARIANT",
+          "access": "read/write",
+          "length": 1,
+          "title": "Sensor variant",
+          "can": "0x1A6"
+        },
+        {
+          "id": 32,
+          "name": "ADS_CONFIGURE",
+          "access": "write",
+          "length": 2,
+          "title": "ADS1115 configuration register",
+          "can": "0x240"
+        },
+        {
+          "id": 33,
+          "name": "ADS_TRIGGER",
+          "access": "write",
+          "length": 0,
+          "title": "Start a conversion",
+          "can": "0x241"
+        },
+        {
+          "id": 34,
+          "name": "ADS_READ",
+          "access": "read",
+          "length": 2,
+          "title": "Last conversion result, signed",
+          "can": "0x242"
+        },
+        {
+          "id": 48,
+          "name": "PWM_CONFIGURE",
+          "access": "write",
+          "length": 3,
+          "title": "Channel (1) and frequency in Hz (2)",
+          "can": "0x230"
+        },
+        {
+          "id": 49,
+          "name": "PWM_PULSE",
+          "access": "write",
+          "length": 3,
+          "title": "Channel, duty percent, duration in ms",
+          "can": "0x231"
+        },
+        {
+          "id": 50,
+          "name": "PWM_STOP",
+          "access": "write",
+          "length": 1,
+          "title": "Channel to stop"
+        }
+      ]
+    }
+  },
+  "procedures": {
+    "version_query": {
+      "title": "Version query",
+      "request": {
+        "id": "0x7F8",
+        "data": "00"
+      },
+      "answers": [
+        {
+          "id": "0x7F9",
+          "required": true,
+          "from": [
+            "application",
+            "bootloader"
+          ]
+        },
+        {
+          "id": "0x7FA",
+          "required": false,
+          "from": [
+            "bootloader"
+          ]
+        },
+        {
+          "id": "0x7E9",
+          "required": false,
+          "from": [
+            "application",
+            "bootloader"
+          ],
+          "grace_ms": 300
+        }
+      ],
+      "rule": "Application major.minor.patch is (0x7F9 major, 0x7F9 minor, 0x7E9 patch). Without 0x7E9 within the grace window the patch is unknown and the legacy two-component form is used."
+    },
+    "minor_field": {
+      "title": "Minor field of the end-of-update frame",
+      "rule": "Legacy: the minor. With a patch (0 to 127), only towards a bootloader that announced bit 0 of the flags of 0x7E9: ((0x80 | patch) << 8) | minor."
+    },
+    "version_order": {
+      "title": "Anti-rollback order",
+      "rule": "Major, then minor; the patch takes part only when both versions carry one."
+    }
+  },
+  "slcan": {
+    "title": "SLCAN subset that is relied on",
+    "terminator": "\\r",
+    "frame": "t + 3 hex digits of identifier + 1 hex digit of DLC (0 to 8) + 2 hex digits per data byte",
+    "frames_accepted": [
+      "t"
+    ],
+    "frames_discarded": [
+      "T",
+      "r",
+      "R"
+    ],
+    "hex_digits": "0123456789abcdefABCDEF",
+    "transmit_hex_case": "upper",
+    "rules": [
+      "Only standard (11-bit) data frames are carried; T, r and R lines are discarded.",
+      "Every character after the leading t must be a hexadecimal digit: a sign, a 0x prefix or an underscore is not.",
+      "A DLC above 8 is not a CAN 2.0 frame.",
+      "The line length must equal 5 + 2 * DLC exactly; a truncated payload, trailing characters and adapter timestamps are all discarded.",
+      "Status characters (z, Z after a transmit, BELL on a bus error) may precede a frame in the same buffered line: the frame is the text from the first t or T on.",
+      "A receive buffer that grows beyond 4096 bytes without a terminator is discarded.",
+      "Lines that are not ASCII are discarded."
+    ],
+    "commands": {
+      "close": "C",
+      "bitrate": "S<code>",
+      "open": "O",
+      "listen_only": "L"
+    },
+    "bitrate_codes": [
+      [
+        "10 kbit/s",
+        "0"
+      ],
+      [
+        "20 kbit/s",
+        "1"
+      ],
+      [
+        "50 kbit/s",
+        "2"
+      ],
+      [
+        "100 kbit/s",
+        "3"
+      ],
+      [
+        "125 kbit/s",
+        "4"
+      ],
+      [
+        "250 kbit/s",
+        "5"
+      ],
+      [
+        "500 kbit/s",
+        "6"
+      ],
+      [
+        "800 kbit/s",
+        "7"
+      ],
+      [
+        "1 Mbit/s",
+        "8"
+      ]
+    ],
+    "bitrate_default_code": "6",
+    "rx_buffer_limit": 4096
+  },
+  "messages": [
+    {
+      "id": "0x095",
+      "name": "IMPACT_EVENT",
+      "group": "impact",
+      "title": "Impact register (touch probe, maximum priority)",
+      "direction": "board_to_host",
+      "handled_by": "application",
+      "tools": [
+        11
+      ],
+      "layouts": [
+        {
+          "role": "response",
+          "dlc": {
+            "exact": 1
+          },
+          "fields": [
+            {
+              "name": "event",
+              "type": "u8",
+              "enum": "impact_event",
+              "offset": 0,
+              "width": 1
+            }
+          ],
+          "examples": [
+            {
+              "name": "impact",
+              "fields": {
+                "event": 1
+              },
+              "data": "01"
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "Sent at once from the EXTI interrupt; the lowest identifier so it always wins arbitration."
+      ],
+      "implemented_by": {
+        "firmware": true,
+        "flasher": false,
+        "tester": true,
+        "web_studio": true
+      },
+      "client_names": {
+        "tester": "CAN_ID_IMPACT_EVENT",
+        "web_studio": "CAN_ID_IMPACT_EVENT"
+      }
+    },
+    {
+      "id": "0x100",
+      "name": "GLOBAL_STATUS",
+      "group": "global",
+      "title": "Status LED, ring LED and OLED mode",
+      "direction": "host_to_board",
+      "handled_by": "application",
+      "tools": "any",
+      "gates": {
+        "blocked_by_critical_error": false
+      },
+      "layouts": [
+        {
+          "role": "request",
+          "dlc": {
+            "exact": 8
+          },
+          "fields": [
+            {
+              "name": "status_r",
+              "type": "u8",
+              "offset": 0,
+              "width": 1
+            },
+            {
+              "name": "status_g",
+              "type": "u8",
+              "offset": 1,
+              "width": 1
+            },
+            {
+              "name": "status_b",
+              "type": "u8",
+              "offset": 2,
+              "width": 1
+            },
+            {
+              "name": "display_mode",
+              "type": "u8",
+              "enum": "display_mode",
+              "strict_enum": true,
+              "offset": 3,
+              "width": 1
+            },
+            {
+              "name": "ring_r",
+              "type": "u8",
+              "offset": 4,
+              "width": 1
+            },
+            {
+              "name": "ring_g",
+              "type": "u8",
+              "offset": 5,
+              "width": 1
+            },
+            {
+              "name": "ring_b",
+              "type": "u8",
+              "offset": 6,
+              "width": 1
+            },
+            {
+              "name": "ring_on",
+              "type": "u8",
+              "range": [
+                0,
+                1
+              ],
+              "note": "Ignored by the AOI tool, whose ring follows 0x150.",
+              "offset": 7,
+              "width": 1
+            }
+          ],
+          "examples": [
+            {
+              "name": "all off",
+              "fields": {
+                "status_r": 0,
+                "status_g": 0,
+                "status_b": 0,
+                "display_mode": 0,
+                "ring_r": 0,
+                "ring_g": 0,
+                "ring_b": 0,
+                "ring_on": 0
+              },
+              "data": "0000000000000000"
+            },
+            {
+              "name": "night mode with a blue ring",
+              "fields": {
+                "status_r": 255,
+                "status_g": 128,
+                "status_b": 0,
+                "display_mode": 1,
+                "ring_r": 0,
+                "ring_g": 0,
+                "ring_b": 255,
+                "ring_on": 1
+              },
+              "data": "FF8000010000FF01"
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "An override that holds for 10 s from the last frame (each frame refreshes it); then the automatic colour scheme returns.",
+        "The only command still processed while a critical error is declared."
+      ],
+      "firmware_accepts_dlc": {
+        "exact": 8
+      },
+      "implemented_by": {
+        "firmware": true,
+        "flasher": false,
+        "tester": true,
+        "web_studio": true
+      },
+      "client_names": {
+        "tester": "CAN_ID_GLOBAL_STATUS",
+        "web_studio": "CAN_ID_STATUS_LED_CMD"
+      }
+    },
+    {
+      "id": "0x110",
+      "name": "QUERY_ACTIVE_TOOL",
+      "group": "global",
+      "title": "Query the active tool and the quick state",
+      "direction": "host_to_board",
+      "handled_by": "application",
+      "tools": "any",
+      "gates": {
+        "blocked_by_critical_error": false
+      },
+      "read_only": true,
+      "layouts": [
+        {
+          "role": "request",
+          "dlc": {
+            "any": true
+          },
+          "fields": [],
+          "note": "The payload is ignored.",
+          "examples": [
+            {
+              "name": "empty query",
+              "fields": {},
+              "data": ""
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "Answered with 0x111, also during a critical error."
+      ],
+      "implemented_by": {
+        "firmware": true,
+        "flasher": false,
+        "tester": true,
+        "web_studio": true
+      },
+      "client_names": {
+        "tester": "CAN_ID_QUERY_ACTIVE_TOOL",
+        "web_studio": "CAN_ID_QUERY_ACTIVE_TOOL"
+      }
+    },
+    {
+      "id": "0x111",
+      "name": "ACTIVE_TOOL_RESP",
+      "group": "global",
+      "title": "Active tool and quick state",
+      "direction": "board_to_host",
+      "handled_by": "application",
+      "tools": "any",
+      "gates": {
+        "blocked_by_critical_error": false
+      },
+      "answers": "0x110",
+      "layouts": [
+        {
+          "role": "response",
+          "dlc": {
+            "min": 4,
+            "max": 6
+          },
+          "fields": [
+            {
+              "name": "tool_id",
+              "type": "u8",
+              "enum": "tool",
+              "offset": 0,
+              "width": 1
+            },
+            {
+              "name": "system_error",
+              "type": "u8",
+              "range": [
+                0,
+                1
+              ],
+              "offset": 1,
+              "width": 1
+            },
+            {
+              "name": "can_error",
+              "type": "u8",
+              "range": [
+                0,
+                1
+              ],
+              "offset": 2,
+              "width": 1
+            },
+            {
+              "name": "booting",
+              "type": "u8",
+              "range": [
+                0,
+                1
+              ],
+              "offset": 3,
+              "width": 1
+            },
+            {
+              "name": "thermal_fault",
+              "type": "u8",
+              "enum": "thermal_fault",
+              "optional": true,
+              "note": "Absent from firmware before the thermal guard: not reported, not zero.",
+              "offset": 4,
+              "width": 1
+            },
+            {
+              "name": "reset_cause",
+              "type": "u8",
+              "enum": "reset_cause",
+              "optional": true,
+              "note": "Absent from firmware before the reset-cause byte: not reported, not zero.",
+              "offset": 5,
+              "width": 1
+            }
+          ],
+          "examples": [
+            {
+              "name": "idle soldering iron after a power-on reset",
+              "fields": {
+                "tool_id": 0,
+                "system_error": 0,
+                "can_error": 0,
+                "booting": 0,
+                "thermal_fault": 0,
+                "reset_cause": 8
+              },
+              "data": "000000000008"
+            }
+          ],
+          "decode_cases": [
+            {
+              "name": "four bytes (older firmware)",
+              "data": "0A000100"
+            },
+            {
+              "name": "five bytes",
+              "data": "0A01000002"
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "Byte 0 is the already-resolved tool, never the raw jumper reading (see 0x1A3).",
+        "A host must treat missing bytes as not reported."
+      ],
+      "implemented_by": {
+        "firmware": true,
+        "flasher": false,
+        "tester": true,
+        "web_studio": true
+      },
+      "client_names": {
+        "tester": "CAN_ID_ACTIVE_TOOL_RESP",
+        "web_studio": "CAN_ID_ACTIVE_TOOL_RESP"
+      }
+    },
+    {
+      "id": "0x120",
+      "name": "MOTION_CMD",
+      "group": "motion",
+      "title": "Plain stepper move (direction and step count)",
+      "direction": "host_to_board",
+      "handled_by": "application",
+      "tools": [
+        0,
+        1,
+        2,
+        3,
+        6,
+        7,
+        12,
+        16
+      ],
+      "gates": {
+        "blocked_by_critical_error": true,
+        "blocked_during_boot_sequence": true
+      },
+      "layouts": [
+        {
+          "role": "request",
+          "dlc": {
+            "exact": 5
+          },
+          "fields": [
+            {
+              "name": "direction",
+              "type": "u8",
+              "enum": "motion_direction",
+              "strict_enum": true,
+              "offset": 0,
+              "width": 1
+            },
+            {
+              "name": "steps",
+              "type": "u32",
+              "note": "0 stops; a move is 1 to 4294967295.",
+              "offset": 1,
+              "width": 4
+            }
+          ],
+          "examples": [
+            {
+              "name": "forward 1000 steps",
+              "fields": {
+                "direction": 1,
+                "steps": 1000
+              },
+              "data": "01000003E8"
+            },
+            {
+              "name": "stop",
+              "fields": {
+                "direction": 0,
+                "steps": 0
+              },
+              "data": "0000000000"
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "The prose names tools 1, 2, 3, 6, 7 and the soldering iron's wire feeder; the firmware routing table also sends tools 12 and 16 here."
+      ],
+      "firmware_accepts_dlc": {
+        "min": 5,
+        "max": 8
+      },
+      "implemented_by": {
+        "firmware": true,
+        "flasher": false,
+        "tester": true,
+        "web_studio": true
+      },
+      "client_names": {
+        "tester": "CAN_ID_MOTION_CMD",
+        "web_studio": "CAN_ID_MOTION_CMD"
+      }
+    },
+    {
+      "id": "0x130",
+      "name": "SOLDER_SETPOINT",
+      "group": "soldering",
+      "title": "T12 setpoint temperature",
+      "direction": "host_to_board",
+      "handled_by": "application",
+      "tools": [
+        0
+      ],
+      "gates": {
+        "blocked_by_critical_error": true
+      },
+      "timing": {
+        "watchdog_ms": 250
+      },
+      "layouts": [
+        {
+          "role": "request",
+          "dlc": {
+            "exact": 2
+          },
+          "fields": [
+            {
+              "name": "setpoint_c",
+              "type": "u16",
+              "range": [
+                0,
+                445
+              ],
+              "unit": "C",
+              "note": "0 turns the thermal loop off; the firmware ceiling is 445 C.",
+              "offset": 0,
+              "width": 2
+            }
+          ],
+          "examples": [
+            {
+              "name": "350 C",
+              "fields": {
+                "setpoint_c": 350
+              },
+              "data": "015E"
+            },
+            {
+              "name": "off",
+              "fields": {
+                "setpoint_c": 0
+              },
+              "data": "0000"
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "Repeat the frame within the watchdog while the setpoint is above 0, or the heater is cut and a critical error is declared."
+      ],
+      "firmware_accepts_dlc": {
+        "min": 2,
+        "max": 8
+      },
+      "implemented_by": {
+        "firmware": true,
+        "flasher": false,
+        "tester": true,
+        "web_studio": true
+      },
+      "client_names": {
+        "tester": "CAN_ID_SOLDER_SETPOINT",
+        "web_studio": "CAN_ID_SOLDER_SETPOINT"
+      }
+    },
+    {
+      "id": "0x131",
+      "name": "SOLDER_FEEDER_RESET",
+      "group": "soldering",
+      "title": "Reset the solder wire feeder position",
+      "direction": "host_to_board",
+      "handled_by": "application",
+      "tools": [
+        0
+      ],
+      "gates": {
+        "blocked_by_critical_error": true,
+        "needs_magic": "solder_feeder_reset"
+      },
+      "layouts": [
+        {
+          "role": "request",
+          "dlc": {
+            "exact": 4
+          },
+          "fields": [
+            {
+              "name": "magic",
+              "type": "bytes",
+              "length": 4,
+              "fixed": "52535030",
+              "offset": 0,
+              "width": 4
+            }
+          ],
+          "examples": [
+            {
+              "name": "reset",
+              "fields": {
+                "magic": "52535030"
+              },
+              "data": "52535030"
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "Always answered with 0x132, even when the payload is not the magic one (the position is then left untouched)."
+      ],
+      "firmware_accepts_dlc": {
+        "exact": 4
+      },
+      "implemented_by": {
+        "firmware": true,
+        "flasher": false,
+        "tester": true,
+        "web_studio": true
+      },
+      "client_names": {
+        "tester": "CAN_ID_SOLDER_FEEDER_RESET",
+        "web_studio": "CAN_ID_SOLDER_FEEDER_RESET"
+      }
+    },
+    {
+      "id": "0x132",
+      "name": "SOLDER_FEEDER_POS",
+      "group": "soldering",
+      "title": "Solder wire feeder position",
+      "direction": "both",
+      "handled_by": "application",
+      "tools": [
+        0
+      ],
+      "gates": {
+        "blocked_by_critical_error": true
+      },
+      "layouts": [
+        {
+          "role": "request",
+          "dlc": {
+            "any": true
+          },
+          "fields": [],
+          "note": "The payload is ignored.",
+          "examples": [
+            {
+              "name": "empty query",
+              "fields": {},
+              "data": ""
+            }
+          ]
+        },
+        {
+          "role": "response",
+          "dlc": {
+            "exact": 4
+          },
+          "fields": [
+            {
+              "name": "position",
+              "type": "i32",
+              "unit": "steps",
+              "offset": 0,
+              "width": 4
+            }
+          ],
+          "examples": [
+            {
+              "name": "net retracted",
+              "fields": {
+                "position": -1500
+              },
+              "data": "FFFFFA24"
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "Open-loop estimate of the commanded steps."
+      ],
+      "implemented_by": {
+        "firmware": true,
+        "flasher": false,
+        "tester": true,
+        "web_studio": true
+      },
+      "client_names": {
+        "tester": "CAN_ID_SOLDER_FEEDER_POS",
+        "web_studio": "CAN_ID_SOLDER_FEEDER_QUERY"
+      }
+    },
+    {
+      "id": "0x135",
+      "name": "SOLDER_TELEMETRY",
+      "group": "soldering",
+      "title": "T12 temperature telemetry",
+      "direction": "board_to_host",
+      "handled_by": "application",
+      "tools": [
+        0,
+        19
+      ],
+      "timing": {
+        "period_ms": 150
+      },
+      "layouts": [
+        {
+          "role": "response",
+          "dlc": {
+            "exact": 2
+          },
+          "fields": [
+            {
+              "name": "temperature_c",
+              "type": "u16",
+              "unit": "C",
+              "offset": 0,
+              "width": 2
+            }
+          ],
+          "examples": [
+            {
+              "name": "25 C",
+              "fields": {
+                "temperature_c": 25
+              },
+              "data": "0019"
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "Shared by the soldering iron and the hot-air rework tool (same heater and thermocouple)."
+      ],
+      "implemented_by": {
+        "firmware": true,
+        "flasher": false,
+        "tester": true,
+        "web_studio": true
+      },
+      "client_names": {
+        "tester": "CAN_ID_SOLDER_TELEMETRY",
+        "web_studio": "CAN_ID_SOLDER_TELEMETRY"
+      }
+    },
+    {
+      "id": "0x140",
+      "name": "DRILL_CMD",
+      "group": "drill",
+      "title": "Drill speed and direction",
+      "direction": "host_to_board",
+      "handled_by": "application",
+      "tools": [
+        5
+      ],
+      "gates": {
+        "blocked_by_critical_error": true,
+        "blocked_during_boot_sequence": true
+      },
+      "timing": {
+        "watchdog_ms": 250
+      },
+      "layouts": [
+        {
+          "role": "request",
+          "dlc": {
+            "exact": 2
+          },
+          "fields": [
+            {
+              "name": "speed",
+              "type": "u8",
+              "note": "0 is a full stop with the brake.",
+              "offset": 0,
+              "width": 1
+            },
+            {
+              "name": "direction",
+              "type": "u8",
+              "enum": "drill_direction",
+              "strict_enum": true,
+              "offset": 1,
+              "width": 1
+            }
+          ],
+          "examples": [
+            {
+              "name": "half speed counter-clockwise",
+              "fields": {
+                "speed": 128,
+                "direction": 1
+              },
+              "data": "8001"
+            }
+          ]
+        }
+      ],
+      "firmware_accepts_dlc": {
+        "min": 2,
+        "max": 8
+      },
+      "implemented_by": {
+        "firmware": true,
+        "flasher": false,
+        "tester": true,
+        "web_studio": true
+      },
+      "client_names": {
+        "tester": "CAN_ID_DRILL_CMD",
+        "web_studio": "CAN_ID_DRILL_CMD"
+      }
+    },
+    {
+      "id": "0x145",
+      "name": "VACUUM_TELEMETRY",
+      "group": "vacuum",
+      "title": "Vacuum pickup telemetry",
+      "direction": "board_to_host",
+      "handled_by": "application",
+      "tools": [
+        4
+      ],
+      "timing": {
+        "period_ms": 150
+      },
+      "layouts": [
+        {
+          "role": "response",
+          "dlc": {
+            "exact": 3
+          },
+          "fields": [
+            {
+              "name": "adc",
+              "type": "u16",
+              "range": [
+                0,
+                4095
+              ],
+              "offset": 0,
+              "width": 2
+            },
+            {
+              "name": "detected",
+              "type": "u8",
+              "range": [
+                0,
+                1
+              ],
+              "offset": 2,
+              "width": 1
+            }
+          ],
+          "examples": [
+            {
+              "name": "object picked up",
+              "fields": {
+                "adc": 2048,
+                "detected": 1
+              },
+              "data": "080001"
+            }
+          ]
+        }
+      ],
+      "implemented_by": {
+        "firmware": true,
+        "flasher": false,
+        "tester": true,
+        "web_studio": true
+      },
+      "client_names": {
+        "tester": "CAN_ID_VACUUM_TELEMETRY",
+        "web_studio": "CAN_ID_VACUUM_TELEMETRY"
+      }
+    },
+    {
+      "id": "0x147",
+      "name": "DRILL_TELEMETRY",
+      "group": "drill",
+      "title": "Drill RPM and endstop telemetry",
+      "direction": "board_to_host",
+      "handled_by": "application",
+      "tools": [
+        5
+      ],
+      "timing": {
+        "period_ms": 150
+      },
+      "layouts": [
+        {
+          "role": "response",
+          "dlc": {
+            "exact": 3
+          },
+          "fields": [
+            {
+              "name": "rpm",
+              "type": "u16",
+              "unit": "rpm",
+              "offset": 0,
+              "width": 2
+            },
+            {
+              "name": "endstop",
+              "type": "u8",
+              "range": [
+                0,
+                1
+              ],
+              "offset": 2,
+              "width": 1
+            }
+          ],
+          "examples": [
+            {
+              "name": "3000 rpm",
+              "fields": {
+                "rpm": 3000,
+                "endstop": 0
+              },
+              "data": "0BB800"
+            }
+          ]
+        }
+      ],
+      "implemented_by": {
+        "firmware": true,
+        "flasher": false,
+        "tester": true,
+        "web_studio": true
+      },
+      "client_names": {
+        "tester": "CAN_ID_DRILL_TELEMETRY",
+        "web_studio": "CAN_ID_DRILL_TELEMETRY"
+      }
+    },
+    {
+      "id": "0x150",
+      "name": "AOI_CMD",
+      "group": "aoi",
+      "title": "AOI ring light mode and strobe period",
+      "direction": "host_to_board",
+      "handled_by": "application",
+      "tools": [
+        8
+      ],
+      "gates": {
+        "blocked_by_critical_error": true
+      },
+      "layouts": [
+        {
+          "role": "request",
+          "dlc": {
+            "exact": 3
+          },
+          "fields": [
+            {
+              "name": "mode",
+              "type": "u8",
+              "enum": "aoi_ring_mode",
+              "strict_enum": true,
+              "offset": 0,
+              "width": 1
+            },
+            {
+              "name": "strobe_period_ms",
+              "type": "u16",
+              "range": [
+                1,
+                500
+              ],
+              "unit": "ms",
+              "note": "The hosts offer 1 to 500 ms.",
+              "offset": 1,
+              "width": 2
+            }
+          ],
+          "examples": [
+            {
+              "name": "strobe 100 ms",
+              "fields": {
+                "mode": 1,
+                "strobe_period_ms": 100
+              },
+              "data": "010064"
+            }
+          ]
+        }
+      ],
+      "firmware_accepts_dlc": {
+        "min": 3,
+        "max": 8
+      },
+      "implemented_by": {
+        "firmware": true,
+        "flasher": false,
+        "tester": true,
+        "web_studio": true
+      },
+      "client_names": {
+        "tester": "CAN_ID_AOI_CMD",
+        "web_studio": "CAN_ID_AOI_CMD"
+      }
+    },
+    {
+      "id": "0x155",
+      "name": "AOI_TELEMETRY",
+      "group": "aoi",
+      "title": "AOI endstop telemetry",
+      "direction": "board_to_host",
+      "handled_by": "application",
+      "tools": [
+        8
+      ],
+      "timing": {
+        "period_ms": 150
+      },
+      "layouts": [
+        {
+          "role": "response",
+          "dlc": {
+            "exact": 1
+          },
+          "fields": [
+            {
+              "name": "endstop",
+              "type": "u8",
+              "range": [
+                0,
+                1
+              ],
+              "offset": 0,
+              "width": 1
+            }
+          ],
+          "examples": [
+            {
+              "name": "open",
+              "fields": {
+                "endstop": 0
+              },
+              "data": "00"
+            }
+          ]
+        }
+      ],
+      "implemented_by": {
+        "firmware": true,
+        "flasher": false,
+        "tester": true,
+        "web_studio": true
+      },
+      "client_names": {
+        "tester": "CAN_ID_AOI_TELEMETRY",
+        "web_studio": "CAN_ID_AOI_TELEMETRY"
+      }
+    },
+    {
+      "id": "0x160",
+      "name": "LASER_CMD",
+      "group": "laser",
+      "title": "Laser power and interlock",
+      "direction": "host_to_board",
+      "handled_by": "application",
+      "tools": [
+        9
+      ],
+      "gates": {
+        "blocked_by_critical_error": true,
+        "blocked_during_boot_sequence": true
+      },
+      "timing": {
+        "watchdog_ms": 250
+      },
+      "layouts": [
+        {
+          "role": "request",
+          "dlc": {
+            "exact": 2
+          },
+          "fields": [
+            {
+              "name": "power",
+              "type": "u8",
+              "offset": 0,
+              "width": 1
+            },
+            {
+              "name": "interlock",
+              "type": "u8",
+              "range": [
+                0,
+                1
+              ],
+              "note": "0 is safe mode (locked), 1 is armed.",
+              "offset": 1,
+              "width": 1
+            }
+          ],
+          "examples": [
+            {
+              "name": "armed at 100",
+              "fields": {
+                "power": 100,
+                "interlock": 1
+              },
+              "data": "6401"
+            },
+            {
+              "name": "safe off",
+              "fields": {
+                "power": 0,
+                "interlock": 0
+              },
+              "data": "0000"
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "Repeat within the watchdog while the power is above 0; otherwise the PWM is cut and the interlock opens."
+      ],
+      "firmware_accepts_dlc": {
+        "min": 2,
+        "max": 8
+      },
+      "implemented_by": {
+        "firmware": true,
+        "flasher": false,
+        "tester": true,
+        "web_studio": true
+      },
+      "client_names": {
+        "tester": "CAN_ID_LASER_CMD",
+        "web_studio": "CAN_ID_LASER_CMD"
+      }
+    },
+    {
+      "id": "0x165",
+      "name": "LASER_TELEMETRY",
+      "group": "laser",
+      "title": "Laser endstop telemetry",
+      "direction": "board_to_host",
+      "handled_by": "application",
+      "tools": [
+        9
+      ],
+      "timing": {
+        "period_ms": 150
+      },
+      "layouts": [
+        {
+          "role": "response",
+          "dlc": {
+            "exact": 1
+          },
+          "fields": [
+            {
+              "name": "endstop",
+              "type": "u8",
+              "range": [
+                0,
+                1
+              ],
+              "offset": 0,
+              "width": 1
+            }
+          ],
+          "examples": [
+            {
+              "name": "triggered",
+              "fields": {
+                "endstop": 1
+              },
+              "data": "01"
+            }
+          ]
+        }
+      ],
+      "implemented_by": {
+        "firmware": true,
+        "flasher": false,
+        "tester": true,
+        "web_studio": true
+      },
+      "client_names": {
+        "tester": "CAN_ID_LASER_TELEMETRY",
+        "web_studio": "CAN_ID_LASER_TELEMETRY"
+      }
+    },
+    {
+      "id": "0x170",
+      "name": "PRINTER_THERMAL_MOTION",
+      "group": "printer",
+      "title": "Nozzle setpoint and extruder motion",
+      "direction": "host_to_board",
+      "handled_by": "application",
+      "tools": [
+        10
+      ],
+      "gates": {
+        "blocked_by_critical_error": true
+      },
+      "timing": {
+        "watchdog_ms": 250
+      },
+      "layouts": [
+        {
+          "role": "request",
+          "dlc": {
+            "exact": 6
+          },
+          "fields": [
+            {
+              "name": "nozzle_setpoint_c",
+              "type": "u16",
+              "range": [
+                0,
+                300
+              ],
+              "unit": "C",
+              "note": "The hosts offer 0 to 300 C; the firmware hard ceiling is 310 C.",
+              "offset": 0,
+              "width": 2
+            },
+            {
+              "name": "extruder_direction",
+              "type": "u8",
+              "enum": "extruder_direction",
+              "strict_enum": true,
+              "offset": 2,
+              "width": 1
+            },
+            {
+              "name": "extruder_steps",
+              "type": "u24",
+              "offset": 3,
+              "width": 3
+            }
+          ],
+          "examples": [
+            {
+              "name": "200 C, extrude 16 steps",
+              "fields": {
+                "nozzle_setpoint_c": 200,
+                "extruder_direction": 1,
+                "extruder_steps": 16
+              },
+              "data": "00C801000010"
+            },
+            {
+              "name": "heater off",
+              "fields": {
+                "nozzle_setpoint_c": 0,
+                "extruder_direction": 1,
+                "extruder_steps": 0
+              },
+              "data": "000001000000"
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "The watchdog covers the nozzle setpoint only, not the extruder motion.",
+        "Only the extruder steps wait for the boot sequence; the nozzle setpoint is accepted during it."
+      ],
+      "firmware_accepts_dlc": {
+        "min": 6,
+        "max": 8
+      },
+      "implemented_by": {
+        "firmware": true,
+        "flasher": false,
+        "tester": true,
+        "web_studio": true
+      },
+      "client_names": {
+        "tester": "CAN_ID_3DP_THERMAL_MOTION",
+        "web_studio": "CAN_ID_3DP_THERMAL_MOTION"
+      }
+    },
+    {
+      "id": "0x173",
+      "name": "PRINTER_LAYERFAN_CMD",
+      "group": "printer",
+      "title": "Layer fan power",
+      "direction": "host_to_board",
+      "handled_by": "application",
+      "tools": [
+        10
+      ],
+      "gates": {
+        "blocked_by_critical_error": true
+      },
+      "timing": {
+        "watchdog_ms": 1000
+      },
+      "layouts": [
+        {
+          "role": "request",
+          "dlc": {
+            "exact": 1
+          },
+          "fields": [
+            {
+              "name": "power",
+              "type": "u8",
+              "offset": 0,
+              "width": 1
+            }
+          ],
+          "examples": [
+            {
+              "name": "full",
+              "fields": {
+                "power": 255
+              },
+              "data": "FF"
+            }
+          ]
+        }
+      ],
+      "firmware_accepts_dlc": {
+        "min": 1,
+        "max": 8
+      },
+      "implemented_by": {
+        "firmware": true,
+        "flasher": false,
+        "tester": true,
+        "web_studio": true
+      },
+      "client_names": {
+        "tester": "CAN_ID_3DP_LAYER_FAN_CMD",
+        "web_studio": "CAN_ID_3DP_LAYERFAN_CMD"
+      }
+    },
+    {
+      "id": "0x175",
+      "name": "PRINTER_HOTEND_TELEMETRY",
+      "group": "printer",
+      "title": "Hotend temperature telemetry",
+      "direction": "board_to_host",
+      "handled_by": "application",
+      "tools": [
+        10
+      ],
+      "timing": {
+        "period_ms": 150
+      },
+      "layouts": [
+        {
+          "role": "response",
+          "dlc": {
+            "exact": 2
+          },
+          "fields": [
+            {
+              "name": "temperature_c",
+              "type": "u16",
+              "unit": "C",
+              "offset": 0,
+              "width": 2
+            }
+          ],
+          "examples": [
+            {
+              "name": "200 C",
+              "fields": {
+                "temperature_c": 200
+              },
+              "data": "00C8"
+            }
+          ]
+        }
+      ],
+      "implemented_by": {
+        "firmware": true,
+        "flasher": false,
+        "tester": true,
+        "web_studio": true
+      },
+      "client_names": {
+        "tester": "CAN_ID_3DP_HOTEND_TELEM",
+        "web_studio": "CAN_ID_3DP_HOTEND_TELEMETRY"
+      }
+    },
+    {
+      "id": "0x177",
+      "name": "PRINTER_LAYERFAN_RPM",
+      "group": "printer",
+      "title": "Layer fan RPM telemetry",
+      "direction": "board_to_host",
+      "handled_by": "application",
+      "tools": [
+        10
+      ],
+      "timing": {
+        "period_ms": 150
+      },
+      "layouts": [
+        {
+          "role": "response",
+          "dlc": {
+            "exact": 2
+          },
+          "fields": [
+            {
+              "name": "rpm",
+              "type": "u16",
+              "unit": "rpm",
+              "offset": 0,
+              "width": 2
+            }
+          ],
+          "examples": [
+            {
+              "name": "4800 rpm",
+              "fields": {
+                "rpm": 4800
+              },
+              "data": "12C0"
+            }
+          ]
+        }
+      ],
+      "implemented_by": {
+        "firmware": true,
+        "flasher": false,
+        "tester": true,
+        "web_studio": true
+      },
+      "client_names": {
+        "tester": "CAN_ID_3DP_LAYER_FAN_RPM",
+        "web_studio": "CAN_ID_3DP_LAYERFAN_TELEMETRY"
+      }
+    },
+    {
+      "id": "0x178",
+      "name": "PRINTER_HOTENDFAN_CMD",
+      "group": "printer",
+      "title": "Hotend fan power",
+      "direction": "host_to_board",
+      "handled_by": "application",
+      "tools": [
+        10
+      ],
+      "gates": {
+        "blocked_by_critical_error": true
+      },
+      "layouts": [
+        {
+          "role": "request",
+          "dlc": {
+            "exact": 1
+          },
+          "fields": [
+            {
+              "name": "power",
+              "type": "u8",
+              "offset": 0,
+              "width": 1
+            }
+          ],
+          "examples": [
+            {
+              "name": "full",
+              "fields": {
+                "power": 255
+              },
+              "data": "FF"
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "No communication watchdog: losing this fan is more dangerous than a stuck one; a stall detector acts instead."
+      ],
+      "firmware_accepts_dlc": {
+        "min": 1,
+        "max": 8
+      },
+      "implemented_by": {
+        "firmware": true,
+        "flasher": false,
+        "tester": true,
+        "web_studio": true
+      },
+      "client_names": {
+        "tester": "CAN_ID_3DP_HOTEND_FAN_CMD",
+        "web_studio": "CAN_ID_3DP_HOTENDFAN_CMD"
+      }
+    },
+    {
+      "id": "0x179",
+      "name": "PRINTER_HOTENDFAN_RPM",
+      "group": "printer",
+      "title": "Hotend fan RPM telemetry",
+      "direction": "board_to_host",
+      "handled_by": "application",
+      "tools": [
+        10
+      ],
+      "timing": {
+        "period_ms": 150
+      },
+      "layouts": [
+        {
+          "role": "response",
+          "dlc": {
+            "exact": 2
+          },
+          "fields": [
+            {
+              "name": "rpm",
+              "type": "u16",
+              "unit": "rpm",
+              "offset": 0,
+              "width": 2
+            }
+          ],
+          "examples": [
+            {
+              "name": "5000 rpm",
+              "fields": {
+                "rpm": 5000
+              },
+              "data": "1388"
+            }
+          ]
+        }
+      ],
+      "implemented_by": {
+        "firmware": true,
+        "flasher": false,
+        "tester": true,
+        "web_studio": true
+      },
+      "client_names": {
+        "tester": "CAN_ID_3DP_HOTEND_FAN_RPM",
+        "web_studio": "CAN_ID_3DP_HOTENDFAN_TELEMETRY"
+      }
+    },
+    {
+      "id": "0x180",
+      "name": "EXPANSION_SPI_REQ",
+      "group": "global",
+      "title": "Expansion SPI passthrough request",
+      "direction": "host_to_board",
+      "handled_by": "application",
+      "tools": "any",
+      "gates": {
+        "blocked_by_critical_error": true
+      },
+      "layouts": [
+        {
+          "role": "request",
+          "dlc": {
+            "min": 2,
+            "max": 8
+          },
+          "fields": [
+            {
+              "name": "count",
+              "type": "u8",
+              "range": [
+                1,
+                7
+              ],
+              "offset": 0,
+              "width": 1
+            },
+            {
+              "name": "data",
+              "type": "bytes",
+              "rest": true,
+              "derived_length_of": "count",
+              "note": "Exactly count bytes.",
+              "offset": 1
+            }
+          ],
+          "note": "count is derived from the length of data.",
+          "examples": [
+            {
+              "name": "three bytes",
+              "fields": {
+                "data": "010203"
+              },
+              "data": "03010203"
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "Generic byte transport (SPI mode 3); the firmware does not interpret the register protocol of the chip behind it."
+      ],
+      "firmware_accepts_dlc": {
+        "min": 2,
+        "max": 8
+      },
+      "implemented_by": {
+        "firmware": true,
+        "flasher": false,
+        "tester": true,
+        "web_studio": true
+      },
+      "client_names": {
+        "tester": "CAN_ID_EXP_SPI_CMD",
+        "web_studio": "CAN_ID_EXPANSION_SPI_REQ"
+      }
+    },
+    {
+      "id": "0x181",
+      "name": "EXPANSION_SPI_RESP",
+      "group": "global",
+      "title": "Expansion SPI passthrough response",
+      "direction": "board_to_host",
+      "handled_by": "application",
+      "tools": "any",
+      "answers": "0x180",
+      "layouts": [
+        {
+          "role": "response",
+          "dlc": {
+            "min": 2,
+            "max": 8
+          },
+          "fields": [
+            {
+              "name": "count",
+              "type": "u8",
+              "range": [
+                1,
+                7
+              ],
+              "offset": 0,
+              "width": 1
+            },
+            {
+              "name": "data",
+              "type": "bytes",
+              "rest": true,
+              "derived_length_of": "count",
+              "offset": 1
+            }
+          ],
+          "examples": [
+            {
+              "name": "three bytes back",
+              "fields": {
+                "data": "A1B2C3"
+              },
+              "data": "03A1B2C3"
+            }
+          ]
+        }
+      ],
+      "implemented_by": {
+        "firmware": true,
+        "flasher": false,
+        "tester": true,
+        "web_studio": true
+      },
+      "client_names": {
+        "tester": "CAN_ID_EXP_SPI_RESP",
+        "web_studio": "CAN_ID_EXPANSION_SPI_RESP"
+      }
+    },
+    {
+      "id": "0x182",
+      "name": "EXPANSION_DIAG0_REQ",
+      "group": "global",
+      "title": "Query the TMC_DIAG0 level",
+      "direction": "host_to_board",
+      "handled_by": "application",
+      "tools": "any",
+      "gates": {
+        "blocked_by_critical_error": true
+      },
+      "read_only": true,
+      "layouts": [
+        {
+          "role": "request",
+          "dlc": {
+            "any": true
+          },
+          "fields": [],
+          "note": "The payload is ignored.",
+          "examples": [
+            {
+              "name": "empty query",
+              "fields": {},
+              "data": ""
+            }
+          ]
+        }
+      ],
+      "implemented_by": {
+        "firmware": true,
+        "flasher": false,
+        "tester": true,
+        "web_studio": true
+      },
+      "client_names": {
+        "tester": "CAN_ID_QUERY_DIAG0",
+        "web_studio": "CAN_ID_EXPANSION_DIAG0_REQ"
+      }
+    },
+    {
+      "id": "0x183",
+      "name": "EXPANSION_DIAG0_RESP",
+      "group": "global",
+      "title": "TMC_DIAG0 level",
+      "direction": "board_to_host",
+      "handled_by": "application",
+      "tools": "any",
+      "answers": "0x182",
+      "layouts": [
+        {
+          "role": "response",
+          "dlc": {
+            "exact": 1
+          },
+          "fields": [
+            {
+              "name": "level",
+              "type": "u8",
+              "range": [
+                0,
+                1
+              ],
+              "note": "1 is a stall or fault on the onboard or the expansion driver.",
+              "offset": 0,
+              "width": 1
+            }
+          ],
+          "examples": [
+            {
+              "name": "high",
+              "fields": {
+                "level": 1
+              },
+              "data": "01"
+            }
+          ]
+        }
+      ],
+      "implemented_by": {
+        "firmware": true,
+        "flasher": false,
+        "tester": true,
+        "web_studio": true
+      },
+      "client_names": {
+        "tester": "CAN_ID_DIAG0_RESP",
+        "web_studio": "CAN_ID_EXPANSION_DIAG0_RESP"
+      }
+    },
+    {
+      "id": "0x190",
+      "name": "FRAM_QUERY",
+      "group": "global",
+      "title": "Query the recovered persisted state",
+      "direction": "host_to_board",
+      "handled_by": "application",
+      "tools": "any",
+      "gates": {
+        "blocked_by_critical_error": false
+      },
+      "read_only": true,
+      "layouts": [
+        {
+          "role": "request",
+          "dlc": {
+            "any": true
+          },
+          "fields": [],
+          "note": "The payload is ignored.",
+          "examples": [
+            {
+              "name": "empty query",
+              "fields": {},
+              "data": ""
+            }
+          ]
+        }
+      ],
+      "implemented_by": {
+        "firmware": true,
+        "flasher": true,
+        "tester": true,
+        "web_studio": true
+      },
+      "client_names": {
+        "flasher": "CAN_ID_QUERY_FRAM_STATE",
+        "tester": "CAN_ID_QUERY_FRAM_STATE",
+        "web_studio": "CAN_ID_FRAM_QUERY"
+      }
+    },
+    {
+      "id": "0x191",
+      "name": "FRAM_STATE_RESP",
+      "group": "global",
+      "title": "Recovered persisted state",
+      "direction": "board_to_host",
+      "handled_by": "application",
+      "tools": "any",
+      "answers": "0x190",
+      "layouts": [
+        {
+          "role": "response",
+          "dlc": {
+            "exact": 8
+          },
+          "fields": [
+            {
+              "name": "valid",
+              "type": "u8",
+              "range": [
+                0,
+                1
+              ],
+              "offset": 0,
+              "width": 1
+            },
+            {
+              "name": "tool_id",
+              "type": "u8",
+              "enum": "tool",
+              "offset": 1,
+              "width": 1
+            },
+            {
+              "name": "had_error",
+              "type": "u8",
+              "range": [
+                0,
+                1
+              ],
+              "offset": 2,
+              "width": 1
+            },
+            {
+              "name": "setpoint_c",
+              "type": "u16",
+              "unit": "C",
+              "offset": 3,
+              "width": 2
+            },
+            {
+              "name": "speed",
+              "type": "u8",
+              "offset": 5,
+              "width": 1
+            },
+            {
+              "name": "dir_or_interlock",
+              "type": "u8",
+              "range": [
+                0,
+                1
+              ],
+              "offset": 6,
+              "width": 1
+            },
+            {
+              "name": "fan",
+              "type": "u8",
+              "offset": 7,
+              "width": 1
+            }
+          ],
+          "examples": [
+            {
+              "name": "saved soldering state",
+              "fields": {
+                "valid": 1,
+                "tool_id": 0,
+                "had_error": 0,
+                "setpoint_c": 350,
+                "speed": 0,
+                "dir_or_interlock": 0,
+                "fan": 0
+              },
+              "data": "010000015E000000"
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "Also the confirmation of an erase (0x192), with valid = 0."
+      ],
+      "implemented_by": {
+        "firmware": true,
+        "flasher": true,
+        "tester": true,
+        "web_studio": true
+      },
+      "client_names": {
+        "flasher": "CAN_ID_FRAM_STATE_RESP",
+        "tester": "CAN_ID_FRAM_STATE_RESP",
+        "web_studio": "CAN_ID_FRAM_STATE_RESP"
+      }
+    },
+    {
+      "id": "0x192",
+      "name": "ERASE_FRAM",
+      "group": "global",
+      "title": "Erase the recovered persisted state",
+      "direction": "host_to_board",
+      "handled_by": "application",
+      "tools": "any",
+      "gates": {
+        "blocked_by_critical_error": true,
+        "needs_magic": "erase_fram"
+      },
+      "layouts": [
+        {
+          "role": "request",
+          "dlc": {
+            "exact": 4
+          },
+          "fields": [
+            {
+              "name": "magic",
+              "type": "bytes",
+              "length": 4,
+              "fixed": "E3A5E0FF",
+              "offset": 0,
+              "width": 4
+            }
+          ],
+          "examples": [
+            {
+              "name": "erase",
+              "fields": {
+                "magic": "E3A5E0FF"
+              },
+              "data": "E3A5E0FF"
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "Any other payload or length is ignored. Answered with 0x191 reporting valid = 0."
+      ],
+      "firmware_accepts_dlc": {
+        "exact": 4
+      },
+      "implemented_by": {
+        "firmware": true,
+        "flasher": true,
+        "tester": true,
+        "web_studio": true
+      },
+      "client_names": {
+        "flasher": "CAN_ID_ERASE_FRAM",
+        "tester": "CAN_ID_ERASE_FRAM",
+        "web_studio": "CAN_ID_ERASE_FRAM"
+      }
+    },
+    {
+      "id": "0x1A0",
+      "name": "SET_EXPANSION_TYPE",
+      "group": "configuration",
+      "title": "Set the expansion board type",
+      "direction": "host_to_board",
+      "handled_by": "application",
+      "tools": "any",
+      "gates": {
+        "blocked_by_critical_error": false
+      },
+      "layouts": [
+        {
+          "role": "request",
+          "dlc": {
+            "min": 1,
+            "max": 8
+          },
+          "fields": [
+            {
+              "name": "board_type",
+              "type": "u8",
+              "enum": "expansion_board_type",
+              "strict_enum": true,
+              "offset": 0,
+              "width": 1
+            }
+          ],
+          "examples": [
+            {
+              "name": "advanced TMC5160A",
+              "fields": {
+                "board_type": 4
+              },
+              "data": "04"
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "Only byte 0 is used; a value above 6 is silently ignored. Answered with 0x1A1."
+      ],
+      "firmware_accepts_dlc": {
+        "min": 1,
+        "max": 8
+      },
+      "implemented_by": {
+        "firmware": true,
+        "flasher": true,
+        "tester": false,
+        "web_studio": true
+      },
+      "client_names": {
+        "flasher": "CAN_ID_SET_EXPANSION_TYPE",
+        "web_studio": "CAN_ID_SET_EXPANSION_TYPE"
+      }
+    },
+    {
+      "id": "0x1A1",
+      "name": "EXPANSION_TYPE_RESP",
+      "group": "configuration",
+      "title": "Expansion board type (query and response)",
+      "direction": "both",
+      "handled_by": "application",
+      "tools": "any",
+      "gates": {
+        "blocked_by_critical_error": false
+      },
+      "read_only": true,
+      "layouts": [
+        {
+          "role": "request",
+          "dlc": {
+            "any": true
+          },
+          "fields": [],
+          "note": "The payload is ignored.",
+          "examples": [
+            {
+              "name": "empty query",
+              "fields": {},
+              "data": ""
+            }
+          ]
+        },
+        {
+          "role": "response",
+          "dlc": {
+            "exact": 1
+          },
+          "fields": [
+            {
+              "name": "board_type",
+              "type": "u8",
+              "enum": "expansion_board_type",
+              "offset": 0,
+              "width": 1
+            }
+          ],
+          "examples": [
+            {
+              "name": "none",
+              "fields": {
+                "board_type": 0
+              },
+              "data": "00"
+            }
+          ]
+        }
+      ],
+      "implemented_by": {
+        "firmware": true,
+        "flasher": true,
+        "tester": true,
+        "web_studio": true
+      },
+      "client_names": {
+        "flasher": "CAN_ID_EXPANSION_TYPE_RESP",
+        "tester": "CAN_ID_EXPANSION_TYPE_RESP",
+        "web_studio": "CAN_ID_EXPANSION_TYPE_RESP"
+      }
+    },
+    {
+      "id": "0x1A2",
+      "name": "SET_FREE_TOOL",
+      "group": "configuration",
+      "title": "Set the free tool configuration",
+      "direction": "host_to_board",
+      "handled_by": "application",
+      "tools": "any",
+      "gates": {
+        "blocked_by_critical_error": false
+      },
+      "layouts": [
+        {
+          "role": "request",
+          "dlc": {
+            "min": 1,
+            "max": 8
+          },
+          "fields": [
+            {
+              "name": "selection",
+              "type": "u8",
+              "range": [
+                0,
+                25
+              ],
+              "note": "0 is no tool; 1 to 25 is the tool id plus one.",
+              "offset": 0,
+              "width": 1
+            }
+          ],
+          "examples": [
+            {
+              "name": "thermal inspection",
+              "fields": {
+                "selection": 23
+              },
+              "data": "17"
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "Only used by a board whose ID jumpers read 0x1F, and only at the next power cycle. Answered with 0x1A3."
+      ],
+      "firmware_accepts_dlc": {
+        "min": 1,
+        "max": 8
+      },
+      "implemented_by": {
+        "firmware": true,
+        "flasher": true,
+        "tester": false,
+        "web_studio": true
+      },
+      "client_names": {
+        "flasher": "CAN_ID_SET_FREE_TOOL",
+        "web_studio": "CAN_ID_SET_FREE_TOOL"
+      }
+    },
+    {
+      "id": "0x1A3",
+      "name": "FREE_TOOL_CONFIG_RESP",
+      "group": "configuration",
+      "title": "Raw jumper reading and free tool configuration",
+      "direction": "both",
+      "handled_by": "application",
+      "tools": "any",
+      "gates": {
+        "blocked_by_critical_error": false
+      },
+      "read_only": true,
+      "layouts": [
+        {
+          "role": "request",
+          "dlc": {
+            "any": true
+          },
+          "fields": [],
+          "note": "The payload is ignored.",
+          "examples": [
+            {
+              "name": "empty query",
+              "fields": {},
+              "data": ""
+            }
+          ]
+        },
+        {
+          "role": "response",
+          "dlc": {
+            "exact": 2
+          },
+          "fields": [
+            {
+              "name": "jumper_reading",
+              "type": "u8",
+              "range": [
+                0,
+                31
+              ],
+              "offset": 0,
+              "width": 1
+            },
+            {
+              "name": "selection",
+              "type": "u8",
+              "range": [
+                0,
+                25
+              ],
+              "offset": 1,
+              "width": 1
+            }
+          ],
+          "examples": [
+            {
+              "name": "jumpers 0x1F, tool 3 chosen",
+              "fields": {
+                "jumper_reading": 31,
+                "selection": 4
+              },
+              "data": "1F04"
+            }
+          ]
+        }
+      ],
+      "implemented_by": {
+        "firmware": true,
+        "flasher": true,
+        "tester": true,
+        "web_studio": true
+      },
+      "client_names": {
+        "flasher": "CAN_ID_FREE_TOOL_CONFIG_RESP",
+        "tester": "CAN_ID_FREE_TOOL_CONFIG_RESP",
+        "web_studio": "CAN_ID_FREE_TOOL_CONFIG_RESP"
+      }
+    },
+    {
+      "id": "0x1A4",
+      "name": "SET_DEVICE_SERIAL",
+      "group": "configuration",
+      "title": "Set the device serial number",
+      "direction": "host_to_board",
+      "handled_by": "application",
+      "tools": "any",
+      "gates": {
+        "blocked_by_critical_error": false
+      },
+      "layouts": [
+        {
+          "role": "request",
+          "dlc": {
+            "min": 1,
+            "max": 8
+          },
+          "fields": [
+            {
+              "name": "serial",
+              "type": "u8",
+              "offset": 0,
+              "width": 1
+            }
+          ],
+          "examples": [
+            {
+              "name": "serial 7",
+              "fields": {
+                "serial": 7
+              },
+              "data": "07"
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "A host-assigned label; the firmware never reads it. Answered with 0x1A5."
+      ],
+      "firmware_accepts_dlc": {
+        "min": 1,
+        "max": 8
+      },
+      "implemented_by": {
+        "firmware": true,
+        "flasher": true,
+        "tester": false,
+        "web_studio": true
+      },
+      "client_names": {
+        "flasher": "CAN_ID_SET_DEVICE_SERIAL",
+        "web_studio": "CAN_ID_SET_DEVICE_SERIAL"
+      }
+    },
+    {
+      "id": "0x1A5",
+      "name": "PERIPHERAL_INFO_RESP",
+      "group": "configuration",
+      "title": "Peripheral type and device serial",
+      "direction": "both",
+      "handled_by": "application",
+      "tools": "any",
+      "gates": {
+        "blocked_by_critical_error": false
+      },
+      "read_only": true,
+      "layouts": [
+        {
+          "role": "request",
+          "dlc": {
+            "any": true
+          },
+          "fields": [],
+          "note": "The payload is ignored.",
+          "examples": [
+            {
+              "name": "empty query",
+              "fields": {},
+              "data": ""
+            }
+          ]
+        },
+        {
+          "role": "response",
+          "dlc": {
+            "exact": 2
+          },
+          "fields": [
+            {
+              "name": "peripheral_type",
+              "type": "u8",
+              "note": "Always 0x03 for URTC firmware.",
+              "offset": 0,
+              "width": 1
+            },
+            {
+              "name": "serial",
+              "type": "u8",
+              "offset": 1,
+              "width": 1
+            }
+          ],
+          "examples": [
+            {
+              "name": "URTC, serial 7",
+              "fields": {
+                "peripheral_type": 3,
+                "serial": 7
+              },
+              "data": "0307"
+            }
+          ]
+        }
+      ],
+      "implemented_by": {
+        "firmware": true,
+        "flasher": true,
+        "tester": true,
+        "web_studio": true
+      },
+      "client_names": {
+        "flasher": "CAN_ID_PERIPHERAL_INFO_RESP",
+        "tester": "CAN_ID_PERIPHERAL_INFO_RESP",
+        "web_studio": "CAN_ID_PERIPHERAL_INFO_RESP"
+      }
+    },
+    {
+      "id": "0x1A6",
+      "name": "SET_MLX_VARIANT",
+      "group": "configuration",
+      "title": "Set the MLX9064x sensor variant",
+      "direction": "host_to_board",
+      "handled_by": "application",
+      "tools": "any",
+      "gates": {
+        "blocked_by_critical_error": false
+      },
+      "layouts": [
+        {
+          "role": "request",
+          "dlc": {
+            "min": 1,
+            "max": 8
+          },
+          "fields": [
+            {
+              "name": "variant",
+              "type": "u8",
+              "enum": "mlx_sensor_variant",
+              "strict_enum": true,
+              "offset": 0,
+              "width": 1
+            }
+          ],
+          "examples": [
+            {
+              "name": "MLX90640",
+              "fields": {
+                "variant": 1
+              },
+              "data": "01"
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "A value above 3 is rejected but 0x1A7 still answers with the unchanged value."
+      ],
+      "firmware_accepts_dlc": {
+        "min": 1,
+        "max": 8
+      },
+      "implemented_by": {
+        "firmware": true,
+        "flasher": true,
+        "tester": false,
+        "web_studio": true
+      },
+      "client_names": {
+        "flasher": "CAN_ID_SET_MLX_VARIANT",
+        "web_studio": "CAN_ID_SET_MLX_VARIANT"
+      }
+    },
+    {
+      "id": "0x1A7",
+      "name": "MLX_VARIANT_RESP",
+      "group": "configuration",
+      "title": "MLX9064x sensor variant (query and response)",
+      "direction": "both",
+      "handled_by": "application",
+      "tools": "any",
+      "gates": {
+        "blocked_by_critical_error": false
+      },
+      "read_only": true,
+      "layouts": [
+        {
+          "role": "request",
+          "dlc": {
+            "any": true
+          },
+          "fields": [],
+          "note": "The payload is ignored.",
+          "examples": [
+            {
+              "name": "empty query",
+              "fields": {},
+              "data": ""
+            }
+          ]
+        },
+        {
+          "role": "response",
+          "dlc": {
+            "exact": 1
+          },
+          "fields": [
+            {
+              "name": "variant",
+              "type": "u8",
+              "enum": "mlx_sensor_variant",
+              "offset": 0,
+              "width": 1
+            }
+          ],
+          "examples": [
+            {
+              "name": "MLX90641",
+              "fields": {
+                "variant": 2
+              },
+              "data": "02"
+            }
+          ]
+        }
+      ],
+      "implemented_by": {
+        "firmware": true,
+        "flasher": true,
+        "tester": true,
+        "web_studio": true
+      },
+      "client_names": {
+        "flasher": "CAN_ID_MLX_VARIANT_RESP",
+        "tester": "CAN_ID_MLX_VARIANT_RESP",
+        "web_studio": "CAN_ID_MLX_VARIANT_RESP"
+      }
+    },
+    {
+      "id": "0x1A8",
+      "name": "BLACKBOX_QUERY",
+      "group": "diagnostics",
+      "title": "Request one chunk of the fault recorder",
+      "direction": "host_to_board",
+      "handled_by": "application",
+      "tools": "any",
+      "gates": {
+        "blocked_by_critical_error": false
+      },
+      "documented_in_prose": false,
+      "layouts": [
+        {
+          "role": "request",
+          "dlc": {
+            "min": 1,
+            "max": 8
+          },
+          "fields": [
+            {
+              "name": "chunk_index",
+              "type": "u8",
+              "range": [
+                0,
+                21
+              ],
+              "note": "22 chunks of 32 bytes cover the current record; an index out of range gets no answer.",
+              "offset": 0,
+              "width": 1
+            }
+          ],
+          "examples": [
+            {
+              "name": "first chunk",
+              "fields": {
+                "chunk_index": 0
+              },
+              "data": "00"
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "Implemented by the firmware and not described in the protocol prose; no host implements it. Answered with four frames of 0x1A9."
+      ],
+      "firmware_accepts_dlc": {
+        "min": 1,
+        "max": 8
+      },
+      "implemented_by": {
+        "firmware": true,
+        "flasher": false,
+        "tester": false,
+        "web_studio": false
+      }
+    },
+    {
+      "id": "0x1A9",
+      "name": "BLACKBOX_CHUNK",
+      "group": "diagnostics",
+      "title": "One chunk of the fault recorder",
+      "direction": "board_to_host",
+      "handled_by": "application",
+      "tools": "any",
+      "answers": "0x1A8",
+      "documented_in_prose": false,
+      "layouts": [
+        {
+          "role": "response",
+          "dlc": {
+            "exact": 8
+          },
+          "fields": [
+            {
+              "name": "data",
+              "type": "bytes",
+              "length": 8,
+              "offset": 0,
+              "width": 8
+            }
+          ],
+          "frames": 4,
+          "note": "Four consecutive frames of eight bytes, concatenated in order, are one 32-byte chunk.",
+          "examples": [
+            {
+              "name": "one of the four frames",
+              "fields": {
+                "data": "0102030405060708"
+              },
+              "data": "0102030405060708"
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "Raw bytes of the F-RAM record; the last chunk is zero-padded. Not described in the protocol prose."
+      ],
+      "implemented_by": {
+        "firmware": true,
+        "flasher": false,
+        "tester": false,
+        "web_studio": false
+      }
+    },
+    {
+      "id": "0x1AA",
+      "name": "THERMAL_STATS_QUERY",
+      "group": "diagnostics",
+      "title": "Query the lifetime thermal counters",
+      "direction": "host_to_board",
+      "handled_by": "application",
+      "tools": "any",
+      "gates": {
+        "blocked_by_critical_error": false
+      },
+      "read_only": true,
+      "layouts": [
+        {
+          "role": "request",
+          "dlc": {
+            "any": true
+          },
+          "fields": [],
+          "note": "The payload is ignored.",
+          "examples": [
+            {
+              "name": "empty query",
+              "fields": {},
+              "data": ""
+            }
+          ]
+        }
+      ],
+      "implemented_by": {
+        "firmware": true,
+        "flasher": false,
+        "tester": true,
+        "web_studio": false
+      },
+      "client_names": {
+        "tester": "CAN_ID_QUERY_THERMAL_STATS"
+      }
+    },
+    {
+      "id": "0x1AB",
+      "name": "THERMAL_STATS_RESP",
+      "group": "diagnostics",
+      "title": "Lifetime thermal counters",
+      "direction": "board_to_host",
+      "handled_by": "application",
+      "tools": "any",
+      "answers": "0x1AA",
+      "layouts": [
+        {
+          "role": "response",
+          "dlc": {
+            "exact": 8
+          },
+          "fields": [
+            {
+              "name": "fault_count",
+              "type": "u16",
+              "offset": 0,
+              "width": 2
+            },
+            {
+              "name": "heater_on_seconds",
+              "type": "u32",
+              "unit": "s",
+              "offset": 2,
+              "width": 4
+            },
+            {
+              "name": "last_fault",
+              "type": "u8",
+              "enum": "thermal_fault",
+              "offset": 6,
+              "width": 1
+            },
+            {
+              "name": "persisted",
+              "type": "u8",
+              "range": [
+                0,
+                1
+              ],
+              "offset": 7,
+              "width": 1
+            }
+          ],
+          "examples": [
+            {
+              "name": "two faults",
+              "fields": {
+                "fault_count": 2,
+                "heater_on_seconds": 3600,
+                "last_fault": 1,
+                "persisted": 1
+              },
+              "data": "000200000E100101"
+            }
+          ]
+        }
+      ],
+      "implemented_by": {
+        "firmware": true,
+        "flasher": false,
+        "tester": true,
+        "web_studio": false
+      },
+      "client_names": {
+        "tester": "CAN_ID_THERMAL_STATS_RESP"
+      }
+    },
+    {
+      "id": "0x1B0",
+      "name": "ELECTROMAGNET_CMD",
+      "group": "electromagnet",
+      "title": "Electromagnet coil",
+      "direction": "host_to_board",
+      "handled_by": "application",
+      "tools": [
+        13
+      ],
+      "gates": {
+        "blocked_by_critical_error": true,
+        "blocked_during_boot_sequence": true
+      },
+      "layouts": [
+        {
+          "role": "request",
+          "dlc": {
+            "exact": 1
+          },
+          "fields": [
+            {
+              "name": "coil",
+              "type": "u8",
+              "range": [
+                0,
+                1
+              ],
+              "note": "The firmware treats any non-zero value as on; encoders send 0 or 1.",
+              "offset": 0,
+              "width": 1
+            }
+          ],
+          "examples": [
+            {
+              "name": "energise",
+              "fields": {
+                "coil": 1
+              },
+              "data": "01"
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "Deliberately no watchdog: staying energised is the safer failure mode."
+      ],
+      "firmware_accepts_dlc": {
+        "min": 1,
+        "max": 8
+      },
+      "implemented_by": {
+        "firmware": true,
+        "flasher": false,
+        "tester": true,
+        "web_studio": true
+      },
+      "client_names": {
+        "tester": "CAN_ID_ELECTROMAGNET_CMD",
+        "web_studio": "CAN_ID_ELECTROMAGNET_CMD"
+      }
+    },
+    {
+      "id": "0x1C0",
+      "name": "SPOT_WELD_CMD",
+      "group": "welding",
+      "title": "Spot welder timed pulse",
+      "direction": "host_to_board",
+      "handled_by": "application",
+      "tools": [
+        14
+      ],
+      "gates": {
+        "blocked_by_critical_error": true,
+        "blocked_during_boot_sequence": true
+      },
+      "layouts": [
+        {
+          "role": "request",
+          "dlc": {
+            "exact": 3
+          },
+          "fields": [
+            {
+              "name": "fire",
+              "type": "u8",
+              "range": [
+                1,
+                1
+              ],
+              "offset": 0,
+              "width": 1
+            },
+            {
+              "name": "duration_ms",
+              "type": "u16",
+              "range": [
+                1,
+                2000
+              ],
+              "unit": "ms",
+              "offset": 1,
+              "width": 2
+            }
+          ],
+          "examples": [
+            {
+              "name": "100 ms pulse",
+              "fields": {
+                "fire": 1,
+                "duration_ms": 100
+              },
+              "data": "010064"
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "Refuses to fire unless the contact sensor reads contact. The firmware clamps the duration to 2000 ms."
+      ],
+      "firmware_accepts_dlc": {
+        "min": 3,
+        "max": 8
+      },
+      "implemented_by": {
+        "firmware": true,
+        "flasher": false,
+        "tester": true,
+        "web_studio": true
+      },
+      "client_names": {
+        "tester": "CAN_ID_SPOT_WELD_CMD",
+        "web_studio": "CAN_ID_WELD_SPOT_CMD"
+      }
+    },
+    {
+      "id": "0x1D0",
+      "name": "UV_CURING_CMD",
+      "group": "uv",
+      "title": "UV curing LED duty",
+      "direction": "host_to_board",
+      "handled_by": "application",
+      "tools": [
+        18
+      ],
+      "gates": {
+        "blocked_by_critical_error": true,
+        "blocked_during_boot_sequence": true
+      },
+      "timing": {
+        "watchdog_ms": 250
+      },
+      "layouts": [
+        {
+          "role": "request",
+          "dlc": {
+            "exact": 1
+          },
+          "fields": [
+            {
+              "name": "duty",
+              "type": "u8",
+              "offset": 0,
+              "width": 1
+            }
+          ],
+          "examples": [
+            {
+              "name": "half",
+              "fields": {
+                "duty": 128
+              },
+              "data": "80"
+            }
+          ]
+        }
+      ],
+      "firmware_accepts_dlc": {
+        "min": 1,
+        "max": 8
+      },
+      "implemented_by": {
+        "firmware": true,
+        "flasher": false,
+        "tester": true,
+        "web_studio": true
+      },
+      "client_names": {
+        "tester": "CAN_ID_UV_CURING_CMD",
+        "web_studio": "CAN_ID_UV_CURING_CMD"
+      }
+    },
+    {
+      "id": "0x1E0",
+      "name": "HOTAIR_CMD",
+      "group": "hotair",
+      "title": "Hot-air nozzle setpoint and blower duty",
+      "direction": "host_to_board",
+      "handled_by": "application",
+      "tools": [
+        19
+      ],
+      "gates": {
+        "blocked_by_critical_error": true,
+        "blocked_during_boot_sequence": true
+      },
+      "timing": {
+        "watchdog_ms": 250
+      },
+      "layouts": [
+        {
+          "role": "request",
+          "dlc": {
+            "exact": 3
+          },
+          "fields": [
+            {
+              "name": "setpoint_c",
+              "type": "u16",
+              "range": [
+                0,
+                445
+              ],
+              "unit": "C",
+              "offset": 0,
+              "width": 2
+            },
+            {
+              "name": "blower_duty",
+              "type": "u8",
+              "offset": 2,
+              "width": 1
+            }
+          ],
+          "examples": [
+            {
+              "name": "300 C, blower 200",
+              "fields": {
+                "setpoint_c": 300,
+                "blower_duty": 200
+              },
+              "data": "012CC8"
+            }
+          ]
+        }
+      ],
+      "firmware_accepts_dlc": {
+        "min": 3,
+        "max": 8
+      },
+      "implemented_by": {
+        "firmware": true,
+        "flasher": false,
+        "tester": true,
+        "web_studio": true
+      },
+      "client_names": {
+        "tester": "CAN_ID_HOTAIR_CMD",
+        "web_studio": "CAN_ID_HOTAIR_CMD"
+      }
+    },
+    {
+      "id": "0x1F0",
+      "name": "CRIMPING_CMD",
+      "group": "crimping",
+      "title": "Crimping actuator motor",
+      "direction": "host_to_board",
+      "handled_by": "application",
+      "tools": [
+        21
+      ],
+      "gates": {
+        "blocked_by_critical_error": true,
+        "blocked_during_boot_sequence": true
+      },
+      "layouts": [
+        {
+          "role": "request",
+          "dlc": {
+            "exact": 5
+          },
+          "fields": [
+            {
+              "name": "direction",
+              "type": "u8",
+              "enum": "motion_direction",
+              "strict_enum": true,
+              "offset": 0,
+              "width": 1
+            },
+            {
+              "name": "steps",
+              "type": "u32",
+              "note": "0 stops.",
+              "offset": 1,
+              "width": 4
+            }
+          ],
+          "examples": [
+            {
+              "name": "forward 500 steps",
+              "fields": {
+                "direction": 1,
+                "steps": 500
+              },
+              "data": "01000001F4"
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "Same layout as 0x120, routed to the expansion board driver; needs a Basic or Advanced expansion board with its own driver."
+      ],
+      "firmware_accepts_dlc": {
+        "min": 5,
+        "max": 8
+      },
+      "implemented_by": {
+        "firmware": true,
+        "flasher": false,
+        "tester": true,
+        "web_studio": true
+      },
+      "client_names": {
+        "tester": "CAN_ID_CRIMPING_CMD",
+        "web_studio": "CAN_ID_CRIMPING_CMD"
+      }
+    },
+    {
+      "id": "0x200",
+      "name": "ULTRASONIC_WELD_CMD",
+      "group": "welding",
+      "title": "Ultrasonic welder timed pulse",
+      "direction": "host_to_board",
+      "handled_by": "application",
+      "tools": [
+        24
+      ],
+      "gates": {
+        "blocked_by_critical_error": true,
+        "blocked_during_boot_sequence": true
+      },
+      "layouts": [
+        {
+          "role": "request",
+          "dlc": {
+            "exact": 3
+          },
+          "fields": [
+            {
+              "name": "fire",
+              "type": "u8",
+              "range": [
+                1,
+                1
+              ],
+              "offset": 0,
+              "width": 1
+            },
+            {
+              "name": "duration_ms",
+              "type": "u16",
+              "range": [
+                1,
+                2000
+              ],
+              "unit": "ms",
+              "offset": 1,
+              "width": 2
+            }
+          ],
+          "examples": [
+            {
+              "name": "250 ms pulse",
+              "fields": {
+                "fire": 1,
+                "duration_ms": 250
+              },
+              "data": "0100FA"
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "Like 0x1C0 without the contact-sensor gate."
+      ],
+      "firmware_accepts_dlc": {
+        "min": 3,
+        "max": 8
+      },
+      "implemented_by": {
+        "firmware": true,
+        "flasher": false,
+        "tester": true,
+        "web_studio": true
+      },
+      "client_names": {
+        "tester": "CAN_ID_ULTRASONIC_WELD_CMD",
+        "web_studio": "CAN_ID_WELD_ULTRASONIC_CMD"
+      }
+    },
+    {
+      "id": "0x210",
+      "name": "SLAVE_ENTER_BOOTLOADER",
+      "group": "slave_bridge",
+      "title": "Enter the expansion slave's bootloader",
+      "direction": "host_to_board",
+      "handled_by": "application",
+      "tools": "any",
+      "gates": {
+        "blocked_by_critical_error": true,
+        "needs_magic": "enter_bootloader"
+      },
+      "layouts": [
+        {
+          "role": "request",
+          "dlc": {
+            "exact": 4
+          },
+          "fields": [
+            {
+              "name": "magic",
+              "type": "bytes",
+              "length": 4,
+              "fixed": "B0071D5A",
+              "offset": 0,
+              "width": 4
+            }
+          ],
+          "examples": [
+            {
+              "name": "enter",
+              "fields": {
+                "magic": "B0071D5A"
+              },
+              "data": "B0071D5A"
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "The tool-head board relays the payload without checking it; the slave application does."
+      ],
+      "firmware_accepts_dlc": {
+        "exact": 4
+      },
+      "implemented_by": {
+        "firmware": true,
+        "flasher": true,
+        "tester": false,
+        "web_studio": true
+      },
+      "client_names": {
+        "flasher": "CAN_ID_SLAVE_ENTER_BOOTLOADER",
+        "web_studio": "CAN_ID_SLAVE_ENTER_BOOTLOADER"
+      }
+    },
+    {
+      "id": "0x211",
+      "name": "SLAVE_START_UPDATE",
+      "group": "slave_bridge",
+      "title": "Start the slave firmware update",
+      "direction": "host_to_board",
+      "handled_by": "application",
+      "tools": "any",
+      "gates": {
+        "blocked_by_critical_error": true
+      },
+      "layouts": [
+        {
+          "role": "request",
+          "dlc": {
+            "exact": 8
+          },
+          "fields": [
+            {
+              "name": "total_size",
+              "type": "u32",
+              "unit": "bytes",
+              "offset": 0,
+              "width": 4
+            },
+            {
+              "name": "hardware_id",
+              "type": "u32",
+              "offset": 4,
+              "width": 4
+            }
+          ],
+          "examples": [
+            {
+              "name": "1 KiB image",
+              "fields": {
+                "total_size": 1024,
+                "hardware_id": 50580225
+              },
+              "data": "000004000303CB01"
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "Same layout as 0x7F1; the slave HardwareID is not the main board one."
+      ],
+      "firmware_accepts_dlc": {
+        "exact": 8
+      },
+      "implemented_by": {
+        "firmware": true,
+        "flasher": true,
+        "tester": false,
+        "web_studio": true
+      },
+      "client_names": {
+        "flasher": "CAN_ID_SLAVE_START_UPDATE",
+        "web_studio": "CAN_ID_SLAVE_START_UPDATE"
+      }
+    },
+    {
+      "id": "0x212",
+      "name": "SLAVE_HMAC_CHUNK",
+      "group": "slave_bridge",
+      "title": "Slave HMAC-SHA256 signature chunk",
+      "direction": "host_to_board",
+      "handled_by": "application",
+      "tools": "any",
+      "gates": {
+        "blocked_by_critical_error": true
+      },
+      "layouts": [
+        {
+          "role": "request",
+          "dlc": {
+            "exact": 8
+          },
+          "fields": [
+            {
+              "name": "hmac_part",
+              "type": "bytes",
+              "length": 8,
+              "offset": 0,
+              "width": 8
+            }
+          ],
+          "frames": 4,
+          "note": "Four sequential frames, bytes 0-7, 8-15, 16-23 and 24-31 of the signature, right after 0x211 and before the first 0x213.",
+          "examples": [
+            {
+              "name": "first of four",
+              "fields": {
+                "hmac_part": "0001020304050607"
+              },
+              "data": "0001020304050607"
+            }
+          ]
+        }
+      ],
+      "firmware_accepts_dlc": {
+        "exact": 8
+      },
+      "implemented_by": {
+        "firmware": true,
+        "flasher": true,
+        "tester": false,
+        "web_studio": true
+      },
+      "client_names": {
+        "flasher": "CAN_ID_SLAVE_HMAC_CHUNK",
+        "web_studio": "CAN_ID_SLAVE_HMAC_CHUNK"
+      }
+    },
+    {
+      "id": "0x213",
+      "name": "SLAVE_DATA",
+      "group": "slave_bridge",
+      "title": "Slave firmware data",
+      "direction": "host_to_board",
+      "handled_by": "application",
+      "tools": "any",
+      "gates": {
+        "blocked_by_critical_error": true
+      },
+      "layouts": [
+        {
+          "role": "request",
+          "dlc": {
+            "min": 1,
+            "max": 8
+          },
+          "fields": [
+            {
+              "name": "data",
+              "type": "bytes",
+              "rest": true,
+              "offset": 0
+            }
+          ],
+          "examples": [
+            {
+              "name": "four bytes",
+              "fields": {
+                "data": "DEADBEEF"
+              },
+              "data": "DEADBEEF"
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "Relayed as is to the slave's data register."
+      ],
+      "firmware_accepts_dlc": {
+        "min": 1,
+        "max": 8
+      },
+      "implemented_by": {
+        "firmware": true,
+        "flasher": true,
+        "tester": false,
+        "web_studio": true
+      },
+      "client_names": {
+        "flasher": "CAN_ID_SLAVE_DATA",
+        "web_studio": "CAN_ID_SLAVE_DATA"
+      }
+    },
+    {
+      "id": "0x214",
+      "name": "SLAVE_END_UPDATE",
+      "group": "slave_bridge",
+      "title": "End the slave update and verify",
+      "direction": "host_to_board",
+      "handled_by": "application",
+      "tools": "any",
+      "gates": {
+        "blocked_by_critical_error": true
+      },
+      "layouts": [
+        {
+          "role": "request",
+          "dlc": {
+            "exact": 8
+          },
+          "fields": [
+            {
+              "name": "crc32",
+              "type": "u32",
+              "offset": 0,
+              "width": 4
+            },
+            {
+              "name": "version_major",
+              "type": "u16",
+              "offset": 4,
+              "width": 2
+            },
+            {
+              "name": "version_minor_field",
+              "type": "u16",
+              "note": "The high byte may carry 0x80 | PATCH towards a bootloader that announced support (0x218).",
+              "offset": 6,
+              "width": 2
+            }
+          ],
+          "examples": [
+            {
+              "name": "0.2.0",
+              "fields": {
+                "crc32": 305419896,
+                "version_major": 0,
+                "version_minor_field": 2
+              },
+              "data": "1234567800000002"
+            }
+          ]
+        }
+      ],
+      "firmware_accepts_dlc": {
+        "exact": 8
+      },
+      "implemented_by": {
+        "firmware": true,
+        "flasher": true,
+        "tester": false,
+        "web_studio": true
+      },
+      "client_names": {
+        "flasher": "CAN_ID_SLAVE_END_UPDATE",
+        "web_studio": "CAN_ID_SLAVE_END_UPDATE"
+      }
+    },
+    {
+      "id": "0x215",
+      "name": "SLAVE_STATUS",
+      "group": "slave_bridge",
+      "title": "Slave bootloader status",
+      "direction": "both",
+      "handled_by": "application",
+      "tools": "any",
+      "gates": {
+        "blocked_by_critical_error": true
+      },
+      "read_only": true,
+      "layouts": [
+        {
+          "role": "request",
+          "dlc": {
+            "any": true
+          },
+          "fields": [],
+          "note": "The payload is ignored.",
+          "examples": [
+            {
+              "name": "empty query",
+              "fields": {},
+              "data": ""
+            }
+          ]
+        },
+        {
+          "role": "response",
+          "dlc": {
+            "exact": 1
+          },
+          "fields": [
+            {
+              "name": "status",
+              "type": "u8",
+              "enum": "bootloader_status",
+              "offset": 0,
+              "width": 1
+            }
+          ],
+          "examples": [
+            {
+              "name": "receiving",
+              "fields": {
+                "status": 3
+              },
+              "data": "03"
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "No answer at all when the I2C transaction fails (nothing there)."
+      ],
+      "implemented_by": {
+        "firmware": true,
+        "flasher": true,
+        "tester": false,
+        "web_studio": true
+      },
+      "client_names": {
+        "flasher": "CAN_ID_SLAVE_STATUS",
+        "web_studio": "CAN_ID_SLAVE_STATUS"
+      }
+    },
+    {
+      "id": "0x216",
+      "name": "SLAVE_PROGRESS",
+      "group": "slave_bridge",
+      "title": "Slave update progress",
+      "direction": "both",
+      "handled_by": "application",
+      "tools": "any",
+      "gates": {
+        "blocked_by_critical_error": true
+      },
+      "read_only": true,
+      "layouts": [
+        {
+          "role": "request",
+          "dlc": {
+            "any": true
+          },
+          "fields": [],
+          "note": "The payload is ignored.",
+          "examples": [
+            {
+              "name": "empty query",
+              "fields": {},
+              "data": ""
+            }
+          ]
+        },
+        {
+          "role": "response",
+          "dlc": {
+            "exact": 1
+          },
+          "fields": [
+            {
+              "name": "progress",
+              "type": "u8",
+              "note": "0 to 100, or 0xFF when no update is in progress.",
+              "offset": 0,
+              "width": 1
+            }
+          ],
+          "examples": [
+            {
+              "name": "half",
+              "fields": {
+                "progress": 50
+              },
+              "data": "32"
+            }
+          ]
+        }
+      ],
+      "implemented_by": {
+        "firmware": true,
+        "flasher": true,
+        "tester": false,
+        "web_studio": true
+      },
+      "client_names": {
+        "flasher": "CAN_ID_SLAVE_PROGRESS",
+        "web_studio": "CAN_ID_SLAVE_PROGRESS"
+      }
+    },
+    {
+      "id": "0x217",
+      "name": "SLAVE_VERSION_RESP_1",
+      "group": "slave_bridge",
+      "title": "Slave bootloader version, part 1",
+      "direction": "both",
+      "handled_by": "application",
+      "tools": "any",
+      "gates": {
+        "blocked_by_critical_error": true
+      },
+      "read_only": true,
+      "layouts": [
+        {
+          "role": "request",
+          "dlc": {
+            "any": true
+          },
+          "fields": [],
+          "note": "The payload is ignored.",
+          "examples": [
+            {
+              "name": "empty query",
+              "fields": {},
+              "data": ""
+            }
+          ]
+        },
+        {
+          "role": "response",
+          "dlc": {
+            "exact": 8
+          },
+          "fields": [
+            {
+              "name": "responder",
+              "type": "u8",
+              "enum": "responder",
+              "offset": 0,
+              "width": 1
+            },
+            {
+              "name": "hardware_id",
+              "type": "u32",
+              "offset": 1,
+              "width": 4
+            },
+            {
+              "name": "version_major",
+              "type": "u16",
+              "offset": 5,
+              "width": 2
+            },
+            {
+              "name": "version_minor_high",
+              "type": "u8",
+              "offset": 7,
+              "width": 1
+            }
+          ],
+          "examples": [
+            {
+              "name": "slave bootloader",
+              "fields": {
+                "responder": 1,
+                "hardware_id": 50580225,
+                "version_major": 0,
+                "version_minor_high": 0
+              },
+              "data": "010303CB01000000"
+            }
+          ]
+        }
+      ],
+      "implemented_by": {
+        "firmware": true,
+        "flasher": true,
+        "tester": false,
+        "web_studio": true
+      },
+      "client_names": {
+        "flasher": "CAN_ID_SLAVE_VERSION_RESP_1",
+        "web_studio": "CAN_ID_SLAVE_VERSION_RESP_1"
+      }
+    },
+    {
+      "id": "0x218",
+      "name": "SLAVE_VERSION_RESP_2",
+      "group": "slave_bridge",
+      "title": "Slave bootloader version, part 2",
+      "direction": "board_to_host",
+      "handled_by": "application",
+      "tools": "any",
+      "answers": "0x217",
+      "layouts": [
+        {
+          "role": "response",
+          "dlc": {
+            "one_of": [
+              2,
+              5
+            ]
+          },
+          "fields": [
+            {
+              "name": "version_minor_low",
+              "type": "u8",
+              "offset": 0,
+              "width": 1
+            },
+            {
+              "name": "bootloader_major",
+              "type": "u8",
+              "offset": 1,
+              "width": 1
+            },
+            {
+              "name": "app_patch",
+              "type": "u8",
+              "optional": true,
+              "present_from_dlc": 5,
+              "note": "0xFF when not known.",
+              "offset": 2,
+              "width": 1
+            },
+            {
+              "name": "bootloader_minor",
+              "type": "u8",
+              "optional": true,
+              "present_from_dlc": 5,
+              "offset": 3,
+              "width": 1
+            },
+            {
+              "name": "bootloader_patch",
+              "type": "u8",
+              "optional": true,
+              "present_from_dlc": 5,
+              "offset": 4,
+              "width": 1
+            }
+          ],
+          "note": "DLC 5 also tells the host that this slave bootloader accepts the patch in the minor field of 0x214.",
+          "examples": [
+            {
+              "name": "legacy form",
+              "fields": {
+                "version_minor_low": 2,
+                "bootloader_major": 0
+              },
+              "data": "0200"
+            },
+            {
+              "name": "patch extension",
+              "fields": {
+                "version_minor_low": 2,
+                "bootloader_major": 0,
+                "app_patch": 1,
+                "bootloader_minor": 1,
+                "bootloader_patch": 3
+              },
+              "data": "0200010103"
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "Sent alongside the 0x217 answer. Released flashers read only the first two bytes."
+      ],
+      "implemented_by": {
+        "firmware": true,
+        "flasher": true,
+        "tester": false,
+        "web_studio": true
+      },
+      "client_names": {
+        "flasher": "CAN_ID_SLAVE_VERSION_RESP_2",
+        "web_studio": "CAN_ID_SLAVE_VERSION_RESP_2"
+      }
+    },
+    {
+      "id": "0x219",
+      "name": "SLAVE_VERIFY_FAIL_REASON",
+      "group": "slave_bridge",
+      "title": "Slave verify-fail reason",
+      "direction": "both",
+      "handled_by": "application",
+      "tools": "any",
+      "gates": {
+        "blocked_by_critical_error": true
+      },
+      "read_only": true,
+      "layouts": [
+        {
+          "role": "request",
+          "dlc": {
+            "any": true
+          },
+          "fields": [],
+          "note": "The payload is ignored.",
+          "examples": [
+            {
+              "name": "empty query",
+              "fields": {},
+              "data": ""
+            }
+          ]
+        },
+        {
+          "role": "response",
+          "dlc": {
+            "exact": 1
+          },
+          "fields": [
+            {
+              "name": "reason",
+              "type": "u8",
+              "enum": "verify_fail_reason",
+              "offset": 0,
+              "width": 1
+            }
+          ],
+          "examples": [
+            {
+              "name": "CRC32",
+              "fields": {
+                "reason": 2
+              },
+              "data": "02"
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "Only meaningful right after 0x215 reports VERIFY_FAIL."
+      ],
+      "implemented_by": {
+        "firmware": true,
+        "flasher": true,
+        "tester": false,
+        "web_studio": true
+      },
+      "client_names": {
+        "flasher": "CAN_ID_SLAVE_VERIFY_FAIL_REASON",
+        "web_studio": "CAN_ID_SLAVE_VERIFY_FAIL_REASON"
+      }
+    },
+    {
+      "id": "0x220",
+      "name": "SLAVE_REG_WRITE",
+      "group": "slave_bridge",
+      "title": "Write a slave application register (generic)",
+      "direction": "host_to_board",
+      "handled_by": "application",
+      "tools": "any",
+      "gates": {
+        "blocked_by_critical_error": true
+      },
+      "layouts": [
+        {
+          "role": "request",
+          "dlc": {
+            "min": 2,
+            "max": 8
+          },
+          "fields": [
+            {
+              "name": "register",
+              "type": "u8",
+              "offset": 0,
+              "width": 1
+            },
+            {
+              "name": "payload",
+              "type": "bytes",
+              "rest": true,
+              "offset": 1
+            }
+          ],
+          "examples": [
+            {
+              "name": "PWM stop channel 1",
+              "fields": {
+                "register": 50,
+                "payload": "01"
+              },
+              "data": "3201"
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "Implemented by the firmware; no host implements it. Writes an arbitrary application register of the expansion slave, with no magic payload and no allow-list: a security gap to close before any host sends it (see docs/CONTRACTS.md)."
+      ],
+      "firmware_accepts_dlc": {
+        "min": 2,
+        "max": 8
+      },
+      "implemented_by": {
+        "firmware": true,
+        "flasher": false,
+        "tester": false,
+        "web_studio": false
+      }
+    },
+    {
+      "id": "0x221",
+      "name": "SLAVE_REG_READ",
+      "group": "slave_bridge",
+      "title": "Read a slave application register (generic)",
+      "direction": "both",
+      "handled_by": "application",
+      "tools": "any",
+      "gates": {
+        "blocked_by_critical_error": true
+      },
+      "layouts": [
+        {
+          "role": "request",
+          "dlc": {
+            "exact": 2
+          },
+          "fields": [
+            {
+              "name": "register",
+              "type": "u8",
+              "offset": 0,
+              "width": 1
+            },
+            {
+              "name": "length",
+              "type": "u8",
+              "range": [
+                1,
+                8
+              ],
+              "offset": 1,
+              "width": 1
+            }
+          ],
+          "examples": [
+            {
+              "name": "read two bytes of register 0x22",
+              "fields": {
+                "register": 34,
+                "length": 2
+              },
+              "data": "2202"
+            }
+          ]
+        },
+        {
+          "role": "response",
+          "dlc": {
+            "min": 1,
+            "max": 8
+          },
+          "fields": [
+            {
+              "name": "data",
+              "type": "bytes",
+              "rest": true,
+              "offset": 0
+            }
+          ],
+          "examples": [
+            {
+              "name": "two bytes",
+              "fields": {
+                "data": "1234"
+              },
+              "data": "1234"
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "Implemented by the firmware; no host implements it. Reads any application register of the expansion slave with no allow-list."
+      ],
+      "firmware_accepts_dlc": {
+        "exact": 2
+      },
+      "implemented_by": {
+        "firmware": true,
+        "flasher": false,
+        "tester": false,
+        "web_studio": false
+      }
+    },
+    {
+      "id": "0x230",
+      "name": "PASTE_JETTING_CONFIG",
+      "group": "pastejetting",
+      "title": "Local PWM configuration",
+      "direction": "host_to_board",
+      "handled_by": "application",
+      "tools": [
+        23
+      ],
+      "gates": {
+        "blocked_by_critical_error": true,
+        "blocked_during_boot_sequence": true
+      },
+      "layouts": [
+        {
+          "role": "request",
+          "dlc": {
+            "exact": 3
+          },
+          "fields": [
+            {
+              "name": "channel",
+              "type": "u8",
+              "range": [
+                0,
+                3
+              ],
+              "offset": 0,
+              "width": 1
+            },
+            {
+              "name": "frequency_hz",
+              "type": "u16",
+              "range": [
+                1,
+                65535
+              ],
+              "unit": "Hz",
+              "offset": 1,
+              "width": 2
+            }
+          ],
+          "examples": [
+            {
+              "name": "channel 1 at 1 kHz",
+              "fields": {
+                "channel": 1,
+                "frequency_hz": 1000
+              },
+              "data": "0103E8"
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "A thin wrapper over the slave register REG_PWM_CONFIGURE."
+      ],
+      "firmware_accepts_dlc": {
+        "exact": 3
+      },
+      "implemented_by": {
+        "firmware": true,
+        "flasher": false,
+        "tester": true,
+        "web_studio": true
+      },
+      "client_names": {
+        "tester": "CAN_ID_PASTE_JETTING_CONFIG",
+        "web_studio": "CAN_ID_PASTE_JETTING_CONFIG"
+      }
+    },
+    {
+      "id": "0x231",
+      "name": "PASTE_JETTING_PULSE",
+      "group": "pastejetting",
+      "title": "Local PWM pulse",
+      "direction": "host_to_board",
+      "handled_by": "application",
+      "tools": [
+        23
+      ],
+      "gates": {
+        "blocked_by_critical_error": true,
+        "blocked_during_boot_sequence": true
+      },
+      "layouts": [
+        {
+          "role": "request",
+          "dlc": {
+            "exact": 3
+          },
+          "fields": [
+            {
+              "name": "channel",
+              "type": "u8",
+              "range": [
+                0,
+                3
+              ],
+              "offset": 0,
+              "width": 1
+            },
+            {
+              "name": "duty_percent",
+              "type": "u8",
+              "range": [
+                0,
+                100
+              ],
+              "offset": 1,
+              "width": 1
+            },
+            {
+              "name": "duration_ms",
+              "type": "u8",
+              "range": [
+                1,
+                255
+              ],
+              "unit": "ms",
+              "note": "The wire accepts 0 (continuous until stopped); hosts must not send it, because nothing stops it.",
+              "offset": 2,
+              "width": 1
+            }
+          ],
+          "examples": [
+            {
+              "name": "50 percent for 20 ms",
+              "fields": {
+                "channel": 0,
+                "duty_percent": 50,
+                "duration_ms": 20
+              },
+              "data": "003214"
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "A thin wrapper over the slave register REG_PWM_PULSE."
+      ],
+      "firmware_accepts_dlc": {
+        "exact": 3
+      },
+      "implemented_by": {
+        "firmware": true,
+        "flasher": false,
+        "tester": true,
+        "web_studio": true
+      },
+      "client_names": {
+        "tester": "CAN_ID_PASTE_JETTING_PULSE",
+        "web_studio": "CAN_ID_PASTE_JETTING_PULSE"
+      }
+    },
+    {
+      "id": "0x240",
+      "name": "ADS1115_CONFIG",
+      "group": "functionaltest",
+      "title": "ADS1115 configuration",
+      "direction": "host_to_board",
+      "handled_by": "application",
+      "tools": [
+        17
+      ],
+      "gates": {
+        "blocked_by_critical_error": true,
+        "blocked_during_boot_sequence": true
+      },
+      "layouts": [
+        {
+          "role": "request",
+          "dlc": {
+            "exact": 2
+          },
+          "fields": [
+            {
+              "name": "config",
+              "type": "u16",
+              "offset": 0,
+              "width": 2
+            }
+          ],
+          "examples": [
+            {
+              "name": "config register",
+              "fields": {
+                "config": 34179
+              },
+              "data": "8583"
+            }
+          ]
+        }
+      ],
+      "firmware_accepts_dlc": {
+        "exact": 2
+      },
+      "implemented_by": {
+        "firmware": true,
+        "flasher": false,
+        "tester": true,
+        "web_studio": true
+      },
+      "client_names": {
+        "tester": "CAN_ID_ADS1115_CONFIG",
+        "web_studio": "CAN_ID_FLYING_PROBE_ADS_CONFIG"
+      }
+    },
+    {
+      "id": "0x241",
+      "name": "ADS1115_TRIGGER",
+      "group": "functionaltest",
+      "title": "ADS1115 trigger a conversion",
+      "direction": "host_to_board",
+      "handled_by": "application",
+      "tools": [
+        17
+      ],
+      "gates": {
+        "blocked_by_critical_error": true,
+        "blocked_during_boot_sequence": true
+      },
+      "layouts": [
+        {
+          "role": "request",
+          "dlc": {
+            "any": true
+          },
+          "fields": [],
+          "note": "The payload is ignored.",
+          "examples": [
+            {
+              "name": "empty query",
+              "fields": {},
+              "data": ""
+            }
+          ]
+        }
+      ],
+      "implemented_by": {
+        "firmware": true,
+        "flasher": false,
+        "tester": true,
+        "web_studio": true
+      },
+      "client_names": {
+        "tester": "CAN_ID_ADS1115_TRIGGER",
+        "web_studio": "CAN_ID_FLYING_PROBE_ADS_TRIGGER"
+      }
+    },
+    {
+      "id": "0x242",
+      "name": "ADS1115_RESULT",
+      "group": "functionaltest",
+      "title": "ADS1115 conversion result (query and response)",
+      "direction": "both",
+      "handled_by": "application",
+      "tools": [
+        17
+      ],
+      "gates": {
+        "blocked_by_critical_error": true
+      },
+      "read_only": true,
+      "layouts": [
+        {
+          "role": "request",
+          "dlc": {
+            "any": true
+          },
+          "fields": [],
+          "note": "The payload is ignored.",
+          "examples": [
+            {
+              "name": "empty query",
+              "fields": {},
+              "data": ""
+            }
+          ]
+        },
+        {
+          "role": "response",
+          "dlc": {
+            "exact": 2
+          },
+          "fields": [
+            {
+              "name": "raw",
+              "type": "i16",
+              "unit": "counts",
+              "offset": 0,
+              "width": 2
+            }
+          ],
+          "examples": [
+            {
+              "name": "negative reading",
+              "fields": {
+                "raw": -2
+              },
+              "data": "FFFE"
+            }
+          ]
+        }
+      ],
+      "implemented_by": {
+        "firmware": true,
+        "flasher": false,
+        "tester": true,
+        "web_studio": true
+      },
+      "client_names": {
+        "tester": "CAN_ID_ADS1115_RESULT",
+        "web_studio": "CAN_ID_FLYING_PROBE_ADS_RESULT"
+      }
+    },
+    {
+      "id": "0x243",
+      "name": "FLYING_PROBE_BASIC",
+      "group": "functionaltest",
+      "title": "Basic-mode onboard ADC reading",
+      "direction": "board_to_host",
+      "handled_by": "application",
+      "tools": [
+        17
+      ],
+      "timing": {
+        "period_ms": 150
+      },
+      "layouts": [
+        {
+          "role": "response",
+          "dlc": {
+            "exact": 2
+          },
+          "fields": [
+            {
+              "name": "adc",
+              "type": "u16",
+              "range": [
+                0,
+                4095
+              ],
+              "offset": 0,
+              "width": 2
+            }
+          ],
+          "examples": [
+            {
+              "name": "mid scale",
+              "fields": {
+                "adc": 2048
+              },
+              "data": "0800"
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "Documented in the prose only in the summary list and the section intro, not under an ID: header."
+      ],
+      "implemented_by": {
+        "firmware": true,
+        "flasher": false,
+        "tester": true,
+        "web_studio": true
+      },
+      "client_names": {
+        "tester": "CAN_ID_FLYING_PROBE_BASIC",
+        "web_studio": "CAN_ID_FLYING_PROBE_BASIC"
+      }
+    },
+    {
+      "id": "0x250",
+      "name": "THERMAL_TRIGGER",
+      "group": "thermal",
+      "title": "Trigger a thermal capture",
+      "direction": "host_to_board",
+      "handled_by": "application",
+      "tools": [
+        22
+      ],
+      "gates": {
+        "blocked_by_critical_error": true,
+        "blocked_during_boot_sequence": true
+      },
+      "layouts": [
+        {
+          "role": "request",
+          "dlc": {
+            "any": true
+          },
+          "fields": [],
+          "note": "The payload is ignored.",
+          "examples": [
+            {
+              "name": "empty query",
+              "fields": {},
+              "data": ""
+            }
+          ]
+        }
+      ],
+      "implemented_by": {
+        "firmware": true,
+        "flasher": false,
+        "tester": true,
+        "web_studio": true
+      },
+      "client_names": {
+        "tester": "CAN_ID_THERMAL_TRIGGER",
+        "web_studio": "CAN_ID_THERMAL_TRIGGER"
+      }
+    },
+    {
+      "id": "0x251",
+      "name": "THERMAL_STATUS",
+      "group": "thermal",
+      "title": "Thermal capture status (query and response)",
+      "direction": "both",
+      "handled_by": "application",
+      "tools": [
+        22
+      ],
+      "gates": {
+        "blocked_by_critical_error": true
+      },
+      "read_only": true,
+      "layouts": [
+        {
+          "role": "request",
+          "dlc": {
+            "any": true
+          },
+          "fields": [],
+          "note": "The payload is ignored.",
+          "examples": [
+            {
+              "name": "empty query",
+              "fields": {},
+              "data": ""
+            }
+          ]
+        },
+        {
+          "role": "response",
+          "dlc": {
+            "exact": 1
+          },
+          "fields": [
+            {
+              "name": "status",
+              "type": "u8",
+              "enum": "thermal_capture_status",
+              "offset": 0,
+              "width": 1
+            }
+          ],
+          "examples": [
+            {
+              "name": "ready",
+              "fields": {
+                "status": 2
+              },
+              "data": "02"
+            }
+          ]
+        }
+      ],
+      "implemented_by": {
+        "firmware": true,
+        "flasher": false,
+        "tester": true,
+        "web_studio": true
+      },
+      "client_names": {
+        "tester": "CAN_ID_THERMAL_STATUS",
+        "web_studio": "CAN_ID_THERMAL_STATUS"
+      }
+    },
+    {
+      "id": "0x252",
+      "name": "THERMAL_RAW_CHUNK_REQ",
+      "group": "thermal",
+      "title": "Request a raw pixel chunk",
+      "direction": "host_to_board",
+      "handled_by": "application",
+      "tools": [
+        22
+      ],
+      "gates": {
+        "blocked_by_critical_error": true
+      },
+      "layouts": [
+        {
+          "role": "request",
+          "dlc": {
+            "exact": 1
+          },
+          "fields": [
+            {
+              "name": "chunk",
+              "type": "u8",
+              "range": [
+                0,
+                47
+              ],
+              "note": "0 to 47 for MLX90640 and MLX90642, 0 to 11 for MLX90641.",
+              "offset": 0,
+              "width": 1
+            }
+          ],
+          "examples": [
+            {
+              "name": "chunk 5",
+              "fields": {
+                "chunk": 5
+              },
+              "data": "05"
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "No answer unless the capture status is ready."
+      ],
+      "firmware_accepts_dlc": {
+        "min": 1,
+        "max": 8
+      },
+      "implemented_by": {
+        "firmware": true,
+        "flasher": false,
+        "tester": true,
+        "web_studio": true
+      },
+      "client_names": {
+        "tester": "CAN_ID_THERMAL_RAW_CHUNK_REQ",
+        "web_studio": "CAN_ID_THERMAL_RAW_CHUNK_REQ"
+      }
+    },
+    {
+      "id": "0x253",
+      "name": "THERMAL_RAW_CHUNK",
+      "group": "thermal",
+      "title": "Raw pixel chunk data",
+      "direction": "board_to_host",
+      "handled_by": "application",
+      "tools": [
+        22
+      ],
+      "answers": "0x252",
+      "layouts": [
+        {
+          "role": "response",
+          "dlc": {
+            "exact": 8
+          },
+          "fields": [
+            {
+              "name": "data",
+              "type": "bytes",
+              "length": 8,
+              "offset": 0,
+              "width": 8
+            }
+          ],
+          "frames": 4,
+          "note": "Four frames of eight bytes make 32 bytes: 16 pixels of uint16, big-endian.",
+          "examples": [
+            {
+              "name": "one of the four frames",
+              "fields": {
+                "data": "0001000200030004"
+              },
+              "data": "0001000200030004"
+            }
+          ]
+        }
+      ],
+      "implemented_by": {
+        "firmware": true,
+        "flasher": false,
+        "tester": true,
+        "web_studio": true
+      },
+      "client_names": {
+        "tester": "CAN_ID_THERMAL_RAW_CHUNK",
+        "web_studio": "CAN_ID_THERMAL_RAW_CHUNK_RESP"
+      }
+    },
+    {
+      "id": "0x254",
+      "name": "THERMAL_CAL_CHUNK_REQ",
+      "group": "thermal",
+      "title": "Request a calibrated temperature chunk",
+      "direction": "host_to_board",
+      "handled_by": "application",
+      "tools": [
+        22
+      ],
+      "gates": {
+        "blocked_by_critical_error": true
+      },
+      "layouts": [
+        {
+          "role": "request",
+          "dlc": {
+            "exact": 1
+          },
+          "fields": [
+            {
+              "name": "chunk",
+              "type": "u8",
+              "range": [
+                0,
+                47
+              ],
+              "offset": 0,
+              "width": 1
+            }
+          ],
+          "examples": [
+            {
+              "name": "chunk 0",
+              "fields": {
+                "chunk": 0
+              },
+              "data": "00"
+            }
+          ]
+        }
+      ],
+      "firmware_accepts_dlc": {
+        "min": 1,
+        "max": 8
+      },
+      "implemented_by": {
+        "firmware": true,
+        "flasher": false,
+        "tester": true,
+        "web_studio": true
+      },
+      "client_names": {
+        "tester": "CAN_ID_THERMAL_CALIB_CHUNK_REQ",
+        "web_studio": "CAN_ID_THERMAL_CAL_CHUNK_REQ"
+      }
+    },
+    {
+      "id": "0x255",
+      "name": "THERMAL_CAL_CHUNK",
+      "group": "thermal",
+      "title": "Calibrated temperature chunk data",
+      "direction": "board_to_host",
+      "handled_by": "application",
+      "tools": [
+        22
+      ],
+      "answers": "0x254",
+      "layouts": [
+        {
+          "role": "response",
+          "dlc": {
+            "exact": 8
+          },
+          "fields": [
+            {
+              "name": "data",
+              "type": "bytes",
+              "length": 8,
+              "offset": 0,
+              "width": 8
+            }
+          ],
+          "frames": 4,
+          "note": "Four frames of eight bytes make 32 bytes: 16 pixels of int16 in centi-degrees C (2550 is 25.50 C), big-endian.",
+          "examples": [
+            {
+              "name": "2550 and 2600 centi-degrees",
+              "fields": {
+                "data": "09F60A2809F60A28"
+              },
+              "data": "09F60A2809F60A28"
+            }
+          ]
+        }
+      ],
+      "implemented_by": {
+        "firmware": true,
+        "flasher": false,
+        "tester": true,
+        "web_studio": true
+      },
+      "client_names": {
+        "tester": "CAN_ID_THERMAL_CALIB_CHUNK",
+        "web_studio": "CAN_ID_THERMAL_CAL_CHUNK_RESP"
+      }
+    },
+    {
+      "id": "0x7E9",
+      "name": "VERSION_PATCH_RESPONSE",
+      "group": "bootloader",
+      "title": "Version patch response",
+      "direction": "board_to_host",
+      "handled_by": "both",
+      "tools": "any",
+      "layouts": [
+        {
+          "role": "response",
+          "dlc": {
+            "min": 3,
+            "max": 8
+          },
+          "fields": [
+            {
+              "name": "responder",
+              "type": "u8",
+              "enum": "responder",
+              "offset": 0,
+              "width": 1
+            },
+            {
+              "name": "patch",
+              "type": "u8",
+              "note": "0xFF when not known.",
+              "offset": 1,
+              "width": 1
+            },
+            {
+              "name": "flags",
+              "type": "u8",
+              "enum": "version_flags",
+              "offset": 2,
+              "width": 1
+            }
+          ],
+          "note": "Sent right after 0x7F9 by boards that know their patch; extra bytes are ignored.",
+          "examples": [
+            {
+              "name": "application patch 5",
+              "fields": {
+                "responder": 0,
+                "patch": 5,
+                "flags": 0
+              },
+              "data": "000500"
+            },
+            {
+              "name": "bootloader patch 7 accepting the end-update patch",
+              "fields": {
+                "responder": 1,
+                "patch": 7,
+                "flags": 1
+              },
+              "data": "010701"
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "TX-only; nothing on the board listens for it. A board that predates it never sends it: a host that gets 0x7F9 and no 0x7E9 within the grace window treats the patch as unknown."
+      ],
+      "implemented_by": {
+        "firmware": true,
+        "flasher": true,
+        "tester": false,
+        "web_studio": true
+      },
+      "client_names": {
+        "flasher": "CAN_ID_VERSION_PATCH_RESPONSE",
+        "web_studio": "CAN_ID_VERSION_PATCH_RESPONSE"
+      }
+    },
+    {
+      "id": "0x7F0",
+      "name": "ENTER_BOOTLOADER",
+      "group": "bootloader",
+      "title": "Enter the bootloader",
+      "direction": "host_to_board",
+      "handled_by": "application",
+      "tools": "any",
+      "gates": {
+        "blocked_by_critical_error": false,
+        "needs_magic": "enter_bootloader"
+      },
+      "layouts": [
+        {
+          "role": "request",
+          "dlc": {
+            "exact": 4
+          },
+          "fields": [
+            {
+              "name": "magic",
+              "type": "bytes",
+              "length": 4,
+              "fixed": "B0071D5A",
+              "offset": 0,
+              "width": 4
+            }
+          ],
+          "examples": [
+            {
+              "name": "enter",
+              "fields": {
+                "magic": "B0071D5A"
+              },
+              "data": "B0071D5A"
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "Cuts power to every actuator inline, then resets into the bootloader."
+      ],
+      "firmware_accepts_dlc": {
+        "exact": 4
+      },
+      "implemented_by": {
+        "firmware": true,
+        "flasher": true,
+        "tester": false,
+        "web_studio": true
+      },
+      "client_names": {
+        "firmware": "CAN_ID_ENTER_BOOTLOADER",
+        "flasher": "CAN_ID_ENTER_BOOTLOADER",
+        "web_studio": "CAN_ID_ENTER_BOOTLOADER"
+      }
+    },
+    {
+      "id": "0x7F1",
+      "name": "START_UPDATE",
+      "group": "bootloader",
+      "title": "Start the firmware update",
+      "direction": "host_to_board",
+      "handled_by": "bootloader",
+      "tools": "any",
+      "layouts": [
+        {
+          "role": "request",
+          "dlc": {
+            "exact": 8
+          },
+          "fields": [
+            {
+              "name": "total_size",
+              "type": "u32",
+              "unit": "bytes",
+              "offset": 0,
+              "width": 4
+            },
+            {
+              "name": "hardware_id",
+              "type": "u32",
+              "offset": 4,
+              "width": 4
+            }
+          ],
+          "examples": [
+            {
+              "name": "1 KiB image",
+              "fields": {
+                "total_size": 1024,
+                "hardware_id": 50580481
+              },
+              "data": "000004000303CC01"
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "A HardwareID that does not match is rejected before a byte of flash is touched."
+      ],
+      "implemented_by": {
+        "firmware": true,
+        "flasher": true,
+        "tester": false,
+        "web_studio": true
+      },
+      "client_names": {
+        "firmware": "CAN_ID_START_UPDATE",
+        "flasher": "CAN_ID_START_UPDATE",
+        "web_studio": "CAN_ID_START_UPDATE"
+      }
+    },
+    {
+      "id": "0x7F2",
+      "name": "DATA",
+      "group": "bootloader",
+      "title": "Firmware data",
+      "direction": "host_to_board",
+      "handled_by": "bootloader",
+      "tools": "any",
+      "layouts": [
+        {
+          "role": "request",
+          "dlc": {
+            "min": 1,
+            "max": 8
+          },
+          "fields": [
+            {
+              "name": "data",
+              "type": "bytes",
+              "rest": true,
+              "offset": 0
+            }
+          ],
+          "examples": [
+            {
+              "name": "eight bytes",
+              "fields": {
+                "data": "0102030405060708"
+              },
+              "data": "0102030405060708"
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "No sequence number: CAN delivers in order. Wait for the page acknowledgement (0x7F3) before sending the next page."
+      ],
+      "implemented_by": {
+        "firmware": true,
+        "flasher": true,
+        "tester": false,
+        "web_studio": true
+      },
+      "client_names": {
+        "firmware": "CAN_ID_DATA",
+        "flasher": "CAN_ID_DATA",
+        "web_studio": "CAN_ID_DATA"
+      }
+    },
+    {
+      "id": "0x7F3",
+      "name": "PAGE_ACK",
+      "group": "bootloader",
+      "title": "Page written acknowledgement",
+      "direction": "board_to_host",
+      "handled_by": "bootloader",
+      "tools": "any",
+      "layouts": [
+        {
+          "role": "response",
+          "dlc": {
+            "exact": 4
+          },
+          "fields": [
+            {
+              "name": "page_index",
+              "type": "u32",
+              "offset": 0,
+              "width": 4
+            }
+          ],
+          "examples": [
+            {
+              "name": "page 3",
+              "fields": {
+                "page_index": 3
+              },
+              "data": "00000003"
+            }
+          ]
+        }
+      ],
+      "implemented_by": {
+        "firmware": true,
+        "flasher": true,
+        "tester": false,
+        "web_studio": true
+      },
+      "client_names": {
+        "firmware": "CAN_ID_PAGE_ACK",
+        "flasher": "CAN_ID_PAGE_ACK",
+        "web_studio": "CAN_ID_PAGE_ACK"
+      }
+    },
+    {
+      "id": "0x7F4",
+      "name": "END_UPDATE",
+      "group": "bootloader",
+      "title": "End the update and verify",
+      "direction": "host_to_board",
+      "handled_by": "bootloader",
+      "tools": "any",
+      "layouts": [
+        {
+          "role": "request",
+          "dlc": {
+            "exact": 8
+          },
+          "fields": [
+            {
+              "name": "crc32",
+              "type": "u32",
+              "offset": 0,
+              "width": 4
+            },
+            {
+              "name": "version_major",
+              "type": "u16",
+              "offset": 4,
+              "width": 2
+            },
+            {
+              "name": "version_minor_field",
+              "type": "u16",
+              "note": "High byte 0 in a legacy frame; 0x80 | PATCH only towards a bootloader that announced it in 0x7E9.",
+              "offset": 6,
+              "width": 2
+            }
+          ],
+          "examples": [
+            {
+              "name": "legacy 0.3",
+              "fields": {
+                "crc32": 3735928559,
+                "version_major": 0,
+                "version_minor_field": 3
+              },
+              "data": "DEADBEEF00000003"
+            },
+            {
+              "name": "0.3.5 with the patch",
+              "fields": {
+                "crc32": 3735928559,
+                "version_major": 0,
+                "version_minor_field": 34051
+              },
+              "data": "DEADBEEF00008503"
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "CRC-32 is the reflected standard variant, the one zlib.crc32 computes."
+      ],
+      "implemented_by": {
+        "firmware": true,
+        "flasher": true,
+        "tester": false,
+        "web_studio": true
+      },
+      "client_names": {
+        "firmware": "CAN_ID_END_UPDATE",
+        "flasher": "CAN_ID_END_UPDATE",
+        "web_studio": "CAN_ID_END_UPDATE"
+      }
+    },
+    {
+      "id": "0x7F5",
+      "name": "STATUS",
+      "group": "bootloader",
+      "title": "Bootloader status",
+      "direction": "board_to_host",
+      "handled_by": "bootloader",
+      "tools": "any",
+      "layouts": [
+        {
+          "role": "response",
+          "dlc": {
+            "min": 1,
+            "max": 2
+          },
+          "fields": [
+            {
+              "name": "status",
+              "type": "u8",
+              "enum": "bootloader_status",
+              "offset": 0,
+              "width": 1
+            },
+            {
+              "name": "reason",
+              "type": "u8",
+              "enum": "verify_fail_reason",
+              "optional": true,
+              "note": "Present only with status VERIFY_FAIL.",
+              "offset": 1,
+              "width": 1
+            }
+          ],
+          "examples": [
+            {
+              "name": "receiving",
+              "fields": {
+                "status": 3
+              },
+              "data": "03"
+            },
+            {
+              "name": "rollback rejected",
+              "fields": {
+                "status": 5,
+                "reason": 5
+              },
+              "data": "0505"
+            }
+          ]
+        }
+      ],
+      "implemented_by": {
+        "firmware": true,
+        "flasher": true,
+        "tester": false,
+        "web_studio": true
+      },
+      "client_names": {
+        "firmware": "CAN_ID_STATUS",
+        "flasher": "CAN_ID_STATUS",
+        "web_studio": "CAN_ID_STATUS"
+      }
+    },
+    {
+      "id": "0x7F6",
+      "name": "HEARTBEAT",
+      "group": "bootloader",
+      "title": "Bootloader heartbeat",
+      "direction": "board_to_host",
+      "handled_by": "bootloader",
+      "tools": "any",
+      "timing": {
+        "period_ms": 1000
+      },
+      "layouts": [
+        {
+          "role": "response",
+          "dlc": {
+            "exact": 2
+          },
+          "fields": [
+            {
+              "name": "status",
+              "type": "u8",
+              "enum": "bootloader_status",
+              "offset": 0,
+              "width": 1
+            },
+            {
+              "name": "progress",
+              "type": "u8",
+              "note": "0 to 100, or 0xFF when not applicable.",
+              "offset": 1,
+              "width": 1
+            }
+          ],
+          "examples": [
+            {
+              "name": "receiving at 40 percent",
+              "fields": {
+                "status": 3,
+                "progress": 40
+              },
+              "data": "0328"
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "Stays at DLC 2 on purpose: released flashers read it only at exactly that length."
+      ],
+      "implemented_by": {
+        "firmware": true,
+        "flasher": true,
+        "tester": false,
+        "web_studio": true
+      },
+      "client_names": {
+        "firmware": "CAN_ID_HEARTBEAT",
+        "flasher": "CAN_ID_HEARTBEAT",
+        "web_studio": "CAN_ID_HEARTBEAT"
+      }
+    },
+    {
+      "id": "0x7F7",
+      "name": "HMAC_CHUNK",
+      "group": "bootloader",
+      "title": "HMAC-SHA256 signature chunk",
+      "direction": "host_to_board",
+      "handled_by": "bootloader",
+      "tools": "any",
+      "layouts": [
+        {
+          "role": "request",
+          "dlc": {
+            "exact": 8
+          },
+          "fields": [
+            {
+              "name": "hmac_part",
+              "type": "bytes",
+              "length": 8,
+              "offset": 0,
+              "width": 8
+            }
+          ],
+          "frames": 4,
+          "note": "Four sequential frames after 0x7F1 and before the first 0x7F2: bytes 0-7, 8-15, 16-23, 24-31.",
+          "examples": [
+            {
+              "name": "first of four",
+              "fields": {
+                "hmac_part": "0001020304050607"
+              },
+              "data": "0001020304050607"
+            }
+          ]
+        }
+      ],
+      "implemented_by": {
+        "firmware": true,
+        "flasher": true,
+        "tester": false,
+        "web_studio": true
+      },
+      "client_names": {
+        "firmware": "CAN_ID_HMAC_CHUNK",
+        "flasher": "CAN_ID_HMAC_CHUNK",
+        "web_studio": "CAN_ID_HMAC_CHUNK"
+      }
+    },
+    {
+      "id": "0x7F8",
+      "name": "QUERY_VERSION",
+      "group": "bootloader",
+      "title": "Query the version",
+      "direction": "host_to_board",
+      "handled_by": "both",
+      "tools": "any",
+      "gates": {
+        "blocked_by_critical_error": false
+      },
+      "read_only": true,
+      "layouts": [
+        {
+          "role": "request",
+          "dlc": {
+            "any": true
+          },
+          "fields": [],
+          "note": "The payload is ignored.",
+          "examples": [
+            {
+              "name": "empty query",
+              "fields": {},
+              "data": ""
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "Answered by whichever side is running: 0x7F9, then 0x7FA (bootloader only), then 0x7E9 (boards that know their patch)."
+      ],
+      "implemented_by": {
+        "firmware": true,
+        "flasher": true,
+        "tester": true,
+        "web_studio": true
+      },
+      "client_names": {
+        "firmware": "CAN_ID_QUERY_VERSION",
+        "flasher": "CAN_ID_QUERY_VERSION",
+        "tester": "CAN_ID_QUERY_VERSION",
+        "web_studio": "CAN_ID_QUERY_VERSION"
+      }
+    },
+    {
+      "id": "0x7F9",
+      "name": "VERSION_RESPONSE",
+      "group": "bootloader",
+      "title": "Version response",
+      "direction": "board_to_host",
+      "handled_by": "both",
+      "tools": "any",
+      "answers": "0x7F8",
+      "layouts": [
+        {
+          "role": "response",
+          "dlc": {
+            "exact": 8
+          },
+          "fields": [
+            {
+              "name": "responder",
+              "type": "u8",
+              "enum": "responder",
+              "offset": 0,
+              "width": 1
+            },
+            {
+              "name": "hardware_id",
+              "type": "u32",
+              "offset": 1,
+              "width": 4
+            },
+            {
+              "name": "version_major",
+              "type": "u16",
+              "offset": 5,
+              "width": 2
+            },
+            {
+              "name": "version_minor",
+              "type": "u8",
+              "offset": 7,
+              "width": 1
+            }
+          ],
+          "examples": [
+            {
+              "name": "application 0.3",
+              "fields": {
+                "responder": 0,
+                "hardware_id": 50580481,
+                "version_major": 0,
+                "version_minor": 3
+              },
+              "data": "000303CC01000003"
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "From a bootloader, HardwareID 0 means nothing valid is installed."
+      ],
+      "implemented_by": {
+        "firmware": true,
+        "flasher": true,
+        "tester": true,
+        "web_studio": true
+      },
+      "client_names": {
+        "firmware": "CAN_ID_VERSION_RESPONSE",
+        "flasher": "CAN_ID_VERSION_RESPONSE",
+        "tester": "CAN_ID_VERSION_RESPONSE",
+        "web_studio": "CAN_ID_VERSION_RESPONSE"
+      }
+    },
+    {
+      "id": "0x7FA",
+      "name": "BOOTLOADER_VERSION_RESPONSE",
+      "group": "bootloader",
+      "title": "Bootloader's own version",
+      "direction": "board_to_host",
+      "handled_by": "bootloader",
+      "tools": "any",
+      "answers": "0x7F8",
+      "layouts": [
+        {
+          "role": "response",
+          "dlc": {
+            "exact": 3
+          },
+          "fields": [
+            {
+              "name": "major",
+              "type": "u8",
+              "offset": 0,
+              "width": 1
+            },
+            {
+              "name": "minor",
+              "type": "u8",
+              "offset": 1,
+              "width": 1
+            },
+            {
+              "name": "patch",
+              "type": "u8",
+              "offset": 2,
+              "width": 1
+            }
+          ],
+          "examples": [
+            {
+              "name": "0.3.9",
+              "fields": {
+                "major": 0,
+                "minor": 3,
+                "patch": 9
+              },
+              "data": "000309"
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "Sent only by the bootloader, alongside 0x7F9. Released flashers read it only at exactly DLC 3."
+      ],
+      "implemented_by": {
+        "firmware": true,
+        "flasher": true,
+        "tester": false,
+        "web_studio": true
+      },
+      "client_names": {
+        "firmware": "CAN_ID_BOOTLOADER_VERSION_RESPONSE",
+        "flasher": "CAN_ID_BOOTLOADER_VERSION_RESPONSE",
+        "web_studio": "CAN_ID_BOOTLOADER_VERSION_RESPONSE"
+      }
+    },
+    {
+      "id": "0x7FB",
+      "name": "QUERY_ERROR_COUNTERS",
+      "group": "bootloader",
+      "title": "Query the CAN error counters",
+      "direction": "host_to_board",
+      "handled_by": "both",
+      "tools": "any",
+      "gates": {
+        "blocked_by_critical_error": false
+      },
+      "read_only": true,
+      "layouts": [
+        {
+          "role": "request",
+          "dlc": {
+            "any": true
+          },
+          "fields": [],
+          "note": "The payload is ignored.",
+          "examples": [
+            {
+              "name": "empty query",
+              "fields": {},
+              "data": ""
+            }
+          ]
+        }
+      ],
+      "implemented_by": {
+        "firmware": true,
+        "flasher": true,
+        "tester": false,
+        "web_studio": true
+      },
+      "client_names": {
+        "firmware": "CAN_ID_QUERY_ERROR_COUNTERS",
+        "flasher": "CAN_ID_QUERY_ERROR_COUNTERS",
+        "web_studio": "CAN_ID_QUERY_ERROR_COUNTERS"
+      }
+    },
+    {
+      "id": "0x7FC",
+      "name": "ERROR_COUNTERS_RESPONSE",
+      "group": "bootloader",
+      "title": "CAN error counters",
+      "direction": "board_to_host",
+      "handled_by": "both",
+      "tools": "any",
+      "answers": "0x7FB",
+      "layouts": [
+        {
+          "role": "response",
+          "dlc": {
+            "exact": 2
+          },
+          "fields": [
+            {
+              "name": "tec",
+              "type": "u8",
+              "offset": 0,
+              "width": 1
+            },
+            {
+              "name": "rec",
+              "type": "u8",
+              "offset": 1,
+              "width": 1
+            }
+          ],
+          "examples": [
+            {
+              "name": "clean bus",
+              "fields": {
+                "tec": 0,
+                "rec": 0
+              },
+              "data": "0000"
+            }
+          ]
+        }
+      ],
+      "implemented_by": {
+        "firmware": true,
+        "flasher": true,
+        "tester": false,
+        "web_studio": true
+      },
+      "client_names": {
+        "firmware": "CAN_ID_ERROR_COUNTERS_RESPONSE",
+        "flasher": "CAN_ID_ERROR_COUNTERS_RESPONSE",
+        "web_studio": "CAN_ID_ERROR_COUNTERS_RESPONSE"
+      }
+    },
+    {
+      "id": "0x7FD",
+      "name": "AUTHORIZE_DOWNGRADE",
+      "group": "bootloader",
+      "title": "Authorise a downgrade for the current update",
+      "direction": "host_to_board",
+      "handled_by": "bootloader",
+      "tools": "any",
+      "gates": {
+        "needs_magic": "authorize_downgrade"
+      },
+      "layouts": [
+        {
+          "role": "request",
+          "dlc": {
+            "exact": 4
+          },
+          "fields": [
+            {
+              "name": "magic",
+              "type": "bytes",
+              "length": 4,
+              "fixed": "D09E12AD",
+              "offset": 0,
+              "width": 4
+            }
+          ],
+          "examples": [
+            {
+              "name": "authorise",
+              "fields": {
+                "magic": "D09E12AD"
+              },
+              "data": "D09E12AD"
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "One-shot: reset at every 0x7F1 and consumed by the anti-rollback check of the next 0x7F4. The image must still be validly signed."
+      ],
+      "implemented_by": {
+        "firmware": true,
+        "flasher": true,
+        "tester": false,
+        "web_studio": true
+      },
+      "client_names": {
+        "firmware": "CAN_ID_AUTHORIZE_DOWNGRADE",
+        "flasher": "CAN_ID_AUTHORIZE_DOWNGRADE",
+        "web_studio": "CAN_ID_AUTHORIZE_DOWNGRADE"
+      }
+    },
+    {
+      "id": "0x7FE",
+      "name": "READBACK",
+      "group": "bootloader",
+      "title": "Read back the installed application",
+      "direction": "both",
+      "handled_by": "bootloader",
+      "tools": "any",
+      "layouts": [
+        {
+          "role": "request",
+          "dlc": {
+            "any": true
+          },
+          "fields": [],
+          "note": "Any payload starts the read-back.",
+          "examples": [
+            {
+              "name": "empty query",
+              "fields": {},
+              "data": ""
+            }
+          ]
+        },
+        {
+          "role": "response",
+          "variant": "size",
+          "dlc": {
+            "exact": 4
+          },
+          "fields": [
+            {
+              "name": "total_size",
+              "type": "u32",
+              "unit": "bytes",
+              "note": "0 when nothing valid is installed.",
+              "offset": 0,
+              "width": 4
+            }
+          ],
+          "note": "The first reply, told apart from the data frames by its length.",
+          "examples": [
+            {
+              "name": "2 KiB installed",
+              "fields": {
+                "total_size": 2048
+              },
+              "data": "00000800"
+            }
+          ]
+        },
+        {
+          "role": "response",
+          "variant": "data",
+          "dlc": {
+            "min": 1,
+            "max": 8
+          },
+          "fields": [
+            {
+              "name": "data",
+              "type": "bytes",
+              "rest": true,
+              "offset": 0
+            }
+          ],
+          "note": "Raw bytes of the main slot, eight per frame; the prose says eight, but the last frame is as short as the size requires.",
+          "examples": [
+            {
+              "name": "eight bytes",
+              "fields": {
+                "data": "0102030405060708"
+              },
+              "data": "0102030405060708"
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "One 2048-byte page (256 frames), then the bootloader waits up to 3 s for the page acknowledgement 0x7FF."
+      ],
+      "implemented_by": {
+        "firmware": true,
+        "flasher": true,
+        "tester": false,
+        "web_studio": true
+      },
+      "client_names": {
+        "firmware": "CAN_ID_READBACK",
+        "flasher": "CAN_ID_READBACK",
+        "web_studio": "CAN_ID_READBACK"
+      }
+    },
+    {
+      "id": "0x7FF",
+      "name": "READBACK_PAGE_ACK",
+      "group": "bootloader",
+      "title": "Read-back page acknowledgement",
+      "direction": "host_to_board",
+      "handled_by": "bootloader",
+      "tools": "any",
+      "layouts": [
+        {
+          "role": "request",
+          "dlc": {
+            "exact": 4
+          },
+          "fields": [
+            {
+              "name": "page_index",
+              "type": "u32",
+              "offset": 0,
+              "width": 4
+            }
+          ],
+          "examples": [
+            {
+              "name": "page 0",
+              "fields": {
+                "page_index": 0
+              },
+              "data": "00000000"
+            }
+          ]
+        }
+      ],
+      "implemented_by": {
+        "firmware": true,
+        "flasher": true,
+        "tester": false,
+        "web_studio": true
+      },
+      "client_names": {
+        "firmware": "CAN_ID_READBACK_PAGE_ACK",
+        "flasher": "CAN_ID_READBACK_PAGE_ACK",
+        "web_studio": "CAN_ID_READBACK_PAGE_ACK"
+      }
+    }
+  ]
+}

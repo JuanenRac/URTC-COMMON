@@ -1,0 +1,64 @@
+# =============================================================================
+# URTC-COMMON - the nightly comparison with the implementations
+# Copyright (C) 2026 JuanenRac (Electro Hobby 3D) <electrohobby3d@gmail.com>
+# GPL-3.0-or-later - see LICENSE
+# =============================================================================
+# The CI of this repository sees only this repository. What the firmware, URTC-FLASHER, URTC-TESTER and
+# URTC-WEB-STUDIO really define can only be compared with them side by side, so every night, and when asked,
+# they are fetched next to this one and tests/test_siblings.py and the vector copies are compared. A failing
+# night opens (or updates) one issue.
+name: URTC nightly comparison
+
+on:
+  schedule:
+    - cron: "17 4 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  siblings:
+    name: Compare the specification with the implementations
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out this repository
+        uses: actions/checkout@v5
+        with:
+          path: URTC-COMMON
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Set up Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: "24"
+
+      - name: Fetch the implementations next to it
+        run: |
+          for repository in URTC URTC-DOCS URTC-FLASHER URTC-TESTER URTC-WEB-STUDIO; do
+            git clone --quiet --depth 1 "https://github.com/JuanenRac/${repository}.git" "${repository}" || echo "::warning::could not fetch ${repository}"
+          done
+          ls -d URTC* | wc -l
+
+      - name: Install
+        working-directory: URTC-COMMON
+        run: python -m pip install --quiet -e ".[dev]"
+
+      - name: Compare (a skipped test means a repository was not fetched)
+        working-directory: URTC-COMMON
+        run: python -m pytest tests/test_siblings.py tests/test_conformance.py -q -rs
+
+      - name: Open an issue when the night failed
+        if: ${{ failure() }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          title="The nightly comparison with the implementations failed"
+          existing=$(gh issue list --repo "${{ github.repository }}" --state open --search "${title} in:title" --json number --jq '.[0].number')
+          body="The specification and an implementation no longer agree: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          if [ -n "$existing" ]; then gh issue comment "$existing" --repo "${{ github.repository }}" --body "$body"; else gh issue create --repo "${{ github.repository }}" --title "$title" --body "$body"; fi
