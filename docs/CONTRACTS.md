@@ -56,7 +56,7 @@ The vectors are computed with a small packer of their own, written apart from th
 |---|---|---|
 | Firmware | 88 | all |
 | URTC-WEB-STUDIO | 82 | not 0x1AA, 0x1AB, 0x1A8, 0x1A9, 0x220, 0x221 |
-| URTC-TESTER | 55 | no bootloader, version patch or slave bridge frames; no 0x1A0, 0x1A2, 0x1A4, 0x1A6 |
+| URTC-TESTER | 56 | no bootloader or slave bridge frames; only the version patch frame (0x7E9) of the bootloader group; no 0x1A0, 0x1A2, 0x1A4, 0x1A6 |
 | URTC-FLASHER | 38 | the bootloader, the slave bridge and the configuration registers only |
 
 Nine identifiers are defined by all three host tools. The table of every identifier is [`PROTOCOL_TABLE.md`](PROTOCOL_TABLE.md).
@@ -65,8 +65,8 @@ Nine identifiers are defined by all three host tools. The table of every identif
 
 These are facts the specification records instead of hiding. None of them is changed by this repository.
 
-1. **Four identifiers that no host implements.** `0x220` and `0x221` (write and read any application register of the expansion slave) and `0x1A8` / `0x1A9` (read the fault recorder, four frames per chunk) exist in the firmware. The first pair is described in the prose; the second pair is not described anywhere outside the firmware source, and the specification marks it `documented_in_prose: false`.
-2. **`0x220` and `0x221` have no allow-list and no magic payload.** Any node on the bus can write any application register of the expansion slave (PWM channels, sensor configuration). The bus has no sender authentication, so a host that implements them should restrict them to the registers it needs. This is a security gap to close before any host sends them, not a protocol feature.
+1. **Four identifiers that no host implements.** `0x220` and `0x221` (write and read any application register of the expansion slave) and `0x1A8` / `0x1A9` (read the fault recorder, four frames per chunk) exist in the firmware. Both pairs are described in the prose of the firmware repository.
+2. **`0x220` and `0x221` have no magic payload, and a built firmware has no list of registers.** Any node on the bus can write any application register of the expansion slave (PWM channels, sensor configuration). The bus has no sender authentication, so a host that implements them should restrict them to the registers it needs. The source of the firmware now drops the register that enters the bootloader and every register that is not on a closed list; a binary that includes that list has not been built yet, and the frames of the specification do not describe the list. A host should still send only the registers it needs.
 3. **The firmware accepts longer frames than the prose says.** For 16 identifiers (0x120, 0x130, 0x140, 0x150, 0x160, 0x170, 0x173, 0x178, 0x1B0, 0x1C0, 0x1D0, 0x1E0, 0x1F0, 0x200, 0x252, 0x254) the prose gives an exact length and the firmware checks only a minimum; `firmware_accepts_dlc` records the real check of all 36 identifiers that have one. A sender follows the layout; a receiver ignores extra bytes.
 4. **`0x120` is valid for more tools than the prose lists.** The prose names tools 1, 2, 3, 6, 7 and the soldering iron's feeder; the firmware routing table also sends tools 12 and 16 there, and both host tools already treat them as plain steppers.
 5. **The read-back data frames are not always eight bytes.** The prose says eight; the bootloader sends the last frame as short as the image size requires (`0x7FE`, variant `data`).

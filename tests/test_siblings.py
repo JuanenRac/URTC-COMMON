@@ -156,9 +156,9 @@ def test_bootloader_status_and_verify_reason_codes_agree_everywhere(spec, siblin
     assert sorted(python_dict_keys(sibling(FLASHER_CONFIG), "STATUS_NAMES")) == sorted(enums["bootloader_status"])
     assert sorted(python_dict_keys(sibling(FLASHER_CONFIG), "VERIFY_FAIL_REASONS")) == sorted(enums["verify_fail_reason"])
     web = text(sibling(WEB_IDS))
-    assert sorted(int(k, 16) for k in re.findall(r"STATUS_NAMES[^{]*\{(.*?)\};", web, re.S)[0].split(":")[0:0]) == []
-    assert sorted(int(k, 0) for k in re.findall(r"^\s*(0x[0-9a-fA-F]+):", re.search(r"STATUS_NAMES.*?\};", web, re.S).group(0), re.M)) == sorted(enums["bootloader_status"])
-    assert sorted(int(k, 0) for k in re.findall(r"^\s*(0x[0-9a-fA-F]+):", re.search(r"VERIFY_FAIL_REASONS.*?\};", web, re.S).group(0), re.M)) == sorted(enums["verify_fail_reason"])
+    codes = re.search(r"VERIFY_FAIL_CODES[^=]*=\s*\[(.*?)\]", web, re.S)
+    assert codes, "the web studio lists the verify-fail reason codes it can word"
+    assert sorted(int(k, 0) for k in re.findall(r"0x[0-9a-fA-F]+", codes.group(1))) == sorted(enums["verify_fail_reason"])
 
 
 def test_expansion_and_sensor_tables_have_the_same_number_of_entries(spec, sibling):
@@ -335,10 +335,10 @@ def test_the_prose_and_the_specification_list_the_same_identifiers(spec, sibling
     table = by_id(spec)
     assert documented <= set(table), sorted(documented - set(table))
     not_in_prose = set(table) - documented
-    assert not_in_prose == {v for v, m in table.items() if m.get("documented_in_prose") is False} == {0x1A8, 0x1A9}
+    assert not_in_prose == {v for v, m in table.items() if m.get("documented_in_prose") is False} == set()
     # an identifier that appears only in the summary and the section intro is the one a scan of the headers would miss
     assert summary - headers == {0x243}
-    assert len(headers) == 85
+    assert len(headers) == 87
 
 
 def test_exact_lengths_in_the_prose_are_the_lengths_of_the_specification(spec, sibling):

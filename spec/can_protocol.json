@@ -3774,7 +3774,6 @@
       "gates": {
         "blocked_by_critical_error": false
       },
-      "documented_in_prose": false,
       "layouts": [
         {
           "role": "request",
@@ -3829,7 +3828,6 @@
       "handled_by": "application",
       "tools": "any",
       "answers": "0x1A8",
-      "documented_in_prose": false,
       "layouts": [
         {
           "role": "response",
@@ -5955,11 +5953,12 @@
       "implemented_by": {
         "firmware": true,
         "flasher": true,
-        "tester": false,
+        "tester": true,
         "web_studio": true
       },
       "client_names": {
         "flasher": "CAN_ID_VERSION_PATCH_RESPONSE",
+        "tester": "CAN_ID_VERSION_PATCH_RESPONSE",
         "web_studio": "CAN_ID_VERSION_PATCH_RESPONSE"
       }
     },

@@ -207,7 +207,7 @@ def test_known_gaps_are_recorded_not_papered_over(spec):
     for gap in ("0x220", "0x221", "0x1A8", "0x1A9"):
         assert not any(by_id[gap]["implemented_by"][h] for h in hosts), gap
         assert by_id[gap]["implemented_by"]["firmware"]
-    assert by_id["0x1A8"]["documented_in_prose"] is False and by_id["0x1A9"]["documented_in_prose"] is False
+    assert "documented_in_prose" not in by_id["0x1A8"] and "documented_in_prose" not in by_id["0x1A9"], "the fault recorder frames are described in the prose of the firmware repository"
     assert any("security gap" in n for n in by_id["0x220"]["notes"])
     assert not by_id["0x1AA"]["implemented_by"]["web_studio"] and by_id["0x1AA"]["implemented_by"]["tester"]
 

@@ -10,6 +10,10 @@ bumped manually only. See `bump_version.py`.
 - The generated TypeScript module passes the strict type check: versionCompare no longer indexes a tuple with a loop variable.
 - The sibling tests read an identifier that a program takes from the generated module (X = protocol.X in Python, generated.X in TypeScript) as the value of that module, so a program that adopted the module is still compared with the specification.
 - docs/MIGRATION.md records that URTC-FLASHER, URTC-TESTER and URTC-WEB-STUDIO carry the generated module and the shared vectors, each with its lock file and a test that fails when a copy is edited by hand or falls behind.
+- The specification no longer marks 0x1A8 and 0x1A9 as missing from the prose (the firmware documentation describes them now), and records that URTC-TESTER reads the version patch frame 0x7E9; docs/PROTOCOL_TABLE.md and docs/CONTRACTS.md follow, and the comparison with the prose expects every identifier to be described.
+- The comparison with URTC-WEB-STUDIO reads the list of verify-fail reason codes that the web studio words in its locales, instead of an English table.
+- docs/CONTRACTS.md says that the source of the firmware has a closed list of slave registers for 0x220 and 0x221 that no built binary includes yet.
+- bump_manifest_version.py prints URTC instead of the name of another ecosystem.
 
 ## [0.0.1] - The CAN protocol as data
 

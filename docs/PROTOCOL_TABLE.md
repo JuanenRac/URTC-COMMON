@@ -45,8 +45,8 @@ Every identifier of `spec/can_protocol.json`, one row each. **Dir**: H>B host to
 | `0x1A5` | PERIPHERAL_INFO_RESP | both | any / 2 | any | `F L T W` |  |
 | `0x1A6` | SET_MLX_VARIANT | H>B | 1-8 | any | `F L . W` |  |
 | `0x1A7` | MLX_VARIANT_RESP | both | any / 1 | any | `F L T W` |  |
-| `0x1A8` | BLACKBOX_QUERY | H>B | 1-8 | any | `F . . .` | not in the prose; no host implements it |
-| `0x1A9` | BLACKBOX_CHUNK | B>H | 8 | any | `F . . .` | not in the prose; no host implements it |
+| `0x1A8` | BLACKBOX_QUERY | H>B | 1-8 | any | `F . . .` | no host implements it |
+| `0x1A9` | BLACKBOX_CHUNK | B>H | 8 | any | `F . . .` | no host implements it |
 | `0x1AA` | THERMAL_STATS_QUERY | H>B | any | any | `F . T .` |  |
 | `0x1AB` | THERMAL_STATS_RESP | B>H | 8 | any | `F . T .` |  |
 | `0x1B0` | ELECTROMAGNET_CMD | H>B | 1 | 13 | `F . T W` |  |
@@ -79,7 +79,7 @@ Every identifier of `spec/can_protocol.json`, one row each. **Dir**: H>B host to
 | `0x253` | THERMAL_RAW_CHUNK | B>H | 8 | 22 | `F . T W` |  |
 | `0x254` | THERMAL_CAL_CHUNK_REQ | H>B | 1 | 22 | `F . T W` |  |
 | `0x255` | THERMAL_CAL_CHUNK | B>H | 8 | 22 | `F . T W` |  |
-| `0x7E9` | VERSION_PATCH_RESPONSE | B>H | 3-8 | any | `F L . W` |  |
+| `0x7E9` | VERSION_PATCH_RESPONSE | B>H | 3-8 | any | `F L T W` |  |
 | `0x7F0` | ENTER_BOOTLOADER | H>B | 4 | any | `F L . W` | magic enter_bootloader |
 | `0x7F1` | START_UPDATE | H>B | 8 | any | `F L . W` |  |
 | `0x7F2` | DATA | H>B | 1-8 | any | `F L . W` |  |
