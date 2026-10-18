@@ -18,7 +18,7 @@
 
 ---
 
-**Verificação de honestidade - o que funciona mesmo hoje:** este repositório contém uma especificação, geradores, vetores de teste e uma pequena biblioteca Python. Tudo é executado e testado em CI, mas nada nos outros repositórios do URTC a utiliza ainda: o URTC-FLASHER, o URTC-TESTER, o URTC-WEB-STUDIO e o firmware mantêm a sua própria cópia do protocolo até cada um migrar. Os testes que comparam a especificação com essas cópias leem o seu texto quando os repositórios estão clonados ao lado deste, e são ignorados quando não estão. Nada disto foi executado contra uma placa ou um adaptador CAN: os transportes são testados com simulações, e a especificação indica para cada identificador quais as implementações que o definem, de modo que as lacunas ficam visíveis em vez de se darem por resolvidas.
+**Verificação de honestidade - o que funciona mesmo hoje:** este repositório contém uma especificação, geradores, vetores de teste e uma pequena biblioteca Python. Tudo é executado e testado em CI, mas até agora só a utilizam o URTC-FLASHER, o URTC-TESTER e o URTC-WEB-STUDIO (os identificadores, as cargas mágicas, os identificadores de hardware e os vetores partilhados, como cópias vigiadas por um ficheiro de bloqueio); o firmware e os transportes mantêm a sua própria cópia do protocolo até cada um migrar. Os testes que comparam a especificação com essas cópias leem o seu texto quando os repositórios estão clonados ao lado deste, e são ignorados quando não estão. Nada disto foi executado contra uma placa ou um adaptador CAN: os transportes são testados com simulações, e a especificação indica para cada identificador quais as implementações que o definem, de modo que as lacunas ficam visíveis em vez de se darem por resolvidas.
 
 ---
 

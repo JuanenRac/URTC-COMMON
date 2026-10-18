@@ -18,7 +18,7 @@
 
 ---
 
-**Honesty check - what actually runs today:** this repository holds a specification, generators, test vectors and a small Python library. All of it runs and is tested in CI, but nothing in the other URTC repositories uses it yet: URTC-FLASHER, URTC-TESTER, URTC-WEB-STUDIO and the firmware keep their own copies of the protocol until each one migrates. The tests that compare the specification with those copies read their text when the repositories are checked out next to this one, and skip when they are not. Nothing here has been run against a board or a CAN adapter: the transports are tested with fakes, and the specification says for every identifier which implementations define it, so the gaps are visible instead of assumed away.
+**Honesty check - what actually runs today:** this repository holds a specification, generators, test vectors and a small Python library. All of it runs and is tested in CI, but so far only URTC-FLASHER, URTC-TESTER and URTC-WEB-STUDIO use it (the identifiers, the magic payloads, the hardware ids and the shared vectors, as copies kept honest by a lock file); the firmware and the transports keep their own copies of the protocol until each one migrates. The tests that compare the specification with those copies read their text when the repositories are checked out next to this one, and skip when they are not. Nothing here has been run against a board or a CAN adapter: the transports are tested with fakes, and the specification says for every identifier which implementations define it, so the gaps are visible instead of assumed away.
 
 ---
 

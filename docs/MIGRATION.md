@@ -8,7 +8,7 @@ GPL-3.0-or-later - see LICENSE
 
 # Migration
 
-Nothing in the other repositories uses URTC-COMMON yet. This page is the order in which each one can adopt it, one step at a time, with every step leaving that repository green and able to stop there.
+URTC-FLASHER, URTC-TESTER and URTC-WEB-STUDIO have taken steps 1 and 2 below (the shared vectors, and the identifiers, magic payloads and hardware ids as aliases of the generated module); the firmware (step 3) and the transports (step 4) have not. This page is the order in which each repository adopts it, one step at a time, with every step leaving that repository green and able to stop there.
 
 ## Why a copy and not a dependency
 

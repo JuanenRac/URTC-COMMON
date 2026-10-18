@@ -466,9 +466,15 @@ export function minorFieldPatch(field: number): number | null {
 }
 /** 1 when the candidate is newer, 0 when equal, -1 when older; the patch decides only when both carry one. */
 export function versionCompare(installed: [number, number, number | null], candidate: [number, number, number | null]): number {
-  for (let i = 0; i < 2; i++) if (candidate[i] !== installed[i]) return candidate[i] > installed[i] ? 1 : -1;
-  if (installed[2] === null || candidate[2] === null) return 0;
-  if (candidate[2] !== installed[2]) return candidate[2] > installed[2] ? 1 : -1;
+  for (let i = 0; i < 2; i++) {
+    const have = installed[i] as number;
+    const want = candidate[i] as number;
+    if (want !== have) return want > have ? 1 : -1;
+  }
+  const havePatch = installed[2];
+  const wantPatch = candidate[2];
+  if (havePatch === null || wantPatch === null) return 0;
+  if (wantPatch !== havePatch) return wantPatch > havePatch ? 1 : -1;
   return 0;
 }
 

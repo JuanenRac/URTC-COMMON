@@ -5,6 +5,12 @@ version number follows this ecosystem's "odometer" scheme: PATCH +1 on
 every real build, rolling into MINOR past 9 (`0.0.9` -> `0.1.0`); MAJOR is
 bumped manually only. See `bump_version.py`.
 
+## [0.0.2] - Generated module adopted by the clients
+
+- The generated TypeScript module passes the strict type check: versionCompare no longer indexes a tuple with a loop variable.
+- The sibling tests read an identifier that a program takes from the generated module (X = protocol.X in Python, generated.X in TypeScript) as the value of that module, so a program that adopted the module is still compared with the specification.
+- docs/MIGRATION.md records that URTC-FLASHER, URTC-TESTER and URTC-WEB-STUDIO carry the generated module and the shared vectors, each with its lock file and a test that fails when a copy is edited by hand or falls behind.
+
 ## [0.0.1] - The CAN protocol as data
 
 - **Specification:** `spec/can_protocol.json` (format 1, with its JSON Schema) describes all 88 identifiers of the tool-head bus: direction, who handles each, the tools it is valid for, the length rule and the typed layout of every request and response, the gates (critical error, boot sequence, magic payload), the watchdog and telemetry timing, 16 enumerations, 37 constants, the four magic payloads, the 23 registers of the expansion slave, the version procedures and the SLCAN subset. Every entry records which of the firmware, URTC-FLASHER, URTC-TESTER and URTC-WEB-STUDIO define it, so the gaps are explicit: `0x220`, `0x221`, `0x1A8` and `0x1A9` exist in the firmware and in no host (the last two are not in the protocol prose either), and `0x220`/`0x221` carry a note about the missing allow-list.
