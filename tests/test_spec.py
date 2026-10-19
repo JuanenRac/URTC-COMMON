@@ -63,7 +63,7 @@ def test_names_are_unique(spec):
 
 
 def test_statistics_the_documents_quote(spec):
-    assert len(spec["messages"]) == 88
+    assert len(spec["messages"]) == 90
     assert len(spec["tools"]) == 26 and [t["id"] for t in spec["tools"]] == list(range(26))
     assert sum(len(b["entries"]) for b in spec["registers"].values()) == 23
     assert len(spec["magic_payloads"]) == 4

@@ -338,7 +338,7 @@ def test_the_prose_and_the_specification_list_the_same_identifiers(spec, sibling
     assert not_in_prose == {v for v, m in table.items() if m.get("documented_in_prose") is False} == set()
     # an identifier that appears only in the summary and the section intro is the one a scan of the headers would miss
     assert summary - headers == {0x243}
-    assert len(headers) == 87
+    assert len(headers) == 89
 
 
 def test_exact_lengths_in_the_prose_are_the_lengths_of_the_specification(spec, sibling):
@@ -358,3 +358,33 @@ def test_exact_lengths_in_the_prose_are_the_lengths_of_the_specification(spec, s
         assert any(rule.get("exact") == n or rule.get("min") == n or rule.get("max") == n or n in rule.get("one_of", []) for rule in rules), (header.group(1), n, rules)
         checked += 1
     assert checked > 50
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# the multinode extension in the firmware
+# ---------------------------------------------------------------------------------------------------------------------
+def test_the_firmware_multinode_header_has_the_values_of_the_specification(spec, sibling):
+    header = sibling(f"{FIRMWARE}/multinode.h")
+    found = c_defines(header, "MN_")
+    mn = spec["multinode"]
+    for constant in mn["constants"]:
+        assert found.get(constant["name"]) == constant["value"], constant["name"]
+    for flag in mn["state_flags"]:
+        assert found.get(f"MN_STATE_{flag['name']}") == 1 << flag["bit"], flag["name"]
+    for action in mn["select_actions"]:
+        assert found.get(f"MN_SELECT_ACTION_{action['name']}") == action["value"], action["name"]
+    for frame in mn["frames"]:
+        assert found.get(f"MN_ID_{frame['name']}") == int(frame["id"], 16), frame["name"]
+    assert found["MN_ID_FIRST"] == 0x400 and found["MN_ID_LAST"] == 0x49F
+
+
+def test_the_firmware_multinode_switch_frames_are_the_ones_of_the_specification(spec, sibling):
+    source = text(sibling(f"{FIRMWARE}/firmware_multinode.c"))
+    table = by_id(spec)
+    assert {0x1AC, 0x1AD} <= set(table)
+    message = table[0x1AC]
+    assert message["layouts"][0]["dlc"] == {"exact": 6} and message["firmware_accepts_dlc"] == {"exact": 6}
+    magic = next(f for f in message["layouts"][0]["fields"] if f["name"] == "magic")["fixed"]
+    comparison = " && ".join(f"rxData\[{i}\] == 0x{b:02X}" for i, b in enumerate(bytes.fromhex(magic)))
+    assert re.search(comparison, source, re.I)
+    assert re.search(r"StdId\s*[!=]=\s*0x1AD", source)

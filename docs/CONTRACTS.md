@@ -16,7 +16,7 @@ The CAN bus of the tool head is the one contract that crosses the firmware, two 
 
 | Part | Where | What it fixes |
 |---|---|---|
-| Frame table | `messages` | 88 identifiers: name, direction, who handles it, the tools it is valid for, the length rule of every layout, every field (offset, type, range, enumeration), the gates (critical error, boot sequence, magic payload), the timing (telemetry period, watchdog), and which implementations define it |
+| Frame table | `messages` | 90 identifiers: name, direction, who handles it, the tools it is valid for, the length rule of every layout, every field (offset, type, range, enumeration), the gates (critical error, boot sequence, magic payload), the timing (telemetry period, watchdog), and which implementations define it |
 | Magic payloads | `magic_payloads` | The four 4-byte values that make a destructive or one-shot command obeyed: enter the bootloader, authorise one downgrade, erase the saved state, reset the solder feeder position |
 | Enumerations | `enums` | Tool profiles (25 plus the invalid marker), bootloader status, verify-fail reason, thermal fault, reset-cause flags, expansion board type, sensor variant and the small value sets of the commands |
 | Constants | `constants` | The bitrate, the HardwareIDs, the flash page, the patch encoding, the timing every host must respect (watchdogs, grace window, acknowledgement timeout) and the limits the hosts offer |
@@ -52,9 +52,9 @@ The vectors are computed with a small packer of their own, written apart from th
 
 `implemented_by` in the specification records, for every identifier, whether the firmware, URTC-FLASHER, URTC-TESTER and URTC-WEB-STUDIO define it. The counts below are read from the specification, and `tests/test_siblings.py` compares them with the text of the other repositories whenever those are checked out next to this one.
 
-| Implementation | Identifiers defined | Of 88 |
+| Implementation | Identifiers defined | Of 90 |
 |---|---|---|
-| Firmware | 88 | all |
+| Firmware | 90 | all |
 | URTC-WEB-STUDIO | 82 | not 0x1AA, 0x1AB, 0x1A8, 0x1A9, 0x220, 0x221 |
 | URTC-TESTER | 56 | no bootloader or slave bridge frames; only the version patch frame (0x7E9) of the bootloader group; no 0x1A0, 0x1A2, 0x1A4, 0x1A6 |
 | URTC-FLASHER | 38 | the bootloader, the slave bridge and the configuration registers only |

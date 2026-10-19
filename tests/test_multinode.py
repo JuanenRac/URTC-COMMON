@@ -26,7 +26,7 @@ def mv():
 
 
 def test_the_extension_is_marked_as_a_design(spec):
-    assert spec["multinode"]["status"] == "designed_not_implemented_in_firmware"
+    assert spec["multinode"]["status"] == "implemented_in_firmware_behind_switch_host_tested_only"
     assert all("implemented_by" not in f for f in spec["multinode"]["frames"])
 
 

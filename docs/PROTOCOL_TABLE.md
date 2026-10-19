@@ -49,6 +49,8 @@ Every identifier of `spec/can_protocol.json`, one row each. **Dir**: H>B host to
 | `0x1A9` | BLACKBOX_CHUNK | B>H | 8 | any | `F . . .` | no host implements it |
 | `0x1AA` | THERMAL_STATS_QUERY | H>B | any | any | `F . T .` |  |
 | `0x1AB` | THERMAL_STATS_RESP | B>H | 8 | any | `F . T .` |  |
+| `0x1AC` | SET_MULTINODE | H>B | 6 | any | `F . . .` | no host implements it |
+| `0x1AD` | MULTINODE_CONFIG_RESP | both | any / 4 | any | `F . . .` | no host implements it |
 | `0x1B0` | ELECTROMAGNET_CMD | H>B | 1 | 13 | `F . T W` |  |
 | `0x1C0` | SPOT_WELD_CMD | H>B | 3 | 14 | `F . T W` |  |
 | `0x1D0` | UV_CURING_CMD | H>B | 1 | 18 | `F . T W` |  |
@@ -97,11 +99,11 @@ Every identifier of `spec/can_protocol.json`, one row each. **Dir**: H>B host to
 | `0x7FE` | READBACK | both | any / 4 (size) / 1-8 (data) | any | `F L . W` |  |
 | `0x7FF` | READBACK_PAGE_ACK | H>B | 4 | any | `F L . W` |  |
 
-88 identifiers, 26 tool values, 23 slave registers, 4 magic payloads.
+90 identifiers, 26 tool values, 23 slave registers, 4 magic payloads.
 
 ## Multinode extension
 
-Several tool heads on one bus. Status: **designed not implemented in firmware**. These identifiers are not in the table above; the firmware does not implement them and no hardware test exists. See `docs/MULTINODE.md`.
+Several tool heads on one bus. Status: **implemented in the firmware behind a switch that is off by default, tested on the host only**. These identifiers are not in the table above and are not tested on boards. See `docs/MULTINODE.md`.
 
 | ID | Name | Dir | DLC | Notes |
 |---|---|---|---|---|

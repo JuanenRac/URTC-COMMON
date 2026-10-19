@@ -5,6 +5,15 @@ version number follows this ecosystem's "odometer" scheme: PATCH +1 on
 every real build, rolling into MINOR past 9 (`0.0.9` -> `0.1.0`); MAJOR is
 bumped manually only. See `bump_version.py`.
 
+## [0.0.5] - The multinode extension is implemented in the firmware behind a switch
+
+- spec/can_protocol.json: the multinode section now says what it is, implemented in the URTC firmware behind a switch that is off by default and tested on the host only (`status_title` carries the sentence the generated files print), gains the constant `MN_LEGACY_LISTEN_MS` (the 1.5 s listening window) and notes on what the firmware answers to `NODE_CMD` and does with `SELECT`.
+- Two identifiers join the single-head table: `0x1AC` `SET_MULTINODE` (four magic bytes, enable, instance) and `0x1AD` `MULTINODE_CONFIG_RESP` (stored value, value in force, instance, node address). The count is 90 identifiers; the C header, the TypeScript module, the Python module, PROTOCOL_TABLE.md and the conformance vectors are regenerated.
+- tools/generate_constants.py puts the parameters that have a default after the others in the Python and TypeScript builders (a frame with a fixed magic block followed by plain fields needs it) and prints `status_title` when the specification has one.
+- tests/test_siblings.py compares the constants, flags, actions and identifiers of the firmware header `multinode.h` with the specification, and the switch frames with the firmware source.
+- docs/MULTINODE.md describes the switch and what the firmware decided; the READMEs in eight languages no longer call the extension unimplemented, and say it is host-tested only.
+- Not done: the copies of the shared protocol in the desktop programs and the web studio still carry the previous generated files until they are synchronised with `tools/vendor_copy.py`; no board has run the extension.
+
 ## [0.0.4] - The interface helpers are copied into the desktop programs
 
 - tools/vendor_copy.py has a new set, `ui`, that copies the urtc_ui package (language list and selector model, status badges, formatting) into a folder of another repository with a lock file, like the other sets; a test copies it, checks the copy against the lock and imports it under its new place.

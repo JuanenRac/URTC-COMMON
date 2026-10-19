@@ -43,7 +43,7 @@ The CAN protocol of the tool head, written once as data, and everything that fol
 * [Specification format](docs/SPEC_FORMAT.md): the keys of the file and how to add or change an identifier.
 * [Migration](docs/MIGRATION.md): the order in which each repository can adopt it, and how a check keeps the copies equal.
 * [Protocol table](docs/PROTOCOL_TABLE.md): every identifier in one table, generated from the specification.
-* [Several tool heads on one bus](docs/MULTINODE.md): a design for addressing, discovery and safety rules; not implemented in the firmware and not tried on hardware.
+* [Several tool heads on one bus](docs/MULTINODE.md): addressing, discovery and safety rules; implemented in the URTC firmware behind a switch that is off by default, tested on the host only and not tried on hardware.
 * Interface helpers: `src/urtc_ui`: the language list, status badges and the formatting of identifiers, bitrates and frames that the desktop programs can share (no Qt needed; URTC-FLASHER and URTC-TESTER carry a copy made with `vendor_copy.py --set ui`).
 * [Conformance vectors](conformance/can_vectors.json): the bytes every implementation must reproduce: every layout, the refusals and the SLCAN streams.
 * **Tools:** `generate_constants.py` writes the C header, the TypeScript module, the Python module and the table (`--check` compares), `make_conformance.py` writes the vectors (`--check`), `vendor_copy.py` copies parts into another repository with a lock file and checks the copy, and `ci_validate.py` is the shared repository check. `make_glance.py` of URTC-DOCS writes the At a glance table.

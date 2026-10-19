@@ -8,8 +8,8 @@
 
 Each example of a frame gives one encode vector (fields to identifier and bytes) and one decode vector. The bytes come from
 the independent packer of make_conformance.py, and every example that carries hand-written bytes is compared with it. Ranged
-frames are written for the first node, a middle node and the last node. The vectors describe a design that the firmware
-does not implement.
+frames are written for the first node, a middle node and the last node. The extension is implemented in the firmware behind a
+switch that is off by default and is tested on the host only.
 
 Usage:
     python tools/make_multinode_vectors.py           # write the file
@@ -31,7 +31,7 @@ SPEC = ROOT / "spec" / "can_protocol.json"
 OUT = ROOT / "conformance" / "multinode_vectors.json"
 NODES = (0, 5, 31)
 ABOUT = (
-    "Vectors of the multinode extension (several tool heads on one bus). A design: the firmware does not implement these frames. "
+    "Vectors of the multinode extension (several tool heads on one bus). The firmware implements them behind a switch that is off by default; they are tested on the host only, not on boards. "
     "Hex strings have no separators; ids are written 0xNNN; 'node' is the node address added to the base identifier of a ranged frame."
 )
 

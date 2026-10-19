@@ -1,8 +1,8 @@
 {
   "format": 1,
-  "about": "Vectors of the multinode extension (several tool heads on one bus). A design: the firmware does not implement these frames. Hex strings have no separators; ids are written 0xNNN; 'node' is the node address added to the base identifier of a ranged frame.",
+  "about": "Vectors of the multinode extension (several tool heads on one bus). The firmware implements them behind a switch that is off by default; they are tested on the host only, not on boards. Hex strings have no separators; ids are written 0xNNN; 'node' is the node address added to the base identifier of a ranged frame.",
   "protocol_version": 1,
-  "status": "designed_not_implemented_in_firmware",
+  "status": "implemented_in_firmware_behind_switch_host_tested_only",
   "encode": [
     {
       "name": "DISCOVER default spacing",

@@ -256,6 +256,21 @@
 #define URTC_THERMAL_STATS_RESP_HEATER_ON_SECONDS_OFFSET 2u
 #define URTC_THERMAL_STATS_RESP_LAST_FAULT_OFFSET 6u
 #define URTC_THERMAL_STATS_RESP_PERSISTED_OFFSET 7u
+#define URTC_CAN_ID_SET_MULTINODE 0x1ACu  /* Switch the multinode extension on or off (persistent, acts after the next power-up) */
+#define URTC_DLC_SET_MULTINODE_MIN 6u
+#define URTC_DLC_SET_MULTINODE_MAX 6u
+#define URTC_SET_MULTINODE_MAGIC_OFFSET 0u
+#define URTC_SET_MULTINODE_ENABLE_OFFSET 4u
+#define URTC_SET_MULTINODE_INSTANCE_OFFSET 5u
+#define URTC_CAN_ID_MULTINODE_CONFIG_RESP 0x1ADu  /* The multinode switch: stored value, value in force, instance and node address */
+#define URTC_DLC_MULTINODE_CONFIG_RESP_REQUEST_MIN 0u
+#define URTC_DLC_MULTINODE_CONFIG_RESP_REQUEST_MAX 8u
+#define URTC_DLC_MULTINODE_CONFIG_RESP_RESPONSE_MIN 4u
+#define URTC_DLC_MULTINODE_CONFIG_RESP_RESPONSE_MAX 4u
+#define URTC_MULTINODE_CONFIG_RESP_RESPONSE_STORED_OFFSET 0u
+#define URTC_MULTINODE_CONFIG_RESP_RESPONSE_RUNNING_OFFSET 1u
+#define URTC_MULTINODE_CONFIG_RESP_RESPONSE_INSTANCE_OFFSET 2u
+#define URTC_MULTINODE_CONFIG_RESP_RESPONSE_ADDRESS_OFFSET 3u
 #define URTC_CAN_ID_ELECTROMAGNET_CMD 0x1B0u  /* Electromagnet coil */
 #define URTC_DLC_ELECTROMAGNET_CMD_MIN 1u
 #define URTC_DLC_ELECTROMAGNET_CMD_MAX 1u
@@ -638,7 +653,7 @@
 #define URTC_SLAVE_APP_REG_PWM_PULSE 0x31u
 #define URTC_SLAVE_APP_REG_PWM_STOP 0x32u
 
-/* --- multinode extension (designed not implemented in firmware): see docs/MULTINODE.md --- */
+/* --- multinode extension (implemented in the firmware behind a switch that is off by default, tested on the host only): see docs/MULTINODE.md --- */
 #define URTC_MN_VERSION 0x1u  /* Multinode extension version carried by the discovery frames */
 #define URTC_MN_ADDRESS_BITS 0x5u  /* Bits of the node address */
 #define URTC_MN_ADDRESS_MASK 0x1Fu  /* Mask of the node address */
@@ -647,6 +662,7 @@
 #define URTC_MN_DISCOVER_SLOT_MS 0x2u  /* Default spacing of the discovery answers: a node answers after its address times this */
 #define URTC_MN_NODE_TIMEOUT_MS 0xDACu  /* A node that sent no status frame for this long is treated as gone */
 #define URTC_MN_SELECT_TIMEOUT_MS 0x7D0u  /* A selection lapses unless the host repeats it within this time */
+#define URTC_MN_LEGACY_LISTEN_MS 0x5DCu  /* A node listens this long after start for other nodes before it behaves as the one head on the bus */
 #define URTC_MN_CMD_ARGS_MAX 0x6u  /* Argument bytes that fit in a node-addressed command */
 #define URTC_MN_STATE_SELECTED 0x01u  /* This node is the selected (active) node */
 #define URTC_MN_STATE_FAULT 0x02u  /* A fault is latched on this node */

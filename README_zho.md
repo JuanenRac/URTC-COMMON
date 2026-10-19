@@ -43,7 +43,7 @@
 * [规范格式](docs/SPEC_FORMAT.md): 文件的键，以及如何添加或修改标识符。
 * [迁移](docs/MIGRATION.md): 各仓库采用它的顺序，以及检查如何保持副本一致。
 * [协议表](docs/PROTOCOL_TABLE.md): 由规范生成的、包含全部标识符的一张表。
-* [一条总线上的多个工具头](docs/MULTINODE.md): 寻址、发现和安全规则的设计；固件中尚未实现，也未在硬件上试过。
+* [一条总线上的多个工具头](docs/MULTINODE.md): 寻址、发现和安全规则；已在 URTC 固件中实现，位于默认关闭的开关之后，仅在计算机上测试，尚未在硬件上试过。
 * 界面辅助模块: `src/urtc_ui`：桌面程序可以共用的语言列表、状态徽章以及标识符、比特率和帧的格式化（不需要 Qt；URTC-FLASHER 和 URTC-TESTER 携带用 `vendor_copy.py --set ui` 生成的副本）。
 * [一致性向量](conformance/can_vectors.json): 每个实现都必须重现的字节：每种布局、被拒绝的输入和 SLCAN 数据流。
 * **工具：** `generate_constants.py` 写出 C 头文件、TypeScript 模块、Python 模块和协议表（`--check` 用于比对），`make_conformance.py` 写出向量（`--check`），`vendor_copy.py` 带锁文件把部分内容复制到其他仓库并检查副本，`ci_validate.py` 是通用的仓库检查。URTC-DOCS 的 `make_glance.py` 负责写出“速览”表。

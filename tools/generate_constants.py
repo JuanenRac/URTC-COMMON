@@ -388,7 +388,7 @@ def render_python_multinode(spec: dict) -> list[str]:
     lines: list[str] = []
     add = lines.append
     add("# ---------------------------------------------------------------------------")
-    add("# multinode extension (" + mn["status"].replace("_", " ") + "): see docs/MULTINODE.md")
+    add("# multinode extension (" + mn.get("status_title", mn["status"].replace("_", " ")) + "): see docs/MULTINODE.md")
     add("# ---------------------------------------------------------------------------")
     for const in mn["constants"]:
         add(f"{const['name']} = {const_value(const['value'])}  # {const['title']}" + (f" ({const['unit']})" if const.get("unit") else ""))
@@ -528,6 +528,7 @@ def render_python(spec: dict) -> str:
                         default = " = None"
                         hint = "int | None"
                 params.append((field["name"], hint, default))
+            params.sort(key=lambda item: bool(item[2]))  # parameters with a default go last (the call passes keywords)
             signature = ", ".join(f"{n}: {h}{d}" for n, h, d in params)
             call = ", ".join(f"{n}={n}" for n, _, _ in params)
             if layout["role"] == "request" and not params:
@@ -746,7 +747,7 @@ def render_typescript_multinode(spec: dict) -> list[str]:
     lines: list[str] = []
     add = lines.append
     add("// ---------------------------------------------------------------------------")
-    add("// multinode extension (" + mn["status"].replace("_", " ") + "): see docs/MULTINODE.md")
+    add("// multinode extension (" + mn.get("status_title", mn["status"].replace("_", " ")) + "): see docs/MULTINODE.md")
     add("// ---------------------------------------------------------------------------")
     for const in mn["constants"]:
         add(f"export const {const['name']} = {const_value(const['value'])}; // {const['title']}" + (f" ({const['unit']})" if const.get("unit") else ""))
@@ -870,6 +871,7 @@ def render_typescript(spec: dict) -> str:
                     params.append(f"{camel(field['name'])}{'?' if optional else ''}: number[] | Uint8Array")
                 else:
                     params.append(f"{camel(field['name'])}{'?' if field.get('optional') else ''}: number")
+            params.sort(key=lambda item: "?:" in item)  # optional parameters go last
             add(f"/** {message['title']} ({hex_id(int(message['id'], 16))}, {layout['role']}{', ' + layout['variant'] if layout.get('variant') else ''}). */")
             if params:
                 add(f"export function encode{cname[0].upper()}{cname[1:]}({', '.join(params)}): {{ id: number; data: number[] }} {{")
@@ -947,7 +949,7 @@ def render_c(spec: dict) -> str:
     add("")
     mn = spec.get("multinode")
     if mn:
-        add("/* --- multinode extension (" + mn["status"].replace("_", " ") + "): see docs/MULTINODE.md --- */")
+        add("/* --- multinode extension (" + mn.get("status_title", mn["status"].replace("_", " ")) + "): see docs/MULTINODE.md --- */")
         for const in mn["constants"]:
             add(f"#define URTC_{const['name']} 0x{const['value']:X}u  /* {const['title']} */")
         for flag in mn["state_flags"]:
@@ -1024,7 +1026,7 @@ def render_table(spec: dict) -> str:
         lines += [
             "## Multinode extension",
             "",
-            f"{mn['title']}. Status: **{mn['status'].replace('_', ' ')}**. These identifiers are not in the table above; the firmware does not implement them and no hardware test exists. See `docs/MULTINODE.md`.",
+            f"{mn['title']}. Status: **{mn.get('status_title', mn['status'].replace('_', ' '))}**. These identifiers are not in the table above and are not tested on boards. See `docs/MULTINODE.md`.",
             "",
             "| ID | Name | Dir | DLC | Notes |",
             "|---|---|---|---|---|",

@@ -1,6 +1,15 @@
 # Several tool heads on one bus (multinode)
 
-**Status: designed, not implemented in firmware.** The URTC firmware answers as one head per bus today. Nothing in this document runs on a board, no host uses it yet, and no part of it has been tried on hardware. What exists is the specification (`multinode` in `spec/can_protocol.json`), the generated constants and builders (C, Python, TypeScript), conformance vectors (`conformance/multinode_vectors.json`) and host-side helpers with tests (`urtc_common.multinode`). Every statement below about what a node does is a requirement for the firmware change that has not been made.
+**Status: implemented in the URTC firmware behind a switch that is off by default; tested on the host only, not on boards.** With the switch off the firmware answers as one head per bus, exactly as before. With it on, the node side below is what the firmware does (main application 0.3.8). No board has run it, no host program uses it yet, and nothing in it has been tried on hardware. What exists is the specification (`multinode` in `spec/can_protocol.json`), the generated constants and builders (C, Python, TypeScript), conformance vectors (`conformance/multinode_vectors.json`), host-side helpers with tests (`urtc_common.multinode`) and, in the firmware repository, the node logic (`multinode.c`) with its host suite (`tests/test_multinode.c`). Where a statement below says what a node does, the firmware implements it; the sections on the switch and on what the firmware decided say how.
+
+## The switch
+
+The extension is off unless a persistent record in the board's F-RAM says otherwise. The default is off, and a blank, erased, zeroed, damaged or missing record reads as off, so a board that was never configured behaves as a single head and every frame and identifier of the single-head protocol is unchanged (the firmware's host suite checks all 2048 identifiers).
+
+* `0x1AC` sets it: the four magic bytes `4D 4E 4F 44`, `enable` (0 or 1) and `instance`. `0x1AD` reads it: the stored value, the value in force, the instance and the node address. Both identifiers are in the single-head table (`SET_MULTINODE`, `MULTINODE_CONFIG_RESP`).
+* The setting is read once at boot, so a change acts after the next power-up.
+* While the extension is on, `0x1AC` reaches only the selected node, like every other single-head frame. While it is off, any host can switch it on; the protection is the same as for the other persistent settings (a magic payload against corrupted frames), not authentication, because the CAN bus has none (see the threat model in the firmware repository). Keep the bus closed.
+* The record is its own F-RAM region (address 960, 8 bytes with a CRC-8), so the saved-state record and its version do not change.
 
 ## Goals and limits
 
@@ -79,7 +88,7 @@ The existing single-head traffic (telemetry about every 100 ms, motion commands)
 
 ## Failure modes
 
-| Failure | What happens (design) |
+| Failure | What happens |
 |---|---|
 | Two boards on one address | Both set `CONFLICT`, ignore commands, keep announcing; the host refuses to command that address and shows both serials. |
 | A node disappears | No status for 3.5 s: the host marks it gone and stops commanding it. If it was selected, the selection has lapsed on its own. |
@@ -97,13 +106,27 @@ The existing single-head traffic (telemetry about every 100 ms, motion commands)
 3. **SAFE_STOP only moves toward safety.** A node always obeys it by entering its safe state (heaters off, motion stopped, outputs released). No frame of the extension leaves the safe state; the node leaves it through its own conditions and the normal commands.
 4. **No broadcast of anything destructive.** Enter-bootloader, erase and update frames are never broadcast and are obeyed only by the selected node, with the existing magic payloads and signature checks unchanged.
 5. **A conflict or a latched fault refuses commands** at the host and at the node.
-6. **No claim without a test on hardware.** Until a board runs this, the extension is a design.
+6. **No claim without a test on hardware.** Until a board runs this, the extension is host-tested only.
+
+## What the firmware decided
+
+The design left some points open. The firmware does this:
+
+* **Listening window.** A node that has just started listens for `MN_LEGACY_LISTEN_MS` (1.5 s). It obeys no single-head frame in that window. A node that hears another node's `NODE_INFO` or `NODE_STATUS` becomes unselected; one that hears nobody becomes the one head on the bus (legacy mode, treated as selected, with no lapse).
+* **Conflict.** A node never receives its own frames, so a frame on its own `NODE_INFO` or `NODE_STATUS` identifier can only come from another board. The node latches `CONFLICT`, puts its tool in the safe state once, ignores commands, cannot be selected and keeps announcing until the next power-up.
+* **Serial.** The 32-bit serial in `NODE_INFO` is a fold of the 96-bit unique device ID of the microcontroller.
+* **`NODE_CMD`.** The firmware answers only `func` `0x110` (the status query) with a `NODE_RESP` that carries the six bytes of `0x111`. Any other `func` is ignored, so this short form never actuates.
+* **Safe state.** `SAFE_STOP` (and a conflict) sets the setpoints to zero, stops stepping, releases the heater and PWM outputs and locks the laser interlock, the same outputs the bootloader-entry command forces before it resets, but without latching the critical-error flag. A lapsed or withdrawn selection does not by itself switch an output off: each tool's own communication watchdog acts as in single-head mode (the electromagnet and the hotend fan keep their state on purpose).
+* **Telemetry.** A node that is not selected sends no single-head telemetry. The collision frame `0x095` of the scan probe is an event and is sent whatever the selection.
+* **Extended identifiers** are ignored while the extension is on.
+* **Bootloader.** The bootloaders do not take part. Their frames reach only the selected application node, and `SELECT` comes first in an update.
+* **`seq`** of `SELECT` is recorded and not otherwise interpreted.
 
 ## Impact by repository
 
 | Repository | Change when the design is implemented | Done now |
 |---|---|---|
-| URTC (firmware) | Read the address into the node state; implement legacy-mode listening, DISCOVER, SELECT with timeout, NODE_INFO/STATUS/CMD/RESP, SAFE_STOP; ignore single-head identifiers when unselected; conflict detection; host tests and a two-board bench test. | Nothing. |
+| URTC (firmware) | Read the address into the node state; implement legacy-mode listening, DISCOVER, SELECT with timeout, NODE_INFO/STATUS/CMD/RESP, SAFE_STOP; ignore single-head identifiers when unselected; conflict detection; host tests and a two-board bench test. | The node side, behind the switch, with host tests. The two-board bench test is not done. |
 | URTC-COMMON | Specification, generated constants and builders, vectors, host helpers. | Yes (this repository). |
 | URTC-FLASHER | Discover and list nodes; SELECT and confirm before every update; never flash an unselected or conflicting node. | Nothing. |
 | URTC-TESTER | Node list and a node chooser in the bus monitor; per-node status; test one node at a time. | Nothing. |
@@ -112,8 +135,8 @@ The existing single-head traffic (telemetry about every 100 ms, motion commands)
 | URTC-VISION-TOOL | Reuses the thermal tool profile; one node among others; large transfers need SELECT. | Nothing. |
 | HYDRA-UMC adapter | Carry the extension identifiers through the CAN adapter; expose the node table; keep one active tool per cell. | Nothing. |
 
-## Open points for the firmware change
+## Open points
 
-* How the board stores `instance` for a second head of one type (the device-serial command `0x1A4` already persists a serial).
-* Whether NODE_STATUS also carries a temperature or only the state and the error code.
+* Settled in the firmware: `instance` is stored in the switch record and set with `0x1AC`; NODE_STATUS carries the state and the error code only.
+* Still open: whether a node should also release a held output when its selection lapses; the host programs; carrying the identifiers through the HYDRA-UMC adapter.
 * Bench plan: two boards on one bus with an adapter that logs frames; check legacy mode with one board, discovery with two, a forced address conflict, selection timeout, and `SAFE_STOP` against each tool profile.

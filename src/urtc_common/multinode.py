@@ -5,7 +5,7 @@
 # =============================================================================
 """Host-side helpers for the multinode extension (several tool heads on one bus).
 
-The extension is a design: the firmware does not implement it and it has not been tried on hardware
+The firmware implements the node side behind a switch that is off by default; it is tested on the host only and has not been tried on hardware
 (see docs/MULTINODE.md). Everything here is pure arithmetic and bookkeeping, so it is tested without a bus.
 The frames themselves come from ``urtc_common.protocol`` (the ``encode_mn_*`` and ``decode_mn_*`` functions).
 """

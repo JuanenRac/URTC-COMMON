@@ -144,7 +144,8 @@
       "additionalProperties": false,
       "required": ["status", "title", "about", "node_address", "constants", "state_flags", "select_actions", "frames"],
       "properties": {
-        "status": {"enum": ["designed_not_implemented_in_firmware"]},
+        "status": {"enum": ["implemented_in_firmware_behind_switch_host_tested_only"]},
+        "status_title": {"type": "string"},
         "title": {"type": "string"},
         "about": {"type": "string"},
         "node_address": {"type": "object", "required": ["bits", "mask", "source"]},

@@ -3977,6 +3977,181 @@
       }
     },
     {
+      "id": "0x1AC",
+      "name": "SET_MULTINODE",
+      "group": "configuration",
+      "title": "Switch the multinode extension on or off (persistent, acts after the next power-up)",
+      "direction": "host_to_board",
+      "handled_by": "application",
+      "tools": "any",
+      "gates": {
+        "blocked_by_critical_error": true
+      },
+      "layouts": [
+        {
+          "role": "request",
+          "dlc": {
+            "exact": 6
+          },
+          "fields": [
+            {
+              "name": "magic",
+              "type": "bytes",
+              "length": 4,
+              "fixed": "4D4E4F44",
+              "offset": 0,
+              "width": 4
+            },
+            {
+              "name": "enable",
+              "type": "u8",
+              "range": [
+                0,
+                1
+              ],
+              "offset": 4,
+              "width": 1
+            },
+            {
+              "name": "instance",
+              "type": "u8",
+              "offset": 5,
+              "width": 1
+            }
+          ],
+          "examples": [
+            {
+              "name": "switch on, instance 0",
+              "fields": {
+                "magic": "4D4E4F44",
+                "enable": 1,
+                "instance": 0
+              },
+              "data": "4D4E4F440100"
+            },
+            {
+              "name": "switch off",
+              "fields": {
+                "magic": "4D4E4F44",
+                "enable": 0,
+                "instance": 0
+              },
+              "data": "4D4E4F440000"
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "The four magic bytes are a fixed field of this layout, like the other persistent settings; the extension's identifier block is not a magic payload of the single-head protocol.",
+        "The switch is off on a board that was never written, with an erased or damaged record, or with any value but 1. Any other payload or length is ignored.",
+        "While the extension is on, this frame reaches only the selected node. Answered with 0x1AD, which reports the stored value and the value in force."
+      ],
+      "firmware_accepts_dlc": {
+        "exact": 6
+      },
+      "implemented_by": {
+        "firmware": true,
+        "flasher": false,
+        "tester": false,
+        "web_studio": false
+      }
+    },
+    {
+      "id": "0x1AD",
+      "name": "MULTINODE_CONFIG_RESP",
+      "group": "configuration",
+      "title": "The multinode switch: stored value, value in force, instance and node address",
+      "direction": "both",
+      "handled_by": "application",
+      "tools": "any",
+      "gates": {
+        "blocked_by_critical_error": true
+      },
+      "read_only": true,
+      "layouts": [
+        {
+          "role": "request",
+          "dlc": {
+            "any": true
+          },
+          "fields": [],
+          "note": "The payload is ignored.",
+          "examples": [
+            {
+              "name": "empty query",
+              "fields": {},
+              "data": ""
+            }
+          ]
+        },
+        {
+          "role": "response",
+          "dlc": {
+            "exact": 4
+          },
+          "fields": [
+            {
+              "name": "stored",
+              "type": "u8",
+              "range": [
+                0,
+                1
+              ],
+              "note": "1 when the F-RAM record says on.",
+              "offset": 0,
+              "width": 1
+            },
+            {
+              "name": "running",
+              "type": "u8",
+              "range": [
+                0,
+                1
+              ],
+              "note": "1 when the extension is active now; it differs from stored until the next power-up.",
+              "offset": 1,
+              "width": 1
+            },
+            {
+              "name": "instance",
+              "type": "u8",
+              "offset": 2,
+              "width": 1
+            },
+            {
+              "name": "address",
+              "type": "u8",
+              "range": [
+                0,
+                31
+              ],
+              "note": "The node address read from the identity jumpers.",
+              "offset": 3,
+              "width": 1
+            }
+          ],
+          "examples": [
+            {
+              "name": "stored on, not yet running, address 5",
+              "fields": {
+                "stored": 1,
+                "running": 0,
+                "instance": 0,
+                "address": 5
+              },
+              "data": "01000005"
+            }
+          ]
+        }
+      ],
+      "implemented_by": {
+        "firmware": true,
+        "flasher": false,
+        "tester": false,
+        "web_studio": false
+      }
+    },
+    {
       "id": "0x1B0",
       "name": "ELECTROMAGNET_CMD",
       "group": "electromagnet",
@@ -6880,9 +7055,9 @@
     }
   ],
   "multinode": {
-    "status": "designed_not_implemented_in_firmware",
+    "status": "implemented_in_firmware_behind_switch_host_tested_only",
     "title": "Several tool heads on one bus",
-    "about": "A backward-compatible extension that lets several tool heads share one CAN bus. It is a design: the firmware does not implement any of it, no host uses it, and nothing here has been tried on hardware. The frames of the single-head protocol keep their identifiers and meaning; the extension only uses identifiers that nothing else uses (0x400-0x49F). See docs/MULTINODE.md.",
+    "about": "A backward-compatible extension that lets several tool heads share one CAN bus. The URTC firmware implements the node side behind a persistent switch that is off by default (0x1AC sets it, 0x1AD reads it, a change acts after the next power-up); with the switch off the board behaves exactly as a single head. The logic is tested on the host; it has not been tried on boards, and no host program uses it yet. The frames of the single-head protocol keep their identifiers and meaning; the extension only uses identifiers that nothing else uses (0x400-0x49F). See docs/MULTINODE.md.",
     "node_address": {
       "bits": 5,
       "mask": 31,
@@ -6931,6 +7106,12 @@
         "name": "MN_SELECT_TIMEOUT_MS",
         "value": 2000,
         "title": "A selection lapses unless the host repeats it within this time",
+        "unit": "ms"
+      },
+      {
+        "name": "MN_LEGACY_LISTEN_MS",
+        "value": 1500,
+        "title": "A node listens this long after start for other nodes before it behaves as the one head on the bus",
         "unit": "ms"
       },
       {
@@ -7080,7 +7261,8 @@
           ]
         },
         "notes": [
-          "Only the selected node obeys the identifiers of the single-head protocol; the others stay silent on them. A selection lapses after MN_SELECT_TIMEOUT_MS unless it is repeated."
+          "Only the selected node obeys the identifiers of the single-head protocol; the others stay silent on them. A selection lapses after MN_SELECT_TIMEOUT_MS unless it is repeated.",
+          "seq is recorded and not otherwise interpreted. A frame that is malformed (wrong length, action above 1, node above 31) changes nothing."
         ]
       },
       {
@@ -7262,7 +7444,8 @@
           ]
         },
         "notes": [
-          "func is the identifier of a single-head command. Commands whose payload is longer than MN_CMD_ARGS_MAX bytes use SELECT and the single-head frames instead."
+          "func is the identifier of a single-head command. Commands whose payload is longer than MN_CMD_ARGS_MAX bytes use SELECT and the single-head frames instead.",
+          "The firmware answers only func 0x110 (the status query, answered with the six bytes of 0x111); any other func is ignored, so this short form never actuates."
         ]
       },
       {
@@ -7306,6 +7489,7 @@
           "func repeats the identifier of the command that is answered."
         ]
       }
-    ]
+    ],
+    "status_title": "implemented in the firmware behind a switch that is off by default, tested on the host only"
   }
 }
