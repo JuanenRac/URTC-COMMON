@@ -44,7 +44,7 @@ Le protocole CAN de la tête d'outil, écrit une seule fois comme données, et t
 * [Migration](docs/MIGRATION.md): l'ordre dans lequel chaque dépôt peut l'adopter, et comment une vérification garde les copies identiques.
 * [Table du protocole](docs/PROTOCOL_TABLE.md): tous les identifiants dans une table, générée à partir de la spécification.
 * [Plusieurs têtes d'outil sur un bus](docs/MULTINODE.md): une conception de l'adressage, de la découverte et des règles de sécurité ; non implémentée dans le firmware et non essayée sur du matériel.
-* Aides d'interface: `src/urtc_ui` : la liste des langues, les pastilles d'état et le formatage des identifiants, débits et trames que les programmes de bureau peuvent partager (sans Qt ; les programmes ne l'utilisent pas encore).
+* Aides d'interface: `src/urtc_ui` : la liste des langues, les pastilles d'état et le formatage des identifiants, débits et trames que les programmes de bureau peuvent partager (sans Qt ; URTC-FLASHER et URTC-TESTER en portent une copie faite avec `vendor_copy.py --set ui`).
 * [Vecteurs de conformité](conformance/can_vectors.json): les octets que toute implémentation doit reproduire : chaque structure, les refus et les flux SLCAN.
 * **Outils :** `generate_constants.py` écrit l'en-tête C, le module TypeScript, le module Python et la table (`--check` compare), `make_conformance.py` écrit les vecteurs (`--check`), `vendor_copy.py` copie des parties dans un autre dépôt avec un fichier de verrouillage et vérifie la copie, et `ci_validate.py` est la vérification commune des dépôts. `make_glance.py` d'URTC-DOCS écrit le tableau En un coup d'œil.
 

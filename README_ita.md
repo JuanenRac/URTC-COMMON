@@ -44,7 +44,7 @@ Il protocollo CAN della testa utensile, scritto una sola volta come dati, e tutt
 * [Migrazione](docs/MIGRATION.md): l'ordine in cui ogni repository può adottarla e come un controllo mantiene uguali le copie.
 * [Tabella del protocollo](docs/PROTOCOL_TABLE.md): tutti gli identificatori in una tabella, generata dalla specifica.
 * [Più teste utensile su un bus](docs/MULTINODE.md): una progettazione di indirizzamento, scoperta e regole di sicurezza; non implementata nel firmware e non provata su hardware.
-* Aiuti per l'interfaccia: `src/urtc_ui`: l'elenco delle lingue, i badge di stato e la formattazione di identificatori, velocità e frame che i programmi desktop possono condividere (senza Qt; i programmi non lo usano ancora).
+* Aiuti per l'interfaccia: `src/urtc_ui`: l'elenco delle lingue, i badge di stato e la formattazione di identificatori, velocità e frame che i programmi desktop possono condividere (senza Qt; URTC-FLASHER e URTC-TESTER ne portano una copia fatta con `vendor_copy.py --set ui`).
 * [Vettori di conformità](conformance/can_vectors.json): i byte che ogni implementazione deve riprodurre: ogni struttura, i rifiuti e i flussi SLCAN.
 * **Strumenti:** `generate_constants.py` scrive l'header C, il modulo TypeScript, il modulo Python e la tabella (`--check` confronta), `make_conformance.py` scrive i vettori (`--check`), `vendor_copy.py` copia parti in un altro repository con un file di blocco e verifica la copia, e `ci_validate.py` è il controllo condiviso dei repository. `make_glance.py` di URTC-DOCS scrive la tabella In breve.
 

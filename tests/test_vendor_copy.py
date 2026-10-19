@@ -147,3 +147,14 @@ def test_the_tool_itself_can_be_copied_into_another_repository(source, tmp_path)
     target = tmp_path / "tools"
     assert run("sync", target, "--source", source, "--set", "tool") == 0
     assert (target / "vendor_copy.py").read_bytes() == (ROOT / "tools" / "vendor_copy.py").read_bytes().replace(b"\r\n", b"\n")
+
+
+def test_the_ui_package_is_copied_as_a_folder_a_program_can_import(source, tmp_path):
+    target = tmp_path / "client" / "urtc_ui"
+    assert run("sync", target, "--source", source, "--set", "ui") == 0
+    assert sorted(path.name for path in target.glob("*.py")) == ["__init__.py", "formatting.py", "languages.py", "status.py"]
+    assert run("check", target, "--source", source) == 0
+    script = "import urtc_ui; print(urtc_ui.LanguageModel('spanish').index(), urtc_ui.format_bitrate(500000))"
+    result = subprocess.run([sys.executable, "-c", script], capture_output=True, text=True, cwd=target.parent)
+    assert result.returncode == 0, result.stderr
+    assert result.stdout.split()[0] == "1" and "500" in result.stdout

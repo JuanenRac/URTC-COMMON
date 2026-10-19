@@ -44,6 +44,9 @@ SETS = {
     "typescript": ["generated/urtcCanIds.ts"],
     "c": ["generated/urtc_can_ids.h"],
     "vectors": ["conformance/can_vectors.json"],
+    "ui": [
+        "src/urtc_ui/__init__.py", "src/urtc_ui/languages.py", "src/urtc_ui/status.py", "src/urtc_ui/formatting.py",
+    ],
     "tool": ["tools/vendor_copy.py"],
 }
 

@@ -5,6 +5,12 @@ version number follows this ecosystem's "odometer" scheme: PATCH +1 on
 every real build, rolling into MINOR past 9 (`0.0.9` -> `0.1.0`); MAJOR is
 bumped manually only. See `bump_version.py`.
 
+## [0.0.4] - The interface helpers are copied into the desktop programs
+
+- tools/vendor_copy.py has a new set, `ui`, that copies the urtc_ui package (language list and selector model, status badges, formatting) into a folder of another repository with a lock file, like the other sets; a test copies it, checks the copy against the lock and imports it under its new place.
+- URTC-FLASHER and URTC-TESTER adopt the package: the language list, the selector model, the colour of the connection state and the bit-rate and identifier formatting come from the copy instead of from duplicated code.
+- docs/MIGRATION.md lists the set, and the READMEs in eight languages say which programs carry the copy.
+
 ## [0.0.3] - Multinode design and shared interface helpers
 
 - docs/MULTINODE.md designs several tool heads on one CAN bus: the node address from the five identity jumpers, a new identifier block 0x400-0x49F that clashes with nothing, discovery, selecting the one active node, per-node status and command frames, bus load at every supported bitrate, failure modes, safety rules and the impact on each repository. It is a design: the firmware does not implement it and nothing was tried on hardware.

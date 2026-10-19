@@ -16,11 +16,12 @@ URTC-FLASHER and URTC-TESTER are packaged with PyInstaller, URTC-WEB-STUDIO is a
 
 ```text
 python tools/vendor_copy.py sync  TARGET --set python --set vectors   # copy and write urtc_common.lock.json
+python tools/vendor_copy.py sync  urtc_ui --set ui                    # the interface helpers into a folder named urtc_ui
 python tools/vendor_copy.py check TARGET --lock-only                  # in the client: was a copy edited by hand?
 python tools/vendor_copy.py check TARGET --source ../URTC-COMMON      # with a checkout: did the copy fall behind?
 ```
 
-The sets are `python` (the package files), `typescript`, `c`, `vectors` and `tool` (the script itself, so a client can run `check` without a checkout of this repository). `--only NAME` copies single files and `--as NAME` keeps an older file name for a single file.
+The sets are `python` (the package files), `ui` (the interface helpers of `urtc_ui`, for the desktop programs), `typescript`, `c`, `vectors` and `tool` (the script itself, so a client can run `check` without a checkout of this repository). `--only NAME` copies single files and `--as NAME` keeps an older file name for a single file.
 
 ## How `check` keeps the copies equal
 
