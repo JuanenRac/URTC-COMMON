@@ -28,7 +28,7 @@
 
 | | |
 |---|---|
-| Versión | `0.0.2` |
+| Versión | `0.0.5` |
 | Madurez | Andamiaje |
 | Tests | 217 |
 | Tecnología | JSON / Python |

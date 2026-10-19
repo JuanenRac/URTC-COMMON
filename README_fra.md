@@ -28,7 +28,7 @@
 
 | | |
 |---|---|
-| Version | `0.0.2` |
+| Version | `0.0.5` |
 | Maturité | Ébauche |
 | Tests | 217 |
 | Technologie | JSON / Python |

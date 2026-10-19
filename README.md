@@ -28,7 +28,7 @@
 
 | | |
 |---|---|
-| Version | `0.0.2` |
+| Version | `0.0.5` |
 | Maturity | Scaffolding |
 | Tests | 217 |
 | Stack | JSON / Python |
