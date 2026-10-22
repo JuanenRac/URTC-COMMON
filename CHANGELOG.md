@@ -7,6 +7,8 @@ bumped manually only. See `bump_version.py`.
 
 ## [Unreleased]
 
+- The `build-test` scripts use the interpreter named by `URTC_PYTHON` (which URTC-UPDATER sets to its own) and, without it, the first `python3` or `py -3` found, so a build check runs with a Python whose packages are known.
+- The dashboard notice is sent only after the CI of the push finished green (`workflow_run`).
 - The banner follows the animated style of the ecosystem banners, with the name, the kind and the technologies of the project.
 - The manifest declares how far the project has been shown to work (`evidence`: host-test) and `tools/ci_validate.py` checks the value.
 - The headers of `bump_manifest_version.py`, `tools/build_test.py` and `tools/ci_validate.py` say `GPL-3.0-or-later` like every other file, and `tools/_doc_policy.py` names this repository; the copy of `bump_manifest_version.py` is now the same as in the other repositories.
