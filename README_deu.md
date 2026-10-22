@@ -28,7 +28,7 @@
 
 | | |
 |---|---|
-| Version | `0.0.5` |
+| Version | `0.0.6` |
 | Reifegrad | Gerüst |
 | Tests | 217 |
 | Technik | JSON / Python |

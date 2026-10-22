@@ -28,7 +28,7 @@
 
 | | |
 |---|---|
-| Versione | `0.0.5` |
+| Versione | `0.0.6` |
 | Maturità | Impalcatura |
 | Test | 217 |
 | Tecnologia | JSON / Python |

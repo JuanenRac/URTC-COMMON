@@ -6,54 +6,54 @@
       "repo": "URTC",
       "title": "Tool head firmware",
       "kind": "firmware",
-      "version": "0.3.9",
+      "version": "0.4.0",
       "components": [
         {
           "name": "URTC_MAIN_FIRMWARE",
-          "version": "0.3.9"
+          "version": "0.4.0"
         },
         {
           "name": "URTC_MAIN_BOOTLOADER",
-          "version": "0.4.1"
+          "version": "0.4.2"
         },
         {
           "name": "URTC_SLAVE_FIRMWARE",
-          "version": "0.2.3"
+          "version": "0.2.4"
         },
         {
           "name": "URTC_SLAVE_BOOTLOADER",
-          "version": "0.2.5"
+          "version": "0.2.6"
         }
       ],
-      "common": "0.0.5"
+      "common": "0.0.6"
     },
     {
       "repo": "URTC-FLASHER",
       "title": "Flasher",
       "kind": "program",
-      "version": "0.3.8",
-      "common": "0.0.5"
+      "version": "0.3.9",
+      "common": "0.0.6"
     },
     {
       "repo": "URTC-GATEWAY",
       "title": "Gateway in front of the bus",
       "kind": "program",
       "version": "0.0.1",
-      "common": "0.0.5"
+      "common": "0.0.6"
     },
     {
       "repo": "URTC-TESTER",
       "title": "Tester",
       "kind": "program",
-      "version": "0.3.9",
-      "common": "0.0.5"
+      "version": "0.4.0",
+      "common": "0.0.6"
     },
     {
       "repo": "URTC-WEB-STUDIO",
       "title": "Web studio",
       "kind": "program",
-      "version": "0.3.4",
-      "common": "0.0.5"
+      "version": "0.3.5",
+      "common": "0.0.6"
     },
     {
       "repo": "URTC-UPDATER",
@@ -65,28 +65,28 @@
       "repo": "URTC-SMART-RACK",
       "title": "Smart rack",
       "kind": "firmware",
-      "version": "0.1.8",
-      "common": "0.0.5"
+      "version": "0.1.9",
+      "common": "0.0.6"
     },
     {
       "repo": "URTC-VISION-TOOL",
       "title": "Vision tool",
       "kind": "firmware",
-      "version": "0.1.2",
-      "common": "0.0.5"
+      "version": "0.1.3",
+      "common": "0.0.6"
     },
     {
       "repo": "URTC-DOCS",
       "title": "Documentation generator",
       "kind": "program",
-      "version": "0.0.8"
+      "version": "0.0.9"
     },
     {
       "repo": "URTC-COMMON",
       "title": "Shared protocol and code",
       "kind": "library",
-      "version": "0.0.5",
-      "common": "0.0.5"
+      "version": "0.0.6",
+      "common": "0.0.6"
     }
   ]
 }

@@ -2,7 +2,7 @@
 
 All notable changes to this project are documented here.
 
-## [Unreleased]
+## [0.0.6] - Optional function switches, health frame, heater PID and shared tool profiles
 
 - **Protocol: five identifiers and an extension.** `0x1AE` / `0x1AF` (switch the optional firmware functions and read the switches), `0x1B8` (health frame), `0x1B9` / `0x1BA` (heater PID gains, autotune and state), and the optional cruise speed and speed profile of `0x120` when it has eight bytes; with the enumerations that go with them. The count is 95 identifiers. The generated C header, TypeScript module, Python module, protocol table and vectors are regenerated. URTC-TESTER and URTC-WEB-STUDIO now define `0x1A8`, `0x1A9`, `0x1AE` and `0x1AF`.
 - `thermal_view.py`: the false colour of the thermal inspection tool (the ramp of the vision companion), the decoding and assembly of its chunks and the statistics of a region; `rack_status.py`: the status of a rack as data, as an overview card and as a self-contained page with every value escaped. `conformance/thermal_vectors.json` is reproduced by this module, the tester, the web studio and the vision companion (within one level).
