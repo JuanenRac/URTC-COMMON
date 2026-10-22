@@ -5,6 +5,11 @@ version number follows this ecosystem's "odometer" scheme: PATCH +1 on
 every real build, rolling into MINOR past 9 (`0.0.9` -> `0.1.0`); MAJOR is
 bumped manually only. See `bump_version.py`.
 
+## [Unreleased]
+
+- The manifest declares how far the project has been shown to work (`evidence`: host-test) and `tools/ci_validate.py` checks the value.
+- The manifest notes are shorter and no longer say the shared protocol is unused: FLASHER, TESTER and WEB-STUDIO carry checked copies of it.
+
 ## [0.0.5] - The multinode extension is implemented in the firmware behind a switch
 
 - spec/can_protocol.json: the multinode section now says what it is, implemented in the URTC firmware behind a switch that is off by default and tested on the host only (`status_title` carries the sentence the generated files print), gains the constant `MN_LEGACY_LISTEN_MS` (the 1.5 s listening window) and notes on what the firmware answers to `NODE_CMD` and does with `SELECT`.

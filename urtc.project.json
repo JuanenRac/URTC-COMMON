@@ -11,10 +11,11 @@
   ],
   "deployment_target": "user-pc",
   "maturity": "scaffolding",
+  "evidence": "host-test",
   "family": "URTC Tool Platform",
   "parent": null,
   "build": "python tools/build_test.py",
-  "notes": "The CAN protocol of the tool head as data: spec/can_protocol.json holds every identifier with its direction, length rule and payload layout, the magic payloads, the registers of the expansion slave, the version procedures and the SLCAN subset the host tools rely on, and it marks which of the firmware, the flasher, the tester and the web studio implement each entry. From it a generator writes a C header, a TypeScript module and a Python module (constants plus pure frame builders and parsers), conformance vectors are written and checked, and a Python package offers the SLCAN codec and the SLCAN, SocketCAN, python-can and simulated transports. Scaffolding on purpose: nothing in the other repositories uses it yet; each keeps its own copy until it migrates, and the tests that compare the specification with those copies skip when the repositories are not next to this one.",
+  "notes": "The CAN protocol of the tool head as data: spec/can_protocol.json holds every identifier with its direction, length rule and payload layout, the magic payloads, the registers of the expansion slave, the version procedures, the SLCAN subset the host tools rely on and the multi-node section. Generators write a C header, a TypeScript module and a Python module (constants plus pure frame builders and parsers), conformance vectors are written and checked, and a Python package offers the SLCAN codec, the transports and the interface helpers the desktop tools share. FLASHER, TESTER and WEB-STUDIO carry checked copies (tools/vendor_copy.py); the tests that compare the specification with the other repositories skip when those are not next to this one.",
   "native_version": {
     "file": "pyproject.toml",
     "pattern": "^version\\s*=\\s*\"(\\d+)\\.(\\d+)\\.(\\d+)\""
