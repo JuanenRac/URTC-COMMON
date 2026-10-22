@@ -11,3 +11,7 @@ conformance/*.json text eol=lf
 generated/* text eol=lf
 src/urtc_common/protocol.py text eol=lf
 docs/PROTOCOL_TABLE.md text eol=lf
+docs/COMPATIBILITY.md text eol=lf
+docs/TOOLS_TABLE.md text eol=lf
+src/urtc_common/tools_catalog.py text eol=lf
+conformance/fuzz_corpus.txt text eol=lf
