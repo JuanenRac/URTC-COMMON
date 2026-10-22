@@ -1,12 +1,19 @@
-# Changelog: URTC-COMMON 🧩
+# Changelog
 
-All notable changes to this project will be documented in this file. The
-version number follows this ecosystem's "odometer" scheme: PATCH +1 on
-every real build, rolling into MINOR past 9 (`0.0.9` -> `0.1.0`); MAJOR is
-bumped manually only. See `bump_version.py`.
+All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **Protocol: five identifiers and an extension.** `0x1AE` / `0x1AF` (switch the optional firmware functions and read the switches), `0x1B8` (health frame), `0x1B9` / `0x1BA` (heater PID gains, autotune and state), and the optional cruise speed and speed profile of `0x120` when it has eight bytes; with the enumerations that go with them. The count is 95 identifiers. The generated C header, TypeScript module, Python module, protocol table and vectors are regenerated. URTC-TESTER and URTC-WEB-STUDIO now define `0x1A8`, `0x1A9`, `0x1AE` and `0x1AF`.
+- `thermal_view.py`: the false colour of the thermal inspection tool (the ramp of the vision companion), the decoding and assembly of its chunks and the statistics of a region; `rack_status.py`: the status of a rack as data, as an overview card and as a self-contained page with every value escaped. `conformance/thermal_vectors.json` is reproduced by this module, the tester, the web studio and the vision companion (within one level).
+- `rack_sim.py` also judges a thermal reading of a slot (`verify_slot`); the vectors in `conformance/rack_vectors.json` and `generated/rack_vectors.h` carry the cases, and URTC-SMART-RACK and URTC-VISION-TOOL pass them.
+- **Tool profiles as data**: `spec/tools.json` holds the 25 tool profiles (name, kind, limits, watchdog, pins, features, expansion board needed). `tools/generate_tools.py` writes `generated/urtcTools.ts`, `src/urtc_common/tools_catalog.py` and `docs/TOOLS_TABLE.md` from it (`--check` in the CI) and refuses a file that disagrees with the tools of the protocol specification. The tester, the web studio and the documents read the generated tables instead of keeping their own.
+- **Fault recorder reader** (`blackbox.py`): puts the 22 chunks of the record (identifiers `0x1A8` and `0x1A9`) back together, checks the magic number, the version and the CRC-8, orders the samples oldest first, exports CSV and JSON with the board time and the time before the last sample, and tells when to read it (`FaultTrigger`: once for each rising edge of the error flag in `0x111`). Vectors in `conformance/blackbox_vectors.json`.
+- **Rack simulator** (`rack_sim.py`): the serial frame of the rack, the pre-heat command with the per-tool limits, the CAN form (`0x260`), the anti-replay sequence, the link watchdog, the longest pre-heat without a tool swap and a slot inventory whose key is the tool type plus its serial number. `conformance/rack_vectors.json` and `generated/rack_vectors.h` are checked by this module and by the C code of the rack.
+- **Frames for fuzzing a board** (`fuzz.py`, `conformance/fuzz_corpus.txt`): valid frames (examples and range edges), invalid ones (a length or a value the specification refuses) and random ones, made from the specification with a seed.
+- **Compatibility table** (`tools/compat_table.py`, `spec/versions.json`, `docs/COMPATIBILITY.md`): the protocol version, the version of every project and the version of this repository each one carries, generated for the body of a release; `--refresh` reads the manifests of the repositories next to this one.
+- `tools/make_extra_vectors.py` writes the vectors above and `--check` is run by the CI; `vendor_copy.py` has the new sets `tools_catalog`, `blackbox`, `rack`, `rack_c`, `fuzz` and `compat`.
+- The comparison with the prose of the URTC documents treats `0x260`-`0x26F` as the identifiers reserved for the rack.
 - `tools/ci_validate.py` fails when a versioned file has the name of a Windows path (a colon, the character a file system uses to store one, or a first folder named like a drive or a user profile): a path handed to WSL without translation once put build output inside a repository. The same check (`tools/_tracked_names.py`) is in every URTC repository.
 - The `build-test` scripts use the interpreter named by `URTC_PYTHON` (which URTC-UPDATER sets to its own) and, without it, the first `python3` or `py -3` found, so a build check runs with a Python whose packages are known.
 - The dashboard notice is sent only after the CI of the push finished green (`workflow_run`).

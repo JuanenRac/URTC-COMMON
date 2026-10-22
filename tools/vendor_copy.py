@@ -48,6 +48,14 @@ SETS = {
         "src/urtc_ui/__init__.py", "src/urtc_ui/languages.py", "src/urtc_ui/status.py", "src/urtc_ui/formatting.py",
     ],
     "tool": ["tools/vendor_copy.py"],
+    "tools_catalog": ["src/urtc_common/tools_catalog.py"],
+    "tools_ts": ["generated/urtcTools.ts"],
+    "blackbox": ["src/urtc_common/blackbox.py", "conformance/blackbox_vectors.json"],
+    "rack": ["src/urtc_common/rack_sim.py", "src/urtc_common/rack_status.py", "conformance/rack_vectors.json"],
+    "thermal": ["src/urtc_common/thermal_view.py", "conformance/thermal_vectors.json"],
+    "rack_c": ["generated/rack_vectors.h"],
+    "fuzz": ["src/urtc_common/fuzz.py", "conformance/fuzz_corpus.txt"],
+    "compat": ["docs/COMPATIBILITY.md"],
 }
 
 

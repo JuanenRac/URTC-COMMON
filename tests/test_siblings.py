@@ -12,6 +12,7 @@ specification can be trusted to describe what the implementations really do.
 """
 from __future__ import annotations
 
+import json
 import re
 from pathlib import Path
 
@@ -135,8 +136,11 @@ def test_the_firmware_compares_against_the_same_four_bytes(spec, sibling):
 def test_tool_names_are_the_same_in_the_flasher_the_tester_and_the_web_studio(spec, sibling):
     titles = {t["id"]: t["title"] for t in spec["tools"] if t["id"] < 25}
     assert python_dict(sibling(FLASHER_CONFIG), "TOOL_NAMES") == titles
-    assert python_dict(sibling(TESTER_CONFIG), "TOOL_NAMES") == titles
-    assert ts_record(sibling(WEB_IDS), "TOOL_NAMES") == titles
+    # the tester and the web studio take their names from the generated tool profiles, which must carry exactly these names
+    assert "tools_catalog.TOOL_NAMES" in text(sibling(TESTER_CONFIG))
+    assert "URTC_TOOL_PROFILES.map(p => [p.id, p.shortName])" in text(sibling(WEB_IDS))
+    tools = json.loads((Path(__file__).resolve().parents[1] / "spec" / "tools.json").read_text(encoding="utf-8"))["tools"]
+    assert {t["id"]: t["short_name"] for t in tools} == titles
 
 
 def test_tool_values_equal_the_firmware_enumeration(spec, sibling):
@@ -327,18 +331,22 @@ def test_slave_registers_equal_the_specification(spec, sibling):
 # ---------------------------------------------------------------------------------------------------------------------
 # the prose
 # ---------------------------------------------------------------------------------------------------------------------
+# 0x260-0x26F are reserved for the tool rack: the prose says so, the firmware answers none of them, the specification does not list them.
+RACK_RESERVED = set(range(0x260, 0x270))
+
+
 def test_the_prose_and_the_specification_list_the_same_identifiers(spec, sibling):
     prose = text(sibling(CANBUS))
     headers = {int(v, 16) for v in re.findall(r"^ID: (0x[0-9A-Fa-f]+)", prose, re.M)}
     summary = {int(v, 16) for v in re.findall(r"^  (0x[0-9A-F]{3}) ->", prose, re.M)}
-    documented = headers | summary
+    documented = (headers | summary) - RACK_RESERVED
     table = by_id(spec)
     assert documented <= set(table), sorted(documented - set(table))
     not_in_prose = set(table) - documented
     assert not_in_prose == {v for v, m in table.items() if m.get("documented_in_prose") is False} == set()
     # an identifier that appears only in the summary and the section intro is the one a scan of the headers would miss
     assert summary - headers == {0x243}
-    assert len(headers) == 89
+    assert len(headers - RACK_RESERVED) == 94
 
 
 def test_exact_lengths_in_the_prose_are_the_lengths_of_the_specification(spec, sibling):
@@ -347,7 +355,7 @@ def test_exact_lengths_in_the_prose_are_the_lengths_of_the_specification(spec, s
     checked = 0
     for block in re.split(r"(?m)^(?=ID: 0x)", prose):
         header = re.match(r"ID: (0x[0-9A-Fa-f]+)", block)
-        if not header:
+        if not header or int(header.group(1), 16) in RACK_RESERVED:
             continue
         length = re.search(r"(?m)^DLC: (\d+) bytes?\b", block)
         if not length:

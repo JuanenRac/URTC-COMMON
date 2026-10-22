@@ -1,0 +1,910 @@
+{
+  "format": 1,
+  "about": "The tool profiles as data: the tables of the programs, the web studio and the documents are generated from this file (tools/generate_tools.py).",
+  "tools": [
+    {
+      "id": 0,
+      "name": "SOLDERING_IRON",
+      "title": "Soldering Iron",
+      "display_name": "T12 Soldering Station",
+      "short_name": "Soldering Iron",
+      "kind": "motion",
+      "category": "Shipped (v0.0)",
+      "description": "PID temperature control with direct ADC feedback for standard T12 soldering tips. Safety timeout watchdog protects tip from oxidation.",
+      "hero_metric": {
+        "label": "TIP TEMP",
+        "unit": "°C"
+      },
+      "limits": {
+        "default": 320,
+        "min": 150,
+        "max": 445
+      },
+      "watchdog_ms": 250,
+      "pins_used": [
+        "PA0 (ADC1_IN1)",
+        "PB0 (TIM3_CH3 MOSFET)",
+        "PA4 (EXTI Limit/Endstop)"
+      ],
+      "features": [
+        "PID Auto-Tune",
+        "ADC Thermocouple Reader",
+        "Sleep Mode Detection",
+        "Watchdog Safety Cutoff"
+      ],
+      "icon_frames": [
+        "IRON_1",
+        "IRON_2",
+        "IRON_3",
+        "IRON_4"
+      ],
+      "expansion_board": "none"
+    },
+    {
+      "id": 1,
+      "name": "PASTE_DISPENSER",
+      "title": "Paste Dispenser",
+      "display_name": "SMT Solder Paste Dispenser",
+      "short_name": "Paste Dispenser",
+      "kind": "motion",
+      "category": "Shipped (v0.0)",
+      "description": "Millimetric syringe feed control powered by TMC2209 stepper driver for high-precision SMT solder paste deposition on PCBs.",
+      "hero_metric": {
+        "label": "DISPENSE RATE",
+        "unit": "mm/s"
+      },
+      "limits": {
+        "default": 1.5,
+        "min": 0.1,
+        "max": 10
+      },
+      "pins_used": [
+        "STEP/DIR/EN (TMC2209)",
+        "PB1 (Pressure Sense)",
+        "PA4 (Endstop)"
+      ],
+      "features": [
+        "Micro-step Feed Control",
+        "Retract Pulse",
+        "Volumetric Calibration",
+        "Solder Syringe Pressure Shield"
+      ],
+      "icon_frames": [
+        "PASTE_1",
+        "PASTE_2",
+        "PASTE_3",
+        "PASTE_4"
+      ],
+      "expansion_board": "none"
+    },
+    {
+      "id": 2,
+      "name": "LIQUID_DISPENSER",
+      "title": "Liquid Dispenser",
+      "display_name": "Thermal Paste / Liquid Dispenser",
+      "short_name": "Liquid Dispenser",
+      "kind": "motion",
+      "category": "Shipped (v0.0)",
+      "description": "Viscosity-adapted liquid dispenser for high-viscosity thermal pastes, conformal gels, and UV adhesives.",
+      "hero_metric": {
+        "label": "FLOW RATE",
+        "unit": "µL/s"
+      },
+      "limits": {
+        "default": 5,
+        "min": 0.5,
+        "max": 50
+      },
+      "pins_used": [
+        "STEP/DIR/EN (TMC2209)",
+        "PA1 (Fluid Temp NTC)",
+        "PB5 (Valve Solenoid)"
+      ],
+      "features": [
+        "Anti-Drip Retraction",
+        "Fluid Viscosity Profile",
+        "Pneumatic Assist"
+      ],
+      "icon_frames": [
+        "LIQUID_1",
+        "LIQUID_2",
+        "LIQUID_3",
+        "LIQUID_4"
+      ],
+      "expansion_board": "none"
+    },
+    {
+      "id": 3,
+      "name": "SCREWDRIVER",
+      "title": "Screwdriver",
+      "display_name": "Smart Electric Screwdriver",
+      "short_name": "Screwdriver",
+      "kind": "motion",
+      "category": "Shipped (v0.0)",
+      "description": "Precision rotation and torque-limiting screwdriver for automatic M2-M4 electronics assembly.",
+      "hero_metric": {
+        "label": "TORQUE LIMIT",
+        "unit": "N·cm"
+      },
+      "limits": {
+        "default": 12,
+        "min": 1,
+        "max": 35
+      },
+      "pins_used": [
+        "PB8/PB9 (I2C1 Current Sense)",
+        "PB0 (PWM Motor)",
+        "PA4 (Bit Limit Switch)"
+      ],
+      "features": [
+        "Dynamic Stall Detection",
+        "Screw Depth Sensing",
+        "Reversible Drive",
+        "Torque Ramp Control"
+      ],
+      "icon_frames": [
+        "SCREW_1",
+        "SCREW_2",
+        "SCREW_3",
+        "SCREW_4"
+      ],
+      "expansion_board": "none"
+    },
+    {
+      "id": 4,
+      "name": "VACUUM_PICKUP",
+      "title": "Vacuum Pickup",
+      "display_name": "Vacuum / Pneumatic Gripper",
+      "short_name": "Vacuum Pickup",
+      "kind": "telemetry",
+      "category": "Shipped (v0.0)",
+      "description": "High-speed vacuum pick-and-place head with real-time pressure feedback for IC and passive component handling.",
+      "hero_metric": {
+        "label": "VACUUM LEVEL",
+        "unit": "kPa"
+      },
+      "limits": {
+        "default": -65,
+        "min": -90,
+        "max": 0
+      },
+      "pins_used": [
+        "PB4 (Pump PWM)",
+        "PA1 (Pressure Sensor ADC)",
+        "PB5 (Blow-off Solenoid)"
+      ],
+      "features": [
+        "Part Detect Feedback",
+        "Quick Blow-Off Release",
+        "Vacuum Pump PWM Control"
+      ],
+      "icon_frames": [
+        "VACUUM_1",
+        "VACUUM_2",
+        "VACUUM_3",
+        "VACUUM_4"
+      ],
+      "expansion_board": "none"
+    },
+    {
+      "id": 5,
+      "name": "DRILL",
+      "title": "Drill",
+      "display_name": "Drill / PCB Spindle (BL4260)",
+      "short_name": "Drill",
+      "kind": "actuator",
+      "category": "Shipped (v0.0)",
+      "description": "High-RPM BLDC spindle with closed-loop tachometer feedback, dynamic electric braking, and direction control.",
+      "hero_metric": {
+        "label": "SPINDLE SPEED",
+        "unit": "RPM"
+      },
+      "limits": {
+        "default": 12000,
+        "min": 1000,
+        "max": 24000
+      },
+      "watchdog_ms": 250,
+      "pins_used": [
+        "PA8 (PWM Speed)",
+        "PA3 (FGIN Tachometer Input)",
+        "PA4 (FRIN Direction)",
+        "PB9 (DRILL_BRAKE)"
+      ],
+      "features": [
+        "Dynamic Braking",
+        "Optical Tachometer Reading",
+        "Direction Switch",
+        "Dedicated Enable Line"
+      ],
+      "icon_frames": [
+        "DRILL_1",
+        "DRILL_2",
+        "DRILL_3",
+        "DRILL_4"
+      ],
+      "expansion_board": "none"
+    },
+    {
+      "id": 6,
+      "name": "GRIPPER_GIMBAL",
+      "title": "Gripper (Gimbal)",
+      "display_name": "Gimbal Gripper",
+      "short_name": "Gripper (Gimbal)",
+      "kind": "motion",
+      "category": "Shipped (v0.0)",
+      "description": "High-sensitivity 3-phase BLDC gimbal motor gripper for delicate object compliance and soft-touch gripping.",
+      "hero_metric": {
+        "label": "GRIP FORCE",
+        "unit": "N"
+      },
+      "limits": {
+        "default": 3.5,
+        "min": 0.2,
+        "max": 15
+      },
+      "pins_used": [
+        "PA8/PA9/PA10 (TIM1 3-Phase)",
+        "PA0 (Angle Sensor Encoder)"
+      ],
+      "features": [
+        "FOC Compliance Control",
+        "Soft Touch Detection",
+        "Position/Torque Dual Mode"
+      ],
+      "icon_frames": [
+        "GIMBAL_1",
+        "GIMBAL_2",
+        "GIMBAL_3",
+        "GIMBAL_4"
+      ],
+      "expansion_board": "none"
+    },
+    {
+      "id": 7,
+      "name": "GRIPPER_NEMA",
+      "title": "Gripper (NEMA)",
+      "display_name": "NEMA Heavy-Duty Gripper",
+      "short_name": "Gripper (NEMA)",
+      "kind": "motion",
+      "category": "Shipped (v0.0)",
+      "description": "High-force mechanical jaw driven by TMC2209 stepper for heavy payload handling and rigid mechanical clamping.",
+      "hero_metric": {
+        "label": "CLAMP POSITION",
+        "unit": "%"
+      },
+      "limits": {
+        "default": 80,
+        "min": 0,
+        "max": 100
+      },
+      "pins_used": [
+        "STEP/DIR/EN (TMC2209)",
+        "PA4 (Homing Switch)",
+        "PA1 (Current Sense)"
+      ],
+      "features": [
+        "StallGuard Load Detection",
+        "Variable Current Hold",
+        "Auto-Homing Sequence"
+      ],
+      "icon_frames": [
+        "NEMA_1",
+        "NEMA_2",
+        "NEMA_3",
+        "NEMA_4"
+      ],
+      "expansion_board": "none"
+    },
+    {
+      "id": 8,
+      "name": "AOI_INSPECTION",
+      "title": "AOI Inspection",
+      "display_name": "AOI Camera Inspection Ring",
+      "short_name": "AOI Inspection",
+      "kind": "telemetry",
+      "category": "Shipped (v0.0)",
+      "description": "Automated Optical Inspection lighting controller with stroboscopic ring LED flash and camera shutter synchronization.",
+      "hero_metric": {
+        "label": "FLASH POWER",
+        "unit": "%"
+      },
+      "limits": {
+        "default": 100,
+        "min": 0,
+        "max": 100
+      },
+      "pins_used": [
+        "PB6 (WS2812B Ring Data)",
+        "PA4 (Cam Shutter Sync In)",
+        "PB7 (Strobe Trigger)"
+      ],
+      "features": [
+        "Stroboscopic Pulse (10µs)",
+        "RGB Color Matrix",
+        "Camera Trigger Out"
+      ],
+      "icon_frames": [
+        "AOI_1",
+        "AOI_2",
+        "AOI_3",
+        "AOI_4"
+      ],
+      "expansion_board": "none"
+    },
+    {
+      "id": 9,
+      "name": "LASER_ENGRAVER",
+      "title": "Laser Engraver",
+      "display_name": "Engraving Laser Diode (10W)",
+      "short_name": "Laser Engraver",
+      "kind": "actuator",
+      "category": "Shipped (v0.0)",
+      "description": "High-power 10W optical laser engraver/cutter with hardware interlock loop and 250ms CAN heartbeat watchdog shutdown.",
+      "hero_metric": {
+        "label": "LASER POWER",
+        "unit": "%"
+      },
+      "limits": {
+        "default": 0,
+        "min": 0,
+        "max": 100
+      },
+      "watchdog_ms": 250,
+      "pins_used": [
+        "PA8 (PWM Laser Modulation)",
+        "PA4 (Safety Interlock Door)",
+        "PA1 (Diode Temp)"
+      ],
+      "features": [
+        "Hardware Watchdog Lockdown",
+        "PWM Power Scale",
+        "Safety Interlock Loop",
+        "Air Assist Solenoid"
+      ],
+      "icon_frames": [
+        "LASER_1",
+        "LASER_2",
+        "LASER_3",
+        "LASER_4"
+      ],
+      "expansion_board": "none"
+    },
+    {
+      "id": 10,
+      "name": "PRINTER_3D",
+      "title": "3D Printer",
+      "display_name": "3D Printing Hotend",
+      "short_name": "3D Printer",
+      "kind": "actuator",
+      "category": "Shipped (v0.0)",
+      "description": "Full FDM hotend controller with PID heater, thermistor reader, extruder motor, and 25kHz tachometer-feedback cooling fan.",
+      "hero_metric": {
+        "label": "NOZZLE TEMP",
+        "unit": "°C"
+      },
+      "limits": {
+        "default": 215,
+        "min": 20,
+        "max": 300
+      },
+      "watchdog_ms": 250,
+      "pins_used": [
+        "PA0 (NTC Thermistor)",
+        "PB0 (Heater MOSFET)",
+        "PA8 (25kHz Fan PWM)",
+        "PA11 (Fan Tach Input)"
+      ],
+      "features": [
+        "PID Nozzle Control",
+        "25kHz 4-Wire Fan Control",
+        "Extruder Stepper Integration",
+        "Thermal Runaway Protection"
+      ],
+      "icon_frames": [
+        "PRINT_1",
+        "PRINT_2",
+        "PRINT_3",
+        "PRINT_4"
+      ],
+      "expansion_board": "none"
+    },
+    {
+      "id": 11,
+      "name": "SCAN_PROBE",
+      "title": "Scan Probe",
+      "display_name": "3D Scanner Contact Probe",
+      "short_name": "Scan Probe",
+      "kind": "telemetry",
+      "category": "Shipped (v0.0)",
+      "description": "Ultra-fast hardware interrupt digitizing probe (EXTI) for surface height mapping and point cloud generation.",
+      "hero_metric": {
+        "label": "TRIGGER COUNT",
+        "unit": "pts"
+      },
+      "limits": {
+        "default": 0,
+        "min": 0,
+        "max": 99999
+      },
+      "pins_used": [
+        "PA4 (EXTI High Priority Probe)",
+        "PB6 (Ring LED Status)"
+      ],
+      "features": [
+        "Sub-microsecond Trigger Latency",
+        "Hardware Debounce Filter",
+        "Surface Point Digitizer"
+      ],
+      "icon_frames": [
+        "PROBE_1",
+        "PROBE_2",
+        "PROBE_3",
+        "PROBE_4"
+      ],
+      "expansion_board": "none"
+    },
+    {
+      "id": 12,
+      "name": "SMT_PICKPLACE",
+      "title": "SMT Pick & Place",
+      "display_name": "SMT Pick & Place Head",
+      "short_name": "SMT Pick & Place",
+      "kind": "motion",
+      "category": "Expansion (v0.1)",
+      "description": "Rotary A-axis alignment motor for rotating SMT components precisely before placement onto PCB pads.",
+      "hero_metric": {
+        "label": "A-AXIS ANGLE",
+        "unit": "°"
+      },
+      "limits": {
+        "default": 0,
+        "min": -180,
+        "max": 180
+      },
+      "pins_used": [
+        "STEP/DIR/EN (TMC2209)",
+        "PA4 (Homing Switch)",
+        "Expansion I2C (Vacuum)"
+      ],
+      "features": [
+        "360° Continuous Rotation",
+        "Micro-degree Accuracy",
+        "Vacuum Link Integration"
+      ],
+      "icon_frames": [
+        "PNP_1",
+        "PNP_2",
+        "PNP_3",
+        "PNP_4"
+      ],
+      "expansion_board": "none"
+    },
+    {
+      "id": 13,
+      "name": "ELECTROMAGNET",
+      "title": "Electromagnet",
+      "display_name": "Heavy-Duty Electromagnet",
+      "short_name": "Electromagnet",
+      "kind": "actuator",
+      "category": "Expansion (v0.1)",
+      "description": "PWM-driven electromagnetic pickup for ferromagnetic component handling and fast magnetic release.",
+      "hero_metric": {
+        "label": "COIL CURRENT",
+        "unit": "%"
+      },
+      "limits": {
+        "default": 50,
+        "min": 0,
+        "max": 100
+      },
+      "pins_used": [
+        "PB0 (High-Current MOSFET)",
+        "PA1 (Coil Temp Sense)"
+      ],
+      "features": [
+        "Reverse Demagnetization Pulse",
+        "Duty Cycle Power Saver",
+        "Thermal Protection"
+      ],
+      "icon_frames": [
+        "MAG_1",
+        "MAG_2",
+        "MAG_3",
+        "MAG_4"
+      ],
+      "expansion_board": "none"
+    },
+    {
+      "id": 14,
+      "name": "SPOT_WELDER",
+      "title": "Spot Welder",
+      "display_name": "Spot Welder Head",
+      "short_name": "Spot Welder",
+      "kind": "actuator",
+      "category": "Expansion (v0.1)",
+      "description": "Millisecond-precise dual pulse spot welder controller for battery pack nickel tab fabrication with contact sensing.",
+      "hero_metric": {
+        "label": "PULSE TIME",
+        "unit": "ms"
+      },
+      "limits": {
+        "default": 15,
+        "min": 1,
+        "max": 100
+      },
+      "pins_used": [
+        "PB0 (Gate Driver Trigger)",
+        "PA4 (Contact Pressure Switch)"
+      ],
+      "features": [
+        "Pre-weld Cleanup Pulse",
+        "Contact Safety Gating",
+        "Energy Monitor"
+      ],
+      "icon_frames": [
+        "WELD_1",
+        "WELD_2",
+        "WELD_3",
+        "WELD_4"
+      ],
+      "expansion_board": "recommended"
+    },
+    {
+      "id": 15,
+      "name": "CONFORMAL_COATING",
+      "title": "Conformal Coating",
+      "display_name": "Conformal Coating Airbrush",
+      "short_name": "Conformal Coating",
+      "kind": "external",
+      "category": "Expansion (v0.1)",
+      "description": "Automated airbrush and spray valve for applying protective conformal acrylic/silicone coating to finished PCBs.",
+      "hero_metric": {
+        "label": "ATOMIZER AIR",
+        "unit": "PSI"
+      },
+      "limits": {
+        "default": 25,
+        "min": 5,
+        "max": 60
+      },
+      "pins_used": [
+        "PB4 (Air Pressure Valve)",
+        "PB5 (Fluid Needle Stepper)"
+      ],
+      "features": [
+        "Fan Pattern Adjustment",
+        "Solvent Purge Cycle",
+        "Anti-Clog Pulsing"
+      ],
+      "icon_frames": [
+        "AIR_1",
+        "AIR_2",
+        "AIR_3",
+        "AIR_4"
+      ],
+      "expansion_board": "none"
+    },
+    {
+      "id": 16,
+      "name": "VACUUM_GRIPPER_LG",
+      "title": "Vacuum Gripper (LG)",
+      "display_name": "Large Vacuum Suction Array",
+      "short_name": "Vacuum Gripper (LG)",
+      "kind": "motion",
+      "category": "Expansion (v0.1)",
+      "description": "Multi-cup suction array controller for unpopulated FR4 panel loader and large metal sheet handling.",
+      "hero_metric": {
+        "label": "PANEL VACUUM",
+        "unit": "kPa"
+      },
+      "limits": {
+        "default": -80,
+        "min": -95,
+        "max": 0
+      },
+      "pins_used": [
+        "PB4 (Master Vacuum Valve)",
+        "PA1 (Array Pressure sensor)",
+        "Expansion GPIO"
+      ],
+      "features": [
+        "4-Zone Selective Vacuum",
+        "Panel Seating Sensor",
+        "Emergency Blow-Off"
+      ],
+      "icon_frames": [
+        "VACARRAY_1",
+        "VACARRAY_2",
+        "VACARRAY_3",
+        "VACARRAY_4"
+      ],
+      "expansion_board": "none"
+    },
+    {
+      "id": 17,
+      "name": "FLYING_PROBE",
+      "title": "Flying Probe",
+      "display_name": "Functional Flying-Probe Tester",
+      "short_name": "Flying Probe",
+      "kind": "telemetry",
+      "category": "Expansion (v0.1)",
+      "description": "High-precision electrical probe testing with 16-bit ADS1115 ADC reading on Advanced Expansion Board for board testing.",
+      "hero_metric": {
+        "label": "MEASURED VOLT",
+        "unit": "V"
+      },
+      "limits": {
+        "default": 3.3,
+        "min": 0,
+        "max": 36
+      },
+      "pins_used": [
+        "Advanced Expansion I2C (ADS1115 16-bit ADC)",
+        "PA4 (Probe Contact)"
+      ],
+      "features": [
+        "16-bit ADC Resolution",
+        "Resistance / Voltage Mode",
+        "Kelvin 4-Wire Measurement"
+      ],
+      "icon_frames": [
+        "TESTER_1",
+        "TESTER_2",
+        "TESTER_3",
+        "TESTER_4"
+      ],
+      "expansion_board": "none"
+    },
+    {
+      "id": 18,
+      "name": "UV_CURING",
+      "title": "UV Curing",
+      "display_name": "UV Curing Lamp Head",
+      "short_name": "UV Curing",
+      "kind": "actuator",
+      "category": "Expansion (v0.1)",
+      "description": "High-power 365nm/395nm UV LED arrays for rapid 2-second curing of optical adhesives and solder mask touchups.",
+      "hero_metric": {
+        "label": "UV INTENSITY",
+        "unit": "%"
+      },
+      "limits": {
+        "default": 80,
+        "min": 0,
+        "max": 100
+      },
+      "watchdog_ms": 250,
+      "pins_used": [
+        "PB0 (UV Driver MOSFET)",
+        "PA1 (Heatsink NTC)",
+        "PA4 (Safety Shield Switch)"
+      ],
+      "features": [
+        "Dual Wavelength Control",
+        "Exposure Timer",
+        "Over-Temp Thermal Throttle"
+      ],
+      "icon_frames": [
+        "UV_1",
+        "UV_2",
+        "UV_3",
+        "UV_4"
+      ],
+      "expansion_board": "none"
+    },
+    {
+      "id": 19,
+      "name": "HOTAIR_REWORK",
+      "title": "Hot Air Rework",
+      "display_name": "Hot Air Rework Nozzle",
+      "short_name": "Hot Air Rework",
+      "kind": "actuator",
+      "category": "Expansion (v0.1)",
+      "description": "Full hot-air SMD reflow nozzle with high-temperature ceramic heater PID and turbine blower control.",
+      "hero_metric": {
+        "label": "AIR TEMP",
+        "unit": "°C"
+      },
+      "limits": {
+        "default": 350,
+        "min": 100,
+        "max": 445
+      },
+      "watchdog_ms": 250,
+      "pins_used": [
+        "PA0 (K-Type Thermocouple Amplifier)",
+        "PB0 (Heater PWM)",
+        "PA8 (Blower Fan PWM)"
+      ],
+      "features": [
+        "Auto Cool-Down Standby",
+        "Airflow Rate Regulation",
+        "PID Temperature Hold"
+      ],
+      "icon_frames": [
+        "HOTAIR_1",
+        "HOTAIR_2",
+        "HOTAIR_3",
+        "HOTAIR_4"
+      ],
+      "expansion_board": "none"
+    },
+    {
+      "id": 20,
+      "name": "PRESSFIT_INSERTER",
+      "title": "Press-Fit Inserter",
+      "display_name": "Pneumatic Press-Fit Inserter",
+      "short_name": "Press-Fit Inserter",
+      "kind": "external",
+      "category": "Expansion (v0.1)",
+      "description": "Linear press cylinder for seating heavy press-fit connectors, headers, and mechanical standoffs onto PCBs.",
+      "hero_metric": {
+        "label": "PRESS FORCE",
+        "unit": "N"
+      },
+      "limits": {
+        "default": 250,
+        "min": 10,
+        "max": 1000
+      },
+      "pins_used": [
+        "PB4 (Press Solenoid)",
+        "PA1 (Load Cell Strain Gauge)",
+        "PA4 (Bottom Limit)"
+      ],
+      "features": [
+        "Load Cell Force Profile",
+        "Depth Limit Stop",
+        "Double-Tap Seating"
+      ],
+      "icon_frames": [
+        "PRESS_1",
+        "PRESS_2",
+        "PRESS_3",
+        "PRESS_4"
+      ],
+      "expansion_board": "none"
+    },
+    {
+      "id": 21,
+      "name": "CRIMPING_ACTUATOR",
+      "title": "Crimping Actuator",
+      "display_name": "Wire Stripper & Crimper",
+      "short_name": "Crimping Actuator",
+      "kind": "motion",
+      "category": "Expansion (v0.1)",
+      "description": "High-torque crimping actuator driven via expansion TMC5160A 10A stepper driver for automated wiring harness assembly.",
+      "hero_metric": {
+        "label": "CRIMP CYCLE",
+        "unit": "mm"
+      },
+      "limits": {
+        "default": 4.2,
+        "min": 0.5,
+        "max": 8
+      },
+      "pins_used": [
+        "Expansion SPI (TMC5160A 10A Driver)",
+        "Expansion DIAG0 (StallGuard)"
+      ],
+      "features": [
+        "TMC5160 10A High Current Mode",
+        "StallGuard Force Peak",
+        "Strip Length Control"
+      ],
+      "icon_frames": [
+        "CRIMP_1",
+        "CRIMP_2",
+        "CRIMP_3",
+        "CRIMP_4"
+      ],
+      "expansion_board": "required"
+    },
+    {
+      "id": 22,
+      "name": "THERMAL_INSPECTION",
+      "title": "Thermal Inspection",
+      "display_name": "PCB Thermal Inspection (MLX90640)",
+      "short_name": "Thermal Inspection",
+      "kind": "telemetry",
+      "category": "Expansion (v0.1)",
+      "description": "32x24 pixel IR thermal imaging camera (MLX90640) on Advanced Expansion Board for identifying shorted PCB components.",
+      "hero_metric": {
+        "label": "MAX BOARD TEMP",
+        "unit": "°C"
+      },
+      "limits": {
+        "default": 45,
+        "min": 15,
+        "max": 150
+      },
+      "pins_used": [
+        "Advanced Expansion Slave (STM32F303CB)",
+        "I2C2 MLX90640 Thermal Sensor"
+      ],
+      "features": [
+        "32x24 IR Matrix Heatmap",
+        "Short Circuit Auto-Detect",
+        "Over-temperature Alarm"
+      ],
+      "icon_frames": [
+        "THERM_1",
+        "THERM_2",
+        "THERM_3",
+        "THERM_4"
+      ],
+      "expansion_board": "required"
+    },
+    {
+      "id": 23,
+      "name": "PASTE_JETTING",
+      "title": "Paste Jetting",
+      "display_name": "Solder Paste Jetting Valve",
+      "short_name": "Paste Jetting",
+      "kind": "actuator",
+      "category": "Expansion (v0.1)",
+      "description": "Piezoelectric droplet dispenser for jetting sub-milligram solder paste droplets onto 0201 passives and fine-pitch QFN pads.",
+      "hero_metric": {
+        "label": "JET FREQ",
+        "unit": "Hz"
+      },
+      "limits": {
+        "default": 150,
+        "min": 10,
+        "max": 500
+      },
+      "pins_used": [
+        "Advanced Expansion Slave TIM1 PWM (Sub-ms precision)",
+        "PB1 (Heated Nozzle)"
+      ],
+      "features": [
+        "Sub-millisecond Local PWM",
+        "Viscosity Thermal Control",
+        "Droplet Count Profiler"
+      ],
+      "icon_frames": [
+        "JET_1",
+        "JET_2",
+        "JET_3",
+        "JET_4"
+      ],
+      "expansion_board": "required"
+    },
+    {
+      "id": 24,
+      "name": "ULTRASONIC_WELDER",
+      "title": "Ultrasonic Welder",
+      "display_name": "Ultrasonic Plastic Welder",
+      "short_name": "Ultrasonic Welder",
+      "kind": "actuator",
+      "category": "Expansion (v0.1)",
+      "description": "28kHz high-frequency ultrasonic transducer driver for sealing plastic enclosures and staking mechanical pins.",
+      "hero_metric": {
+        "label": "WELD TIME",
+        "unit": "ms"
+      },
+      "limits": {
+        "default": 400,
+        "min": 50,
+        "max": 2000
+      },
+      "pins_used": [
+        "PB0 (Ultrasonic Generator Enable)",
+        "PA1 (Acoustic Amplitude ADC)"
+      ],
+      "features": [
+        "Resonance Frequency Lock",
+        "Weld Energy Integration",
+        "Solidification Hold Time"
+      ],
+      "icon_frames": [
+        "SONIC_1",
+        "SONIC_2",
+        "SONIC_3",
+        "SONIC_4"
+      ],
+      "expansion_board": "recommended"
+    }
+  ]
+}

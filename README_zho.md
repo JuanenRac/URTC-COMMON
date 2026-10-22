@@ -46,6 +46,7 @@
 * [一条总线上的多个工具头](docs/MULTINODE.md): 寻址、发现和安全规则；已在 URTC 固件中实现，位于默认关闭的开关之后，仅在计算机上测试，尚未在硬件上试过。
 * 界面辅助模块: `src/urtc_ui`：桌面程序可以共用的语言列表、状态徽章以及标识符、比特率和帧的格式化（不需要 Qt；URTC-FLASHER 和 URTC-TESTER 携带用 `vendor_copy.py --set ui` 生成的副本）。
 * [一致性向量](conformance/can_vectors.json): 每个实现都必须重现的字节：每种布局、被拒绝的输入和 SLCAN 数据流。
+* [工具配置](spec/tools.json)：25 个工具配置（限值、看门狗、引脚、扩展板）以数据形式保存；`generate_tools.py` 生成 TypeScript 和 Python 表格以及[工具表](docs/TOOLS_TABLE.md)。此外还有：支持导出 CSV 和 JSON 的黑匣子读取器（`blackbox.py`）、机架模拟器（`rack_sim.py`）、根据规范生成的用于板卡模糊测试的帧（`fuzz.py`），以及由 `spec/versions.json` 生成的发布[兼容性表](docs/COMPATIBILITY.md)。
 * **工具：** `generate_constants.py` 写出 C 头文件、TypeScript 模块、Python 模块和协议表（`--check` 用于比对），`make_conformance.py` 写出向量（`--check`），`vendor_copy.py` 带锁文件把部分内容复制到其他仓库并检查副本，`ci_validate.py` 是通用的仓库检查。URTC-DOCS 的 `make_glance.py` 负责写出“速览”表。
 
 ## 🧩 在 URTC 中的角色
@@ -86,7 +87,7 @@ python -m pytest tests -q                            # 单元测试以及与相�
 
 URTC 由相互独立的仓库组成，每个仓库都有自己的版本、测试和 README。以下是按组划分的家族：
 
-* **URTC Tool Platform:** [URTC](https://github.com/JuanenRac/URTC), **URTC-COMMON** (本仓库), [URTC-FLASHER](https://github.com/JuanenRac/URTC-FLASHER), [URTC-SMART-RACK](https://github.com/JuanenRac/URTC-SMART-RACK), [URTC-TESTER](https://github.com/JuanenRac/URTC-TESTER), [URTC-VISION-TOOL](https://github.com/JuanenRac/URTC-VISION-TOOL), [URTC-WEB-STUDIO](https://github.com/JuanenRac/URTC-WEB-STUDIO)
+* **URTC Tool Platform:** [URTC](https://github.com/JuanenRac/URTC), **URTC-COMMON** (本仓库), [URTC-FLASHER](https://github.com/JuanenRac/URTC-FLASHER), [URTC-GATEWAY](https://github.com/JuanenRac/URTC-GATEWAY), [URTC-SMART-RACK](https://github.com/JuanenRac/URTC-SMART-RACK), [URTC-TESTER](https://github.com/JuanenRac/URTC-TESTER), [URTC-VISION-TOOL](https://github.com/JuanenRac/URTC-VISION-TOOL), [URTC-WEB-STUDIO](https://github.com/JuanenRac/URTC-WEB-STUDIO)
 * **Ecosystem Operations:** [URTC-DOCS](https://github.com/JuanenRac/URTC-DOCS), [URTC-UPDATER](https://github.com/JuanenRac/URTC-UPDATER)
 
 **URTC 之外：**

@@ -46,6 +46,7 @@ Il protocollo CAN della testa utensile, scritto una sola volta come dati, e tutt
 * [Più teste utensile su un bus](docs/MULTINODE.md): indirizzamento, scoperta e regole di sicurezza; implementati nel firmware URTC dietro un interruttore spento per impostazione predefinita, provati solo su computer e non provati su hardware.
 * Aiuti per l'interfaccia: `src/urtc_ui`: l'elenco delle lingue, i badge di stato e la formattazione di identificatori, velocità e frame che i programmi desktop possono condividere (senza Qt; URTC-FLASHER e URTC-TESTER ne portano una copia fatta con `vendor_copy.py --set ui`).
 * [Vettori di conformità](conformance/can_vectors.json): i byte che ogni implementazione deve riprodurre: ogni struttura, i rifiuti e i flussi SLCAN.
+* [Profili degli utensili](spec/tools.json): i 25 profili degli utensili (limiti, watchdog, pin, scheda di espansione) come dati; `generate_tools.py` scrive le tabelle TypeScript e Python e [la tabella degli utensili](docs/TOOLS_TABLE.md). Inoltre: il lettore della scatola nera con esportazione in CSV e JSON (`blackbox.py`), il simulatore del rack (`rack_sim.py`), frame per il fuzzing di una scheda creati dalla specifica (`fuzz.py`) e la [tabella di compatibilità](docs/COMPATIBILITY.md) di una release, creata da `spec/versions.json`.
 * **Strumenti:** `generate_constants.py` scrive l'header C, il modulo TypeScript, il modulo Python e la tabella (`--check` confronta), `make_conformance.py` scrive i vettori (`--check`), `vendor_copy.py` copia parti in un altro repository con un file di blocco e verifica la copia, e `ci_validate.py` è il controllo condiviso dei repository. `make_glance.py` di URTC-DOCS scrive la tabella In breve.
 
 ## 🧩 Ruolo in URTC
@@ -86,7 +87,7 @@ python -m pytest tests -q                            # i test unitari e il confr
 
 URTC è fatto di repository indipendenti, ciascuno con la propria versione, i propri test e il proprio README. Ecco la famiglia, per gruppi:
 
-* **URTC Tool Platform:** [URTC](https://github.com/JuanenRac/URTC), **URTC-COMMON** (questo repository), [URTC-FLASHER](https://github.com/JuanenRac/URTC-FLASHER), [URTC-SMART-RACK](https://github.com/JuanenRac/URTC-SMART-RACK), [URTC-TESTER](https://github.com/JuanenRac/URTC-TESTER), [URTC-VISION-TOOL](https://github.com/JuanenRac/URTC-VISION-TOOL), [URTC-WEB-STUDIO](https://github.com/JuanenRac/URTC-WEB-STUDIO)
+* **URTC Tool Platform:** [URTC](https://github.com/JuanenRac/URTC), **URTC-COMMON** (questo repository), [URTC-FLASHER](https://github.com/JuanenRac/URTC-FLASHER), [URTC-GATEWAY](https://github.com/JuanenRac/URTC-GATEWAY), [URTC-SMART-RACK](https://github.com/JuanenRac/URTC-SMART-RACK), [URTC-TESTER](https://github.com/JuanenRac/URTC-TESTER), [URTC-VISION-TOOL](https://github.com/JuanenRac/URTC-VISION-TOOL), [URTC-WEB-STUDIO](https://github.com/JuanenRac/URTC-WEB-STUDIO)
 * **Ecosystem Operations:** [URTC-DOCS](https://github.com/JuanenRac/URTC-DOCS), [URTC-UPDATER](https://github.com/JuanenRac/URTC-UPDATER)
 
 **Oltre URTC:**

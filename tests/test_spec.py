@@ -63,7 +63,7 @@ def test_names_are_unique(spec):
 
 
 def test_statistics_the_documents_quote(spec):
-    assert len(spec["messages"]) == 90
+    assert len(spec["messages"]) == 95
     assert len(spec["tools"]) == 26 and [t["id"] for t in spec["tools"]] == list(range(26))
     assert sum(len(b["entries"]) for b in spec["registers"].values()) == 23
     assert len(spec["magic_payloads"]) == 4
@@ -204,9 +204,11 @@ def test_every_layout_with_fields_has_an_example(spec):
 def test_known_gaps_are_recorded_not_papered_over(spec):
     by_id = {m["id"]: m for m in spec["messages"]}
     hosts = ("flasher", "tester", "web_studio")
-    for gap in ("0x220", "0x221", "0x1A8", "0x1A9"):
+    for gap in ("0x220", "0x221"):
         assert not any(by_id[gap]["implemented_by"][h] for h in hosts), gap
         assert by_id[gap]["implemented_by"]["firmware"]
+    for done in ("0x1A8", "0x1A9"):  # the tester and the web studio read the fault recorder now; the flasher does not
+        assert by_id[done]["implemented_by"]["tester"] and by_id[done]["implemented_by"]["web_studio"] and not by_id[done]["implemented_by"]["flasher"]
     assert "documented_in_prose" not in by_id["0x1A8"] and "documented_in_prose" not in by_id["0x1A9"], "the fault recorder frames are described in the prose of the firmware repository"
     assert any("security gap" in n for n in by_id["0x220"]["notes"])
     assert not by_id["0x1AA"]["implemented_by"]["web_studio"] and by_id["0x1AA"]["implemented_by"]["tester"]

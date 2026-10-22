@@ -46,6 +46,7 @@
 * [1本のバスに複数のツールヘッド](docs/MULTINODE.md): アドレス指定・検出・安全規則。URTC ファームウェアに、既定でオフのスイッチの背後で実装済みで、コンピュータ上でのみテストされ、ハードウェアでは試していません。
 * インターフェース用ヘルパー: `src/urtc_ui`: デスクトップ用プログラムが共有できる言語一覧、状態バッジ、識別子・ビットレート・フレームの書式整形（Qt不要。URTC-FLASHER と URTC-TESTER は `vendor_copy.py --set ui` で作ったコピーを持っています）。
 * [適合ベクトル](conformance/can_vectors.json): すべての実装が再現しなければならないバイト列：各レイアウト、拒否される入力、SLCAN ストリーム。
+* [ツールプロファイル](spec/tools.json)：25 種類のツールプロファイル（上限・下限、ウォッチドッグ、ピン、拡張ボード）をデータとして保持します。`generate_tools.py` が TypeScript と Python の表および[ツール一覧表](docs/TOOLS_TABLE.md)を生成します。ほかに、CSV と JSON に書き出せるブラックボックスの読み取り機能（`blackbox.py`）、ラックのシミュレーター（`rack_sim.py`）、仕様から作るボードのファジング用フレーム（`fuzz.py`）、`spec/versions.json` から作るリリースの[互換性表](docs/COMPATIBILITY.md)があります。
 * **ツール：** `generate_constants.py` は C ヘッダー、TypeScript モジュール、Python モジュール、表を書き出します（`--check` で比較）。`make_conformance.py` はベクトルを書き出します（`--check`）。`vendor_copy.py` はロックファイル付きで他のリポジトリに一部をコピーし、そのコピーを検査します。`ci_validate.py` は共通のリポジトリ検査です。URTC-DOCS の `make_glance.py` が「ひと目で」の表を書きます。
 
 ## 🧩 URTC での役割
@@ -86,7 +87,7 @@ python -m pytest tests -q                            # ユニットテストと�
 
 URTC は独立したリポジトリで構成され、それぞれに固有のバージョン、テスト、README があります。グループ別のファミリーは次のとおりです：
 
-* **URTC Tool Platform:** [URTC](https://github.com/JuanenRac/URTC), **URTC-COMMON** (このリポジトリ), [URTC-FLASHER](https://github.com/JuanenRac/URTC-FLASHER), [URTC-SMART-RACK](https://github.com/JuanenRac/URTC-SMART-RACK), [URTC-TESTER](https://github.com/JuanenRac/URTC-TESTER), [URTC-VISION-TOOL](https://github.com/JuanenRac/URTC-VISION-TOOL), [URTC-WEB-STUDIO](https://github.com/JuanenRac/URTC-WEB-STUDIO)
+* **URTC Tool Platform:** [URTC](https://github.com/JuanenRac/URTC), **URTC-COMMON** (このリポジトリ), [URTC-FLASHER](https://github.com/JuanenRac/URTC-FLASHER), [URTC-GATEWAY](https://github.com/JuanenRac/URTC-GATEWAY), [URTC-SMART-RACK](https://github.com/JuanenRac/URTC-SMART-RACK), [URTC-TESTER](https://github.com/JuanenRac/URTC-TESTER), [URTC-VISION-TOOL](https://github.com/JuanenRac/URTC-VISION-TOOL), [URTC-WEB-STUDIO](https://github.com/JuanenRac/URTC-WEB-STUDIO)
 * **Ecosystem Operations:** [URTC-DOCS](https://github.com/JuanenRac/URTC-DOCS), [URTC-UPDATER](https://github.com/JuanenRac/URTC-UPDATER)
 
 **URTC の外：**

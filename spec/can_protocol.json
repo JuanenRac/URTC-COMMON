@@ -777,6 +777,118 @@
           "title": "Impact detected"
         }
       ]
+    },
+    {
+      "name": "firmware_feature",
+      "title": "Optional firmware features (each one is off until switched on)",
+      "prefix": "FEATURE_",
+      "kind": "flags",
+      "values": [
+        {
+          "value": 1,
+          "name": "MOTION_RAMPS",
+          "title": "Trapezoidal and S-curve ramps for the stepper"
+        },
+        {
+          "value": 2,
+          "name": "HEALTH_PROFILE",
+          "title": "Periodic health frame of the board"
+        },
+        {
+          "value": 4,
+          "name": "HSI_AUTOTRIM",
+          "title": "Trim of the internal oscillator against the CAN bit time"
+        },
+        {
+          "value": 8,
+          "name": "THERMAL_PID",
+          "title": "PID with anti-windup and relay autotune for the heaters"
+        }
+      ]
+    },
+    {
+      "name": "motion_profile",
+      "title": "Speed profile of a stepper move",
+      "prefix": "MOTION_PROFILE_",
+      "kind": "value",
+      "values": [
+        {
+          "value": 0,
+          "name": "CONSTANT",
+          "title": "Constant speed (the behaviour without the ramps feature)"
+        },
+        {
+          "value": 1,
+          "name": "TRAPEZOID",
+          "title": "Trapezoidal: constant acceleration, cruise, constant deceleration"
+        },
+        {
+          "value": 2,
+          "name": "S_CURVE",
+          "title": "S-curve: the acceleration itself ramps up and down"
+        }
+      ]
+    },
+    {
+      "name": "pid_action",
+      "title": "What a PID configuration frame asks",
+      "prefix": "PID_ACTION_",
+      "kind": "value",
+      "values": [
+        {
+          "value": 0,
+          "name": "SET_GAINS",
+          "title": "Store the gains in the frame"
+        },
+        {
+          "value": 1,
+          "name": "AUTOTUNE_START",
+          "title": "Start the relay autotune around the current setpoint"
+        },
+        {
+          "value": 2,
+          "name": "AUTOTUNE_ABORT",
+          "title": "Abort a running autotune"
+        },
+        {
+          "value": 3,
+          "name": "QUERY",
+          "title": "Change nothing, answer with the state"
+        }
+      ]
+    },
+    {
+      "name": "pid_state",
+      "title": "State of the heater PID",
+      "prefix": "PID_STATE_",
+      "kind": "value",
+      "values": [
+        {
+          "value": 0,
+          "name": "OFF",
+          "title": "The feature is not running (bang-bang control)"
+        },
+        {
+          "value": 1,
+          "name": "RUNNING",
+          "title": "PID control"
+        },
+        {
+          "value": 2,
+          "name": "AUTOTUNING",
+          "title": "Relay autotune in progress"
+        },
+        {
+          "value": 3,
+          "name": "AUTOTUNE_DONE",
+          "title": "Autotune finished and the gains were stored"
+        },
+        {
+          "value": 4,
+          "name": "AUTOTUNE_FAILED",
+          "title": "Autotune gave up; the previous gains are kept"
+        }
+      ]
     }
   ],
   "constants": [
@@ -1727,7 +1839,8 @@
         {
           "role": "request",
           "dlc": {
-            "exact": 5
+            "min": 5,
+            "max": 8
           },
           "fields": [
             {
@@ -1744,6 +1857,26 @@
               "note": "0 stops; a move is 1 to 4294967295.",
               "offset": 1,
               "width": 4
+            },
+            {
+              "name": "speed",
+              "type": "u16",
+              "optional": true,
+              "present_from_dlc": 8,
+              "unit": "steps/s",
+              "note": "Cruise speed of the move; 0 keeps the default. Read only while the MOTION_RAMPS feature runs.",
+              "offset": 5,
+              "width": 2
+            },
+            {
+              "name": "profile",
+              "type": "u8",
+              "optional": true,
+              "present_from_dlc": 8,
+              "enum": "motion_profile",
+              "note": "Speed profile; read only while the MOTION_RAMPS feature runs, ignored (constant speed) otherwise.",
+              "offset": 7,
+              "width": 1
             }
           ],
           "examples": [
@@ -1762,12 +1895,23 @@
                 "steps": 0
               },
               "data": "0000000000"
+            },
+            {
+              "name": "forward 1000 steps, 800 steps/s, S-curve",
+              "fields": {
+                "direction": 1,
+                "steps": 1000,
+                "speed": 800,
+                "profile": 2
+              },
+              "data": "01000003E8032002"
             }
           ]
         }
       ],
       "notes": [
-        "The prose names tools 1, 2, 3, 6, 7 and the soldering iron's wire feeder; the firmware routing table also sends tools 12 and 16 here."
+        "The prose names tools 1, 2, 3, 6, 7 and the soldering iron's wire feeder; the firmware routing table also sends tools 12 and 16 here.",
+        "With eight bytes the frame also carries a cruise speed and a speed profile. A board whose MOTION_RAMPS feature is off ignores bytes 5 to 7, exactly as before."
       ],
       "firmware_accepts_dlc": {
         "min": 5,
@@ -3815,8 +3959,12 @@
       "implemented_by": {
         "firmware": true,
         "flasher": false,
-        "tester": false,
-        "web_studio": false
+        "tester": true,
+        "web_studio": true
+      },
+      "client_names": {
+        "tester": "CAN_ID_BLACKBOX_QUERY",
+        "web_studio": "CAN_ID_BLACKBOX_QUERY"
       }
     },
     {
@@ -3862,8 +4010,12 @@
       "implemented_by": {
         "firmware": true,
         "flasher": false,
-        "tester": false,
-        "web_studio": false
+        "tester": true,
+        "web_studio": true
+      },
+      "client_names": {
+        "tester": "CAN_ID_BLACKBOX_CHUNK",
+        "web_studio": "CAN_ID_BLACKBOX_CHUNK"
       }
     },
     {
@@ -4152,6 +4304,175 @@
       }
     },
     {
+      "id": "0x1AE",
+      "name": "SET_FEATURES",
+      "group": "configuration",
+      "title": "Switch the optional firmware features on or off (persistent, acts after the next power-up)",
+      "direction": "host_to_board",
+      "handled_by": "application",
+      "tools": "any",
+      "gates": {
+        "blocked_by_critical_error": true
+      },
+      "layouts": [
+        {
+          "role": "request",
+          "dlc": {
+            "exact": 5
+          },
+          "fields": [
+            {
+              "name": "magic",
+              "type": "bytes",
+              "length": 4,
+              "fixed": "46454154",
+              "offset": 0,
+              "width": 4
+            },
+            {
+              "name": "features",
+              "type": "u8",
+              "range": [
+                0,
+                15
+              ],
+              "enum": "firmware_feature",
+              "note": "Bit mask: the features to have on; the others are off.",
+              "offset": 4,
+              "width": 1
+            }
+          ],
+          "examples": [
+            {
+              "name": "all off",
+              "fields": {
+                "magic": "46454154",
+                "features": 0
+              },
+              "data": "4645415400"
+            },
+            {
+              "name": "health frame and PID on",
+              "fields": {
+                "magic": "46454154",
+                "features": 10
+              },
+              "data": "464541540A"
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "Every feature is off on a board that was never written, with an erased or damaged record, or when a bit outside the supported mask is set. Any other payload or length is ignored.",
+        "Answered with 0x1AF, which reports the stored mask, the mask in force and the mask this firmware supports."
+      ],
+      "firmware_accepts_dlc": {
+        "exact": 5
+      },
+      "implemented_by": {
+        "firmware": true,
+        "flasher": false,
+        "tester": true,
+        "web_studio": true
+      },
+      "client_names": {
+        "tester": "CAN_ID_SET_FEATURES",
+        "web_studio": "CAN_ID_SET_FEATURES"
+      }
+    },
+    {
+      "id": "0x1AF",
+      "name": "FEATURES_RESP",
+      "group": "configuration",
+      "title": "The optional firmware features: stored mask, mask in force and supported mask",
+      "direction": "both",
+      "handled_by": "application",
+      "tools": "any",
+      "gates": {
+        "blocked_by_critical_error": true
+      },
+      "read_only": true,
+      "layouts": [
+        {
+          "role": "request",
+          "dlc": {
+            "any": true
+          },
+          "fields": [],
+          "note": "The payload is ignored.",
+          "examples": [
+            {
+              "name": "empty query",
+              "fields": {},
+              "data": ""
+            }
+          ]
+        },
+        {
+          "role": "response",
+          "dlc": {
+            "exact": 3
+          },
+          "fields": [
+            {
+              "name": "stored",
+              "type": "u8",
+              "range": [
+                0,
+                15
+              ],
+              "note": "The mask the F-RAM record says.",
+              "offset": 0,
+              "width": 1
+            },
+            {
+              "name": "running",
+              "type": "u8",
+              "range": [
+                0,
+                15
+              ],
+              "note": "The mask in force now; it differs from stored until the next power-up.",
+              "offset": 1,
+              "width": 1
+            },
+            {
+              "name": "supported",
+              "type": "u8",
+              "range": [
+                0,
+                15
+              ],
+              "note": "The features this firmware has.",
+              "offset": 2,
+              "width": 1
+            }
+          ],
+          "examples": [
+            {
+              "name": "health on, stored but not yet running",
+              "fields": {
+                "stored": 2,
+                "running": 0,
+                "supported": 15
+              },
+              "data": "02000F"
+            }
+          ]
+        }
+      ],
+      "implemented_by": {
+        "firmware": true,
+        "flasher": false,
+        "tester": true,
+        "web_studio": true
+      },
+      "client_names": {
+        "tester": "CAN_ID_FEATURES_RESP",
+        "web_studio": "CAN_ID_FEATURES_RESP"
+      }
+    },
+    {
       "id": "0x1B0",
       "name": "ELECTROMAGNET_CMD",
       "group": "electromagnet",
@@ -4211,6 +4532,287 @@
       "client_names": {
         "tester": "CAN_ID_ELECTROMAGNET_CMD",
         "web_studio": "CAN_ID_ELECTROMAGNET_CMD"
+      }
+    },
+    {
+      "id": "0x1B8",
+      "name": "HEALTH_PROFILE",
+      "group": "diagnostics",
+      "title": "Periodic health frame of the board (only while the health feature runs)",
+      "direction": "board_to_host",
+      "handled_by": "application",
+      "tools": "any",
+      "gates": {
+        "blocked_by_critical_error": false
+      },
+      "timing": {
+        "period_ms": 1000
+      },
+      "layouts": [
+        {
+          "role": "response",
+          "dlc": {
+            "exact": 8
+          },
+          "fields": [
+            {
+              "name": "tec",
+              "type": "u8",
+              "note": "Transmit error counter of the CAN peripheral.",
+              "offset": 0,
+              "width": 1
+            },
+            {
+              "name": "rec",
+              "type": "u8",
+              "note": "Receive error counter.",
+              "offset": 1,
+              "width": 1
+            },
+            {
+              "name": "bus_off_count",
+              "type": "u8",
+              "note": "Times the bus went off since power-up (saturates at 255).",
+              "offset": 2,
+              "width": 1
+            },
+            {
+              "name": "hsi_trim",
+              "type": "u8",
+              "note": "Trim value of the internal oscillator in force (16 is the factory value).",
+              "offset": 3,
+              "width": 1
+            },
+            {
+              "name": "loop_max_ms",
+              "type": "u8",
+              "unit": "ms",
+              "note": "Longest pass of the main loop since the last frame (saturates at 255).",
+              "offset": 4,
+              "width": 1
+            },
+            {
+              "name": "mcu_temp_plus_40",
+              "type": "u8",
+              "unit": "°C",
+              "note": "Chip temperature plus 40; 0 means not available.",
+              "offset": 5,
+              "width": 1
+            },
+            {
+              "name": "vdda_mv",
+              "type": "u16",
+              "unit": "mV",
+              "note": "Analogue supply from the internal reference; 0 means not available.",
+              "offset": 6,
+              "width": 2
+            }
+          ],
+          "examples": [
+            {
+              "name": "healthy board",
+              "fields": {
+                "tec": 0,
+                "rec": 0,
+                "bus_off_count": 0,
+                "hsi_trim": 16,
+                "loop_max_ms": 7,
+                "mcu_temp_plus_40": 65,
+                "vdda_mv": 3300
+              },
+              "data": "0000001007410CE4"
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "Sent once a second by a board whose health feature runs, whichever tool is active. A host must treat a field it cannot use (0 for the temperature and the supply) as not reported."
+      ],
+      "implemented_by": {
+        "firmware": true,
+        "flasher": false,
+        "tester": false,
+        "web_studio": false
+      }
+    },
+    {
+      "id": "0x1B9",
+      "name": "PID_CONFIG",
+      "group": "configuration",
+      "title": "Gains of the heater PID and start of its relay autotune",
+      "direction": "host_to_board",
+      "handled_by": "application",
+      "tools": "any",
+      "gates": {
+        "blocked_by_critical_error": true
+      },
+      "layouts": [
+        {
+          "role": "request",
+          "dlc": {
+            "exact": 7
+          },
+          "fields": [
+            {
+              "name": "kp_x100",
+              "type": "u16",
+              "note": "Proportional gain times 100.",
+              "offset": 0,
+              "width": 2
+            },
+            {
+              "name": "ki_x100",
+              "type": "u16",
+              "note": "Integral gain times 100 (per second).",
+              "offset": 2,
+              "width": 2
+            },
+            {
+              "name": "kd_x100",
+              "type": "u16",
+              "note": "Derivative gain times 100 (seconds).",
+              "offset": 4,
+              "width": 2
+            },
+            {
+              "name": "action",
+              "type": "u8",
+              "enum": "pid_action",
+              "strict_enum": true,
+              "offset": 6,
+              "width": 1
+            }
+          ],
+          "examples": [
+            {
+              "name": "set the gains",
+              "fields": {
+                "kp_x100": 800,
+                "ki_x100": 20,
+                "kd_x100": 150,
+                "action": 0
+              },
+              "data": "03200014009600"
+            },
+            {
+              "name": "start the autotune",
+              "fields": {
+                "kp_x100": 0,
+                "ki_x100": 0,
+                "kd_x100": 0,
+                "action": 1
+              },
+              "data": "00000000000001"
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "Only acts while the THERMAL_PID feature runs and a heater tool (soldering iron or hot air) is active; the gains are stored in the F-RAM when they are set or when an autotune ends. The thermal guards stay active whatever the gains are.",
+        "Answered with 0x1BA."
+      ],
+      "firmware_accepts_dlc": {
+        "exact": 7
+      },
+      "implemented_by": {
+        "firmware": true,
+        "flasher": false,
+        "tester": false,
+        "web_studio": false
+      }
+    },
+    {
+      "id": "0x1BA",
+      "name": "PID_STATE_RESP",
+      "group": "configuration",
+      "title": "The heater PID: gains in force, state and output",
+      "direction": "both",
+      "handled_by": "application",
+      "tools": "any",
+      "gates": {
+        "blocked_by_critical_error": true
+      },
+      "read_only": true,
+      "layouts": [
+        {
+          "role": "request",
+          "dlc": {
+            "any": true
+          },
+          "fields": [],
+          "note": "The payload is ignored.",
+          "examples": [
+            {
+              "name": "empty query",
+              "fields": {},
+              "data": ""
+            }
+          ]
+        },
+        {
+          "role": "response",
+          "dlc": {
+            "exact": 8
+          },
+          "fields": [
+            {
+              "name": "kp_x100",
+              "type": "u16",
+              "offset": 0,
+              "width": 2
+            },
+            {
+              "name": "ki_x100",
+              "type": "u16",
+              "offset": 2,
+              "width": 2
+            },
+            {
+              "name": "kd_x100",
+              "type": "u16",
+              "offset": 4,
+              "width": 2
+            },
+            {
+              "name": "state",
+              "type": "u8",
+              "enum": "pid_state",
+              "offset": 6,
+              "width": 1
+            },
+            {
+              "name": "duty_percent",
+              "type": "u8",
+              "range": [
+                0,
+                100
+              ],
+              "unit": "%",
+              "note": "The heater output of the last control cycle.",
+              "offset": 7,
+              "width": 1
+            }
+          ],
+          "examples": [
+            {
+              "name": "running",
+              "fields": {
+                "kp_x100": 800,
+                "ki_x100": 20,
+                "kd_x100": 150,
+                "state": 1,
+                "duty_percent": 37
+              },
+              "data": "0320001400960125"
+            }
+          ]
+        }
+      ],
+      "implemented_by": {
+        "firmware": true,
+        "flasher": false,
+        "tester": false,
+        "web_studio": false
       }
     },
     {
