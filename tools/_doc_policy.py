@@ -1,5 +1,5 @@
 # =============================================================================
-# URTC-DOCS - tools/_doc_policy.py
+# URTC-COMMON - tools/_doc_policy.py
 # Copyright (C) 2026 JuanenRac (Electro Hobby 3D) <electrohobby3d@gmail.com>
 # GPL-3.0-or-later - see LICENSE
 # =============================================================================

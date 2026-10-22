@@ -9,6 +9,7 @@ bumped manually only. See `bump_version.py`.
 
 - The banner follows the animated style of the ecosystem banners, with the name, the kind and the technologies of the project.
 - The manifest declares how far the project has been shown to work (`evidence`: host-test) and `tools/ci_validate.py` checks the value.
+- The headers of `bump_manifest_version.py`, `tools/build_test.py` and `tools/ci_validate.py` say `GPL-3.0-or-later` like every other file, and `tools/_doc_policy.py` names this repository; the copy of `bump_manifest_version.py` is now the same as in the other repositories.
 - The manifest notes are shorter and no longer say the shared protocol is unused: FLASHER, TESTER and WEB-STUDIO carry checked copies of it.
 
 ## [0.0.5] - The multinode extension is implemented in the firmware behind a switch
