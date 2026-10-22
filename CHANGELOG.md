@@ -7,6 +7,7 @@ bumped manually only. See `bump_version.py`.
 
 ## [Unreleased]
 
+- The banner follows the animated style of the ecosystem banners, with the name, the kind and the technologies of the project.
 - The manifest declares how far the project has been shown to work (`evidence`: host-test) and `tools/ci_validate.py` checks the value.
 - The manifest notes are shorter and no longer say the shared protocol is unused: FLASHER, TESTER and WEB-STUDIO carry checked copies of it.
 
