@@ -10,8 +10,9 @@ import argparse
 import json
 import sys
 from pathlib import Path
+from typing import Any
 
-from . import __version__, conformance, protocol
+from . import __version__, conformance, protocol, specdata
 from .slcan import decode_line
 
 
@@ -28,7 +29,7 @@ def _layouts_of(can_id: int) -> list[str]:
 
 
 def cmd_conformance(args: argparse.Namespace) -> int:
-    vectors = conformance.load(Path(args.vectors)) if args.vectors else conformance.load()
+    vectors = conformance.load(Path(args.vectors) if args.vectors else specdata.path("vectors"))
     problems = conformance.check_all(vectors)
     if problems:
         print("\n".join(problems), file=sys.stderr)
@@ -41,14 +42,14 @@ def cmd_conformance(args: argparse.Namespace) -> int:
 
 def cmd_describe(args: argparse.Namespace) -> int:
     can_id = _resolve(args.identifier)
-    info = protocol.MESSAGES.get(can_id) if can_id is not None else None
-    if info is None:
+    info: Any = protocol.MESSAGES.get(can_id) if can_id is not None else None
+    if can_id is None or info is None:
         print(f"unknown identifier: {args.identifier}", file=sys.stderr)
         return 1
     print(f"0x{can_id:03X} {info['name']}  ({info['direction']}, handled by {info['handled_by']}, group {info['group']})")
     print(f"  tools: {'any' if info['tools'] is None else info['tools']}")
     for key in _layouts_of(can_id):
-        layout = protocol.LAYOUTS[key]
+        layout: Any = protocol.LAYOUTS[key]
         print(f"  {key} [{layout['role']}] dlc {layout['dlc']}")
         for field in layout["fields"]:
             print(f"    +{field['offset']} {field['name']}: {field['type']}")
@@ -93,6 +94,12 @@ def cmd_virtual_board(args: argparse.Namespace) -> int:
     return virtual_board.main(args.options)
 
 
+def cmd_files(_args: argparse.Namespace) -> int:
+    for kind in specdata.FILES:
+        print(f"{kind}: {specdata.path(kind)}")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="urtc-common", description=__doc__)
     parser.add_argument("--version", action="version", version=f"urtc-common {__version__}")
@@ -100,6 +107,8 @@ def main(argv: list[str] | None = None) -> int:
     run = sub.add_parser("conformance", help="run the shared vectors against this package")
     run.add_argument("--vectors", help="a vectors file (default: conformance/can_vectors.json)")
     run.set_defaults(func=cmd_conformance)
+    files = sub.add_parser("files", help="print where the specification, the tool table, the C header and the vectors are")
+    files.set_defaults(func=cmd_files)
     describe = sub.add_parser("describe", help="show an identifier: direction, tools and layouts")
     describe.add_argument("identifier", help="0x120, 288 or MOTION_CMD")
     describe.set_defaults(func=cmd_describe)

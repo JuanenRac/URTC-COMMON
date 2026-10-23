@@ -17,7 +17,7 @@ keywords = ["urtc", "can-bus", "slcan", "socketcan", "protocol", "conformance"]
 [project.optional-dependencies]
 serial = ["pyserial>=3.5"]
 can = ["python-can>=4.0"]
-dev = ["pytest>=8.0", "pytest-cov>=5.0", "jsonschema>=4.0", "pyserial>=3.5"]
+dev = ["pytest>=8.0", "pytest-cov>=5.0", "jsonschema>=4.0", "pyserial>=3.5", "mypy>=1.10"]
 
 [project.urls]
 Homepage = "https://github.com/JuanenRac/URTC-COMMON"
@@ -27,6 +27,11 @@ urtc-common = "urtc_common.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.mypy]
+files = ["src/urtc_common", "src/urtc_ui"]
+# pyserial and python-can ship no type information
+ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
