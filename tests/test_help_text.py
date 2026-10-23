@@ -68,6 +68,16 @@ def test_the_guide_names_the_updates_in_the_words_of_the_update_window():
         assert update_strings.STRINGS[language]["UPD_TITLE"].lower() in joined("flasher", language).lower() or language in {"chinese", "japanese"}, language
 
 
+def test_the_updater_guide_covers_the_list_the_install_the_way_back_the_packages_and_the_security_in_every_language():
+    for language in ht.LANGUAGES:
+        sections = ht.GUIDES["updater"][language]
+        assert len(sections) == 5, language
+        text = joined("updater", language)
+        assert "SHA-256" in text and "FLASHER" in text and "TESTER" in text, language
+        assert update_strings.STRINGS[language]["UPD_TITLE"].lower() in text.lower() or language in {"chinese", "japanese"}, language
+        assert update_strings.STRINGS[language]["UPD_BTN_DOWNLOAD"].lower() in text.lower() or language in {"chinese", "japanese"}, language
+
+
 pytest.importorskip("PySide6")
 from PySide6.QtCore import QCoreApplication  # noqa: E402
 
