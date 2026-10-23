@@ -11,6 +11,7 @@ web app is static and the firmware is built on its own. They carry a COPY, and t
 safe to carry:
 
     python tools/vendor_copy.py sync  TARGET --set python --set vectors   # copy, write the lock file
+    python tools/vendor_copy.py refresh TARGET                             # copy again what the lock lists (a copy that fell behind)
     python tools/vendor_copy.py status TARGET                              # what is there and what it is based on
     python tools/vendor_copy.py check  TARGET [--source PATH | --lock-only]
 
@@ -76,6 +77,12 @@ SETS = {
         "conformance/multinode_vectors.json", "conformance/multinode_scenarios.json",
     ],
     "multinode_c": ["generated/multinode_scenarios.h"],
+    "slave_version": ["conformance/slave_version_vectors.json"],
+    "node_picker": [
+        "src/urtc_common/node_picker.py", "src/urtc_common/node_picker_strings.py", "src/urtc_common/node_picker_qt.py",
+        "conformance/node_picker_vectors.json",
+    ],
+    "node_picker_qml": ["qml/NodePickerDialog.qml"],
 }
 
 
@@ -137,6 +144,28 @@ def sync(source: Path, target: Path, sets: list[str], only: list[str] | None, re
     return 0
 
 
+def refresh(source: Path, target: Path) -> int:
+    """Copy again every file the lock of TARGET lists, from where the lock says it came from (a copy that fell behind)."""
+    previous = read_lock(target)
+    if previous is None:
+        print(f"VENDOR=FAIL {target}: no {LOCK_NAME}", file=sys.stderr)
+        return 1
+    files = {}
+    for name, entry in previous["files"].items():
+        origin = source / entry["from"]
+        if not origin.is_file():
+            print(f"VENDOR=FAIL {entry['from']} no longer exists in URTC-COMMON", file=sys.stderr)
+            return 1
+        data = normalized(origin.read_bytes())
+        (target / name).write_bytes(data)
+        files[name] = {"from": entry["from"], "sha256": digest(data)}
+        print(f"copied {entry['from']} -> {name}")
+    lock = {"format": 1, "urtc_common_version": common_version(source), "files": dict(sorted(files.items()))}
+    (target / LOCK_NAME).write_bytes((json.dumps(lock, indent=2) + "\n").encode("utf-8"))
+    print(f"wrote {LOCK_NAME} (urtc-common {lock['urtc_common_version']}, {len(files)} files)")
+    return 0
+
+
 def problems(target: Path, source: Path | None) -> list[str]:
     lock = read_lock(target)
     if lock is None:
@@ -162,7 +191,7 @@ def problems(target: Path, source: Path | None) -> list[str]:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = parser.add_subparsers(dest="command", required=True)
-    for name in ("sync", "status", "check"):
+    for name in ("sync", "refresh", "status", "check"):
         command = sub.add_parser(name)
         command.add_argument("target", help="the folder inside the other repository that holds the copy")
         command.add_argument("--source", help="a checkout of URTC-COMMON (default: the one this script is in)")
@@ -180,6 +209,11 @@ def main(argv: list[str] | None = None) -> int:
             print("VENDOR=FAIL no checkout of URTC-COMMON found (use --source)", file=sys.stderr)
             return 1
         return sync(source, target, args.sets, args.only, args.rename)
+    if args.command == "refresh":
+        if source is None:
+            print("VENDOR=FAIL no checkout of URTC-COMMON found (use --source)", file=sys.stderr)
+            return 1
+        return refresh(source, target)
     if args.command == "status":
         lock = read_lock(target)
         if lock is None:

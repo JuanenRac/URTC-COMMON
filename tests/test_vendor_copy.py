@@ -158,3 +158,17 @@ def test_the_ui_package_is_copied_as_a_folder_a_program_can_import(source, tmp_p
     result = subprocess.run([sys.executable, "-c", script], capture_output=True, text=True, cwd=target.parent)
     assert result.returncode == 0, result.stderr
     assert result.stdout.split()[0] == "1" and "500" in result.stdout
+
+
+def test_refresh_copies_again_what_the_lock_lists_and_only_that(source, tmp_path, capsys):
+    target = tmp_path / "t"
+    run("sync", target, "--source", source, "--set", "c")
+    with open(source / "generated" / "urtc_can_ids.h", "a", encoding="utf-8") as handle:
+        handle.write("/* a newer protocol */\n")
+    assert run("check", target, "--source", source) == 1
+    assert run("refresh", target, "--source", source) == 0
+    assert run("check", target, "--source", source) == 0
+    assert (target / "urtc_can_ids.h").read_bytes().endswith(b"/* a newer protocol */\n")
+    assert sorted(path.name for path in target.iterdir()) == sorted([vendor_copy.LOCK_NAME, "urtc_can_ids.h"])
+    assert run("refresh", tmp_path / "nothing", "--source", source) == 1
+    assert "no urtc_common.lock.json" in capsys.readouterr().err

@@ -89,7 +89,7 @@ def test_the_model_gives_the_title_the_close_button_and_the_sections_in_the_lang
     language = ["spanish"]
     model = help_qt.HelpModel("flasher", lambda: language[0])
     assert model.title == "Ayuda" and model.closeText == "Cerrar"
-    assert len(model.sections) == 5 and model.sections[0]["title"] == "Conectar"
+    assert len(model.sections) == 6 and model.sections[0]["title"] == "Conectar"
     seen = []
     model.changed.connect(lambda: seen.append(1))
     language[0] = "german"
@@ -151,3 +151,14 @@ def test_the_help_dialog_loads_and_opens_without_qml_errors(tmp_path):
     problems = [m for m in result["messages"] if ".qml" in m or "QML" in m]
     assert problems == [], " | ".join(problems)
     assert result["opened"]
+
+
+def test_the_flasher_and_tester_guides_tell_about_several_heads_in_the_words_of_the_window():
+    from urtc_common import node_picker_strings as picker_strings
+
+    for app in ("flasher", "tester"):
+        for language in ht.LANGUAGES:
+            section = ht.GUIDES[app][language][-2]
+            assert section[1] == ht.GUIDES["flasher"][language][-2][1], (app, language)
+            find = picker_strings.STRINGS[language]["NP_BTN_FIND"]
+            assert find in section[1], (app, language, find)

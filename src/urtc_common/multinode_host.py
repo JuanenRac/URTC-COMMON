@@ -23,6 +23,8 @@ from . import multinode as mn
 from . import protocol as p
 
 BOOTLOADER_IDS = range(0x7F0, 0x800)
+# The reason byte the host puts in SAFE_STOP when it lets go of a head whose selection it lost (the byte is informational for the nodes).
+STOP_REASON_HOST_LAPSE = 0x10
 
 
 class NodeNotReady(RuntimeError):
@@ -35,6 +37,16 @@ class NodeNotReady(RuntimeError):
 
 
 @dataclass
+class Lapse:
+    """The selection the host wanted and no longer has: which head, why, and whether the host asked every head for its safe state."""
+
+    node: int
+    reason: str            # gone, conflict, fault, bootloader, lost, several
+    released: bool         # SAFE_STOP was sent (the outputs of the heads go to their safe state)
+    at_ms: int
+
+
+@dataclass
 class HostIO:
     send: Callable[[int, bytes], None]
     poll: Callable[[], list]           # frames received since the last call: (time_ms, can_id, data)
@@ -43,8 +55,15 @@ class HostIO:
 
 
 class MultinodeHost:
-    def __init__(self, io: HostIO, slot_ms: int = p.MN_DISCOVER_SLOT_MS, confirm_ms: int = 100, attempts: int = 3):
+    def __init__(self, io: HostIO, slot_ms: int = p.MN_DISCOVER_SLOT_MS, confirm_ms: int = 100, attempts: int = 3,
+                 release_on_lapse: bool = True):
         self.io = io
+        # What to do when the head that was being driven stops being confirmed selected (it was lost, faulted, entered its
+        # bootloader, or its selection lapsed): True (the conservative default) asks every head for its safe state, False only
+        # tells the caller. Either way the host stops believing that it has a selection and the caller is told through ``lapses``.
+        self.release_on_lapse = release_on_lapse
+        self.lapses: list[Lapse] = []
+        self.suspended = False             # the head is about to reset into its bootloader: no lapse is reported and no SELECT is repeated
         self.slot_ms = slot_ms
         self.confirm_ms = confirm_ms
         self.attempts = attempts
@@ -105,6 +124,7 @@ class MultinodeHost:
             raise NodeNotReady(node, "not announced")
         if not self.table.may_command(node, now):
             raise NodeNotReady(node, self._why_not(node, now))
+        self.suspended = False
         for _attempt in range(self.attempts):
             self._seq = (self._seq + 1) & 0xFF
             self._send(*p.encode_mn_select(p.MN_SELECT_SELECT, node, self._seq))
@@ -146,10 +166,51 @@ class MultinodeHost:
     def release(self) -> None:
         self._send(*p.encode_mn_select(p.MN_SELECT_DESELECT_ALL, 0, self._seq))
         self.wanted = None
+        self.suspended = False
+
+    def suspend(self) -> None:
+        """The selected head is going to reset into its bootloader (the update tools call this after the enter-bootloader frame): its status
+        stops by design, so ``tick`` neither calls that a lapse nor repeats SELECT until ``release`` or a new ``select``."""
+        self.suspended = True
+
+    def _lapse_reason(self, node: int, now: int) -> str | None:
+        record = self.table.nodes.get(node)
+        if record is None or node not in self.table.alive(now):
+            return "gone"
+        if record.conflict or record.state & p.MN_STATE_CONFLICT:
+            return "conflict"
+        if record.state & p.MN_STATE_FAULT:
+            return "fault"
+        if record.state & p.MN_STATE_BOOTLOADER:
+            return "bootloader"
+        if self._several_selected():
+            return "several"
+        if not record.state & p.MN_STATE_SELECTED and now - self._last_select_ms > self.confirm_ms:
+            return "lost"
+        return None
+
+    def take_lapses(self) -> list[Lapse]:
+        """The lapses since the last call (the caller shows them once)."""
+        taken, self.lapses = self.lapses, []
+        return taken
 
     def tick(self) -> None:
-        """Call while working: reads the bus and repeats SELECT before the selection lapses."""
+        """Call while working: reads the bus, notices a head that is no longer confirmed selected and repeats SELECT before it lapses.
+
+        When the head being driven is gone, in conflict, faulted, in its bootloader or no longer reports itself selected, the host forgets
+        the selection, records a ``Lapse`` and, with ``release_on_lapse`` (the default), sends SAFE_STOP so no head keeps an output on
+        without a host watching it. Nothing is ever sent to the head again until it is selected and confirmed anew."""
         self.ingest()
+        if self.suspended:
+            return
+        if self.wanted is not None:
+            why = self._lapse_reason(self.wanted, self.io.now())
+            if why is not None:
+                self.lapses.append(Lapse(self.wanted, why, self.release_on_lapse, self.io.now()))
+                self.wanted = None
+                if self.release_on_lapse:
+                    self.safe_stop(STOP_REASON_HOST_LAPSE)
+                return
         if self.wanted is not None and self.io.now() - self._last_select_ms >= p.MN_SELECT_TIMEOUT_MS // 2:
             self._seq = (self._seq + 1) & 0xFF
             self._send(*p.encode_mn_select(p.MN_SELECT_SELECT, self.wanted, self._seq))
@@ -166,6 +227,12 @@ class MultinodeHost:
             raise NodeNotReady(node, self._why_not(node, now))
         if self.table.selected(now) != node:
             raise NodeNotReady(node, "not confirmed selected")
+
+    def is_confirmed(self, node: int) -> bool:
+        """True when, by what the host has already read, the node is alive, commandable and the one head that reports itself selected.
+        Reads nothing from the bus (``require_selected`` does), so a program can ask it in the middle of its own traffic."""
+        now = self.io.now()
+        return self.table.may_command(node, now) and self.table.selected(now) == node
 
     def send(self, can_id: int, data: bytes, node: int | None = None) -> None:
         """Send a single-head frame. On a bus without the extension it goes straight out; with heads present it needs ``node`` to be

@@ -91,3 +91,19 @@ def test_quick_state_names_every_reset_cause_bit_and_an_unknown_fault_code():
     state = quick_state.decode(bytes.fromhex("19000001" + "09" + "0C"))
     assert state["reset_causes"] == ["SOFTWARE", "POWER_ON"] and state["thermal_fault"] == 9 and state["thermal_fault_name"] == "CODE_9"
     assert state["booting"] is True and state["tool_id"] == 25
+
+
+# ---- the application of the expansion slave: 0x221 and its companion 0x222 -------------------------------------------------------
+SLAVE_VECTORS = __import__("json").loads((__import__("pathlib").Path(__file__).resolve().parents[1] / "conformance" / "slave_version_vectors.json").read_text(encoding="utf-8"))
+
+
+def test_the_request_asks_for_the_version_register_of_the_slave():
+    can_id, data = versioning.slave_app_version_request()
+    assert (can_id, data.hex()) == (SLAVE_VECTORS["request"]["id"], SLAVE_VECTORS["request"]["data"])
+
+
+@pytest.mark.parametrize("case", SLAVE_VECTORS["cases"], ids=lambda case: case["name"])
+def test_the_slave_version_is_read_as_the_vectors_say(case):
+    info = versioning.parse_slave_app_version([(can_id, bytes.fromhex(data)) for can_id, data in case["frames"]])
+    assert info == case["expected"]
+    assert versioning.slave_app_version_text(info) == case["text"]

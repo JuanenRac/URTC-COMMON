@@ -226,3 +226,61 @@ def test_the_counter_wrap_does_not_confuse_a_session():
         host.tick()
     host.require_selected(2)
     assert bus.now < 0x10000                          # it did wrap
+
+
+# ---- a head that stops being confirmed while the host works ----------------------------------------------------------------------
+def test_a_head_that_vanishes_while_driven_makes_the_host_stop_every_head_and_say_so():
+    bus, host, _ = make_bus(2, 5)
+    bus.step(100)
+    host.discover()
+    host.select(2)
+    bus.nodes[0].enabled = False                     # the driven head loses power
+    for _ in range(p.MN_NODE_TIMEOUT_MS // 10 + 20):
+        bus.step(10)
+        host.tick()
+    lapse = host.take_lapses()
+    assert [(x.node, x.reason, x.released) for x in lapse] == [(2, "gone", True)]
+    assert host.wanted is None and bus.safe_state_calls.get(5) == 1   # the other head put its tool in the safe state too
+    assert bus.nodes[1].stop_reason == mh.STOP_REASON_HOST_LAPSE
+    assert host.take_lapses() == []
+    with pytest.raises(mh.NodeNotReady):
+        host.require_selected(2)
+
+
+def test_the_release_can_be_switched_off_and_the_host_still_forgets_the_selection():
+    bus, host, _ = make_bus(2, 5)
+    host.release_on_lapse = False
+    bus.step(100)
+    host.discover()
+    host.select(2)
+    bus.nodes[0].fault = True
+    bus.nodes[0].status_now = True
+    for _ in range(20):
+        bus.step(10)
+        host.tick()
+    assert [(x.node, x.reason, x.released) for x in host.take_lapses()] == [(2, "fault", False)]
+    assert host.wanted is None and bus.safe_state_calls == {}
+
+
+def test_a_selection_that_the_node_drops_is_noticed_as_lost():
+    bus, host, _ = make_bus(3)
+    bus.step(100)
+    host.discover()
+    host.select(3)
+    bus.nodes[0].phase = sim.PHASE_UNSELECTED         # something else deselected it (another host, a reset of the model)
+    bus.nodes[0].status_now = True
+    bus.step(5)
+    host._last_select_ms = bus.elapsed - 500          # long enough ago that the host does not expect to see it yet
+    host.tick()
+    assert [x.reason for x in host.take_lapses()] == ["lost"]
+
+
+def test_a_working_session_never_lapses():
+    bus, host, _ = make_bus(3)
+    bus.step(100)
+    host.discover()
+    host.select(3)
+    for _ in range(500):
+        bus.step(10)
+        host.tick()
+    assert host.take_lapses() == [] and host.wanted == 3
