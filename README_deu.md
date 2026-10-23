@@ -45,6 +45,7 @@ Das CAN-Protokoll des Werkzeugkopfs, einmal als Daten geschrieben, und alles, wa
 * [Protokolltabelle](docs/PROTOCOL_TABLE.md): alle Identifier in einer Tabelle, aus der Spezifikation erzeugt.
 * [Mehrere Werkzeugköpfe an einem Bus](docs/MULTINODE.md): Adressierung, Erkennung und Sicherheitsregeln; in der URTC-Firmware hinter einem standardmäßig ausgeschalteten Schalter umgesetzt, nur auf dem Rechner getestet und nicht an Hardware erprobt.
 * Oberflächen-Hilfen: `src/urtc_ui`: die Sprachliste, Statusabzeichen und die Formatierung von Identifiern, Bitraten und Frames, die die Desktop-Programme gemeinsam nutzen können (ohne Qt; URTC-FLASHER und URTC-TESTER tragen eine mit `vendor_copy.py --set ui` erstellte Kopie).
+* Firmware-Bausteine: `firmware_base/urtc_crc8.h`, das CRC-8 der seriellen Rahmen von Rack und Vision an einer Stelle (kopiert mit `vendor_copy.py --set firmware_base`), und `generated/urtc_fw_vectors.h`, die Vektoren, die die Firmware selbst bestehen muss (Versionsfelder, Magic-Nutzdaten, Prüfwerte des CRC-8) als C-Tabellen (`--set fw_vectors`).
 * [Konformitätsvektoren](conformance/can_vectors.json): die Bytes, die jede Implementierung reproduzieren muss: jeder Aufbau, die Ablehnungen und die SLCAN-Datenströme.
 * [Werkzeugprofile](spec/tools.json): die 25 Werkzeugprofile (Grenzen, Watchdog, Pins, Erweiterungsplatine) als Daten; `generate_tools.py` schreibt die TypeScript- und Python-Tabellen und [die Werkzeugtabelle](docs/TOOLS_TABLE.md). Außerdem: der Leser der Blackbox mit CSV- und JSON-Export (`blackbox.py`), der Rack-Simulator (`rack_sim.py`), aus der Spezifikation erzeugte Frames zum Fuzzing einer Platine (`fuzz.py`) und die [Kompatibilitätstabelle](docs/COMPATIBILITY.md) einer Version, erzeugt aus `spec/versions.json`.
 * **Werkzeuge:** `generate_constants.py` schreibt den C-Header, das TypeScript-Modul, das Python-Modul und die Tabelle (`--check` vergleicht), `make_conformance.py` schreibt die Vektoren (`--check`), `vendor_copy.py` kopiert Teile mit einer Sperrdatei in ein anderes Repository und prüft die Kopie, und `ci_validate.py` ist die gemeinsame Repository-Prüfung. `make_glance.py` von URTC-DOCS schreibt die Tabelle Auf einen Blick.
@@ -60,6 +61,7 @@ URTC-COMMON/
 ├── docs/         Verträge, Spezifikationsformat, Migrationsanleitung, erzeugte Protokolltabelle
 ├── spec/         die Spezifikation (can_protocol.json) und ihr JSON-Schema
 ├── generated/    der C-Header und das TypeScript-Modul, aus der Spezifikation erzeugt
+├── firmware_base/ C-Bausteine, die die Firmware-Repositories teilen (das CRC-8)
 ├── conformance/  die gemeinsamen Vektoren
 ├── src/          das Python-Paket: erzeugtes Protokoll, Rahmen, SLCAN-Codec, Transporte, Versionen, Vektorläufer
 ├── tools/        Generatoren mit --check, vendor_copy.py und die gemeinsamen CI-Prüfungen des Ökosystems

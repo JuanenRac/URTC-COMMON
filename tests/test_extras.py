@@ -370,3 +370,21 @@ def test_the_status_snapshot_the_card_and_the_page_agree_and_escape_everything()
     assert json.loads(rack_status.to_json(snap))["slots"][0]["unit"] == "0:7"
     quiet = rack_status.snapshot(rk.SimulatedRack().status())
     assert rack_status.card(quiet)["state"] == "ok" and quiet["alarms"] == []
+
+
+# ---- shared firmware parts and the vectors the firmware is held to ---------------------------------------------------------
+def test_the_shared_checksum_header_has_the_parameters_the_python_reference_uses():
+    text = (ROOT / "firmware_base" / "urtc_crc8.h").read_text(encoding="utf-8")
+    assert "URTC_CRC8_POLYNOMIAL 0x07u" in text and "URTC_CRC8_START      0x00u" in text
+    assert rk.crc8(b"123456789") == 0xF4  # the check value the header promises
+    assert "0xF4" in text
+
+
+def test_the_firmware_vector_header_carries_every_group_and_the_check_text():
+    text = (ROOT / "generated" / "urtc_fw_vectors.h").read_text(encoding="utf-8")
+    for table in ("URTC_VEC_IDENTIFIERS", "URTC_VEC_MINOR", "URTC_VEC_ORDER", "URTC_VEC_MAGIC", "URTC_VEC_CRC8"):
+        assert f"{table}[]" in text
+    assert '{"the check text", 9, {0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39}, 0xF4}' in text
+    data = json.loads((ROOT / "conformance" / "can_vectors.json").read_text(encoding="utf-8"))
+    assert text.count("\n    {\"") >= len(data["magic_payloads"]) + len(make_extra_vectors.CRC8_CASES)
+    assert len(data["identifiers_all"]) == text.split("URTC_VEC_IDENTIFIERS[] = {")[1].split("}")[0].count("u")

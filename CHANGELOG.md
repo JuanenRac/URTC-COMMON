@@ -2,6 +2,12 @@
 
 All notable changes to this project are documented here.
 
+## [Unreleased]
+
+- **A CRC-8 for the repositories that frame data with it:** `firmware_base/urtc_crc8.h` holds the checksum of the rack serial frames, the vision sensor frames and the fault recorder (polynomial `0x07`, start `0x00`, no final XOR; check value `0xF4` for `123456789`), header only; `vendor_copy.py --set firmware_base` copies it, and URTC-SMART-RACK and URTC-VISION-TOOL now use it instead of two copies of the same loop.
+
+- **The vectors the firmware must pass, as C tables:** `generated/urtc_fw_vectors.h` (written by `make_extra_vectors.py`, `--check` in the CI, copied with `--set fw_vectors`) carries the identifiers of the specification, the minor and patch fields, the version ordering, the magic payloads and the CRC-8 check values taken from `conformance/can_vectors.json`; the firmware repository compiles them into a host test, so the vectors are no longer only read by the three programs.
+
 ## [0.0.6] - Optional function switches, health frame, heater PID and shared tool profiles
 
 - **Protocol: five identifiers and an extension.** `0x1AE` / `0x1AF` (switch the optional firmware functions and read the switches), `0x1B8` (health frame), `0x1B9` / `0x1BA` (heater PID gains, autotune and state), and the optional cruise speed and speed profile of `0x120` when it has eight bytes; with the enumerations that go with them. The count is 95 identifiers. The generated C header, TypeScript module, Python module, protocol table and vectors are regenerated. URTC-TESTER and URTC-WEB-STUDIO now define `0x1A8`, `0x1A9`, `0x1AE` and `0x1AF`.

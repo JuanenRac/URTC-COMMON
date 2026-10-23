@@ -45,6 +45,7 @@ El protocolo CAN del cabezal de herramienta, escrito una sola vez como datos, y 
 * [Tabla del protocolo](docs/PROTOCOL_TABLE.md): todos los identificadores en una tabla, generada a partir de la especificación.
 * [Varias cabezas de herramienta en un bus](docs/MULTINODE.md): direccionamiento, descubrimiento y reglas de seguridad; implementados en el firmware de URTC tras un interruptor desactivado por defecto, probados solo en el ordenador y no probados en hardware.
 * Ayudas de interfaz: `src/urtc_ui`: la lista de idiomas, las insignias de estado y el formato de identificadores, velocidades y tramas que los programas de escritorio pueden compartir (sin Qt; URTC-FLASHER y URTC-TESTER llevan una copia hecha con `vendor_copy.py --set ui`).
+* Piezas de firmware: `firmware_base/urtc_crc8.h`, el CRC-8 de las tramas serie del rack y de la visión en un solo sitio (se copia con `vendor_copy.py --set firmware_base`), y `generated/urtc_fw_vectors.h`, los vectores que debe pasar el propio firmware (campos de versión, cargas mágicas, valores de comprobación del CRC-8) como tablas C (`--set fw_vectors`).
 * [Vectores de conformidad](conformance/can_vectors.json): los bytes que toda implementación debe reproducir: cada formato, los rechazos y los flujos SLCAN.
 * [Perfiles de herramienta](spec/tools.json): los 25 perfiles de herramienta (límites, watchdog, pines, placa de expansión) como dato; `generate_tools.py` escribe las tablas de TypeScript y Python y [la tabla de herramientas](docs/TOOLS_TABLE.md). También: el lector de la caja negra con exportación a CSV y JSON (`blackbox.py`), el simulador del rack (`rack_sim.py`), tramas para probar una placa con fuzzing hechas desde la especificación (`fuzz.py`) y la [tabla de compatibilidad](docs/COMPATIBILITY.md) de una release, hecha desde `spec/versions.json`.
 * **Herramientas:** `generate_constants.py` escribe la cabecera C, el módulo TypeScript, el módulo Python y la tabla (`--check` compara), `make_conformance.py` escribe los vectores (`--check`), `vendor_copy.py` copia partes a otro repositorio con un archivo de bloqueo y comprueba la copia, y `ci_validate.py` es la comprobación compartida de los repositorios. `make_glance.py` de URTC-DOCS escribe la tabla De un vistazo.
@@ -60,6 +61,7 @@ URTC-COMMON/
 ├── docs/         contratos, formato de la especificación, guía de migración, tabla del protocolo generada
 ├── spec/         la especificación (can_protocol.json) y su esquema JSON
 ├── generated/    la cabecera C y el módulo TypeScript, escritos a partir de la especificación
+├── firmware_base/ piezas C que comparten los repositorios de firmware (el CRC-8)
 ├── conformance/  los vectores compartidos
 ├── src/          el paquete Python: protocolo generado, tramas, códec SLCAN, transportes, versiones, ejecutor de vectores
 ├── tools/        generadores con --check, vendor_copy.py y las comprobaciones de CI compartidas del ecosistema

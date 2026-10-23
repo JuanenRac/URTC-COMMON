@@ -45,6 +45,7 @@
 * [プロトコル表](docs/PROTOCOL_TABLE.md): 仕様から生成された、すべての識別子を一つにまとめた表。
 * [1本のバスに複数のツールヘッド](docs/MULTINODE.md): アドレス指定・検出・安全規則。URTC ファームウェアに、既定でオフのスイッチの背後で実装済みで、コンピュータ上でのみテストされ、ハードウェアでは試していません。
 * インターフェース用ヘルパー: `src/urtc_ui`: デスクトップ用プログラムが共有できる言語一覧、状態バッジ、識別子・ビットレート・フレームの書式整形（Qt不要。URTC-FLASHER と URTC-TESTER は `vendor_copy.py --set ui` で作ったコピーを持っています）。
+* ファームウェア部品: `firmware_base/urtc_crc8.h`（ラックとビジョンのシリアルフレームの CRC-8 を一か所にまとめたもの。`vendor_copy.py --set firmware_base` でコピー）と、`generated/urtc_fw_vectors.h`（ファームウェア自身が通すべきベクター。バージョン欄、マジックペイロード、CRC-8 の確認値）を C のテーブルとして提供します（`--set fw_vectors`）。
 * [適合ベクトル](conformance/can_vectors.json): すべての実装が再現しなければならないバイト列：各レイアウト、拒否される入力、SLCAN ストリーム。
 * [ツールプロファイル](spec/tools.json)：25 種類のツールプロファイル（上限・下限、ウォッチドッグ、ピン、拡張ボード）をデータとして保持します。`generate_tools.py` が TypeScript と Python の表および[ツール一覧表](docs/TOOLS_TABLE.md)を生成します。ほかに、CSV と JSON に書き出せるブラックボックスの読み取り機能（`blackbox.py`）、ラックのシミュレーター（`rack_sim.py`）、仕様から作るボードのファジング用フレーム（`fuzz.py`）、`spec/versions.json` から作るリリースの[互換性表](docs/COMPATIBILITY.md)があります。
 * **ツール：** `generate_constants.py` は C ヘッダー、TypeScript モジュール、Python モジュール、表を書き出します（`--check` で比較）。`make_conformance.py` はベクトルを書き出します（`--check`）。`vendor_copy.py` はロックファイル付きで他のリポジトリに一部をコピーし、そのコピーを検査します。`ci_validate.py` は共通のリポジトリ検査です。URTC-DOCS の `make_glance.py` が「ひと目で」の表を書きます。
@@ -60,6 +61,7 @@ URTC-COMMON/
 ├── docs/         コントラクト、仕様のフォーマット、移行ガイド、生成されたプロトコル表
 ├── spec/         仕様（can_protocol.json）とその JSON スキーマ
 ├── generated/    仕様から書き出した C ヘッダーと TypeScript モジュール
+├── firmware_base/ ファームウェアのリポジトリが共有する C 部品（CRC-8）
 ├── conformance/  共有ベクトル
 ├── src/          Python パッケージ：生成されたプロトコル、フレーム、SLCAN コーデック、トランスポート、バージョン、ベクトル実行器
 ├── tools/        --check 付きジェネレーター、vendor_copy.py、エコシステム共通の CI 検査

@@ -10,6 +10,8 @@
 * ``conformance/rack_vectors.json``      serial frames, command checks, CAN data and short link scenarios of the rack
 * ``conformance/fuzz_corpus.txt``        frames for fuzzing a board made from the specification (valid, invalid and random), one per line
 * ``generated/rack_vectors.h``           the rack vectors as C tables (the rack repository compiles them into a host test)
+* ``generated/urtc_fw_vectors.h``        the vectors of ``conformance/can_vectors.json`` that the firmware itself must pass and the check
+                                         values of the shared checksum, as C tables (the firmware repository compiles them into a host test)
 
 ``--check`` writes nothing and fails when a file differs from what this tool produces.
 """
@@ -31,6 +33,8 @@ from urtc_common import thermal_view as tv  # noqa: E402
 BB_OUT = ROOT / "conformance" / "blackbox_vectors.json"
 RK_OUT = ROOT / "conformance" / "rack_vectors.json"
 RK_H = ROOT / "generated" / "rack_vectors.h"
+FW_H = ROOT / "generated" / "urtc_fw_vectors.h"
+CAN_VECTORS = ROOT / "conformance" / "can_vectors.json"
 FUZZ_OUT = ROOT / "conformance" / "fuzz_corpus.txt"
 TV_OUT = ROOT / "conformance" / "thermal_vectors.json"
 PROTOCOL_ORDER = ("ok", "incomplete", "bad_sof", "unsupported_version", "length_out_of_range", "crc_mismatch")
@@ -210,6 +214,55 @@ def rack_header(v: dict) -> str:
     return "\n".join(lines)
 
 
+CRC8_CASES = (
+    ("empty", b""), ("one zero byte", b"\x00"), ("one 0xFF byte", b"\xff"), ("four zero bytes", b"\x00" * 4),
+    ("the check text", b"123456789"), ("a rack frame header", bytes([0xA5, 0x01, 0x01, 0x01, 0x03, 0x00, 0xC8, 0x00])),
+    ("the 255 byte ramp", bytes(range(255))),
+)
+
+
+def fw_header() -> str:
+    """The vectors of can_vectors.json that a firmware can be held to, as C tables."""
+    data = json.loads(CAN_VECTORS.read_text(encoding="utf-8"))
+    ids = ", ".join(f"0x{int(i['id'], 16):03X}u" for i in data["identifiers_all"])
+
+    def patch(value: int | None) -> int:
+        return 0xFF if value is None or value < 0 else value
+
+    lines = [
+        "// GENERATED from spec by tools/make_extra_vectors.py - do not edit by hand.",
+        "// Copyright (C) 2026 JuanenRac (Electro Hobby 3D) <electrohobby3d@gmail.com>",
+        "// GPL-3.0-or-later - see LICENSE",
+        "#ifndef URTC_FW_VECTORS_H", "#define URTC_FW_VECTORS_H", "", "#include <stdint.h>", "",
+        "// a test that uses only some of the tables must not get an unused-variable warning for the others",
+        "#if defined(__GNUC__)", "#define URTC_VEC_TABLE static const __attribute__((unused))", "#else", "#define URTC_VEC_TABLE static const", "#endif", "",
+        "// patch 0xFF = no patch number (the firmware's URTC_PATCH_UNKNOWN); a patch above 0x7F is what the firmware drops",
+        "typedef struct { uint8_t minor; uint8_t patch; int accepts_patch; uint16_t expect; } urtc_vec_minor_t;",
+        "// expect: -1 the candidate is older, 0 same or not comparable, 1 newer; patch 0xFF = unknown",
+        "typedef struct { uint8_t inst_major, inst_minor, inst_patch, cand_major, cand_minor, cand_patch; int expect; } urtc_vec_order_t;",
+        "typedef struct { const char *name; uint16_t id; uint8_t data[4]; } urtc_vec_magic_t;",
+        "typedef struct { const char *name; uint8_t len; uint8_t data[255]; uint8_t crc; } urtc_vec_crc8_t;", "",
+        f"URTC_VEC_TABLE uint16_t URTC_VEC_IDENTIFIERS[] = {{{ids}}};", "",
+        "URTC_VEC_TABLE urtc_vec_minor_t URTC_VEC_MINOR[] = {",
+    ]
+    for c in data["minor_field"]:
+        lines.append(f'    {{{c["minor"]}, {patch(c["patch"])}, {1 if c["bootloader_accepts_patch"] else 0}, {c["expect"]}u}},')
+    lines += ["};", "", "URTC_VEC_TABLE urtc_vec_order_t URTC_VEC_ORDER[] = {"]
+    for c in data["version_order"]:
+        i, n = c["installed"], c["candidate"]
+        lines.append(f'    {{{i[0]}, {i[1]}, {patch(i[2])}, {n[0]}, {n[1]}, {patch(n[2])}, {c["expect"]}}},')
+    lines += ["};", "", "URTC_VEC_TABLE urtc_vec_magic_t URTC_VEC_MAGIC[] = {"]
+    for m in data["magic_payloads"]:
+        raw = bytes.fromhex(m["data"])
+        lines.append(f'    {{"{m["name"]}", 0x{int(m["id"], 16):03X}u, {{' + ", ".join(f"0x{b:02X}" for b in raw) + "}},")
+    lines += ["};", "", "URTC_VEC_TABLE urtc_vec_crc8_t URTC_VEC_CRC8[] = {"]
+    for name, raw in CRC8_CASES:
+        body = ", ".join(f"0x{b:02X}" for b in raw) if raw else "0"
+        lines.append(f'    {{"{name}", {len(raw)}, {{{body}}}, 0x{rk.crc8(raw):02X}}},')
+    lines += ["};", "", "#define URTC_VEC_COUNT(a) ((int)(sizeof(a) / sizeof((a)[0])))", "", "#endif // URTC_FW_VECTORS_H", ""]
+    return "\n".join(lines)
+
+
 def thermal_vectors() -> dict:
     cases = []
     frames = {
@@ -243,6 +296,7 @@ def outputs() -> dict[Path, str]:
         BB_OUT: json.dumps(blackbox_vectors(), indent=2) + "\n",
         RK_OUT: json.dumps(rv, indent=2) + "\n",
         RK_H: rack_header(rv),
+        FW_H: fw_header(),
         FUZZ_OUT: fuzz_corpus(),
         TV_OUT: json.dumps(thermal_vectors(), indent=2) + "\n",
     }

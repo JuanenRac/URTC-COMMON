@@ -56,6 +56,8 @@ SETS = {
     "rack_c": ["generated/rack_vectors.h"],
     "fuzz": ["src/urtc_common/fuzz.py", "conformance/fuzz_corpus.txt"],
     "compat": ["docs/COMPATIBILITY.md"],
+    "firmware_base": ["firmware_base/urtc_crc8.h"],
+    "fw_vectors": ["generated/urtc_fw_vectors.h"],
 }
 
 

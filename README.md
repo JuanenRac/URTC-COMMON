@@ -45,6 +45,7 @@ The CAN protocol of the tool head, written once as data, and everything that fol
 * [Protocol table](docs/PROTOCOL_TABLE.md): every identifier in one table, generated from the specification.
 * [Several tool heads on one bus](docs/MULTINODE.md): addressing, discovery and safety rules; implemented in the URTC firmware behind a switch that is off by default, tested on the host only and not tried on hardware.
 * Interface helpers: `src/urtc_ui`: the language list, status badges and the formatting of identifiers, bitrates and frames that the desktop programs can share (no Qt needed; URTC-FLASHER and URTC-TESTER carry a copy made with `vendor_copy.py --set ui`).
+* Firmware parts: `firmware_base/urtc_crc8.h`, the CRC-8 of the rack and vision serial frames in one place (copied with `vendor_copy.py --set firmware_base`), and `generated/urtc_fw_vectors.h`, the vectors the firmware itself must pass (version fields, the magic payloads, the check values of the CRC-8) as C tables (`--set fw_vectors`).
 * [Conformance vectors](conformance/can_vectors.json): the bytes every implementation must reproduce: every layout, the refusals and the SLCAN streams.
 * [Tool profiles](spec/tools.json): the 25 tool profiles (limits, watchdog, pins, expansion board) as data; `generate_tools.py` writes the TypeScript and Python tables and [the tool table](docs/TOOLS_TABLE.md). Also here: the fault recorder reader with CSV and JSON export (`blackbox.py`), the rack simulator (`rack_sim.py`), frames for fuzzing a board made from the specification (`fuzz.py`) and the [compatibility table](docs/COMPATIBILITY.md) of a release, made from `spec/versions.json`.
 * **Tools:** `generate_constants.py` writes the C header, the TypeScript module, the Python module and the table (`--check` compares), `make_conformance.py` writes the vectors (`--check`), `vendor_copy.py` copies parts into another repository with a lock file and checks the copy, and `ci_validate.py` is the shared repository check. `make_glance.py` of URTC-DOCS writes the At a glance table.
@@ -60,6 +61,7 @@ URTC-COMMON/
 ├── docs/         contracts, specification format, migration guide, generated protocol table
 ├── spec/         the specification (can_protocol.json) and its JSON Schema
 ├── generated/    the C header and the TypeScript module, written from the specification
+├── firmware_base/ C parts the firmware repositories share (the CRC-8)
 ├── conformance/  the shared vectors
 ├── src/          the Python package: generated protocol, framing, SLCAN codec, transports, versions, vector runner
 ├── tools/        generators with --check, vendor_copy.py, and the shared CI checks of the ecosystem
