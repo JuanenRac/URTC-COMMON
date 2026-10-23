@@ -25,7 +25,7 @@
           "version": "0.2.6"
         }
       ],
-      "common": "0.0.6"
+      "common": "0.0.7"
     },
     {
       "repo": "URTC-FLASHER",
@@ -59,7 +59,8 @@
       "repo": "URTC-UPDATER",
       "title": "Updater",
       "kind": "program",
-      "version": "0.1.7"
+      "version": "0.1.7",
+      "common": "0.0.7"
     },
     {
       "repo": "URTC-SMART-RACK",
