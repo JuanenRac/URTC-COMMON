@@ -51,7 +51,7 @@ jobs:
 
       - name: Compare (a skipped test means a repository was not fetched)
         working-directory: URTC-COMMON
-        run: python -m pytest tests/test_siblings.py tests/test_conformance.py tests/test_i18n_glossary.py tests/test_readme_sections.py -q -rs
+        run: python -m pytest tests/test_siblings.py tests/test_conformance.py tests/test_i18n_glossary.py tests/test_i18n_generate.py tests/test_readme_sections.py -q -rs
 
       - name: Open an issue when the night failed
         if: ${{ failure() }}
