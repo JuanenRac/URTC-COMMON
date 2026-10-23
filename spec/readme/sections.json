@@ -1,0 +1,96 @@
+{
+  "format": 1,
+  "about": "Sections that several README files carry, written once in the eight languages. tools/readme_sections.py puts each between two marker comments before the license heading of the README of every repository that lists it, and checks that they are there and equal.",
+  "sections": [
+    {
+      "id": "updates",
+      "emoji": "🔄",
+      "repos": [
+        "URTC-FLASHER",
+        "URTC-TESTER",
+        "URTC-UPDATER"
+      ],
+      "heading": {
+        "english": "How it updates",
+        "spanish": "Cómo se actualiza",
+        "german": "So wird aktualisiert",
+        "french": "Comment il se met à jour",
+        "italian": "Come si aggiorna",
+        "japanese": "更新のしくみ",
+        "chinese": "如何更新",
+        "portuguese": "Como se atualiza"
+      },
+      "body": {
+        "english": "This program can look for a newer version of itself: the \"Check for updates\" button asks GitHub once and offers a signed package only if it is for your system and newer. Nothing is checked or installed on its own unless you turn the check on, and an update needs your confirmation. The package must match its SHA-256 and the signature of the releases key pinned in the program; the previous version is kept, and it is restored by itself if the new one does not start. `urtc-updater --cli package list|check|install|rollback` does the same from the command line for the flasher and the tester, and `install --file` works without a network.",
+        "spanish": "Este programa puede buscar una versión más nueva de sí mismo: el botón «Buscar actualización» pregunta una vez a GitHub y ofrece un paquete firmado solo si es para tu sistema y más nuevo. Nada se comprueba ni se instala por su cuenta salvo que actives la comprobación, y una actualización necesita tu confirmación. El paquete debe coincidir con su SHA-256 y con la firma de la clave de las releases fijada en el programa; la versión anterior se conserva y se restaura sola si la nueva no arranca. `urtc-updater --cli package list|check|install|rollback` hace lo mismo desde la línea de órdenes para el flasher y el tester, y `install --file` funciona sin red.",
+        "german": "Dieses Programm kann nach einer neueren Version seiner selbst suchen: Die Schaltfläche „Nach Updates suchen“ fragt GitHub einmal und bietet ein signiertes Paket nur an, wenn es für Ihr System ist und neuer. Nichts wird von selbst geprüft oder installiert, solange Sie die Prüfung nicht einschalten, und ein Update braucht Ihre Bestätigung. Das Paket muss zu seinem SHA-256 und zur Signatur des im Programm angehefteten Release-Schlüssels passen; die vorherige Version bleibt erhalten und wird von selbst wiederhergestellt, wenn die neue nicht startet. `urtc-updater --cli package list|check|install|rollback` macht dasselbe auf der Kommandozeile für Flasher und Tester, und `install --file` funktioniert ohne Netzwerk.",
+        "french": "Ce programme peut chercher une version plus récente de lui-même : le bouton « Rechercher une mise à jour » interroge GitHub une fois et ne propose un paquet signé que s'il est pour votre système et plus récent. Rien n'est vérifié ni installé tout seul tant que vous n'activez pas la vérification, et une mise à jour demande votre confirmation. Le paquet doit correspondre à son SHA-256 et à la signature de la clé des releases épinglée dans le programme ; la version précédente est conservée et rétablie d'elle-même si la nouvelle ne démarre pas. `urtc-updater --cli package list|check|install|rollback` fait la même chose en ligne de commande pour le flasher et le testeur, et `install --file` fonctionne sans réseau.",
+        "italian": "Questo programma può cercare una versione più recente di sé stesso: il pulsante «Cerca aggiornamenti» interroga GitHub una volta e propone un pacchetto firmato solo se è per il tuo sistema e più recente. Nulla viene controllato o installato da solo a meno che tu non attivi il controllo, e un aggiornamento richiede la tua conferma. Il pacchetto deve corrispondere al suo SHA-256 e alla firma della chiave delle release fissata nel programma; la versione precedente viene conservata e ripristinata da sola se la nuova non si avvia. `urtc-updater --cli package list|check|install|rollback` fa lo stesso da riga di comando per il flasher e il tester, e `install --file` funziona senza rete.",
+        "japanese": "このプログラムは自分自身の新しいバージョンを探せます。「更新を確認」ボタンは GitHub に一度だけ問い合わせ、お使いのシステム向けで新しい場合にだけ署名付きパッケージを提案します。確認を有効にしない限り、何も自動では確認もインストールもされず、更新にはあなたの確認が必要です。パッケージは SHA-256 と、プログラムに固定されたリリース鍵の署名に一致しなければなりません。前のバージョンは保持され、新しいバージョンが起動しない場合は自動的に復元されます。`urtc-updater --cli package list|check|install|rollback` はコマンドラインからフラッシャーとテスターに対して同じことを行い、`install --file` はネットワークなしで動作します。",
+        "chinese": "本程序可以查找自身的较新版本：“检查更新”按钮只向 GitHub 查询一次，只有当包适用于您的系统且更新时才会提供已签名的包。除非您打开检查，否则不会自行检查或安装，更新需要您的确认。包必须与其 SHA-256 以及程序中固定的发布密钥签名一致；上一版本会保留，新版本无法启动时会自动恢复。`urtc-updater --cli package list|check|install|rollback` 可在命令行中为刷写器和测试器完成同样的操作，`install --file` 无需网络即可使用。",
+        "portuguese": "Este programa pode procurar uma versão mais recente de si próprio: o botão «Procurar atualizações» pergunta uma vez ao GitHub e só propõe um pacote assinado se for para o seu sistema e mais recente. Nada é verificado nem instalado por si só, a não ser que ative a verificação, e uma atualização precisa da sua confirmação. O pacote tem de coincidir com o seu SHA-256 e com a assinatura da chave das versões fixada no programa; a versão anterior é guardada e reposta sozinha se a nova não arrancar. `urtc-updater --cli package list|check|install|rollback` faz o mesmo na linha de comandos para o flasher e o tester, e `install --file` funciona sem rede."
+      }
+    },
+    {
+      "id": "first_flash",
+      "emoji": "🚦",
+      "repos": [
+        "URTC-FLASHER"
+      ],
+      "heading": {
+        "english": "First flash without hardware",
+        "spanish": "Primer flasheo sin hardware",
+        "german": "Erstes Flashen ohne Hardware",
+        "french": "Premier flashage sans matériel",
+        "italian": "Primo flash senza hardware",
+        "japanese": "ハードウェアなしの最初の書き込み",
+        "chinese": "无硬件的首次刷写",
+        "portuguese": "Primeira gravação sem hardware"
+      },
+      "body": {
+        "english": "1. Start the virtual board: `python -m urtc_can.virtual_board`.\n2. In another terminal set `URTC_VIRTUAL_PORT=socket://127.0.0.1:7777` and start the flasher: the virtual board is in the list of ports.\n3. Select it, press Connect, pick an image from `firmware/` (or Browse) and press Start CAN-OTA.\n4. The virtual board takes the whole update, with the same checks of the size, the signature and the version as a real one. It is a model: nothing of this has run on a board.",
+        "spanish": "1. Arranca la placa virtual: `python -m urtc_can.virtual_board`.\n2. En otra terminal define `URTC_VIRTUAL_PORT=socket://127.0.0.1:7777` y arranca el flasher: la placa virtual está en la lista de puertos.\n3. Selecciónala, pulsa Conectar, elige una imagen de `firmware/` (o búscala) y pulsa Iniciar CAN-OTA.\n4. La placa virtual admite la actualización completa, con las mismas comprobaciones de tamaño, firma y versión que una real. Es un modelo: nada de esto ha corrido en una placa.",
+        "german": "1. Starten Sie die virtuelle Platine: `python -m urtc_can.virtual_board`.\n2. Setzen Sie in einem anderen Terminal `URTC_VIRTUAL_PORT=socket://127.0.0.1:7777` und starten Sie den Flasher: Die virtuelle Platine steht in der Portliste.\n3. Wählen Sie sie, drücken Sie Verbinden, wählen Sie ein Image aus `firmware/` (oder suchen Sie eines) und drücken Sie CAN-OTA starten.\n4. Die virtuelle Platine nimmt das ganze Update an, mit denselben Prüfungen von Größe, Signatur und Version wie eine echte. Sie ist ein Modell: Nichts davon lief auf einer Platine.",
+        "french": "1. Démarrez la carte virtuelle : `python -m urtc_can.virtual_board`.\n2. Dans un autre terminal, définissez `URTC_VIRTUAL_PORT=socket://127.0.0.1:7777` et démarrez le flasher : la carte virtuelle est dans la liste des ports.\n3. Sélectionnez-la, appuyez sur Connecter, choisissez une image de `firmware/` (ou parcourez) et appuyez sur Démarrer CAN-OTA.\n4. La carte virtuelle accepte toute la mise à jour, avec les mêmes vérifications de taille, de signature et de version qu'une vraie. C'est un modèle : rien de cela n'a tourné sur une carte.",
+        "italian": "1. Avvia la scheda virtuale: `python -m urtc_can.virtual_board`.\n2. In un altro terminale imposta `URTC_VIRTUAL_PORT=socket://127.0.0.1:7777` e avvia il flasher: la scheda virtuale è nell'elenco delle porte.\n3. Selezionala, premi Connetti, scegli un'immagine da `firmware/` (o cercala) e premi Avvia CAN-OTA.\n4. La scheda virtuale accetta l'intero aggiornamento, con gli stessi controlli di dimensione, firma e versione di una vera. È un modello: nulla di tutto ciò è girato su una scheda.",
+        "japanese": "1. 仮想ボードを起動します：`python -m urtc_can.virtual_board`。\n2. 別のターミナルで `URTC_VIRTUAL_PORT=socket://127.0.0.1:7777` を設定してフラッシャーを起動します。仮想ボードがポート一覧に表示されます。\n3. それを選んで接続を押し、`firmware/` からイメージを選び（または参照して）CAN-OTA 開始を押します。\n4. 仮想ボードは、実機と同じサイズ、署名、バージョンの検査を行いながら更新全体を受け付けます。これはモデルであり、実機では動かしていません。",
+        "chinese": "1. 启动虚拟开发板：`python -m urtc_can.virtual_board`。\n2. 在另一个终端设置 `URTC_VIRTUAL_PORT=socket://127.0.0.1:7777` 并启动刷写器：虚拟开发板会出现在端口列表中。\n3. 选中它，点击连接，从 `firmware/` 选择镜像（或浏览选择），然后点击开始 CAN-OTA。\n4. 虚拟开发板会接受完整更新，并像真实开发板一样检查大小、签名和版本。它只是一个模型：以上均未在开发板上运行过。",
+        "portuguese": "1. Arranque a placa virtual: `python -m urtc_can.virtual_board`.\n2. Noutro terminal defina `URTC_VIRTUAL_PORT=socket://127.0.0.1:7777` e arranque o flasher: a placa virtual está na lista de portas.\n3. Selecione-a, carregue em Ligar, escolha uma imagem de `firmware/` (ou procure uma) e carregue em Iniciar CAN-OTA.\n4. A placa virtual aceita a atualização completa, com as mesmas verificações de tamanho, assinatura e versão de uma real. É um modelo: nada disto correu numa placa."
+      }
+    },
+    {
+      "id": "compatibility",
+      "emoji": "🧩",
+      "repos": [
+        "URTC-FLASHER",
+        "URTC-TESTER",
+        "URTC-UPDATER",
+        "URTC-GATEWAY",
+        "URTC-SMART-RACK",
+        "URTC-VISION-TOOL",
+        "URTC-WEB-STUDIO",
+        "URTC"
+      ],
+      "heading": {
+        "english": "Compatibility",
+        "spanish": "Compatibilidad",
+        "german": "Kompatibilität",
+        "french": "Compatibilité",
+        "italian": "Compatibilità",
+        "japanese": "互換性",
+        "chinese": "兼容性",
+        "portuguese": "Compatibilidade"
+      },
+      "body": {
+        "english": "Which versions of the URTC programs work together, and which protocol version each one speaks, is listed in the compatibility table that URTC-COMMON generates: [docs/COMPATIBILITY.md](https://github.com/JuanenRac/URTC/blob/main/docs/COMPATIBILITY.md).",
+        "spanish": "Qué versiones de los programas de URTC funcionan juntas, y qué versión del protocolo habla cada una, figura en la tabla de compatibilidad que genera URTC-COMMON: [docs/COMPATIBILITY.md](https://github.com/JuanenRac/URTC/blob/main/docs/COMPATIBILITY.md).",
+        "german": "Welche Versionen der URTC-Programme zusammenarbeiten und welche Protokollversion jede spricht, steht in der Kompatibilitätstabelle, die URTC-COMMON erzeugt: [docs/COMPATIBILITY.md](https://github.com/JuanenRac/URTC/blob/main/docs/COMPATIBILITY.md).",
+        "french": "Les versions des programmes URTC qui fonctionnent ensemble, et la version du protocole que parle chacune, figurent dans le tableau de compatibilité que génère URTC-COMMON : [docs/COMPATIBILITY.md](https://github.com/JuanenRac/URTC/blob/main/docs/COMPATIBILITY.md).",
+        "italian": "Quali versioni dei programmi URTC funzionano insieme, e quale versione del protocollo parla ciascuna, è elencato nella tabella di compatibilità generata da URTC-COMMON: [docs/COMPATIBILITY.md](https://github.com/JuanenRac/URTC/blob/main/docs/COMPATIBILITY.md).",
+        "japanese": "どのバージョンの URTC プログラムが連携して動作し、それぞれがどのプロトコルバージョンを話すかは、URTC-COMMON が生成する互換性表に載っています：[docs/COMPATIBILITY.md](https://github.com/JuanenRac/URTC/blob/main/docs/COMPATIBILITY.md)。",
+        "chinese": "哪些版本的 URTC 程序可以配合使用、各自使用哪个协议版本，列在 URTC-COMMON 生成的兼容性表中：[docs/COMPATIBILITY.md](https://github.com/JuanenRac/URTC/blob/main/docs/COMPATIBILITY.md)。",
+        "portuguese": "As versões dos programas URTC que funcionam em conjunto, e a versão do protocolo que cada uma fala, constam da tabela de compatibilidade que o URTC-COMMON gera: [docs/COMPATIBILITY.md](https://github.com/JuanenRac/URTC/blob/main/docs/COMPATIBILITY.md)."
+      }
+    }
+  ]
+}
