@@ -61,6 +61,7 @@ SETS = {
     "sensor_c": ["generated/sensor_vectors.h"],
     "compat": ["docs/COMPATIBILITY.md"],
     "firmware_base": ["firmware_base/urtc_crc8.h"],
+    "firmware_test": ["firmware_base/urtc_test.h"],
     "fw_vectors": ["generated/urtc_fw_vectors.h"],
 }
 

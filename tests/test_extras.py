@@ -388,3 +388,24 @@ def test_the_firmware_vector_header_carries_every_group_and_the_check_text():
     data = json.loads((ROOT / "conformance" / "can_vectors.json").read_text(encoding="utf-8"))
     assert text.count("\n    {\"") >= len(data["magic_payloads"]) + len(make_extra_vectors.CRC8_CASES)
     assert len(data["identifiers_all"]) == text.split("URTC_VEC_IDENTIFIERS[] = {")[1].split("}")[0].count("u")
+
+
+def test_the_shared_test_header_counts_a_failed_assertion_with_the_host_compiler(tmp_path):
+    import os
+    import shutil
+
+    compiler = shutil.which("cc") or shutil.which("gcc")
+    if compiler is None:
+        pytest.skip("no host C compiler")
+    source = tmp_path / "t.c"
+    source.write_text(
+        '#include "urtc_test.h"\n'
+        "static void suite(int *failures) { TEST_ASSERT(1 == 1, \"holds\"); TEST_ASSERT(1 == 2, \"does not hold\"); }\n"
+        "int main(void) { int failures = 0; suite(&failures); return failures == 1 ? 0 : 3; }\n",
+        encoding="utf-8",
+    )
+    binary = tmp_path / ("t.exe" if os.name == "nt" else "t")
+    build = subprocess.run([compiler, "-std=c11", "-Wall", "-Wextra", "-Werror", f"-I{ROOT / 'firmware_base'}", str(source), "-o", str(binary)], capture_output=True, text=True)
+    assert build.returncode == 0, build.stderr
+    run = subprocess.run([str(binary)], capture_output=True, text=True)
+    assert run.returncode == 0 and "FAIL: does not hold (" in run.stdout and "holds (" not in run.stdout.replace("does not hold (", "")

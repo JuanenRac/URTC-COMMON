@@ -30,7 +30,7 @@
 |---|---|
 | Version | `0.0.7` |
 | Maturity | Scaffolding |
-| Tests | 430 |
+| Tests | 431 |
 | Stack | JSON / Python |
 | On real hardware | Simulated only: tested against emulators, fakes or simulators; no run on real hardware is recorded for this version |
 
@@ -46,6 +46,7 @@ The CAN protocol of the tool head, written once as data, and everything that fol
 * [Several tool heads on one bus](docs/MULTINODE.md): addressing, discovery and safety rules; implemented in the URTC firmware behind a switch that is off by default, tested on the host only and not tried on hardware.
 * Interface helpers: `src/urtc_ui`: the language list, status badges and the formatting of identifiers, bitrates and frames that the desktop programs can share (no Qt needed; URTC-FLASHER and URTC-TESTER carry a copy made with `vendor_copy.py --set ui`).
 * Firmware parts: `firmware_base/urtc_crc8.h`, the CRC-8 of the rack and vision serial frames in one place (copied with `vendor_copy.py --set firmware_base`), and `generated/urtc_fw_vectors.h`, the vectors the firmware itself must pass (version fields, the magic payloads, the check values of the CRC-8) as C tables (`--set fw_vectors`).
+* The assertion of the host tests of the firmware: `firmware_base/urtc_test.h` holds `TEST_ASSERT`, the one macro the rack, the vision tool and the tool head firmware used to define three times; each repository copies it with `vendor_copy.py --set firmware_test` and keeps its own `test_runner.h` with its suites.
 * [Conformance vectors](conformance/can_vectors.json): the bytes every implementation must reproduce: every layout, the refusals and the SLCAN streams.
 * [Tool profiles](spec/tools.json): the 25 tool profiles (limits, watchdog, pins, expansion board) as data; `generate_tools.py` writes the TypeScript and Python tables and [the tool table](docs/TOOLS_TABLE.md). Also here: the fault recorder reader with CSV and JSON export (`blackbox.py`), the rack simulator (`rack_sim.py`), frames for fuzzing a board made from the specification (`fuzz.py`) and the [compatibility table](docs/COMPATIBILITY.md) of a release, made from `spec/versions.json`.
 * **Virtual board and companion links:** `virtual_board.py` serves a board behind an SLCAN adapter on a TCP port (`python -m urtc_common.virtual_board`); type `socket://127.0.0.1:7777` where a tool asks for a serial port and the flasher, the tester and the gateway run end to end with no hardware. `sensor_frame.py` is the reference of the vision sensor frame; it and the rack serial frame are version 2, big-endian like the bus, with their vectors (`conformance/sensor_vectors.json`, `generated/sensor_vectors.h`).

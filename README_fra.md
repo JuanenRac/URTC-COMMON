@@ -30,7 +30,7 @@
 |---|---|
 | Version | `0.0.7` |
 | Maturité | Ébauche |
-| Tests | 430 |
+| Tests | 431 |
 | Technologie | JSON / Python |
 | Sur matériel réel | Simulé seulement : testé avec des émulateurs, des doubles de test ou des simulateurs ; aucune exécution sur du matériel réel n'est consignée pour cette version |
 
@@ -46,6 +46,7 @@ Le protocole CAN de la tête d'outil, écrit une seule fois comme données, et t
 * [Plusieurs têtes d'outil sur un bus](docs/MULTINODE.md): adressage, découverte et règles de sécurité ; implémentés dans le firmware URTC derrière un interrupteur éteint par défaut, testés seulement sur ordinateur et non essayés sur du matériel.
 * Aides d'interface: `src/urtc_ui` : la liste des langues, les pastilles d'état et le formatage des identifiants, débits et trames que les programmes de bureau peuvent partager (sans Qt ; URTC-FLASHER et URTC-TESTER en portent une copie faite avec `vendor_copy.py --set ui`).
 * Éléments de firmware : `firmware_base/urtc_crc8.h`, le CRC-8 des trames série du rack et de la vision en un seul endroit (copié avec `vendor_copy.py --set firmware_base`), et `generated/urtc_fw_vectors.h`, les vecteurs que le firmware lui-même doit réussir (champs de version, charges magiques, valeurs de contrôle du CRC-8) sous forme de tables C (`--set fw_vectors`).
+* L'assertion des tests hôte du firmware : `firmware_base/urtc_test.h` contient `TEST_ASSERT`, la macro que les firmwares du rack, de l'outil de vision et de la tête d'outil définissaient trois fois ; chaque dépôt la copie avec `vendor_copy.py --set firmware_test` et garde son propre `test_runner.h` avec ses suites.
 * [Vecteurs de conformité](conformance/can_vectors.json): les octets que toute implémentation doit reproduire : chaque structure, les refus et les flux SLCAN.
 * [Profils d'outil](spec/tools.json) : les 25 profils d'outil (limites, chien de garde, broches, carte d'extension) comme données ; `generate_tools.py` écrit les tables TypeScript et Python et [la table des outils](docs/TOOLS_TABLE.md). Aussi ici : le lecteur de la boîte noire avec export CSV et JSON (`blackbox.py`), le simulateur du rack (`rack_sim.py`), des trames pour tester une carte par fuzzing, produites à partir de la spécification (`fuzz.py`) et le [tableau de compatibilité](docs/COMPATIBILITY.md) d'une version, produit à partir de `spec/versions.json`.
 * **Carte virtuelle et liaisons complémentaires :** `virtual_board.py` sert une carte derrière un adaptateur SLCAN sur un port TCP (`python -m urtc_common.virtual_board`) ; saisissez `socket://127.0.0.1:7777` là où un outil demande un port série et le flasheur, le testeur et la passerelle fonctionnent de bout en bout sans matériel. `sensor_frame.py` est la référence de la trame du capteur de la tête de vision ; elle et la trame série du rack sont en version 2, big-endian comme le bus, avec leurs vecteurs (`conformance/sensor_vectors.json`, `generated/sensor_vectors.h`).
