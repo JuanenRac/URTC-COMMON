@@ -30,7 +30,7 @@
 |---|---|
 | 版本 | `0.0.7` |
 | 成熟度 | 雏形 |
-| 测试 | 337 |
+| 测试 | 398 |
 | 技术栈 | JSON / Python |
 | 真实硬件 | 仅模拟：使用模拟器、替身或仿真测试；此版本没有在真实硬件上运行的记录 |
 
@@ -48,6 +48,7 @@
 * 固件部件: `firmware_base/urtc_crc8.h`，把工具架和视觉串行帧的 CRC-8 集中在一处（用 `vendor_copy.py --set firmware_base` 复制），以及 `generated/urtc_fw_vectors.h`，以 C 表格形式给出固件自身必须通过的向量（版本字段、魔术载荷、CRC-8 校验值）（`--set fw_vectors`）。
 * [一致性向量](conformance/can_vectors.json): 每个实现都必须重现的字节：每种布局、被拒绝的输入和 SLCAN 数据流。
 * [工具配置](spec/tools.json)：25 个工具配置（限值、看门狗、引脚、扩展板）以数据形式保存；`generate_tools.py` 生成 TypeScript 和 Python 表格以及[工具表](docs/TOOLS_TABLE.md)。此外还有：支持导出 CSV 和 JSON 的黑匣子读取器（`blackbox.py`）、机架模拟器（`rack_sim.py`）、根据规范生成的用于板卡模糊测试的帧（`fuzz.py`），以及由 `spec/versions.json` 生成的发布[兼容性表](docs/COMPATIBILITY.md)。
+* **虚拟板与辅助链路：** `virtual_board.py` 在 TCP 端口上提供一块位于 SLCAN 适配器之后的板子（`python -m urtc_common.virtual_board`）；在工具要求串口的地方输入 `socket://127.0.0.1:7777`，刷写器、测试器和网关即可在没有硬件的情况下端到端运行。`sensor_frame.py` 是视觉头传感器帧的参考实现；它和机架串口帧都是版本 2，与总线一样采用大端序，并附有各自的向量（`conformance/sensor_vectors.json`、`generated/sensor_vectors.h`）。
 * **工具：** `generate_constants.py` 写出 C 头文件、TypeScript 模块、Python 模块和协议表（`--check` 用于比对），`make_conformance.py` 写出向量（`--check`），`vendor_copy.py` 带锁文件把部分内容复制到其他仓库并检查副本，`ci_validate.py` 是通用的仓库检查。URTC-DOCS 的 `make_glance.py` 负责写出“速览”表。
 
 ## 🧩 在 URTC 中的角色

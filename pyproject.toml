@@ -17,7 +17,7 @@ keywords = ["urtc", "can-bus", "slcan", "socketcan", "protocol", "conformance"]
 [project.optional-dependencies]
 serial = ["pyserial>=3.5"]
 can = ["python-can>=4.0"]
-dev = ["pytest>=8.0", "jsonschema>=4.0"]
+dev = ["pytest>=8.0", "pytest-cov>=5.0", "jsonschema>=4.0", "pyserial>=3.5"]
 
 [project.urls]
 Homepage = "https://github.com/JuanenRac/URTC-COMMON"
@@ -31,3 +31,7 @@ where = ["src"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["src", "tools", "tests"]
+
+[tool.coverage.report]
+# measured 85 percent of the package; the floor is eight points below so a real drop fails the CI
+fail_under = 77

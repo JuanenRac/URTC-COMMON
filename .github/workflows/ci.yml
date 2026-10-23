@@ -52,7 +52,7 @@ jobs:
       - name: Install and run the real Python test suite
         run: |
           python -m pip install -e ".[dev]"
-          python -m pytest tests/ -q
+          python -m pytest tests/ -q --cov=urtc_common
       - name: Run the vectors through the package and through the generated TypeScript
         run: |
           python -m urtc_common.cli conformance

@@ -30,7 +30,7 @@
 |---|---|
 | Version | `0.0.7` |
 | Maturité | Ébauche |
-| Tests | 337 |
+| Tests | 398 |
 | Technologie | JSON / Python |
 | Sur matériel réel | Simulé seulement : testé avec des émulateurs, des doubles de test ou des simulateurs ; aucune exécution sur du matériel réel n'est consignée pour cette version |
 
@@ -48,6 +48,7 @@ Le protocole CAN de la tête d'outil, écrit une seule fois comme données, et t
 * Éléments de firmware : `firmware_base/urtc_crc8.h`, le CRC-8 des trames série du rack et de la vision en un seul endroit (copié avec `vendor_copy.py --set firmware_base`), et `generated/urtc_fw_vectors.h`, les vecteurs que le firmware lui-même doit réussir (champs de version, charges magiques, valeurs de contrôle du CRC-8) sous forme de tables C (`--set fw_vectors`).
 * [Vecteurs de conformité](conformance/can_vectors.json): les octets que toute implémentation doit reproduire : chaque structure, les refus et les flux SLCAN.
 * [Profils d'outil](spec/tools.json) : les 25 profils d'outil (limites, chien de garde, broches, carte d'extension) comme données ; `generate_tools.py` écrit les tables TypeScript et Python et [la table des outils](docs/TOOLS_TABLE.md). Aussi ici : le lecteur de la boîte noire avec export CSV et JSON (`blackbox.py`), le simulateur du rack (`rack_sim.py`), des trames pour tester une carte par fuzzing, produites à partir de la spécification (`fuzz.py`) et le [tableau de compatibilité](docs/COMPATIBILITY.md) d'une version, produit à partir de `spec/versions.json`.
+* **Carte virtuelle et liaisons complémentaires :** `virtual_board.py` sert une carte derrière un adaptateur SLCAN sur un port TCP (`python -m urtc_common.virtual_board`) ; saisissez `socket://127.0.0.1:7777` là où un outil demande un port série et le flasheur, le testeur et la passerelle fonctionnent de bout en bout sans matériel. `sensor_frame.py` est la référence de la trame du capteur de la tête de vision ; elle et la trame série du rack sont en version 2, big-endian comme le bus, avec leurs vecteurs (`conformance/sensor_vectors.json`, `generated/sensor_vectors.h`).
 * **Outils :** `generate_constants.py` écrit l'en-tête C, le module TypeScript, le module Python et la table (`--check` compare), `make_conformance.py` écrit les vecteurs (`--check`), `vendor_copy.py` copie des parties dans un autre dépôt avec un fichier de verrouillage et vérifie la copie, et `ci_validate.py` est la vérification commune des dépôts. `make_glance.py` d'URTC-DOCS écrit le tableau En un coup d'œil.
 
 ## 🧩 Rôle dans URTC

@@ -30,7 +30,7 @@
 |---|---|
 | バージョン | `0.0.7` |
 | 成熟度 | 足場段階 |
-| テスト | 337 |
+| テスト | 398 |
 | 技術 | JSON / Python |
 | 実機での確認 | シミュレーションのみ：エミュレーター、模擬部品、シミュレーターで試験済み。このバージョンについて実機での動作記録はありません |
 
@@ -48,6 +48,7 @@
 * ファームウェア部品: `firmware_base/urtc_crc8.h`（ラックとビジョンのシリアルフレームの CRC-8 を一か所にまとめたもの。`vendor_copy.py --set firmware_base` でコピー）と、`generated/urtc_fw_vectors.h`（ファームウェア自身が通すべきベクター。バージョン欄、マジックペイロード、CRC-8 の確認値）を C のテーブルとして提供します（`--set fw_vectors`）。
 * [適合ベクトル](conformance/can_vectors.json): すべての実装が再現しなければならないバイト列：各レイアウト、拒否される入力、SLCAN ストリーム。
 * [ツールプロファイル](spec/tools.json)：25 種類のツールプロファイル（上限・下限、ウォッチドッグ、ピン、拡張ボード）をデータとして保持します。`generate_tools.py` が TypeScript と Python の表および[ツール一覧表](docs/TOOLS_TABLE.md)を生成します。ほかに、CSV と JSON に書き出せるブラックボックスの読み取り機能（`blackbox.py`）、ラックのシミュレーター（`rack_sim.py`）、仕様から作るボードのファジング用フレーム（`fuzz.py`）、`spec/versions.json` から作るリリースの[互換性表](docs/COMPATIBILITY.md)があります。
+* **仮想ボードと補助リンク:** `virtual_board.py` は SLCAN アダプターの背後にあるボードを TCP ポートで提供します (`python -m urtc_common.virtual_board`)。ツールがシリアルポートを尋ねる場所に `socket://127.0.0.1:7777` を入力すると、フラッシャー、テスター、ゲートウェイがハードウェアなしで最初から最後まで動きます。`sensor_frame.py` はビジョンヘッドのセンサーフレームのリファレンスで、これとラックのシリアルフレームはバス同様にビッグエンディアンのバージョン 2 で、ベクトル (`conformance/sensor_vectors.json`、`generated/sensor_vectors.h`) があります。
 * **ツール：** `generate_constants.py` は C ヘッダー、TypeScript モジュール、Python モジュール、表を書き出します（`--check` で比較）。`make_conformance.py` はベクトルを書き出します（`--check`）。`vendor_copy.py` はロックファイル付きで他のリポジトリに一部をコピーし、そのコピーを検査します。`ci_validate.py` は共通のリポジトリ検査です。URTC-DOCS の `make_glance.py` が「ひと目で」の表を書きます。
 
 ## 🧩 URTC での役割

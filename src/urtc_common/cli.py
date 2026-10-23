@@ -87,6 +87,12 @@ def cmd_slcan(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_virtual_board(args: argparse.Namespace) -> int:
+    from . import virtual_board
+
+    return virtual_board.main(args.options)
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="urtc-common", description=__doc__)
     parser.add_argument("--version", action="version", version=f"urtc-common {__version__}")
@@ -104,6 +110,12 @@ def main(argv: list[str] | None = None) -> int:
     line = sub.add_parser("slcan", help="decode one received SLCAN line")
     line.add_argument("line")
     line.set_defaults(func=cmd_slcan)
+    board = sub.add_parser("virtual-board", help="serve a virtual board behind an SLCAN adapter on a TCP port (options as for python -m urtc_common.virtual_board)")
+    board.add_argument("options", nargs=argparse.REMAINDER)
+    board.set_defaults(func=cmd_virtual_board)
+    arguments = sys.argv[1:] if argv is None else argv
+    if arguments[:1] == ["virtual-board"]:
+        return cmd_virtual_board(argparse.Namespace(options=arguments[1:]))  # its own options, which this parser would not know
     args = parser.parse_args(argv)
     return args.func(args)
 

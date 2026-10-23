@@ -61,6 +61,17 @@ The vectors are computed with a small packer of their own, written apart from th
 
 Ten identifiers are defined by all three host tools. The table of every identifier is [`PROTOCOL_TABLE.md`](PROTOCOL_TABLE.md).
 
+## The companion links
+
+Two links of the family do not travel on the CAN bus of the tool head but follow its byte order. Both are big-endian in every multi-byte value, like every temperature on the bus.
+
+| Link | Frame | Version | Vectors | Reference |
+|---|---|---|---|---|
+| Tool rack, serial | start byte `0xA5`, version, sequence, command, length, payload, CRC-8; the temperature of `SET_PREHEAT` is two bytes, big-endian | rack serial frame version 2 | `conformance/rack_vectors.json`, `generated/rack_vectors.h` | `rack_sim.py` |
+| Vision head, sensor | start byte `0xB6`, version, sensor, sequence, timestamp (four bytes, big-endian), length, payload, CRC-8; a thermal reading is a signed 16-bit number in hundredths of a degree, big-endian | sensor frame version 2 | `conformance/sensor_vectors.json`, `generated/sensor_vectors.h` | `sensor_frame.py` |
+
+Version 1 of both frames was little-endian. A receiver at version 2 refuses a version 1 frame as an unsupported version, so an old sender can never be read as a different number. The CAN protocol of the tool head itself is unchanged (`protocol_version` stays at 1).
+
 ## Known gaps and differences
 
 These are facts the specification records instead of hiding. None of them is changed by this repository.

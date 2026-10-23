@@ -9,6 +9,8 @@
 * ``conformance/blackbox_vectors.json``  records (hex) with the rows and the CSV a reader must produce, and records it must refuse
 * ``conformance/rack_vectors.json``      serial frames, command checks, CAN data and short link scenarios of the rack
 * ``conformance/fuzz_corpus.txt``        frames for fuzzing a board made from the specification (valid, invalid and random), one per line
+* ``conformance/sensor_vectors.json``    frames and thermal readings of the sensor link of the vision head
+* ``generated/sensor_vectors.h``         the sensor vectors as C tables (the vision repository compiles them into a host test)
 * ``generated/rack_vectors.h``           the rack vectors as C tables (the rack repository compiles them into a host test)
 * ``generated/urtc_fw_vectors.h``        the vectors of ``conformance/can_vectors.json`` that the firmware itself must pass and the check
                                          values of the shared checksum, as C tables (the firmware repository compiles them into a host test)
@@ -28,11 +30,14 @@ sys.path.insert(0, str(ROOT / "src"))
 from urtc_common import blackbox as bb  # noqa: E402
 from urtc_common import fuzz  # noqa: E402
 from urtc_common import rack_sim as rk  # noqa: E402
+from urtc_common import sensor_frame as sf  # noqa: E402
 from urtc_common import thermal_view as tv  # noqa: E402
 
 BB_OUT = ROOT / "conformance" / "blackbox_vectors.json"
 RK_OUT = ROOT / "conformance" / "rack_vectors.json"
 RK_H = ROOT / "generated" / "rack_vectors.h"
+SF_OUT = ROOT / "conformance" / "sensor_vectors.json"
+SF_H = ROOT / "generated" / "sensor_vectors.h"
 FW_H = ROOT / "generated" / "urtc_fw_vectors.h"
 CAN_VECTORS = ROOT / "conformance" / "can_vectors.json"
 FUZZ_OUT = ROOT / "conformance" / "fuzz_corpus.txt"
@@ -79,7 +84,7 @@ def blackbox_vectors() -> dict:
 
 def rack_vectors() -> dict:
     frames = []
-    for name, seq, cmd, payload in (("set 200 C on the soldering iron", 1, 1, bytes([0, 200, 0])), ("set 0 on the hot air nozzle", 255, 1, bytes([19, 0, 0])),
+    for name, seq, cmd, payload in (("set 200 C on the soldering iron", 1, 1, bytes([0, 0, 200])), ("set 0 on the hot air nozzle", 255, 1, bytes([19, 0, 0])),
                                     ("unknown command, empty", 7, 0x7E, b""), ("full payload", 9, 1, bytes(range(16)))):
         frames.append({"name": name, "seq": seq, "cmd": cmd, "payload": payload.hex().upper(), "frame": rk.encode_frame(seq, cmd, payload).hex().upper()})
     good = rk.encode_set_preheat(3, 0, 250)
@@ -87,15 +92,15 @@ def rack_vectors() -> dict:
     parse.append({"name": "short", "hex": good[:5].hex().upper(), "status": "incomplete"})
     parse.append({"name": "frame cut after the header", "hex": good[:7].hex().upper(), "status": "incomplete"})
     parse.append({"name": "wrong start byte", "hex": (b"\x5A" + good[1:]).hex().upper(), "status": "bad_sof"})
-    parse.append({"name": "version 2", "hex": (good[:1] + b"\x02" + good[2:]).hex().upper(), "status": "unsupported_version"})
+    parse.append({"name": "version 1, the little-endian layout", "hex": (good[:1] + b"\x01" + good[2:]).hex().upper(), "status": "unsupported_version"})
     parse.append({"name": "length 17", "hex": (good[:4] + b"\x11" + good[5:]).hex().upper(), "status": "length_out_of_range"})
     parse.append({"name": "bad crc", "hex": (good[:-1] + bytes([good[-1] ^ 0xFF])).hex().upper(), "status": "crc_mismatch"})
     validate = []
-    for name, payload in (("soldering 250", bytes([0, 250, 0])), ("soldering 400", bytes([0, 144, 1])), ("soldering 401", bytes([0, 145, 1])),
-                          ("printer 310", bytes([10, 54, 1])), ("printer 311", bytes([10, 55, 1])), ("hot air 400", bytes([19, 144, 1])),
-                          ("gripper 0 (no heater, target 0)", bytes([6, 0, 0])), ("gripper 100", bytes([6, 100, 0])),
+    for name, payload in (("soldering 250", bytes([0, 0, 250])), ("soldering 400", bytes([0, 1, 144])), ("soldering 401", bytes([0, 1, 145])),
+                          ("printer 310", bytes([10, 1, 54])), ("printer 311", bytes([10, 1, 55])), ("hot air 400", bytes([19, 1, 144])),
+                          ("gripper 0 (no heater, target 0)", bytes([6, 0, 0])), ("gripper 100", bytes([6, 0, 100])),
                           ("no tool (31)", bytes([31, 0, 0])), ("tool 25", bytes([25, 0, 0])), ("tool byte 32", bytes([32, 0, 0])),
-                          ("two bytes", bytes([0, 1])), ("four bytes", bytes([0, 1, 0, 0])), ("empty", b"")):
+                          ("two bytes", bytes([0, 1])), ("four bytes", bytes([0, 0, 1, 0])), ("empty", b"")):
         status, tool, target = rk.validate_set_preheat(payload)
         validate.append({"name": name, "payload": payload.hex().upper(), "status": status, "tool": tool if status == "ok" else None,
                          "target": target if status == "ok" else None})
@@ -134,6 +139,68 @@ def rack_vectors() -> dict:
     return {"format": 1, "about": "Frames, command checks, CAN data, link scenarios and thermal slot checks of the tool rack; the rack firmware and the simulator both pass them.",
             "frames": frames, "parse": parse, "validate": validate, "can": can, "scenarios": out_scen, "verify": verify,
             "limits": {"ceiling_c": rk.RACK_CEILING_C, "link_timeout_ms": rk.LINK_TIMEOUT_MS, "printer_c": rk.MAX_PREHEAT_C[10]}}
+
+
+def sensor_vectors() -> dict:
+    frames = []
+    for name, sensor_id, seq, stamp, payload in (("thermal 20.00 C", 1, 3, 123456, sf.encode_thermal_payload(2000)), ("thermal negative", 1, 255, 1, sf.encode_thermal_payload(-1250)),
+                                                 ("trigger, no payload", 2, 1, 0, b""), ("timestamp with every byte different", 1, 7, 0x01020304, sf.encode_thermal_payload(300)),
+                                                 ("largest timestamp, full payload", 1, 0, 0xFFFFFFFF, bytes(range(16)))):
+        frames.append({"name": name, "sensor_id": sensor_id, "seq": seq, "timestamp_ms": stamp, "payload": payload.hex().upper(),
+                       "frame": sf.encode_frame(sensor_id, seq, stamp, payload).hex().upper()})
+    good = sf.encode_frame(1, 3, 123456, sf.encode_thermal_payload(2000))
+    parse = [{"name": "good frame", "hex": good.hex().upper(), "status": "ok"},
+             {"name": "short", "hex": good[:4].hex().upper(), "status": "incomplete"},
+             {"name": "one byte short", "hex": good[:-1].hex().upper(), "status": "incomplete"},
+             {"name": "wrong start byte", "hex": (b"\x00" + good[1:]).hex().upper(), "status": "bad_sof"},
+             {"name": "version 1, the little-endian layout", "hex": (good[:1] + b"\x01" + good[2:]).hex().upper(), "status": "unsupported_version"},
+             {"name": "length 17", "hex": (good[:8] + b"\x11" + good[9:]).hex().upper(), "status": "length_out_of_range"},
+             {"name": "bad crc", "hex": (good[:-1] + bytes([good[-1] ^ 0xFF])).hex().upper(), "status": "crc_mismatch"},
+             {"name": "corrupted payload", "hex": (good[:9] + bytes([good[9] ^ 1]) + good[10:]).hex().upper(), "status": "crc_mismatch"}]
+    thermal = []
+    for name, payload in (("20.00 C", sf.encode_thermal_payload(2000)), ("zero", sf.encode_thermal_payload(0)), ("-40.00 C", sf.encode_thermal_payload(-4000)),
+                          ("just below -40.00 C", sf.encode_thermal_payload(-4001)), ("300.00 C", sf.encode_thermal_payload(30000)),
+                          ("just above 300.00 C", sf.encode_thermal_payload(30001)), ("2000 sent little-endian is 53255 and is refused", bytes([0xD0, 0x07])),
+                          ("one byte", b"\x07"), ("three bytes", b"\x00\x07\xd0"), ("empty", b"")):
+        status, value = sf.validate_thermal(payload)
+        thermal.append({"name": name, "payload": payload.hex().upper(), "status": status, "centidegrees": value})
+    return {"format": 1, "about": "Frames and thermal readings of the sensor link of the vision head, every multi-byte value big-endian; the vision firmware and the reference module both pass them.",
+            "frames": frames, "parse": parse, "thermal": thermal,
+            "limits": {"version": sf.VERSION, "min_centidegrees_c": sf.MIN_TEMP_CENTIDEGREES_C, "max_centidegrees_c": sf.MAX_TEMP_CENTIDEGREES_C}}
+
+
+SENSOR_ORDER = ("ok", "incomplete", "bad_sof", "unsupported_version", "length_out_of_range", "crc_mismatch")
+READING_ORDER = ("ok", "wrong_payload_len", "temp_out_of_range")
+
+
+def sensor_header(v: dict) -> str:
+    def arr(data: bytes) -> str:
+        return "{" + ", ".join(f"0x{b:02X}" for b in data) + "}" if data else "{0}"
+
+    lines = [
+        "// GENERATED from spec by tools/make_extra_vectors.py - do not edit by hand.",
+        "// Copyright (C) 2026 JuanenRac (Electro Hobby 3D) <electrohobby3d@gmail.com>",
+        "// GPL-3.0-or-later - see LICENSE",
+        "#ifndef SENSOR_VECTORS_H", "#define SENSOR_VECTORS_H", "", "#include <stdint.h>", "",
+        "typedef struct { const char *name; uint8_t sensor_id, seq; uint32_t timestamp_ms; uint8_t payload_len; uint8_t payload[16]; uint8_t frame_len; uint8_t frame[26]; } sensor_vec_frame_t;",
+        "typedef struct { const char *name; uint8_t len; uint8_t buf[26]; int status; } sensor_vec_parse_t; // sensor_frame_status_t order",
+        "typedef struct { const char *name; uint8_t len; uint8_t payload[4]; int status; int centidegrees; } sensor_vec_thermal_t; // sensor_reading_status_t order",
+        "",
+        "static const sensor_vec_frame_t SENSOR_VEC_FRAMES[] = {",
+    ]
+    for f in v["frames"]:
+        p, fr = bytes.fromhex(f["payload"]), bytes.fromhex(f["frame"])
+        lines.append(f'    {{"{f["name"]}", {f["sensor_id"]}, {f["seq"]}, {f["timestamp_ms"]}u, {len(p)}, {arr(p)}, {len(fr)}, {arr(fr)}}},')
+    lines += ["};", "", "static const sensor_vec_parse_t SENSOR_VEC_PARSE[] = {"]
+    for p in v["parse"]:
+        b = bytes.fromhex(p["hex"])
+        lines.append(f'    {{"{p["name"]}", {len(b)}, {arr(b)}, {SENSOR_ORDER.index(p["status"])}}},')
+    lines += ["};", "", "static const sensor_vec_thermal_t SENSOR_VEC_THERMAL[] = {"]
+    for t in v["thermal"]:
+        b = bytes.fromhex(t["payload"])
+        lines.append(f'    {{"{t["name"]}", {len(b)}, {arr(b)}, {READING_ORDER.index(t["status"])}, {0 if t["centidegrees"] is None else t["centidegrees"]}}},')
+    lines += ["};", "", "#define SENSOR_VEC_COUNT(a) ((int)(sizeof(a) / sizeof((a)[0])))", "", "#endif // SENSOR_VECTORS_H", ""]
+    return "\n".join(lines)
 
 
 class _Watchdog:
@@ -216,7 +283,7 @@ def rack_header(v: dict) -> str:
 
 CRC8_CASES = (
     ("empty", b""), ("one zero byte", b"\x00"), ("one 0xFF byte", b"\xff"), ("four zero bytes", b"\x00" * 4),
-    ("the check text", b"123456789"), ("a rack frame header", bytes([0xA5, 0x01, 0x01, 0x01, 0x03, 0x00, 0xC8, 0x00])),
+    ("the check text", b"123456789"), ("a rack frame header", bytes([0xA5, 0x02, 0x01, 0x01, 0x03, 0x00, 0x00, 0xC8])),
     ("the 255 byte ramp", bytes(range(255))),
 )
 
@@ -292,10 +359,13 @@ def fuzz_corpus() -> str:
 
 def outputs() -> dict[Path, str]:
     rv = rack_vectors()
+    sv = sensor_vectors()
     return {
         BB_OUT: json.dumps(blackbox_vectors(), indent=2) + "\n",
         RK_OUT: json.dumps(rv, indent=2) + "\n",
         RK_H: rack_header(rv),
+        SF_OUT: json.dumps(sv, indent=2) + "\n",
+        SF_H: sensor_header(sv),
         FW_H: fw_header(),
         FUZZ_OUT: fuzz_corpus(),
         TV_OUT: json.dumps(thermal_vectors(), indent=2) + "\n",

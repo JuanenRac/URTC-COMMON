@@ -30,7 +30,7 @@
 |---|---|
 | Versión | `0.0.7` |
 | Madurez | Andamiaje |
-| Tests | 337 |
+| Tests | 398 |
 | Tecnología | JSON / Python |
 | En hardware real | Solo simulado: probado con emuladores, dobles de prueba o simuladores; no consta ninguna ejecución en hardware real para esta versión |
 
@@ -48,6 +48,7 @@ El protocolo CAN del cabezal de herramienta, escrito una sola vez como datos, y 
 * Piezas de firmware: `firmware_base/urtc_crc8.h`, el CRC-8 de las tramas serie del rack y de la visión en un solo sitio (se copia con `vendor_copy.py --set firmware_base`), y `generated/urtc_fw_vectors.h`, los vectores que debe pasar el propio firmware (campos de versión, cargas mágicas, valores de comprobación del CRC-8) como tablas C (`--set fw_vectors`).
 * [Vectores de conformidad](conformance/can_vectors.json): los bytes que toda implementación debe reproducir: cada formato, los rechazos y los flujos SLCAN.
 * [Perfiles de herramienta](spec/tools.json): los 25 perfiles de herramienta (límites, watchdog, pines, placa de expansión) como dato; `generate_tools.py` escribe las tablas de TypeScript y Python y [la tabla de herramientas](docs/TOOLS_TABLE.md). También: el lector de la caja negra con exportación a CSV y JSON (`blackbox.py`), el simulador del rack (`rack_sim.py`), tramas para probar una placa con fuzzing hechas desde la especificación (`fuzz.py`) y la [tabla de compatibilidad](docs/COMPATIBILITY.md) de una release, hecha desde `spec/versions.json`.
+* **Placa virtual y enlaces complementarios:** `virtual_board.py` sirve una placa tras un adaptador SLCAN en un puerto TCP (`python -m urtc_common.virtual_board`); escribe `socket://127.0.0.1:7777` donde una herramienta pide un puerto serie y el flasheador, el probador y la pasarela funcionan de extremo a extremo sin hardware. `sensor_frame.py` es la referencia de la trama del sensor de visión; ella y la trama serie del rack son la versión 2, big-endian como el bus, con sus vectores (`conformance/sensor_vectors.json`, `generated/sensor_vectors.h`).
 * **Herramientas:** `generate_constants.py` escribe la cabecera C, el módulo TypeScript, el módulo Python y la tabla (`--check` compara), `make_conformance.py` escribe los vectores (`--check`), `vendor_copy.py` copia partes a otro repositorio con un archivo de bloqueo y comprueba la copia, y `ci_validate.py` es la comprobación compartida de los repositorios. `make_glance.py` de URTC-DOCS escribe la tabla De un vistazo.
 
 ## 🧩 Papel en URTC

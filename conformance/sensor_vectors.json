@@ -1,0 +1,155 @@
+{
+  "format": 1,
+  "about": "Frames and thermal readings of the sensor link of the vision head, every multi-byte value big-endian; the vision firmware and the reference module both pass them.",
+  "frames": [
+    {
+      "name": "thermal 20.00 C",
+      "sensor_id": 1,
+      "seq": 3,
+      "timestamp_ms": 123456,
+      "payload": "07D0",
+      "frame": "B60201030001E2400207D0A3"
+    },
+    {
+      "name": "thermal negative",
+      "sensor_id": 1,
+      "seq": 255,
+      "timestamp_ms": 1,
+      "payload": "FB1E",
+      "frame": "B60201FF0000000102FB1E9A"
+    },
+    {
+      "name": "trigger, no payload",
+      "sensor_id": 2,
+      "seq": 1,
+      "timestamp_ms": 0,
+      "payload": "",
+      "frame": "B602020100000000001B"
+    },
+    {
+      "name": "timestamp with every byte different",
+      "sensor_id": 1,
+      "seq": 7,
+      "timestamp_ms": 16909060,
+      "payload": "012C",
+      "frame": "B60201070102030402012C55"
+    },
+    {
+      "name": "largest timestamp, full payload",
+      "sensor_id": 1,
+      "seq": 0,
+      "timestamp_ms": 4294967295,
+      "payload": "000102030405060708090A0B0C0D0E0F",
+      "frame": "B6020100FFFFFFFF10000102030405060708090A0B0C0D0E0F21"
+    }
+  ],
+  "parse": [
+    {
+      "name": "good frame",
+      "hex": "B60201030001E2400207D0A3",
+      "status": "ok"
+    },
+    {
+      "name": "short",
+      "hex": "B6020103",
+      "status": "incomplete"
+    },
+    {
+      "name": "one byte short",
+      "hex": "B60201030001E2400207D0",
+      "status": "incomplete"
+    },
+    {
+      "name": "wrong start byte",
+      "hex": "000201030001E2400207D0A3",
+      "status": "bad_sof"
+    },
+    {
+      "name": "version 1, the little-endian layout",
+      "hex": "B60101030001E2400207D0A3",
+      "status": "unsupported_version"
+    },
+    {
+      "name": "length 17",
+      "hex": "B60201030001E2401107D0A3",
+      "status": "length_out_of_range"
+    },
+    {
+      "name": "bad crc",
+      "hex": "B60201030001E2400207D05C",
+      "status": "crc_mismatch"
+    },
+    {
+      "name": "corrupted payload",
+      "hex": "B60201030001E2400206D0A3",
+      "status": "crc_mismatch"
+    }
+  ],
+  "thermal": [
+    {
+      "name": "20.00 C",
+      "payload": "07D0",
+      "status": "ok",
+      "centidegrees": 2000
+    },
+    {
+      "name": "zero",
+      "payload": "0000",
+      "status": "ok",
+      "centidegrees": 0
+    },
+    {
+      "name": "-40.00 C",
+      "payload": "F060",
+      "status": "ok",
+      "centidegrees": -4000
+    },
+    {
+      "name": "just below -40.00 C",
+      "payload": "F05F",
+      "status": "temp_out_of_range",
+      "centidegrees": null
+    },
+    {
+      "name": "300.00 C",
+      "payload": "7530",
+      "status": "ok",
+      "centidegrees": 30000
+    },
+    {
+      "name": "just above 300.00 C",
+      "payload": "7531",
+      "status": "temp_out_of_range",
+      "centidegrees": null
+    },
+    {
+      "name": "2000 sent little-endian is 53255 and is refused",
+      "payload": "D007",
+      "status": "temp_out_of_range",
+      "centidegrees": null
+    },
+    {
+      "name": "one byte",
+      "payload": "07",
+      "status": "wrong_payload_len",
+      "centidegrees": null
+    },
+    {
+      "name": "three bytes",
+      "payload": "0007D0",
+      "status": "wrong_payload_len",
+      "centidegrees": null
+    },
+    {
+      "name": "empty",
+      "payload": "",
+      "status": "wrong_payload_len",
+      "centidegrees": null
+    }
+  ],
+  "limits": {
+    "version": 2,
+    "min_centidegrees_c": -4000,
+    "max_centidegrees_c": 30000
+  }
+}
