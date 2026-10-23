@@ -32,7 +32,6 @@ import base64
 import gzip
 import hashlib
 import io
-import os
 import re
 import subprocess
 import sys
