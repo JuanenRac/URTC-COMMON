@@ -345,7 +345,7 @@ def test_the_prose_and_the_specification_list_the_same_identifiers(spec, sibling
     assert not_in_prose == {v for v, m in table.items() if m.get("documented_in_prose") is False} == set()
     # an identifier that appears only in the summary and the section intro is the one a scan of the headers would miss
     assert summary - headers == {0x243}
-    assert len(headers - RACK_RESERVED) == 94
+    assert len(headers - RACK_RESERVED) == 95
 
 
 def test_exact_lengths_in_the_prose_are_the_lengths_of_the_specification(spec, sibling):

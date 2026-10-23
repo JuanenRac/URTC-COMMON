@@ -1265,7 +1265,7 @@
           "name": "APP_VERSION",
           "access": "read",
           "length": 10,
-          "title": "Same layout as the bootloader version register, responder 0"
+          "title": "Same layout as the bootloader version register, responder 0; the tenth byte is the application PATCH (1 to 127, 0 when not sent)"
         },
         {
           "id": 2,
@@ -5960,11 +5960,67 @@
         }
       ],
       "notes": [
-        "Implemented by the firmware; no host implements it. Reads any application register of the expansion slave with no allow-list."
+        "Implemented by the firmware; no host implements it. Reads one application register of the expansion slave, from the closed list of registers the firmware relays (anything else is dropped without an answer). The version register (0x01) is read whole: its tenth byte, the PATCH number of the slave application, follows in 0x222."
       ],
       "firmware_accepts_dlc": {
         "exact": 2
       },
+      "implemented_by": {
+        "firmware": true,
+        "flasher": false,
+        "tester": false,
+        "web_studio": false
+      }
+    },
+    {
+      "id": "0x222",
+      "name": "SLAVE_APP_PATCH",
+      "group": "slave_bridge",
+      "title": "Patch number of the slave application (companion of 0x221)",
+      "direction": "board_to_host",
+      "handled_by": "application",
+      "tools": "any",
+      "answers": "0x221",
+      "layouts": [
+        {
+          "role": "response",
+          "dlc": {
+            "exact": 2
+          },
+          "fields": [
+            {
+              "name": "register",
+              "type": "u8",
+              "note": "The register the patch belongs to: 0x01, the version register of the slave application.",
+              "offset": 0,
+              "width": 1
+            },
+            {
+              "name": "patch",
+              "type": "u8",
+              "range": [
+                1,
+                127
+              ],
+              "offset": 1,
+              "width": 1
+            }
+          ],
+          "examples": [
+            {
+              "name": "patch 4",
+              "fields": {
+                "register": 1,
+                "patch": 4
+              },
+              "data": "0104"
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "TX-only; nothing on the board listens for it. Sent right after the 0x221 answer for register 0x01 when the tenth byte of that register, the patch number of the slave application, is 1 to 127. A byte of 0 (what a slave application from before the field sends) is ignored and no frame follows, so a host that sees no 0x222 treats the patch as unknown."
+      ],
       "implemented_by": {
         "firmware": true,
         "flasher": false,
@@ -7511,7 +7567,8 @@
         }
       ],
       "notes": [
-        "One-shot: reset at every 0x7F1 and consumed by the anti-rollback check of the next 0x7F4. The image must still be validly signed."
+        "One-shot: reset at every 0x7F1 and consumed by the anti-rollback check of the next 0x7F4. The image must still be validly signed.",
+        "Answered only in a bootloader session that the application started by accepting 0x7F0, or when no valid application is installed (a recovery); in any other session the frame is ignored. A build option switches the restriction off."
       ],
       "implemented_by": {
         "firmware": true,
@@ -7604,7 +7661,8 @@
         }
       ],
       "notes": [
-        "One 2048-byte page (256 frames), then the bootloader waits up to 3 s for the page acknowledgement 0x7FF."
+        "One 2048-byte page (256 frames), then the bootloader waits up to 3 s for the page acknowledgement 0x7FF.",
+        "Answered only in a bootloader session that the application started by accepting 0x7F0, or when no valid application is installed (a recovery); in any other session the frame is ignored. A build option switches the restriction off."
       ],
       "implemented_by": {
         "firmware": true,
