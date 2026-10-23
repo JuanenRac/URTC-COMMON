@@ -26,7 +26,6 @@ from __future__ import annotations
 import argparse
 import json
 import pprint
-import re
 import sys
 from pathlib import Path
 
@@ -897,7 +896,7 @@ def render_c(spec: dict) -> str:
     lines: list[str] = []
     add = lines.append
     add("/* =============================================================================")
-    add(f" * URTC CAN protocol: identifiers, length rules, field offsets, enumerations and magic payloads.")
+    add(" * URTC CAN protocol: identifiers, length rules, field offsets, enumerations and magic payloads.")
     add(f" * {BANNER}")
     for part in HEADER_LICENSE.splitlines():
         add(f" * {part}")

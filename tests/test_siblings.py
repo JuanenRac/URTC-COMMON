@@ -16,9 +16,8 @@ import json
 import re
 from pathlib import Path
 
-import pytest
 
-from sources import HEX, c_defines, python_bytes, python_dict, python_ints, python_dict_keys, text, ts_array, ts_ints, ts_record
+from sources import c_defines, python_bytes, python_dict, python_ints, python_dict_keys, text, ts_array, ts_ints
 
 FLASHER_CONFIG = "URTC-FLASHER/flasher_config.py"
 FLASHER_PROTOCOL = "URTC-FLASHER/flasher_protocol.py"
