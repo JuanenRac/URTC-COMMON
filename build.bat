@@ -27,7 +27,7 @@ echo ***************************************************************************
 echo.
 REM HYDRA_UMC_SCRIPT_STANDARD_BANNER_END
 REM Builds URTC-COMMON: creates/activates a venv, installs the
-REM project (editable, with dev extras), verifies it compiles/imports
+REM project (editable) and the pinned dev dependencies, verifies it compiles/imports
 REM cleanly, and runs the real test suite. Run this before run.bat.
 setlocal enabledelayedexpansion
 rem Keep the window open for people, never in automation (CI / URTC_CI).
@@ -69,10 +69,12 @@ if errorlevel 1 goto :error
 echo       Done.
 echo.
 
-echo [3/5] Installing project (editable, with dev extras) into the venv...
+echo [3/5] Installing project (editable) and the pinned dev dependencies into the venv...
 python -m pip install --upgrade pip >nul
 if errorlevel 1 goto :error
-python -m pip install -e ".[dev]"
+python -m pip install --require-hashes -r requirements-dev.lock
+if errorlevel 1 goto :error
+python -m pip install --no-deps -e .
 if errorlevel 1 goto :error
 echo       Done.
 echo.

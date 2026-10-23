@@ -26,7 +26,7 @@ printf '%s\n' "*****************************************************************
 printf '\n'
 # HYDRA_UMC_SCRIPT_STANDARD_BANNER_END
 # Builds URTC-COMMON: creates/activates a venv, installs the
-# project (editable, with dev extras), verifies it compiles/imports
+# project (editable) and the pinned dev dependencies, verifies it compiles/imports
 # cleanly, and runs the real test suite. Run this before run.sh.
 #
 # Usage:
@@ -75,9 +75,10 @@ fi
 echo "      Done."
 echo
 
-echo "[3/5] Installing project (editable, with dev extras) into the venv..."
+echo "[3/5] Installing project (editable) and the pinned dev dependencies into the venv..."
 python -m pip install --upgrade pip >/dev/null
-python -m pip install -e ".[dev]"
+python -m pip install --require-hashes -r requirements-dev.lock
+python -m pip install --no-deps -e .
 echo "      Done."
 echo
 

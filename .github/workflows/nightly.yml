@@ -47,7 +47,9 @@ jobs:
 
       - name: Install
         working-directory: URTC-COMMON
-        run: python -m pip install --quiet -e ".[dev]"
+        run: |
+          python -m pip install --quiet --require-hashes -r requirements-dev.lock
+          python -m pip install --quiet --no-deps -e .
 
       - name: Compare (a skipped test means a repository was not fetched)
         working-directory: URTC-COMMON
