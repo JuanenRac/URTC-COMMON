@@ -59,6 +59,7 @@ SETS = {
     "update": ["src/urtc_common/self_update.py", "src/urtc_common/update_service.py", "src/urtc_common/update_controller.py", "src/urtc_common/launcher.py"],
     "update_qt": ["src/urtc_common/update_qt.py", "src/urtc_common/update_strings.py"],
     "update_qml": ["qml/UpdateDialog.qml"],
+    "package_tool": ["tools/make_update_package.py"],
     "sensor": ["src/urtc_common/sensor_frame.py", "conformance/sensor_vectors.json"],
     "sensor_c": ["generated/sensor_vectors.h"],
     "compat": ["docs/COMPATIBILITY.md"],

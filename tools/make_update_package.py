@@ -34,9 +34,14 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
+sys.path.insert(0, str(ROOT))
 
-from urtc_common import self_update as su  # noqa: E402
-from urtc_common import update_service as svc  # noqa: E402
+try:  # URTC-COMMON itself
+    from urtc_common import self_update as su  # noqa: E402
+    from urtc_common import update_service as svc  # noqa: E402
+except ImportError:  # a program that carries the copy in urtc_can/
+    from urtc_can import self_update as su  # type: ignore[no-redef]  # noqa: E402
+    from urtc_can import update_service as svc  # type: ignore[no-redef]  # noqa: E402
 
 FIXED_TIME = (2020, 1, 1, 0, 0, 0)
 EXCLUDED = {"__pycache__", ".git", ".venv"}
