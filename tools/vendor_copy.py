@@ -56,6 +56,7 @@ SETS = {
     "rack_c": ["generated/rack_vectors.h"],
     "fuzz": ["src/urtc_common/fuzz.py", "conformance/fuzz_corpus.txt"],
     "virtual_board": ["src/urtc_common/virtual_board.py"],
+    "update": ["src/urtc_common/self_update.py"],
     "sensor": ["src/urtc_common/sensor_frame.py", "conformance/sensor_vectors.json"],
     "sensor_c": ["generated/sensor_vectors.h"],
     "compat": ["docs/COMPATIBILITY.md"],

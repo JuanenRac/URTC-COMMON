@@ -30,7 +30,7 @@
 |---|---|
 | Version | `0.0.7` |
 | Maturité | Ébauche |
-| Tests | 398 |
+| Tests | 430 |
 | Technologie | JSON / Python |
 | Sur matériel réel | Simulé seulement : testé avec des émulateurs, des doubles de test ou des simulateurs ; aucune exécution sur du matériel réel n'est consignée pour cette version |
 
@@ -49,6 +49,7 @@ Le protocole CAN de la tête d'outil, écrit une seule fois comme données, et t
 * [Vecteurs de conformité](conformance/can_vectors.json): les octets que toute implémentation doit reproduire : chaque structure, les refus et les flux SLCAN.
 * [Profils d'outil](spec/tools.json) : les 25 profils d'outil (limites, chien de garde, broches, carte d'extension) comme données ; `generate_tools.py` écrit les tables TypeScript et Python et [la table des outils](docs/TOOLS_TABLE.md). Aussi ici : le lecteur de la boîte noire avec export CSV et JSON (`blackbox.py`), le simulateur du rack (`rack_sim.py`), des trames pour tester une carte par fuzzing, produites à partir de la spécification (`fuzz.py`) et le [tableau de compatibilité](docs/COMPATIBILITY.md) d'une version, produit à partir de `spec/versions.json`.
 * **Carte virtuelle et liaisons complémentaires :** `virtual_board.py` sert une carte derrière un adaptateur SLCAN sur un port TCP (`python -m urtc_common.virtual_board`) ; saisissez `socket://127.0.0.1:7777` là où un outil demande un port série et le flasheur, le testeur et la passerelle fonctionnent de bout en bout sans matériel. `sensor_frame.py` est la référence de la trame du capteur de la tête de vision ; elle et la trame série du rack sont en version 2, big-endian comme le bus, avec leurs vecteurs (`conformance/sensor_vectors.json`, `generated/sensor_vectors.h`).
+* **Auto-mise à jour depuis un paquet signé :** `self_update.py` est tout le parcours d'un programme qui se met à jour seul depuis une release GitHub, sans réseau ni fenêtre propres (l'appelant fournit le téléchargement et la progression) : il ne propose qu'une version strictement supérieure avec un paquet pour la plateforme, télécharge uniquement depuis les hôtes de téléchargement des releases GitHub, vérifie la taille annoncée, le SHA-256 et la signature Ed25519 de `urtc-pkg/1|app|version|plateforme|sha256|taille` avec la clé fixée dans le programme, extrait sans jamais sortir du dossier (ni `..`, ni chemin absolu, ni lien, ni périphérique), refuse d'installer tant qu'une opération sur le bus est en cours, garde les deux dernières releases, revient seul en arrière si le premier démarrage échoue et consigne chaque étape. Bibliothèque standard seulement ; copié avec `vendor_copy.py --set update`.
 * **Outils :** `generate_constants.py` écrit l'en-tête C, le module TypeScript, le module Python et la table (`--check` compare), `make_conformance.py` écrit les vecteurs (`--check`), `vendor_copy.py` copie des parties dans un autre dépôt avec un fichier de verrouillage et vérifie la copie, et `ci_validate.py` est la vérification commune des dépôts. `make_glance.py` d'URTC-DOCS écrit le tableau En un coup d'œil.
 
 ## 🧩 Rôle dans URTC

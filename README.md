@@ -30,7 +30,7 @@
 |---|---|
 | Version | `0.0.7` |
 | Maturity | Scaffolding |
-| Tests | 398 |
+| Tests | 430 |
 | Stack | JSON / Python |
 | On real hardware | Simulated only: tested against emulators, fakes or simulators; no run on real hardware is recorded for this version |
 
@@ -49,6 +49,7 @@ The CAN protocol of the tool head, written once as data, and everything that fol
 * [Conformance vectors](conformance/can_vectors.json): the bytes every implementation must reproduce: every layout, the refusals and the SLCAN streams.
 * [Tool profiles](spec/tools.json): the 25 tool profiles (limits, watchdog, pins, expansion board) as data; `generate_tools.py` writes the TypeScript and Python tables and [the tool table](docs/TOOLS_TABLE.md). Also here: the fault recorder reader with CSV and JSON export (`blackbox.py`), the rack simulator (`rack_sim.py`), frames for fuzzing a board made from the specification (`fuzz.py`) and the [compatibility table](docs/COMPATIBILITY.md) of a release, made from `spec/versions.json`.
 * **Virtual board and companion links:** `virtual_board.py` serves a board behind an SLCAN adapter on a TCP port (`python -m urtc_common.virtual_board`); type `socket://127.0.0.1:7777` where a tool asks for a serial port and the flasher, the tester and the gateway run end to end with no hardware. `sensor_frame.py` is the reference of the vision sensor frame; it and the rack serial frame are version 2, big-endian like the bus, with their vectors (`conformance/sensor_vectors.json`, `generated/sensor_vectors.h`).
+* **Self-update from a signed package:** `self_update.py` is the whole flow for a program that updates itself from a GitHub release, with no network and no window of its own (the caller passes the fetch and the progress): it offers only a strictly higher version with a package for the platform, downloads from the hosts of GitHub's release downloads only, checks the announced size and SHA-256 and the Ed25519 signature of `urtc-pkg/1|app|version|platform|sha256|size` against the key pinned in the program, extracts without ever leaving the folder (no `..`, absolute path, link or device), refuses to install while an operation on the bus is running, keeps the two latest releases, rolls back by itself when the first start fails and records every step. Standard library only; copied with `vendor_copy.py --set update`.
 * **Tools:** `generate_constants.py` writes the C header, the TypeScript module, the Python module and the table (`--check` compares), `make_conformance.py` writes the vectors (`--check`), `vendor_copy.py` copies parts into another repository with a lock file and checks the copy, and `ci_validate.py` is the shared repository check. `make_glance.py` of URTC-DOCS writes the At a glance table.
 
 ## 🧩 Role in URTC

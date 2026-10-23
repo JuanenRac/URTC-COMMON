@@ -30,7 +30,7 @@
 |---|---|
 | Versão | `0.0.7` |
 | Maturidade | Estrutura inicial |
-| Testes | 398 |
+| Testes | 430 |
 | Tecnologia | JSON / Python |
 | Em hardware real | Só simulado: testado com emuladores, dublês de teste ou simuladores; não há registo de execução em hardware real para esta versão |
 
@@ -49,6 +49,7 @@ O protocolo CAN da cabeça de ferramenta, escrito uma só vez como dados, e tudo
 * [Vetores de conformidade](conformance/can_vectors.json): os bytes que toda a implementação deve reproduzir: cada estrutura, as recusas e os fluxos SLCAN.
 * [Perfis de ferramenta](spec/tools.json): os 25 perfis de ferramenta (limites, watchdog, pinos, placa de expansão) como dados; o `generate_tools.py` escreve as tabelas de TypeScript e Python e [a tabela de ferramentas](docs/TOOLS_TABLE.md). Também aqui: o leitor da caixa negra com exportação para CSV e JSON (`blackbox.py`), o simulador do rack (`rack_sim.py`), tramas para testar uma placa com fuzzing, criadas a partir da especificação (`fuzz.py`) e a [tabela de compatibilidade](docs/COMPATIBILITY.md) de uma versão, criada a partir de `spec/versions.json`.
 * **Placa virtual e ligações complementares:** `virtual_board.py` serve uma placa atrás de um adaptador SLCAN numa porta TCP (`python -m urtc_common.virtual_board`); escreva `socket://127.0.0.1:7777` onde uma ferramenta pede uma porta série e o programador, o testador e a gateway funcionam de ponta a ponta sem hardware. `sensor_frame.py` é a referência da trama do sensor da cabeça de visão; ela e a trama série do rack são a versão 2, big-endian como o barramento, com os seus vetores (`conformance/sensor_vectors.json`, `generated/sensor_vectors.h`).
+* **Autoatualização a partir de um pacote assinado:** `self_update.py` é todo o fluxo de um programa que se atualiza sozinho a partir de uma release do GitHub, sem rede nem janela próprias (quem o chama passa a descarga e o progresso): oferece apenas uma versão estritamente superior com pacote para a plataforma, descarrega só dos anfitriões de descargas de releases do GitHub, verifica o tamanho anunciado, o SHA-256 e a assinatura Ed25519 de `urtc-pkg/1|app|versão|plataforma|sha256|tamanho` com a chave fixada no programa, extrai sem nunca sair da pasta (sem `..`, caminho absoluto, ligação ou dispositivo), recusa instalar enquanto uma operação no bus estiver a decorrer, mantém as duas últimas releases, volta atrás sozinha se o primeiro arranque falhar e regista cada passo. Só biblioteca padrão; copia-se com `vendor_copy.py --set update`.
 * **Ferramentas:** `generate_constants.py` escreve o cabeçalho C, o módulo TypeScript, o módulo Python e a tabela (`--check` compara), `make_conformance.py` escreve os vetores (`--check`), `vendor_copy.py` copia partes para outro repositório com um ficheiro de bloqueio e verifica a cópia, e `ci_validate.py` é a verificação partilhada dos repositórios. O `make_glance.py` do URTC-DOCS escreve a tabela Num relance.
 
 ## 🧩 Papel no URTC

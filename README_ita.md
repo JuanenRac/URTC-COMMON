@@ -30,7 +30,7 @@
 |---|---|
 | Versione | `0.0.7` |
 | Maturità | Impalcatura |
-| Test | 398 |
+| Test | 430 |
 | Tecnologia | JSON / Python |
 | Su hardware reale | Solo simulato: provato con emulatori, test double o simulatori; per questa versione non risulta alcuna esecuzione su hardware reale |
 
@@ -49,6 +49,7 @@ Il protocollo CAN della testa utensile, scritto una sola volta come dati, e tutt
 * [Vettori di conformità](conformance/can_vectors.json): i byte che ogni implementazione deve riprodurre: ogni struttura, i rifiuti e i flussi SLCAN.
 * [Profili degli utensili](spec/tools.json): i 25 profili degli utensili (limiti, watchdog, pin, scheda di espansione) come dati; `generate_tools.py` scrive le tabelle TypeScript e Python e [la tabella degli utensili](docs/TOOLS_TABLE.md). Inoltre: il lettore della scatola nera con esportazione in CSV e JSON (`blackbox.py`), il simulatore del rack (`rack_sim.py`), frame per il fuzzing di una scheda creati dalla specifica (`fuzz.py`) e la [tabella di compatibilità](docs/COMPATIBILITY.md) di una release, creata da `spec/versions.json`.
 * **Scheda virtuale e collegamenti complementari:** `virtual_board.py` serve una scheda dietro un adattatore SLCAN su una porta TCP (`python -m urtc_common.virtual_board`); digita `socket://127.0.0.1:7777` dove uno strumento chiede una porta seriale e il flasher, il tester e il gateway funzionano da un capo all'altro senza hardware. `sensor_frame.py` è il riferimento della trama del sensore della testa di visione; essa e la trama seriale del rack sono in versione 2, big-endian come il bus, con i loro vettori (`conformance/sensor_vectors.json`, `generated/sensor_vectors.h`).
+* **Autoaggiornamento da un pacchetto firmato:** `self_update.py` è l'intero flusso per un programma che si aggiorna da solo da una release GitHub, senza rete né finestra proprie (chi lo chiama passa il download e l'avanzamento): offre solo una versione strettamente maggiore con pacchetto per la piattaforma, scarica solo dagli host di download delle release GitHub, controlla la dimensione annunciata, lo SHA-256 e la firma Ed25519 di `urtc-pkg/1|app|versione|piattaforma|sha256|dimensione` con la chiave fissata nel programma, estrae senza mai uscire dalla cartella (niente `..`, percorso assoluto, collegamento o dispositivo), rifiuta di installare finché è in corso un'operazione sul bus, conserva le due ultime release, torna indietro da sola se il primo avvio fallisce e registra ogni passo. Solo libreria standard; si copia con `vendor_copy.py --set update`.
 * **Strumenti:** `generate_constants.py` scrive l'header C, il modulo TypeScript, il modulo Python e la tabella (`--check` confronta), `make_conformance.py` scrive i vettori (`--check`), `vendor_copy.py` copia parti in un altro repository con un file di blocco e verifica la copia, e `ci_validate.py` è il controllo condiviso dei repository. `make_glance.py` di URTC-DOCS scrive la tabella In breve.
 
 ## 🧩 Ruolo in URTC
