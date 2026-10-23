@@ -85,7 +85,7 @@ def test_only_the_exact_magic_payload_enters_the_bootloader(vectors):
             board.handle(other_id, other_data)
             assert board.mode == APPLICATION, name
     board = VirtualBoard()
-    board.handle(can_id, data)
+    assert board.handle(can_id, data) == [(protocol.CAN_ID_HEARTBEAT, bytes([protocol.STATUS_LISTENING, 0xFF]))]
     assert board.mode == BOOTLOADER
 
 
@@ -240,6 +240,7 @@ def test_the_slcan_transport_runs_a_bootloader_session_over_tcp():
         try:
             port.open_channel()
             port.send_frame(protocol.CAN_ID_ENTER_BOOTLOADER, bytes.fromhex(protocol.MAGIC_PAYLOADS["enter_bootloader"]["data"]))
+            assert _collect(port, 1) == [(protocol.CAN_ID_HEARTBEAT, bytes([protocol.STATUS_LISTENING, 0xFF]))]
             port.send_frame(protocol.CAN_ID_QUERY_VERSION)
             parsed = versioning.parse_version_answer(_collect(port, 3))
             assert parsed["responder"] == "bootloader"

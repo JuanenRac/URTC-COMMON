@@ -21,7 +21,7 @@ Two layers:
   opened listen-only.
 * ``VirtualBoard`` is what sits behind it. In application mode it answers the version query (0x7F8 with 0x7F9 and the
   patch frame 0x7E9) and the active-tool query (0x110 with 0x111), and enters the bootloader on 0x7F0 carrying the
-  magic payload and on nothing else. In bootloader mode it plays the update exchange of ``transports.MockCAN``.
+  magic payload and on nothing else, announcing it with the heartbeat of the listening window. In bootloader mode it plays the update exchange of ``transports.MockCAN``.
 
 This is a second reading of the protocol by the same author as the tools, not the firmware: the tests run the
 shared conformance vectors through it, but only the firmware's own virtual board (``tests/virtual_board.c`` in the
@@ -110,6 +110,8 @@ class VirtualBoard:
             return [self._quick_state()]
         if can_id == protocol.CAN_ID_ENTER_BOOTLOADER and data == _magic("enter_bootloader"):
             self.enter_bootloader()
+            # The bootloader opens its listening window with its first heartbeat: status "listening", progress not applicable.
+            return [(protocol.CAN_ID_HEARTBEAT, bytes([protocol.STATUS_LISTENING, 0xFF]))]
         return []  # every other identifier is outside what this model plays
 
     # ---- the bootloader --------------------------------------------------------------------------
