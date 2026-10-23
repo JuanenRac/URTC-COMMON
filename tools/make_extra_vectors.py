@@ -6,7 +6,8 @@
 # =============================================================================
 """Write the vectors of the fault recorder and of the rack, and the C table the rack firmware checks itself against.
 
-* ``conformance/blackbox_vectors.json``  records (hex) with the rows and the CSV a reader must produce, and records it must refuse
+* ``conformance/blackbox_vectors.json``  records (hex) with the rows and the CSV a reader must produce, records it must refuse and the scenarios the recorder of the firmware replays
+* ``generated/blackbox_vectors.h``       the recorder scenarios as C tables (the firmware repository replays them against ``firmware_blackbox.c``)
 * ``conformance/rack_vectors.json``      serial frames, command checks, CAN data and short link scenarios of the rack
 * ``conformance/fuzz_corpus.txt``        frames for fuzzing a board made from the specification (valid, invalid and random), one per line
 * ``conformance/sensor_vectors.json``    frames and thermal readings of the sensor link of the vision head
@@ -37,6 +38,7 @@ from urtc_common import sensor_frame as sf  # noqa: E402
 from urtc_common import thermal_view as tv  # noqa: E402
 
 BB_OUT = ROOT / "conformance" / "blackbox_vectors.json"
+BB_H = ROOT / "generated" / "blackbox_vectors.h"
 RK_OUT = ROOT / "conformance" / "rack_vectors.json"
 RK_H = ROOT / "generated" / "rack_vectors.h"
 SF_OUT = ROOT / "conformance" / "sensor_vectors.json"
@@ -84,7 +86,82 @@ def blackbox_vectors() -> dict:
     bad.append({"name": "unknown version", "hex": bytes(ver).hex().upper(), "error": "version"})
     bad.append({"name": "too short", "hex": good[:100].hex().upper(), "error": "record is"})
     return {"format": 1, "about": "Fault recorder records: what a reader must decode and what it must refuse. The layout is the firmware's, little-endian.",
-            "record_size": bb.RECORD_SIZE, "chunks": bb.CHUNK_COUNT, "valid": ok, "invalid": bad}
+            "record_size": bb.RECORD_SIZE, "chunks": bb.CHUNK_COUNT, "valid": ok, "invalid": bad, "recorder": recorder_vectors()}
+
+
+# Scenarios of the recorder: the inputs of each tick (tick_ms, tool, current, target, end-stop, error flag, thermal code) and what the model flushes.
+RECORDER_FIELDS = ("tick_ms", "tool_id", "current", "target", "endstop", "error", "thermal_code")
+
+
+def recorder_scenarios() -> list[tuple[str, list[tuple]]]:
+    def run(count, start=1000, error_from=None, error_until=None, thermal=0, endstop_at=(), wrap_at=None):
+        out = []
+        for i in range(count):
+            error = error_from is not None and i >= error_from and (error_until is None or i < error_until)
+            tick = start + i * 150
+            if wrap_at is not None and i >= wrap_at:
+                tick = (start + i * 150) & 0xFFFFFFFF
+            out.append((tick & 0xFFFFFFFF, 0, 300 + (i * 7) % 60, 320, i in endstop_at, error, thermal if error else 0))
+        return out
+
+    return [
+        ("no fault, no flush", run(10)),
+        ("the first fault flushes the ring that was filled so far", run(30, error_from=20)),
+        ("a fault after the ring wrapped flushes a full ring", run(101, error_from=100)),
+        ("a fault that stays raised flushes once", run(40, error_from=12)),
+        ("the latch is re-armed when the flag falls and a second fault flushes again", run(60, error_from=5, error_until=9) + [(1000 + (60 + i) * 150, 0, 305, 320, False, 15 + i >= 18, 0) for i in range(8)]),
+        ("the end-stop and the thermal guard code travel in the flags", run(12, error_from=6, thermal=2, endstop_at=(2, 6))),
+        ("the tick counter wraps inside the window", run(40, start=4_294_967_000, error_from=33)),
+    ]
+
+
+def recorder_vectors() -> list[dict]:
+    out = []
+    for name, steps in recorder_scenarios():
+        model = bb.Recorder()
+        flushes = []
+        last = None
+        for index, step in enumerate(steps):
+            record = model.tick(*step)
+            if record is not None:
+                flushes.append(index)
+                last = record
+        out.append({"name": name, "steps": [dict(zip(RECORDER_FIELDS, (*step[:4], int(step[4]), int(step[5]), step[6]))) for step in steps],
+                    "flush_steps": flushes, "record": last.hex().upper() if last is not None else None})
+    return out
+
+
+def blackbox_header(scenarios: list[dict]) -> str:
+    lines = [
+        "// GENERATED from spec by tools/make_extra_vectors.py - do not edit by hand.",
+        "// Copyright (C) 2026 JuanenRac (Electro Hobby 3D) <electrohobby3d@gmail.com>",
+        "// GPL-3.0-or-later - see LICENSE",
+        "#ifndef BLACKBOX_VECTORS_H", "#define BLACKBOX_VECTORS_H", "", "#include <stdint.h>", "",
+        "typedef struct { uint32_t tick_ms; uint8_t tool_id; uint16_t current, target; uint8_t endstop, error, thermal_code; } bb_vec_step_t;",
+        "// flush_steps lists the ticks (0-based) after which the recorder must have written the record; record is the last one flushed (NULL: none).",
+        "typedef struct { const char *name; int step_count; const bb_vec_step_t *steps; int flush_count; const int *flush_steps; const uint8_t *record; } bb_vec_scenario_t;",
+        "",
+    ]
+    for n, sc in enumerate(scenarios):
+        lines.append(f"static const bb_vec_step_t BB_VEC_STEPS_{n}[] = {{")
+        for step in sc["steps"]:
+            lines.append(f"    {{{step['tick_ms']}u, {step['tool_id']}, {step['current']}, {step['target']}, {step['endstop']}, {step['error']}, {step['thermal_code']}}},")
+        lines.append("};")
+        flush = ", ".join(str(i) for i in sc["flush_steps"]) or "0"
+        lines.append(f"static const int BB_VEC_FLUSH_{n}[] = {{{flush}}};")
+        if sc["record"]:
+            data = bytes.fromhex(sc["record"])
+            rows = [", ".join(f"0x{b:02X}" for b in data[i:i + 16]) for i in range(0, len(data), 16)]
+            lines.append(f"static const uint8_t BB_VEC_RECORD_{n}[] = {{")
+            lines += [f"    {row}," for row in rows]
+            lines.append("};")
+        lines.append("")
+    lines.append("static const bb_vec_scenario_t BB_VEC_SCENARIOS[] = {")
+    for n, sc in enumerate(scenarios):
+        record = f"BB_VEC_RECORD_{n}" if sc["record"] else "0"
+        lines.append(f'    {{"{sc["name"]}", {len(sc["steps"])}, BB_VEC_STEPS_{n}, {len(sc["flush_steps"])}, BB_VEC_FLUSH_{n}, {record}}},')
+    lines += ["};", "", "#define BB_VEC_COUNT(a) ((int)(sizeof(a) / sizeof((a)[0])))", "", "#endif // BLACKBOX_VECTORS_H", ""]
+    return "\n".join(lines)
 
 
 def rack_vectors() -> dict:
@@ -384,8 +461,10 @@ def outputs() -> dict[Path, str]:
     rv = rack_vectors()
     sv = sensor_vectors()
     rate = fl.rate_vectors()
+    bbv = blackbox_vectors()
     return {
-        BB_OUT: json.dumps(blackbox_vectors(), indent=2) + "\n",
+        BB_OUT: json.dumps(bbv, indent=2) + "\n",
+        BB_H: blackbox_header(bbv["recorder"]),
         RK_OUT: json.dumps(rv, indent=2) + "\n",
         RK_H: rack_header(rv),
         SF_OUT: json.dumps(sv, indent=2) + "\n",
