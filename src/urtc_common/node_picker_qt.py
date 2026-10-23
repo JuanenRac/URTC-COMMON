@@ -28,22 +28,26 @@ class NodePickerModel(QObject):
     changed = Signal()
     _finished = Signal()
 
-    def __init__(self, picker: npk.NodePicker, language: Callable[[], str] = lambda: "english",
-                 save_release: Callable[[bool], None] | None = None, sync: bool = False, parent: QObject | None = None) -> None:
+    def __init__(self, picker: npk.NodePicker | None = None, language: Callable[[], str] = lambda: "english",
+                 save_release: Callable[[bool], None] | None = None, sync: bool = False,
+                 app_busy: Callable[[], bool] = lambda: False, parent: QObject | None = None) -> None:
         super().__init__(parent)
-        self.picker = picker
+        self.picker: npk.NodePicker | None = None
         self._language = language
-        picker.language = language
         self._save_release = save_release
         self._sync = sync
+        self._app_busy = app_busy        # True while the program does an exchange of its own on the bus: the picker keeps off it
         self._busy = False
-        self._shot: dict = picker.snapshot(language())
+        self._release_pending = True
+        self._shot: dict = npk.empty_snapshot(language())
         self._messages: list[dict] = []
         self._lapse = ""
         self._finished.connect(self._refresh)
         self._timer = QTimer(self)
         self._timer.setInterval(TICK_MS)
         self._timer.timeout.connect(self._tick)
+        if picker is not None:
+            self.attach(picker)
 
     # -- text ------------------------------------------------------------------------------------------------------
     @Slot(str, result=str)
@@ -115,37 +119,69 @@ class NodePickerModel(QObject):
     def mayShowRows(self) -> bool:
         return self._shot["mode"] == npk.MODE_MULTI
 
+    # -- the connection -------------------------------------------------------------------------------------------
+    def attach(self, picker: npk.NodePicker | None) -> None:
+        """Give the window the picker of the connection that was just opened, or None when it was closed."""
+        self.picker = picker
+        self._messages.clear()
+        self._lapse = ""
+        if picker is not None:
+            picker.language = self._language
+            picker.release_on_lapse = self._release_pending
+        self._refresh()
+
+    @Property(bool, notify=changed)
+    def connected(self) -> bool:
+        return self.picker is not None
+
     # -- actions ---------------------------------------------------------------------------------------------------
     @Slot()
     def find(self) -> None:
+        if self.picker is None:
+            self._messages.append({"text": self.t("NP_MSG_NOT_CONNECTED"), "level": "warning"})
+            self.changed.emit()
+            return
         self._run(self.picker.scan)
 
     @Slot(int)
     def ask(self, node: int) -> None:
-        self.picker.ask(node)
+        if self.picker is not None:
+            self.picker.ask(node)
         self._refresh()
 
     @Slot()
     def confirm(self) -> None:
-        self._run(self.picker.confirm)
+        if self.picker is not None:
+            self._run(self.picker.confirm)
 
     @Slot()
     def cancel(self) -> None:
-        self.picker.cancel()
+        if self.picker is not None:
+            self.picker.cancel()
         self._refresh()
 
     @Slot()
     def release(self) -> None:
-        self._run(self.picker.release)
+        if self.picker is not None:
+            self._run(self.picker.release)
 
     @Slot(bool, result=bool)
     def needsWarningForRelease(self, value: bool) -> bool:
         """True when the change lowers the protection (it switches the release of the heads off): the dialog asks first."""
-        return not value and self.picker.release_on_lapse
+        return not value and self._release_pending
+
+    def restoreReleaseOption(self, value: bool) -> None:
+        """The program gives back the option it saved last time (nothing is saved again)."""
+        self._release_pending = bool(value)
+        if self.picker is not None:
+            self.picker.release_on_lapse = bool(value)
+        self._refresh()
 
     @Slot(bool)
     def setReleaseOnLapse(self, value: bool) -> None:
-        self.picker.release_on_lapse = bool(value)
+        self._release_pending = bool(value)
+        if self.picker is not None:
+            self.picker.release_on_lapse = bool(value)
         if self._save_release:
             self._save_release(bool(value))
         self._refresh()
@@ -163,7 +199,7 @@ class NodePickerModel(QObject):
 
     # -- inside ----------------------------------------------------------------------------------------------------
     def _run(self, work: Callable[[], object]) -> None:
-        if self._busy:
+        if self._busy or self._app_busy():
             return
         self._busy = True
         self.changed.emit()
@@ -183,12 +219,16 @@ class NodePickerModel(QObject):
         threading.Thread(target=job, daemon=True, name="urtc-node-picker").start()
 
     def _tick(self) -> None:
-        if self._busy or self.picker.selected is None:
+        if self._busy or self.picker is None or self.picker.selected is None or self._app_busy():
             return
         self._run(self.picker.tick)
 
     def _refresh(self) -> None:
         language = self._language()
+        if self.picker is None:
+            self._shot = npk.empty_snapshot(language)
+            self.changed.emit()
+            return
         for notice in self.picker.take_notices():
             text = self.picker.render(notice, language)
             self._messages.append({"text": text, "level": notice.level})

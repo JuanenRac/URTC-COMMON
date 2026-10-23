@@ -301,6 +301,15 @@ class GatedTransport:
         return getattr(self._transport, name)
 
 
+def empty_snapshot(language: str = "english") -> dict:
+    """What a window shows before any connection: no rows, nothing selected."""
+    return {
+        "mode": MODE_IDLE, "searched": False, "switch": SW_UNKNOWN, "switch_text": strings.text(language, _SW_KEYS[SW_UNKNOWN]), "rows": [],
+        "selected": None, "pending": None, "confirm_text": "", "summary": strings.text(language, "NP_BUS_NONE"), "release_on_lapse": True,
+        "may_send": True,
+    }
+
+
 # -- connecting it to something --------------------------------------------------------------------------------------------------
 def transport_io(transport, clock: Callable[[], float] = time.monotonic) -> mh.HostIO:
     """A ``HostIO`` over a transport of the programs (``send_frame``, ``read_frame(timeout)``): time passes by listening."""
@@ -355,5 +364,5 @@ def sim_picker(addresses: tuple[int, ...] = (2, 5), config: dict | None = None, 
 
 
 __all__ = [
-    "NodePicker", "NodeRow", "Notice", "NodeBlocked", "GatedTransport", "classify_node", "switch_state", "tool_name", "transport_io", "config_reader_for", "sim_picker",
+    "NodePicker", "NodeRow", "Notice", "NodeBlocked", "GatedTransport", "classify_node", "switch_state", "tool_name", "transport_io", "config_reader_for", "sim_picker", "empty_snapshot",
 ]

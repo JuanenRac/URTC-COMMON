@@ -200,9 +200,9 @@ class MultinodeHost:
         When the head being driven is gone, in conflict, faulted, in its bootloader or no longer reports itself selected, the host forgets
         the selection, records a ``Lapse`` and, with ``release_on_lapse`` (the default), sends SAFE_STOP so no head keeps an output on
         without a host watching it. Nothing is ever sent to the head again until it is selected and confirmed anew."""
-        self.ingest()
         if self.suspended:
             return
+        self.ingest()
         if self.wanted is not None:
             why = self._lapse_reason(self.wanted, self.io.now())
             if why is not None:

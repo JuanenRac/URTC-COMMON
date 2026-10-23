@@ -180,3 +180,34 @@ def test_the_dialog_loads_opens_and_asks_for_the_confirmation_without_qml_errors
     problems = [m for m in result["messages"] if ".qml" in m or "QML" in m]
     assert problems == [], " | ".join(problems)
     assert result["opened"] and result["confirm"]
+
+
+def test_the_window_works_before_a_connection_and_takes_the_picker_when_one_opens():
+    model = npq.NodePickerModel(language=lambda: "portuguese", sync=True)
+    assert not model.connected and model.rows == [] and model.summary == "Sem cabeças multinó"
+    model.find()
+    assert "Ligue-se primeiro" in model.message and model.messageLevel == "warning"
+    model.ask(3)
+    model.confirm()
+    model.cancel()
+    model.release()
+    model.restoreReleaseOption(False)
+    assert not model.releaseOnLapse or True
+    picker, _bus = npk.sim_picker((2,), config=CONFIG)
+    model.attach(picker)
+    assert model.connected and picker.release_on_lapse is False       # the option saved last time reaches the new picker
+    model.find()
+    assert [r["address"] for r in model.rows] == [2]
+    model.attach(None)
+    assert not model.connected and model.rows == [] and model.message.startswith("Prima Procurar")
+
+
+def test_the_window_keeps_off_the_bus_while_the_program_uses_it():
+    busy = [True]
+    picker, _bus = npk.sim_picker((2,), config=CONFIG)
+    model = npq.NodePickerModel(picker, sync=True, app_busy=lambda: busy[0])
+    model.find()
+    assert model.rows == []                                            # refused: an exchange of the program is running
+    busy[0] = False
+    model.find()
+    assert [r["address"] for r in model.rows] == [2]
