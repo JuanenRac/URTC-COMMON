@@ -97,8 +97,8 @@ def test_the_c_headers_pass_the_same_vectors_with_the_host_compiler(tmp_path):
     base = [compiler, "-std=c11", "-Wall", "-Wextra", "-Wconversion", "-Wno-unused-const-variable", f"-I{ROOT / 'firmware_base'}", f"-I{ROOT / 'generated'}",
             str(ROOT / "tests" / "c" / "test_frame_layer.c"), "-o", str(binary)]
     build = subprocess.run(base + ["-fsanitize=address,undefined", "-fno-sanitize-recover=undefined"], capture_output=True, text=True)
-    if build.returncode != 0 and "sanitize" in build.stderr:
-        build = subprocess.run(base, capture_output=True, text=True)  # a compiler with no sanitizer runtime
+    if build.returncode != 0:
+        build = subprocess.run(base, capture_output=True, text=True)  # a compiler with no sanitizer runtime (the MinGW of the Windows runner has none)
     assert build.returncode == 0, build.stderr
     run = subprocess.run([str(binary)], capture_output=True, text=True)
     assert run.returncode == 0, run.stdout + run.stderr
