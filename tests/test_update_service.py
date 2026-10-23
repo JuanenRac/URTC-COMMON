@@ -448,3 +448,37 @@ def test_the_controller_can_run_in_a_worker_thread(tmp_path):
     c = uc.UpdateController(service(tmp_path, fetch), lambda shot: done.set() if shot["state"] == uc.AVAILABLE else None)
     assert c.check()
     assert done.wait(10) and c.state == uc.AVAILABLE
+
+
+# ---- a package file picked by hand ---------------------------------------------------------------------------------
+def test_a_package_file_is_verified_and_installed_and_the_file_stays(tmp_path):
+    package = make_package(tmp_path)
+    s = service(tmp_path, lambda url: (_ for _ in ()).throw(AssertionError("no network for a local file")))
+    prepared = s.prepare_local(package)
+    assert prepared.offer.version == "0.5.0" and prepared.sha256 == hashlib.sha256(package.read_bytes()).hexdigest()
+    s.install(prepared, confirmed=True)
+    assert s.current() == "0.5.0" and package.is_file()
+    assert any(h.get("source") == "file" for h in s.history())
+
+
+def test_a_package_file_is_refused_for_another_program_system_version_or_without_its_companions(tmp_path):
+    package = make_package(tmp_path)
+    s = service(tmp_path, None)
+
+    def refused(candidate, code, service_=s):
+        with pytest.raises(su.UpdateError) as caught:
+            service_.prepare_local(candidate)
+        assert caught.value.code == code
+
+    refused(tmp_path / "notes.txt", "bad_package_name")
+    refused(package, "app_info_mismatch", svc.UpdateService("urtc-tester", "0.4.0", tmp_path / "r", svc.UpdatePolicy(), PUBLIC.hex(), KEY_ID, fetch=None, platform="windows-x64"))
+    refused(package, "unsupported_platform", svc.UpdateService("urtc-flasher", "0.4.0", tmp_path / "r", svc.UpdatePolicy(), PUBLIC.hex(), KEY_ID, fetch=None, platform="linux-x64"))
+    refused(package, "not_newer", service(tmp_path, None, installed="0.5.0"))
+    lonely = tmp_path / "lonely"
+    lonely.mkdir()
+    copy = lonely / package.name
+    copy.write_bytes(package.read_bytes())
+    refused(copy, "incomplete_release")
+    (lonely / (package.name + ".sha256")).write_text((package.parent / (package.name + ".sha256")).read_text())
+    (lonely / (package.name + ".sig")).write_text(bytes(64).hex() + "\n")
+    refused(copy, "bad_signature")
