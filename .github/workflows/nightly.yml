@@ -40,7 +40,7 @@ jobs:
 
       - name: Fetch the implementations next to it
         run: |
-          for repository in URTC URTC-DOCS URTC-FLASHER URTC-TESTER URTC-WEB-STUDIO; do
+          for repository in URTC URTC-DOCS URTC-FLASHER URTC-TESTER URTC-UPDATER URTC-WEB-STUDIO; do
             git clone --quiet --depth 1 "https://github.com/JuanenRac/${repository}.git" "${repository}" || echo "::warning::could not fetch ${repository}"
           done
           ls -d URTC* | wc -l
@@ -51,7 +51,7 @@ jobs:
 
       - name: Compare (a skipped test means a repository was not fetched)
         working-directory: URTC-COMMON
-        run: python -m pytest tests/test_siblings.py tests/test_conformance.py -q -rs
+        run: python -m pytest tests/test_siblings.py tests/test_conformance.py tests/test_i18n_glossary.py -q -rs
 
       - name: Open an issue when the night failed
         if: ${{ failure() }}

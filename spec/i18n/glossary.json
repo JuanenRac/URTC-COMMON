@@ -1,0 +1,2248 @@
+{
+  "format": 1,
+  "about": "Phrases that more than one URTC program says, in the eight languages, and the keys of the programs that must say them this way. tools/i18n_glossary.py checks it against the programs next to this repository; the comparison ignores case, accents and punctuation.",
+  "entries": [
+    {
+      "id": "activity_log",
+      "text": {
+        "english": "ACTIVITY LOG",
+        "spanish": "REGISTRO DE ACTIVIDAD",
+        "german": "AKTIVITAETSPROTOKOLL",
+        "french": "JOURNAL D'ACTIVITE",
+        "italian": "REGISTRO ATTIVITA",
+        "japanese": "アクティビティログ",
+        "chinese": "活动日志",
+        "portuguese": "REGISTO DE ATIVIDADE"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-FLASHER",
+          "key": "QT_ACTIVITY_LOG"
+        },
+        {
+          "repo": "URTC-TESTER",
+          "key": "QT_ACTIVITY_LOG"
+        },
+        {
+          "repo": "URTC-UPDATER",
+          "key": "activity_log_title"
+        }
+      ]
+    },
+    {
+      "id": "advance_time_ms",
+      "text": {
+        "english": "Advance time (ms)",
+        "spanish": "Avanzar el tiempo (ms)",
+        "german": "Zeit vorstellen (ms)",
+        "french": "Avancer le temps (ms)",
+        "italian": "Avanza il tempo (ms)",
+        "japanese": "時間を進める (ms)",
+        "chinese": "推进时间 (ms)",
+        "portuguese": "Avançar o tempo (ms)"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-TESTER",
+          "key": "BTN_ADVANCE_TIME"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "testerextras.rack_advance"
+        }
+      ]
+    },
+    {
+      "id": "author",
+      "text": {
+        "english": "Author",
+        "spanish": "Autor",
+        "german": "Autor",
+        "french": "Auteur",
+        "italian": "Autore",
+        "japanese": "作者",
+        "chinese": "作者",
+        "portuguese": "Autor"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-FLASHER",
+          "key": "ABOUT_AUTHOR"
+        },
+        {
+          "repo": "URTC-TESTER",
+          "key": "ABOUT_AUTHOR"
+        },
+        {
+          "repo": "URTC-UPDATER",
+          "key": "about_author_label"
+        }
+      ]
+    },
+    {
+      "id": "auto_detect",
+      "text": {
+        "english": "Auto-detect",
+        "spanish": "Autodetectar",
+        "german": "Automatische Erkennung",
+        "french": "Détection automatique",
+        "italian": "Rilevamento automatico",
+        "japanese": "自動検出",
+        "chinese": "自动检测",
+        "portuguese": "Deteção automática"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-FLASHER",
+          "key": "BTN_AUTO_DETECT"
+        },
+        {
+          "repo": "URTC-TESTER",
+          "key": "BTN_AUTO_DETECT"
+        }
+      ]
+    },
+    {
+      "id": "autotune_done_gains_stored",
+      "text": {
+        "english": "autotune done (gains stored)",
+        "spanish": "autoajuste terminado (ganancias guardadas)",
+        "german": "Autotune fertig (Verstärkungen gespeichert)",
+        "french": "autoréglage terminé (gains enregistrés)",
+        "italian": "autotuning concluso (guadagni salvati)",
+        "japanese": "オートチューニング完了（ゲインを保存）",
+        "chinese": "自整定完成（增益已保存）",
+        "portuguese": "autoajuste concluído (ganhos guardados)"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-TESTER",
+          "key": "VAL_PID_STATE_AUTOTUNE_DONE"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "testerextras.pid_state_autotune_done"
+        }
+      ]
+    },
+    {
+      "id": "autotune_failed",
+      "text": {
+        "english": "autotune failed",
+        "spanish": "autoajuste fallido",
+        "german": "Autotune fehlgeschlagen",
+        "french": "autoréglage échoué",
+        "italian": "autotuning fallito",
+        "japanese": "オートチューニング失敗",
+        "chinese": "自整定失败",
+        "portuguese": "autoajuste falhou"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-TESTER",
+          "key": "VAL_PID_STATE_AUTOTUNE_FAILED"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "testerextras.pid_state_autotune_failed"
+        }
+      ]
+    },
+    {
+      "id": "autotuning",
+      "text": {
+        "english": "autotuning",
+        "spanish": "autoajustando",
+        "german": "Autotune läuft",
+        "french": "autoréglage en cours",
+        "italian": "autotuning in corso",
+        "japanese": "オートチューニング中",
+        "chinese": "自整定中",
+        "portuguese": "a autoajustar"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-TESTER",
+          "key": "VAL_PID_STATE_AUTOTUNING"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "testerextras.pid_state_autotuning"
+        }
+      ]
+    },
+    {
+      "id": "browse",
+      "text": {
+        "english": "Browse...",
+        "spanish": "Examinar...",
+        "german": "Durchsuchen...",
+        "french": "Parcourir...",
+        "italian": "Sfoglia...",
+        "japanese": "参照...",
+        "chinese": "浏览...",
+        "portuguese": "Procurar..."
+      },
+      "consumers": [
+        {
+          "repo": "URTC-FLASHER",
+          "key": "BTN_BROWSE"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "flasher.browse"
+        }
+      ]
+    },
+    {
+      "id": "cancel",
+      "text": {
+        "english": "Cancel",
+        "spanish": "Cancelar",
+        "german": "Abbrechen",
+        "french": "Annuler",
+        "italian": "Annulla",
+        "japanese": "キャンセル",
+        "chinese": "取消",
+        "portuguese": "Cancelar"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-FLASHER",
+          "key": "BTN_CANCEL"
+        },
+        {
+          "repo": "URTC-TESTER",
+          "key": "QT_CANCEL"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "confirm.cancel"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "flasher.cancel_button"
+        },
+        {
+          "repo": "URTC-UPDATER",
+          "key": "confirm_cancel_button"
+        }
+      ]
+    },
+    {
+      "id": "can_id_hex",
+      "text": {
+        "english": "CAN ID (hex):",
+        "spanish": "ID CAN (hex):",
+        "german": "CAN-ID (hex):",
+        "french": "ID CAN (hex) :",
+        "italian": "ID CAN (hex):",
+        "japanese": "CAN ID（16進数）：",
+        "chinese": "CAN ID（十六进制）：",
+        "portuguese": "ID CAN (hex):"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-TESTER",
+          "key": "LBL_CAN_ID_HEX"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "canbus.id_label"
+        }
+      ]
+    },
+    {
+      "id": "clear",
+      "text": {
+        "english": "Clear",
+        "spanish": "Limpiar",
+        "german": "Leeren",
+        "french": "Effacer",
+        "italian": "Pulisci",
+        "japanese": "クリア",
+        "chinese": "清除",
+        "portuguese": "Limpar"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-TESTER",
+          "key": "BTN_CLEAR"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "testerglobal.clear"
+        }
+      ]
+    },
+    {
+      "id": "clockwise",
+      "text": {
+        "english": "Clockwise",
+        "spanish": "Horario",
+        "german": "Im Uhrzeigersinn",
+        "french": "Horaire",
+        "italian": "Orario",
+        "japanese": "時計回り",
+        "chinese": "顺时针",
+        "portuguese": "Horário"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-TESTER",
+          "key": "OPT_CLOCKWISE"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "testertool.clockwise"
+        }
+      ]
+    },
+    {
+      "id": "close",
+      "text": {
+        "english": "Close",
+        "spanish": "Cerrar",
+        "german": "Schließen",
+        "french": "Fermer",
+        "italian": "Chiudi",
+        "japanese": "閉じる",
+        "chinese": "关闭",
+        "portuguese": "Fechar"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-FLASHER",
+          "key": "BTN_CLOSE"
+        },
+        {
+          "repo": "URTC-TESTER",
+          "key": "BTN_CLOSE"
+        },
+        {
+          "repo": "URTC-UPDATER",
+          "key": "about_close_button"
+        },
+        {
+          "repo": "URTC-UPDATER",
+          "key": "security_close_button"
+        }
+      ]
+    },
+    {
+      "id": "configure",
+      "text": {
+        "english": "Configure",
+        "spanish": "Configurar",
+        "german": "Konfigurieren",
+        "french": "Configurer",
+        "italian": "Configura",
+        "japanese": "設定",
+        "chinese": "配置",
+        "portuguese": "Configurar"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-TESTER",
+          "key": "QT_CONFIGURE"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "testertool.configure"
+        }
+      ]
+    },
+    {
+      "id": "connect",
+      "text": {
+        "english": "Connect",
+        "spanish": "Conectar",
+        "german": "Verbinden",
+        "french": "Connecter",
+        "italian": "Connetti",
+        "japanese": "接続",
+        "chinese": "连接",
+        "portuguese": "Ligar"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-FLASHER",
+          "key": "BTN_CONNECT"
+        },
+        {
+          "repo": "URTC-TESTER",
+          "key": "BTN_CONNECT"
+        }
+      ]
+    },
+    {
+      "id": "connection_failed",
+      "text": {
+        "english": "Connection failed",
+        "spanish": "Falló la conexión",
+        "german": "Verbindung fehlgeschlagen",
+        "french": "Échec de la connexion",
+        "italian": "Connessione non riuscita",
+        "japanese": "接続に失敗しました",
+        "chinese": "连接失败",
+        "portuguese": "Falhou a ligação"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-FLASHER",
+          "key": "QTLOG_CONNECTION_FAILED"
+        },
+        {
+          "repo": "URTC-TESTER",
+          "key": "QTLOG_CONNECTION_FAILED"
+        }
+      ]
+    },
+    {
+      "id": "could_not_save_the_language",
+      "text": {
+        "english": "Could not save the language",
+        "spanish": "No se pudo guardar el idioma",
+        "german": "Die Sprache konnte nicht gespeichert werden",
+        "french": "Impossible d'enregistrer la langue",
+        "italian": "Impossibile salvare la lingua",
+        "japanese": "言語を保存できませんでした",
+        "chinese": "无法保存语言",
+        "portuguese": "Não foi possível guardar o idioma"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-FLASHER",
+          "key": "QTLOG_LANGUAGE_SAVE_FAILED"
+        },
+        {
+          "repo": "URTC-TESTER",
+          "key": "QTLOG_LANGUAGE_SAVE_FAILED"
+        }
+      ]
+    },
+    {
+      "id": "counter_clockwise",
+      "text": {
+        "english": "Counter-clockwise",
+        "spanish": "Antihorario",
+        "german": "Gegen den Uhrzeigersinn",
+        "french": "Antihoraire",
+        "italian": "Antiorario",
+        "japanese": "反時計回り",
+        "chinese": "逆时针",
+        "portuguese": "Anti-horário"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-TESTER",
+          "key": "OPT_COUNTER_CLOCKWISE"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "testertool.counter_clockwise"
+        }
+      ]
+    },
+    {
+      "id": "count_lines_were_not_valid_frames_and_were_skipp",
+      "text": {
+        "english": "{count} lines were not valid frames and were skipped",
+        "spanish": "{count} líneas no eran tramas válidas y se omitieron",
+        "german": "{count} Zeilen waren keine gültigen Frames und wurden übersprungen",
+        "french": "{count} lignes n'étaient pas des trames valides et ont été ignorées",
+        "italian": "{count} righe non erano frame validi e sono state saltate",
+        "japanese": "{count} 行は有効なフレームではないためスキップしました",
+        "chinese": "有 {count} 行不是有效的帧，已跳过",
+        "portuguese": "{count} linhas não eram tramas válidas e foram ignoradas"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-TESTER",
+          "key": "LBL_REPLAY_REJECTED"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "canbus.replay_rejected"
+        }
+      ]
+    },
+    {
+      "id": "disconnect",
+      "text": {
+        "english": "Disconnect",
+        "spanish": "Desconectar",
+        "german": "Trennen",
+        "french": "Déconnecter",
+        "italian": "Disconnetti",
+        "japanese": "切断",
+        "chinese": "断开连接",
+        "portuguese": "Desligar"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-FLASHER",
+          "key": "BTN_DISCONNECT"
+        },
+        {
+          "repo": "URTC-TESTER",
+          "key": "BTN_DISCONNECT"
+        }
+      ]
+    },
+    {
+      "id": "disconnected",
+      "text": {
+        "english": "Disconnected",
+        "spanish": "Desconectado",
+        "german": "Getrennt",
+        "french": "Déconnecté",
+        "italian": "Disconnesso",
+        "japanese": "切断しました",
+        "chinese": "已断开",
+        "portuguese": "Desligado"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-FLASHER",
+          "key": "QTLOG_TRANSPORT_DISCONNECTED"
+        },
+        {
+          "repo": "URTC-TESTER",
+          "key": "QTLOG_TRANSPORT_DISCONNECTED"
+        }
+      ]
+    },
+    {
+      "id": "duty",
+      "text": {
+        "english": "Duty (%)",
+        "spanish": "Ciclo de Trabajo (%)",
+        "german": "Tastverhältnis (%)",
+        "french": "Rapport Cyclique (%)",
+        "italian": "Ciclo di lavoro (%)",
+        "japanese": "デューティ比 (%)",
+        "chinese": "占空比 (%)",
+        "portuguese": "Ciclo de Trabalho (%)"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-TESTER",
+          "key": "QT_PASTE_DUTY"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "testertool.duty_label"
+        }
+      ]
+    },
+    {
+      "id": "email",
+      "text": {
+        "english": "Email",
+        "spanish": "Correo",
+        "german": "E-Mail",
+        "french": "E-mail",
+        "italian": "Email",
+        "japanese": "メール",
+        "chinese": "邮箱",
+        "portuguese": "E-mail"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-FLASHER",
+          "key": "ABOUT_EMAIL"
+        },
+        {
+          "repo": "URTC-TESTER",
+          "key": "ABOUT_EMAIL"
+        },
+        {
+          "repo": "URTC-UPDATER",
+          "key": "about_email_label"
+        }
+      ]
+    },
+    {
+      "id": "energize",
+      "text": {
+        "english": "Energize",
+        "spanish": "Energizar",
+        "german": "Aktivieren",
+        "french": "Activer",
+        "italian": "Attiva",
+        "japanese": "励磁",
+        "chinese": "通电",
+        "portuguese": "Energizar"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-TESTER",
+          "key": "QT_ENERGIZE"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "testertool.energize"
+        }
+      ]
+    },
+    {
+      "id": "erase_f_ram",
+      "text": {
+        "english": "Erase F-RAM...",
+        "spanish": "Borrar F-RAM...",
+        "german": "F-RAM löschen...",
+        "french": "Effacer la F-RAM...",
+        "italian": "Cancella F-RAM...",
+        "japanese": "F-RAM を消去...",
+        "chinese": "擦除 F-RAM...",
+        "portuguese": "Apagar F-RAM..."
+      },
+      "consumers": [
+        {
+          "repo": "URTC-TESTER",
+          "key": "BTN_ERASE_FRAM"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "testerglobal.erase_fram"
+        }
+      ]
+    },
+    {
+      "id": "error_flag",
+      "text": {
+        "english": "Error flag",
+        "spanish": "Indicador de error",
+        "german": "Fehlerflag",
+        "french": "Drapeau d'erreur",
+        "italian": "Flag di errore",
+        "japanese": "エラーフラグ",
+        "chinese": "错误标志",
+        "portuguese": "Indicador de erro"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-TESTER",
+          "key": "LBL_BLACKBOX_LEGEND_TRIGGER"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "testerextras.black_chart_trigger"
+        }
+      ]
+    },
+    {
+      "id": "export_asc",
+      "text": {
+        "english": "Export .asc...",
+        "spanish": "Exportar .asc...",
+        "german": ".asc exportieren...",
+        "french": "Exporter .asc...",
+        "italian": "Esporta .asc...",
+        "japanese": ".asc をエクスポート...",
+        "chinese": "导出 .asc...",
+        "portuguese": "Exportar .asc..."
+      },
+      "consumers": [
+        {
+          "repo": "URTC-TESTER",
+          "key": "BTN_EXPORT_ASC"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "testerglobal.export_asc"
+        }
+      ]
+    },
+    {
+      "id": "export_failed",
+      "text": {
+        "english": "Export failed",
+        "spanish": "Fallo al exportar",
+        "german": "Export fehlgeschlagen",
+        "french": "Échec de l'exportation",
+        "italian": "Esportazione non riuscita",
+        "japanese": "エクスポートに失敗しました",
+        "chinese": "导出失败",
+        "portuguese": "Falha ao exportar"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-FLASHER",
+          "key": "TITLE_EXPORT_FAILED"
+        },
+        {
+          "repo": "URTC-TESTER",
+          "key": "TITLE_EXPORT_FAILED"
+        }
+      ]
+    },
+    {
+      "id": "export_trc",
+      "text": {
+        "english": "Export .trc...",
+        "spanish": "Exportar .trc...",
+        "german": ".trc exportieren...",
+        "french": "Exporter .trc...",
+        "italian": "Esporta .trc...",
+        "japanese": ".trc をエクスポート...",
+        "chinese": "导出 .trc...",
+        "portuguese": "Exportar .trc..."
+      },
+      "consumers": [
+        {
+          "repo": "URTC-TESTER",
+          "key": "BTN_EXPORT_TRC"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "testerglobal.export_trc"
+        }
+      ]
+    },
+    {
+      "id": "forward",
+      "text": {
+        "english": "Forward",
+        "spanish": "Adelante",
+        "german": "Vorwärts",
+        "french": "Avant",
+        "italian": "Avanti",
+        "japanese": "正転",
+        "chinese": "正转",
+        "portuguese": "Avançar"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-TESTER",
+          "key": "OPT_FORWARD"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "testertool.forward"
+        }
+      ]
+    },
+    {
+      "id": "f_ram",
+      "text": {
+        "english": "F-RAM",
+        "spanish": "F-RAM",
+        "german": "F-RAM",
+        "french": "F-RAM",
+        "italian": "F-RAM",
+        "japanese": "F-RAM",
+        "chinese": "F-RAM",
+        "portuguese": "F-RAM"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-TESTER",
+          "key": "QT_FRAM_PANEL"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "tester.tab_fram"
+        }
+      ]
+    },
+    {
+      "id": "health_frame",
+      "text": {
+        "english": "Health frame",
+        "spanish": "Trama de salud",
+        "german": "Zustandsframe",
+        "french": "Trame de santé",
+        "italian": "Frame di salute",
+        "japanese": "状態フレーム",
+        "chinese": "健康帧",
+        "portuguese": "Trama de saúde"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-TESTER",
+          "key": "LBL_FEATURE_HEALTH_PROFILE"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "testerextras.feature_health_profile"
+        }
+      ]
+    },
+    {
+      "id": "heater_pid",
+      "text": {
+        "english": "Heater PID",
+        "spanish": "PID del calentador",
+        "german": "Heizungs-PID",
+        "french": "PID du chauffage",
+        "italian": "PID del riscaldatore",
+        "japanese": "ヒーターの PID",
+        "chinese": "加热器 PID",
+        "portuguese": "PID do aquecedor"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-TESTER",
+          "key": "LBL_FEATURE_THERMAL_PID"
+        },
+        {
+          "repo": "URTC-TESTER",
+          "key": "QTLOG_HEATER_PID"
+        },
+        {
+          "repo": "URTC-TESTER",
+          "key": "QT_PID_PANEL"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "testerextras.feature_thermal_pid"
+        }
+      ]
+    },
+    {
+      "id": "kp_kp_ki_ki_kd_kd_state_state_heater_output_duty",
+      "text": {
+        "english": "Kp {kp}  Ki {ki}  Kd {kd}  |  State: {state}  |  Heater output: {duty} %",
+        "spanish": "Kp {kp}  Ki {ki}  Kd {kd}  |  Estado: {state}  |  Salida del calentador: {duty} %",
+        "german": "Kp {kp}  Ki {ki}  Kd {kd}  |  Zustand: {state}  |  Heizerausgang: {duty} %",
+        "french": "Kp {kp}  Ki {ki}  Kd {kd}  |  État : {state}  |  Sortie du chauffage : {duty} %",
+        "italian": "Kp {kp}  Ki {ki}  Kd {kd}  |  Stato: {state}  |  Uscita del riscaldatore: {duty} %",
+        "japanese": "Kp {kp}  Ki {ki}  Kd {kd}  |  状態: {state}  |  ヒーター出力: {duty} %",
+        "chinese": "Kp {kp}  Ki {ki}  Kd {kd}  |  状态: {state}  |  加热器输出: {duty} %",
+        "portuguese": "Kp {kp}  Ki {ki}  Kd {kd}  |  Estado: {state}  |  Saída do aquecedor: {duty} %"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-TESTER",
+          "key": "LBL_PID_TEXT"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "testerextras.pid_status"
+        }
+      ]
+    },
+    {
+      "id": "language_saved",
+      "text": {
+        "english": "Language saved",
+        "spanish": "Idioma guardado",
+        "german": "Sprache gespeichert",
+        "french": "Langue enregistrée",
+        "italian": "Lingua salvata",
+        "japanese": "言語を保存しました",
+        "chinese": "语言已保存",
+        "portuguese": "Idioma guardado"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-FLASHER",
+          "key": "QTLOG_LANGUAGE_SAVED"
+        },
+        {
+          "repo": "URTC-TESTER",
+          "key": "QTLOG_LANGUAGE_SAVED"
+        }
+      ]
+    },
+    {
+      "id": "license",
+      "text": {
+        "english": "License",
+        "spanish": "Licencia",
+        "german": "Lizenz",
+        "french": "Licence",
+        "italian": "Licenza",
+        "japanese": "ライセンス",
+        "chinese": "许可证",
+        "portuguese": "Licença"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-FLASHER",
+          "key": "ABOUT_LICENSE"
+        },
+        {
+          "repo": "URTC-FLASHER",
+          "key": "MENU_LICENSE"
+        },
+        {
+          "repo": "URTC-TESTER",
+          "key": "ABOUT_LICENSE"
+        },
+        {
+          "repo": "URTC-TESTER",
+          "key": "MENU_LICENSE"
+        },
+        {
+          "repo": "URTC-UPDATER",
+          "key": "about_license_label"
+        }
+      ]
+    },
+    {
+      "id": "log_saved",
+      "text": {
+        "english": "Log saved",
+        "spanish": "Registro guardado",
+        "german": "Protokoll gespeichert",
+        "french": "Journal enregistré",
+        "italian": "Registro salvato",
+        "japanese": "ログを保存しました",
+        "chinese": "日志已保存",
+        "portuguese": "Registo guardado"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-FLASHER",
+          "key": "QTLOG_LOG_SAVED"
+        },
+        {
+          "repo": "URTC-TESTER",
+          "key": "QTLOG_LOG_SAVED"
+        }
+      ]
+    },
+    {
+      "id": "measured",
+      "text": {
+        "english": "Measured",
+        "spanish": "Medida",
+        "german": "Gemessen",
+        "french": "Mesurée",
+        "italian": "Misurata",
+        "japanese": "測定値",
+        "chinese": "测量值",
+        "portuguese": "Medida"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-TESTER",
+          "key": "LBL_BLACKBOX_LEGEND_CURRENT"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "testerextras.black_chart_current"
+        }
+      ]
+    },
+    {
+      "id": "ms",
+      "text": {
+        "english": "ms",
+        "spanish": "ms",
+        "german": "ms",
+        "french": "ms",
+        "italian": "ms",
+        "japanese": "ms",
+        "chinese": "毫秒",
+        "portuguese": "ms"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-TESTER",
+          "key": "LBL_MS_UNIT"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "testerglobal.ms"
+        }
+      ]
+    },
+    {
+      "id": "name_count_samples",
+      "text": {
+        "english": "{name}: {count} samples",
+        "spanish": "{name}: {count} muestras",
+        "german": "{name}: {count} Messwerte",
+        "french": "{name} : {count} échantillons",
+        "italian": "{name}: {count} campioni",
+        "japanese": "{name}：{count} サンプル",
+        "chinese": "{name}：{count} 个采样",
+        "portuguese": "{name}: {count} amostras"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-TESTER",
+          "key": "LBL_BLACKBOX_OPEN_OK"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "testerextras.black_open_ok"
+        }
+      ]
+    },
+    {
+      "id": "name_is_not_a_record_that_can_be_read_reason",
+      "text": {
+        "english": "{name} is not a record that can be read: {reason}",
+        "spanish": "{name} no es un registro que se pueda leer: {reason}",
+        "german": "{name} ist kein lesbarer Datensatz: {reason}",
+        "french": "{name} n'est pas un enregistrement lisible : {reason}",
+        "italian": "{name} non è una registrazione leggibile: {reason}",
+        "japanese": "{name} は読み取れる記録ではありません：{reason}",
+        "chinese": "{name} 不是可读取的记录：{reason}",
+        "portuguese": "{name} não é um registo que se possa ler: {reason}"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-TESTER",
+          "key": "LBL_BLACKBOX_OPEN_FAILED"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "testerextras.black_open_failed"
+        }
+      ]
+    },
+    {
+      "id": "no",
+      "text": {
+        "english": "no",
+        "spanish": "no",
+        "german": "nein",
+        "french": "non",
+        "italian": "no",
+        "japanese": "いいえ",
+        "chinese": "否",
+        "portuguese": "não"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-TESTER",
+          "key": "VAL_NO"
+        },
+        {
+          "repo": "URTC-TESTER",
+          "key": "VAL_PART_NOT_DETECTED"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "testerglobal.fram_had_error_no"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "testertool.no"
+        }
+      ]
+    },
+    {
+      "id": "no_answer_firmware_without_the_heater_pid",
+      "text": {
+        "english": "No answer (firmware without the heater PID)",
+        "spanish": "Sin respuesta (firmware sin el PID del calentador)",
+        "german": "Keine Antwort (Firmware ohne Heizer-PID)",
+        "french": "Pas de réponse (firmware sans PID du chauffage)",
+        "italian": "Nessuna risposta (firmware senza il PID del riscaldatore)",
+        "japanese": "応答なし（ヒーター PID のないファームウェア）",
+        "chinese": "无应答（固件没有加热器 PID）",
+        "portuguese": "Sem resposta (firmware sem o PID do aquecedor)"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-TESTER",
+          "key": "LBL_PID_NO_RESPONSE"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "testerextras.pid_no_answer"
+        }
+      ]
+    },
+    {
+      "id": "no_answer_firmware_without_these_functions",
+      "text": {
+        "english": "No answer (firmware without these functions)",
+        "spanish": "Sin respuesta (firmware sin estas funciones)",
+        "german": "Keine Antwort (Firmware ohne diese Funktionen)",
+        "french": "Pas de réponse (firmware sans ces fonctions)",
+        "italian": "Nessuna risposta (firmware senza queste funzioni)",
+        "japanese": "応答なし（この機能のないファームウェア）",
+        "chinese": "无应答（固件没有这些功能）",
+        "portuguese": "Sem resposta (firmware sem estas funções)"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-TESTER",
+          "key": "LBL_FEATURES_NO_RESPONSE"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "testerextras.features_no_answer"
+        }
+      ]
+    },
+    {
+      "id": "not_installed",
+      "text": {
+        "english": "not installed",
+        "spanish": "no instalado",
+        "german": "nicht installiert",
+        "french": "non installé",
+        "italian": "non installato",
+        "japanese": "未インストール",
+        "chinese": "未安装",
+        "portuguese": "não instalado"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-FLASHER",
+          "key": "QT_NOT_INSTALLED"
+        },
+        {
+          "repo": "URTC-UPDATER",
+          "key": "state_not_installed"
+        }
+      ]
+    },
+    {
+      "id": "off_on_off_control",
+      "text": {
+        "english": "off (on/off control)",
+        "spanish": "apagado (control todo/nada)",
+        "german": "aus (Zweipunktregelung)",
+        "french": "arrêté (régulation tout ou rien)",
+        "italian": "spento (regolazione on/off)",
+        "japanese": "オフ（オン/オフ制御）",
+        "chinese": "关闭（通断控制）",
+        "portuguese": "desligado (controlo tudo ou nada)"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-TESTER",
+          "key": "VAL_PID_STATE_OFF"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "testerextras.pid_state_off"
+        }
+      ]
+    },
+    {
+      "id": "open_a_saved_record_json_or_csv",
+      "text": {
+        "english": "Open a saved record (JSON or CSV)",
+        "spanish": "Abrir un registro guardado (JSON o CSV)",
+        "german": "Gespeicherten Datensatz öffnen (JSON oder CSV)",
+        "french": "Ouvrir un enregistrement sauvegardé (JSON ou CSV)",
+        "italian": "Apri una registrazione salvata (JSON o CSV)",
+        "japanese": "保存した記録を開く（JSON または CSV）",
+        "chinese": "打开已保存的记录（JSON 或 CSV）",
+        "portuguese": "Abrir um registo guardado (JSON ou CSV)"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-TESTER",
+          "key": "BTN_BLACKBOX_OPEN"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "testerextras.black_open"
+        }
+      ]
+    },
+    {
+      "id": "open_trace",
+      "text": {
+        "english": "Open Trace",
+        "spanish": "Abrir traza",
+        "german": "Trace öffnen",
+        "french": "Ouvrir une trace",
+        "italian": "Apri traccia",
+        "japanese": "トレースを開く",
+        "chinese": "打开跟踪",
+        "portuguese": "Abrir rastreio"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-TESTER",
+          "key": "BTN_REPLAY_OPEN"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "canbus.replay_load"
+        }
+      ]
+    },
+    {
+      "id": "optional_functions",
+      "text": {
+        "english": "Optional functions",
+        "spanish": "Funciones opcionales",
+        "german": "Optionale Funktionen",
+        "french": "Fonctions optionnelles",
+        "italian": "Funzioni opzionali",
+        "japanese": "オプション機能",
+        "chinese": "可选功能",
+        "portuguese": "Funções opcionais"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-TESTER",
+          "key": "BTN_QUERY_FEATURES"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "tester.tab_features"
+        }
+      ]
+    },
+    {
+      "id": "oscillator_trim",
+      "text": {
+        "english": "Oscillator trim",
+        "spanish": "Ajuste del oscilador",
+        "german": "Oszillator-Trimmung",
+        "french": "Réglage de l'oscillateur",
+        "italian": "Regolazione dell'oscillatore",
+        "japanese": "発振器のトリム",
+        "chinese": "振荡器微调",
+        "portuguese": "Ajuste do oscilador"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-TESTER",
+          "key": "LBL_FEATURE_HSI_AUTOTRIM"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "testerextras.feature_hsi_autotrim"
+        }
+      ]
+    },
+    {
+      "id": "pause",
+      "text": {
+        "english": "Pause",
+        "spanish": "Pausa",
+        "german": "Pause",
+        "french": "Pause",
+        "italian": "Pausa",
+        "japanese": "一時停止",
+        "chinese": "暂停",
+        "portuguese": "Pausa"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-TESTER",
+          "key": "BTN_REPLAY_PAUSE"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "canbus.replay_pause"
+        }
+      ]
+    },
+    {
+      "id": "play",
+      "text": {
+        "english": "Play",
+        "spanish": "Reproducir",
+        "german": "Abspielen",
+        "french": "Lire",
+        "italian": "Riproduci",
+        "japanese": "再生",
+        "chinese": "播放",
+        "portuguese": "Reproduzir"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-TESTER",
+          "key": "BTN_REPLAY_PLAY"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "canbus.replay_play"
+        }
+      ]
+    },
+    {
+      "id": "played_total_frames",
+      "text": {
+        "english": "{played} / {total} frames",
+        "spanish": "{played} / {total} tramas",
+        "german": "{played} / {total} Frames",
+        "french": "{played} / {total} trames",
+        "italian": "{played} / {total} frame",
+        "japanese": "{played} / {total} フレーム",
+        "chinese": "{played} / {total} 帧",
+        "portuguese": "{played} / {total} tramas"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-TESTER",
+          "key": "LBL_REPLAY_PROGRESS"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "canbus.replay_progress"
+        }
+      ]
+    },
+    {
+      "id": "port_scan",
+      "text": {
+        "english": "Port scan",
+        "spanish": "Búsqueda de puertos",
+        "german": "Port-Suche",
+        "french": "Recherche de ports",
+        "italian": "Ricerca porte",
+        "japanese": "ポートの検索",
+        "chinese": "端口扫描",
+        "portuguese": "Pesquisa de portas"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-FLASHER",
+          "key": "QTLOG_PORT_SCAN"
+        },
+        {
+          "repo": "URTC-TESTER",
+          "key": "QTLOG_PORT_SCAN"
+        }
+      ]
+    },
+    {
+      "id": "query_diag0",
+      "text": {
+        "english": "Query DIAG0",
+        "spanish": "Consultar DIAG0",
+        "german": "DIAG0 abfragen",
+        "french": "Interroger DIAG0",
+        "italian": "Interroga DIAG0",
+        "japanese": "DIAG0 を照会",
+        "chinese": "查询 DIAG0",
+        "portuguese": "Consultar DIAG0"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-TESTER",
+          "key": "BTN_QUERY_DIAG0"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "testerglobal.query_diag0"
+        }
+      ]
+    },
+    {
+      "id": "rack_bench_simulated_no_board",
+      "text": {
+        "english": "Rack bench (simulated, no board)",
+        "spanish": "Banco de rack (simulado, sin placa)",
+        "german": "Rack-Prüfstand (simuliert, ohne Platine)",
+        "french": "Banc du rack (simulé, sans carte)",
+        "italian": "Banco del rack (simulato, senza scheda)",
+        "japanese": "ラック試験台（シミュレーション、ボード不要）",
+        "chinese": "机架试验台（模拟，无需板卡）",
+        "portuguese": "Bancada do rack (simulada, sem placa)"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-TESTER",
+          "key": "QT_RACK_BENCH"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "testerextras.rack_title"
+        }
+      ]
+    },
+    {
+      "id": "rack_the_head",
+      "text": {
+        "english": "Rack the head",
+        "spanish": "Colocar el cabezal",
+        "german": "Kopf einsetzen",
+        "french": "Placer la tête",
+        "italian": "Inserisci la testa",
+        "japanese": "ヘッドをセット",
+        "chinese": "放入工具头",
+        "portuguese": "Colocar a cabeça"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-TESTER",
+          "key": "BTN_RACK_IT"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "testerextras.rack_place"
+        }
+      ]
+    },
+    {
+      "id": "read_from_the_board",
+      "text": {
+        "english": "Read from the board",
+        "spanish": "Leer de la placa",
+        "german": "Von der Platine lesen",
+        "french": "Lire depuis la carte",
+        "italian": "Leggi dalla scheda",
+        "japanese": "ボードから読む",
+        "chinese": "从板卡读取",
+        "portuguese": "Ler da placa"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-TESTER",
+          "key": "BTN_THERMAL_READ"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "testerextras.thermal_read"
+        }
+      ]
+    },
+    {
+      "id": "read_it_automatically_when_the_board_reports_an_",
+      "text": {
+        "english": "Read it automatically when the board reports an error",
+        "spanish": "Leerla automáticamente cuando la placa indique un error",
+        "german": "Automatisch lesen, wenn die Platine einen Fehler meldet",
+        "french": "La lire automatiquement quand la carte signale une erreur",
+        "italian": "Leggila automaticamente quando la scheda segnala un errore",
+        "japanese": "ボードがエラーを報告したら自動で読む",
+        "chinese": "板卡报告错误时自动读取",
+        "portuguese": "Lê-la automaticamente quando a placa indicar um erro"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-TESTER",
+          "key": "LBL_AUTO_BLACK_BOX"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "testerextras.black_auto"
+        }
+      ]
+    },
+    {
+      "id": "readme",
+      "text": {
+        "english": "Readme",
+        "spanish": "Readme",
+        "german": "Readme",
+        "french": "Lisez-moi",
+        "italian": "Readme",
+        "japanese": "README",
+        "chinese": "自述文件",
+        "portuguese": "Readme"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-FLASHER",
+          "key": "MENU_README"
+        },
+        {
+          "repo": "URTC-TESTER",
+          "key": "MENU_README"
+        }
+      ]
+    },
+    {
+      "id": "read_the_black_box",
+      "text": {
+        "english": "Read the black box",
+        "spanish": "Leer la caja negra",
+        "german": "Blackbox lesen",
+        "french": "Lire la boîte noire",
+        "italian": "Leggi la scatola nera",
+        "japanese": "ブラックボックスを読む",
+        "chinese": "读取黑匣子",
+        "portuguese": "Ler a caixa negra"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-TESTER",
+          "key": "BTN_READ_BLACK_BOX"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "testerextras.black_read"
+        }
+      ]
+    },
+    {
+      "id": "refresh",
+      "text": {
+        "english": "Refresh",
+        "spanish": "Actualizar",
+        "german": "Aktualisieren",
+        "french": "Actualiser",
+        "italian": "Aggiorna",
+        "japanese": "更新",
+        "chinese": "刷新",
+        "portuguese": "Atualizar"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-FLASHER",
+          "key": "BTN_REFRESH"
+        },
+        {
+          "repo": "URTC-TESTER",
+          "key": "BTN_REFRESH"
+        },
+        {
+          "repo": "URTC-UPDATER",
+          "key": "refresh_button"
+        }
+      ]
+    },
+    {
+      "id": "repeat",
+      "text": {
+        "english": "Repeat",
+        "spanish": "Repetir",
+        "german": "Wiederholen",
+        "french": "Répéter",
+        "italian": "Ripeti",
+        "japanese": "繰り返し",
+        "chinese": "重复",
+        "portuguese": "Repetir"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-TESTER",
+          "key": "LBL_REPLAY_LOOP"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "canbus.replay_loop"
+        }
+      ]
+    },
+    {
+      "id": "repeat_every",
+      "text": {
+        "english": "Repeat every",
+        "spanish": "Repetir cada",
+        "german": "Wiederholen alle",
+        "french": "Répéter toutes les",
+        "italian": "Ripeti ogni",
+        "japanese": "繰り返し間隔",
+        "chinese": "重复间隔",
+        "portuguese": "Repetir a cada"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-TESTER",
+          "key": "LBL_REPEAT_EVERY"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "testerglobal.repeat_every"
+        }
+      ]
+    },
+    {
+      "id": "replay",
+      "text": {
+        "english": "REPLAY",
+        "spanish": "REPLAY",
+        "german": "REPLAY",
+        "french": "REPLAY",
+        "italian": "REPLAY",
+        "japanese": "REPLAY",
+        "chinese": "REPLAY",
+        "portuguese": "REPLAY"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-TESTER",
+          "key": "LBL_REPLAY_BADGE"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "canbus.replay_badge"
+        }
+      ]
+    },
+    {
+      "id": "replay_a_recorded_trace",
+      "text": {
+        "english": "Replay a Recorded Trace",
+        "spanish": "Reproducir una traza grabada",
+        "german": "Aufgezeichneten Trace abspielen",
+        "french": "Rejouer une trace enregistrée",
+        "italian": "Riproduci una traccia registrata",
+        "japanese": "記録したトレースを再生",
+        "chinese": "回放已录制的跟踪",
+        "portuguese": "Reproduzir um rastreio gravado"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-TESTER",
+          "key": "TITLE_REPLAY"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "canbus.replay_title"
+        }
+      ]
+    },
+    {
+      "id": "save",
+      "text": {
+        "english": "Save",
+        "spanish": "Guardar",
+        "german": "Speichern",
+        "french": "Enregistrer",
+        "italian": "Salva",
+        "japanese": "保存",
+        "chinese": "保存",
+        "portuguese": "Guardar"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-FLASHER",
+          "key": "BTN_SAVE"
+        },
+        {
+          "repo": "URTC-UPDATER",
+          "key": "security_save_button"
+        }
+      ]
+    },
+    {
+      "id": "save_logs",
+      "text": {
+        "english": "Save Logs...",
+        "spanish": "Guardar registros...",
+        "german": "Protokolle speichern...",
+        "french": "Enregistrer les journaux...",
+        "italian": "Salva registri...",
+        "japanese": "ログを保存...",
+        "chinese": "保存日志...",
+        "portuguese": "Guardar registos..."
+      },
+      "consumers": [
+        {
+          "repo": "URTC-FLASHER",
+          "key": "MENU_SAVE_LOGS"
+        },
+        {
+          "repo": "URTC-TESTER",
+          "key": "MENU_SAVE_LOGS"
+        }
+      ]
+    },
+    {
+      "id": "seconds_s_recorded",
+      "text": {
+        "english": "{seconds} s recorded",
+        "spanish": "{seconds} s registrados",
+        "german": "{seconds} s aufgezeichnet",
+        "french": "{seconds} s enregistrées",
+        "italian": "{seconds} s registrati",
+        "japanese": "{seconds} 秒を記録",
+        "chinese": "已记录 {seconds} 秒",
+        "portuguese": "{seconds} s registados"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-TESTER",
+          "key": "LBL_BLACKBOX_SPAN"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "testerextras.black_chart_span"
+        }
+      ]
+    },
+    {
+      "id": "send",
+      "text": {
+        "english": "Send",
+        "spanish": "Enviar",
+        "german": "Senden",
+        "french": "Envoyer",
+        "italian": "Invia",
+        "japanese": "送信",
+        "chinese": "发送",
+        "portuguese": "Enviar"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-TESTER",
+          "key": "BTN_SEND"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "testerglobal.send"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "testertool.send"
+        }
+      ]
+    },
+    {
+      "id": "send_once",
+      "text": {
+        "english": "Send Once",
+        "spanish": "Enviar una vez",
+        "german": "Einmal senden",
+        "french": "Envoyer une fois",
+        "italian": "Invia una volta",
+        "japanese": "一度送信",
+        "chinese": "发送一次",
+        "portuguese": "Enviar uma vez"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-TESTER",
+          "key": "BTN_SEND_ONCE"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "testerglobal.send_once"
+        }
+      ]
+    },
+    {
+      "id": "send_pre_heat",
+      "text": {
+        "english": "Send pre-heat",
+        "spanish": "Enviar precalentamiento",
+        "german": "Vorheizen senden",
+        "french": "Envoyer le préchauffage",
+        "italian": "Invia preriscaldamento",
+        "japanese": "予熱を送る",
+        "chinese": "发送预热",
+        "portuguese": "Enviar pré-aquecimento"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-TESTER",
+          "key": "BTN_SEND_PREHEAT"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "testerextras.rack_send"
+        }
+      ]
+    },
+    {
+      "id": "show_a_simulated_image",
+      "text": {
+        "english": "Show a simulated image",
+        "spanish": "Mostrar una imagen simulada",
+        "german": "Simuliertes Bild zeigen",
+        "french": "Afficher une image simulée",
+        "italian": "Mostra un'immagine simulata",
+        "japanese": "模擬画像を表示",
+        "chinese": "显示模拟图像",
+        "portuguese": "Mostrar uma imagem simulada"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-TESTER",
+          "key": "BTN_THERMAL_SIMULATED"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "testerextras.thermal_simulated"
+        }
+      ]
+    },
+    {
+      "id": "slot",
+      "text": {
+        "english": "Slot",
+        "spanish": "Hueco",
+        "german": "Platz",
+        "french": "Emplacement",
+        "italian": "Slot",
+        "japanese": "スロット",
+        "chinese": "槽位",
+        "portuguese": "Posição"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-TESTER",
+          "key": "LBL_SLOT"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "testerextras.rack_slot"
+        }
+      ]
+    },
+    {
+      "id": "speed",
+      "text": {
+        "english": "Speed",
+        "spanish": "Velocidad",
+        "german": "Geschwindigkeit",
+        "french": "Vitesse",
+        "italian": "Velocità",
+        "japanese": "速度",
+        "chinese": "速度",
+        "portuguese": "Velocidade"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-TESTER",
+          "key": "LBL_REPLAY_SPEED"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "canbus.replay_speed"
+        }
+      ]
+    },
+    {
+      "id": "standard",
+      "text": {
+        "english": "Standard",
+        "spanish": "Estandar",
+        "german": "Standard",
+        "french": "Standard",
+        "italian": "Standard",
+        "japanese": "標準",
+        "chinese": "标准",
+        "portuguese": "Padrão"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-TESTER",
+          "key": "OPT_STANDARD"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "testerglobal.oled_standard"
+        }
+      ]
+    },
+    {
+      "id": "stepper_ramps",
+      "text": {
+        "english": "Stepper ramps",
+        "spanish": "Rampas del paso a paso",
+        "german": "Schrittmotor-Rampen",
+        "french": "Rampes du moteur pas à pas",
+        "italian": "Rampe del passo-passo",
+        "japanese": "ステッピングモーターの加減速",
+        "chinese": "步进电机加减速",
+        "portuguese": "Rampas do motor de passo"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-TESTER",
+          "key": "LBL_FEATURE_MOTION_RAMPS"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "testerextras.feature_motion_ramps"
+        }
+      ]
+    },
+    {
+      "id": "stop",
+      "text": {
+        "english": "Stop",
+        "spanish": "Detener",
+        "german": "Stopp",
+        "french": "Arrêter",
+        "italian": "Ferma",
+        "japanese": "停止",
+        "chinese": "停止",
+        "portuguese": "Parar"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-TESTER",
+          "key": "BTN_REPLAY_STOP"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "canbus.replay_stop"
+        }
+      ]
+    },
+    {
+      "id": "stored_stored_in_force_running_supported_support",
+      "text": {
+        "english": "Stored: {stored}  |  In force: {running}  |  Supported: {supported}",
+        "spanish": "Guardado: {stored}  |  En vigor: {running}  |  Admitido: {supported}",
+        "german": "Gespeichert: {stored}  |  Wirksam: {running}  |  Unterstützt: {supported}",
+        "french": "Enregistré : {stored}  |  En vigueur : {running}  |  Pris en charge : {supported}",
+        "italian": "Salvato: {stored}  |  In vigore: {running}  |  Supportato: {supported}",
+        "japanese": "保存済み: {stored}  |  有効: {running}  |  対応: {supported}",
+        "chinese": "已保存：{stored}  |  生效：{running}  |  支持：{supported}",
+        "portuguese": "Guardado: {stored}  |  Em vigor: {running}  |  Suportado: {supported}"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-TESTER",
+          "key": "LBL_FEATURES_TEXT"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "testerextras.features_status"
+        }
+      ]
+    },
+    {
+      "id": "synchronous_strobe",
+      "text": {
+        "english": "Synchronous strobe",
+        "spanish": "Estrobo síncrono",
+        "german": "Synchrones Stroboskop",
+        "french": "Stroboscope synchrone",
+        "italian": "Strobo sincrono",
+        "japanese": "同期ストロボ",
+        "chinese": "同步频闪",
+        "portuguese": "Estroboscópio síncrono"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-TESTER",
+          "key": "OPT_SYNCHRONOUS_STROBE"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "testertool.mode_sync"
+        }
+      ]
+    },
+    {
+      "id": "target_c",
+      "text": {
+        "english": "Target C",
+        "spanish": "Objetivo C",
+        "german": "Ziel C",
+        "french": "Cible C",
+        "italian": "Obiettivo C",
+        "japanese": "目標 C",
+        "chinese": "目标 C",
+        "portuguese": "Objetivo C"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-TESTER",
+          "key": "LBL_TARGET_C"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "testerextras.rack_target"
+        }
+      ]
+    },
+    {
+      "id": "temperature_before_the_error",
+      "text": {
+        "english": "Temperature before the error",
+        "spanish": "Temperatura antes del error",
+        "german": "Temperatur vor dem Fehler",
+        "french": "Température avant l'erreur",
+        "italian": "Temperatura prima dell'errore",
+        "japanese": "エラー前の温度",
+        "chinese": "错误发生前的温度",
+        "portuguese": "Temperatura antes do erro"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-TESTER",
+          "key": "TITLE_BLACKBOX_VIEW"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "testerextras.black_chart_title"
+        }
+      ]
+    },
+    {
+      "id": "the_black_box_could_not_be_read_reason",
+      "text": {
+        "english": "The black box could not be read: {reason}",
+        "spanish": "No se pudo leer la caja negra: {reason}",
+        "german": "Die Blackbox konnte nicht gelesen werden: {reason}",
+        "french": "La boîte noire n'a pas pu être lue : {reason}",
+        "italian": "Impossibile leggere la scatola nera: {reason}",
+        "japanese": "ブラックボックスを読めませんでした: {reason}",
+        "chinese": "无法读取黑匣子：{reason}",
+        "portuguese": "Não foi possível ler a caixa negra: {reason}"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-TESTER",
+          "key": "LBL_BLACKBOX_FAILED"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "testerextras.black_failed"
+        }
+      ]
+    },
+    {
+      "id": "the_file_could_not_be_read",
+      "text": {
+        "english": "The file could not be read.",
+        "spanish": "No se pudo leer el archivo.",
+        "german": "Die Datei konnte nicht gelesen werden.",
+        "french": "Le fichier n'a pas pu être lu.",
+        "italian": "Impossibile leggere il file.",
+        "japanese": "ファイルを読み込めませんでした。",
+        "chinese": "无法读取该文件。",
+        "portuguese": "Não foi possível ler o ficheiro."
+      },
+      "consumers": [
+        {
+          "repo": "URTC-TESTER",
+          "key": "LBL_REPLAY_UNREADABLE"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "canbus.replay_error_unreadable"
+        }
+      ]
+    },
+    {
+      "id": "the_file_holds_no_frames_that_can_be_replayed_a_",
+      "text": {
+        "english": "The file holds no frames that can be replayed: a .trc or .asc trace with received (Rx) frames is needed.",
+        "spanish": "El archivo no contiene tramas reproducibles: hace falta una traza .trc o .asc con tramas recibidas (Rx).",
+        "german": "Die Datei enthält keine abspielbaren Frames: Nötig ist ein .trc- oder .asc-Trace mit empfangenen (Rx) Frames.",
+        "french": "Le fichier ne contient aucune trame rejouable : il faut une trace .trc ou .asc avec des trames reçues (Rx).",
+        "italian": "Il file non contiene frame riproducibili: serve una traccia .trc o .asc con frame ricevuti (Rx).",
+        "japanese": "再生できるフレームがありません。受信（Rx）フレームを含む .trc または .asc トレースが必要です。",
+        "chinese": "文件中没有可回放的帧：需要包含已接收（Rx）帧的 .trc 或 .asc 跟踪。",
+        "portuguese": "O ficheiro não contém tramas reproduzíveis: é preciso um rastreio .trc ou .asc com tramas recebidas (Rx)."
+      },
+      "consumers": [
+        {
+          "repo": "URTC-TESTER",
+          "key": "LBL_REPLAY_EMPTY"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "canbus.replay_error_empty"
+        }
+      ]
+    },
+    {
+      "id": "the_file_is_too_big_for_a_record",
+      "text": {
+        "english": "the file is too big for a record",
+        "spanish": "el archivo es demasiado grande para ser un registro",
+        "german": "die Datei ist zu groß für einen Datensatz",
+        "french": "le fichier est trop gros pour un enregistrement",
+        "italian": "il file è troppo grande per essere una registrazione",
+        "japanese": "ファイルが大きすぎて記録として読めません",
+        "chinese": "文件太大，不可能是一条记录",
+        "portuguese": "o ficheiro é demasiado grande para ser um registo"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-TESTER",
+          "key": "LBL_BLACKBOX_TOO_BIG"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "testerextras.black_open_big"
+        }
+      ]
+    },
+    {
+      "id": "thermal_view",
+      "text": {
+        "english": "Thermal view",
+        "spanish": "Vista térmica",
+        "german": "Wärmebild",
+        "french": "Vue thermique",
+        "italian": "Vista termica",
+        "japanese": "熱画像",
+        "chinese": "热像",
+        "portuguese": "Vista térmica"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-TESTER",
+          "key": "QTLOG_THERMAL_VIEW"
+        },
+        {
+          "repo": "URTC-TESTER",
+          "key": "QT_THERMAL_VIEW"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "tester.tab_thermal"
+        }
+      ]
+    },
+    {
+      "id": "the_thermal_image_could_not_be_read_reason",
+      "text": {
+        "english": "The thermal image could not be read: {reason}",
+        "spanish": "No se pudo leer la imagen térmica: {reason}",
+        "german": "Das Wärmebild konnte nicht gelesen werden: {reason}",
+        "french": "L'image thermique n'a pas pu être lue : {reason}",
+        "italian": "Impossibile leggere l'immagine termica: {reason}",
+        "japanese": "熱画像を読めませんでした: {reason}",
+        "chinese": "无法读取热像：{reason}",
+        "portuguese": "Não foi possível ler a imagem térmica: {reason}"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-TESTER",
+          "key": "LBL_THERMAL_READ_FAILED"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "testerextras.thermal_failed"
+        }
+      ]
+    },
+    {
+      "id": "unknown_reason",
+      "text": {
+        "english": "unknown reason",
+        "spanish": "motivo desconocido",
+        "german": "unbekannter Grund",
+        "french": "raison inconnue",
+        "italian": "motivo sconosciuto",
+        "japanese": "不明な理由",
+        "chinese": "未知原因",
+        "portuguese": "motivo desconhecido"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-FLASHER",
+          "key": "ERR_UNKNOWN_REASON"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "flasher.verify_fail_unknown"
+        }
+      ]
+    },
+    {
+      "id": "unknown_reason_0x_code",
+      "text": {
+        "english": "unknown reason 0x{code}",
+        "spanish": "motivo desconocido 0x{code}",
+        "german": "unbekannter Grund 0x{code}",
+        "french": "raison inconnue 0x{code}",
+        "italian": "motivo sconosciuto 0x{code}",
+        "japanese": "不明な理由 0x{code}",
+        "chinese": "未知原因 0x{code}",
+        "portuguese": "motivo desconhecido 0x{code}"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-FLASHER",
+          "key": "ERR_UNKNOWN_REASON_CODE"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "flasher.verify_fail_unknown_code"
+        }
+      ]
+    },
+    {
+      "id": "update_failed",
+      "text": {
+        "english": "Update failed",
+        "spanish": "Falló la actualización",
+        "german": "Update fehlgeschlagen",
+        "french": "Échec de la mise à jour",
+        "italian": "Aggiornamento non riuscito",
+        "japanese": "更新に失敗しました",
+        "chinese": "更新失败",
+        "portuguese": "Falhou a atualização"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-FLASHER",
+          "key": "QTLOG_FLASH_FAILED"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "flasher.status_update_failed"
+        }
+      ]
+    },
+    {
+      "id": "urtc_github",
+      "text": {
+        "english": "URTC GitHub",
+        "spanish": "GitHub de URTC",
+        "german": "URTC GitHub",
+        "french": "GitHub d'URTC",
+        "italian": "GitHub di URTC",
+        "japanese": "URTC GitHub",
+        "chinese": "URTC GitHub",
+        "portuguese": "GitHub do URTC"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-FLASHER",
+          "key": "MENU_GITHUB"
+        },
+        {
+          "repo": "URTC-TESTER",
+          "key": "MENU_GITHUB"
+        }
+      ]
+    },
+    {
+      "id": "version",
+      "text": {
+        "english": "Version",
+        "spanish": "Versión",
+        "german": "Version",
+        "french": "Version",
+        "italian": "Versione",
+        "japanese": "バージョン",
+        "chinese": "版本",
+        "portuguese": "Versão"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-FLASHER",
+          "key": "ABOUT_VERSION"
+        },
+        {
+          "repo": "URTC-TESTER",
+          "key": "ABOUT_VERSION"
+        },
+        {
+          "repo": "URTC-UPDATER",
+          "key": "about_version_label"
+        }
+      ]
+    },
+    {
+      "id": "yes",
+      "text": {
+        "english": "yes",
+        "spanish": "sí",
+        "german": "ja",
+        "french": "oui",
+        "italian": "sì",
+        "japanese": "はい",
+        "chinese": "是",
+        "portuguese": "sim"
+      },
+      "consumers": [
+        {
+          "repo": "URTC-TESTER",
+          "key": "VAL_YES"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "testerglobal.fram_had_error_yes"
+        },
+        {
+          "repo": "URTC-WEB-STUDIO",
+          "key": "testertool.yes"
+        }
+      ]
+    }
+  ]
+}
