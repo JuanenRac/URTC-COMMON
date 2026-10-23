@@ -71,6 +71,11 @@ SETS = {
     "rate_c": ["generated/rate_vectors.h"],
     "blackbox_c": ["generated/blackbox_vectors.h"],
     "fw_vectors": ["generated/urtc_fw_vectors.h"],
+    "multinode": [
+        "src/urtc_common/multinode.py", "src/urtc_common/multinode_sim.py", "src/urtc_common/multinode_host.py",
+        "conformance/multinode_vectors.json", "conformance/multinode_scenarios.json",
+    ],
+    "multinode_c": ["generated/multinode_scenarios.h"],
 }
 
 

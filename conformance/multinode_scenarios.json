@@ -1,0 +1,1606 @@
+{
+  "format": 1,
+  "about": "Scenarios of one node of the multinode extension, with the expectations written by hand from docs/MULTINODE.md. Hex strings have no separators; ids are written 0xNNN; 't' is the offset in ms from the start of the node, whose clock is the 32-bit millisecond counter of the board. 'verdict' is what the node does with the received frame: 'pass' hands it to the single-head dispatcher, 'consume' keeps it. 'emit' lists, in order, the frames the node has due after that frame; 'may' is whether it may obey single-head frames at that moment.",
+  "scenarios": [
+    {
+      "name": "alone on the bus: listens, then behaves as the one head",
+      "node": {
+        "address": 5,
+        "tool": 3,
+        "instance": 0,
+        "enabled": 1,
+        "serial": "0A0B0C0D",
+        "start_ms": 0
+      },
+      "steps": [
+        {
+          "t": 0,
+          "emit": [],
+          "may": 0
+        },
+        {
+          "t": 9,
+          "emit": [],
+          "may": 0
+        },
+        {
+          "t": 10,
+          "emit": [
+            {
+              "id": "0x425",
+              "data": "030000010A0B0C0D"
+            }
+          ],
+          "may": 0
+        },
+        {
+          "t": 999,
+          "emit": [],
+          "may": 0
+        },
+        {
+          "t": 1000,
+          "emit": [
+            {
+              "id": "0x445",
+              "data": "00000001"
+            }
+          ],
+          "may": 0
+        },
+        {
+          "t": 1499,
+          "rx": {
+            "id": "0x120",
+            "data": "0000000000"
+          },
+          "verdict": "consume",
+          "effects": {
+            "safe_stop": 0,
+            "answer_cmd": 0,
+            "cmd_func": 0
+          },
+          "emit": [],
+          "may": 0
+        },
+        {
+          "t": 1500,
+          "rx": {
+            "id": "0x120",
+            "data": "0000000000"
+          },
+          "verdict": "pass",
+          "effects": {
+            "safe_stop": 0,
+            "answer_cmd": 0,
+            "cmd_func": 0
+          },
+          "emit": [],
+          "may": 1
+        },
+        {
+          "t": 2000,
+          "emit": [
+            {
+              "id": "0x445",
+              "data": "01000002"
+            }
+          ],
+          "may": 1
+        }
+      ]
+    },
+    {
+      "name": "hears another node: starts unselected and waits",
+      "node": {
+        "address": 5,
+        "tool": 3,
+        "instance": 0,
+        "enabled": 1,
+        "serial": "0A0B0C0D",
+        "start_ms": 0
+      },
+      "steps": [
+        {
+          "t": 10,
+          "emit": [
+            {
+              "id": "0x425",
+              "data": "030000010A0B0C0D"
+            }
+          ],
+          "may": 0
+        },
+        {
+          "t": 100,
+          "rx": {
+            "id": "0x421",
+            "data": "0000000000000000"
+          },
+          "verdict": "consume",
+          "effects": {
+            "safe_stop": 0,
+            "answer_cmd": 0,
+            "cmd_func": 0
+          },
+          "emit": [
+            {
+              "id": "0x445",
+              "data": "00000000"
+            }
+          ],
+          "may": 0
+        },
+        {
+          "t": 1500,
+          "rx": {
+            "id": "0x120",
+            "data": "0000000000"
+          },
+          "verdict": "consume",
+          "effects": {
+            "safe_stop": 0,
+            "answer_cmd": 0,
+            "cmd_func": 0
+          },
+          "emit": [
+            {
+              "id": "0x445",
+              "data": "00000001"
+            }
+          ],
+          "may": 0
+        },
+        {
+          "t": 2600,
+          "rx": {
+            "id": "0x441",
+            "data": "00000000"
+          },
+          "verdict": "consume",
+          "effects": {
+            "safe_stop": 0,
+            "answer_cmd": 0,
+            "cmd_func": 0
+          },
+          "emit": [
+            {
+              "id": "0x445",
+              "data": "00000002"
+            }
+          ],
+          "may": 0
+        }
+      ]
+    },
+    {
+      "name": "selected, repeated, lapsed, taken away",
+      "node": {
+        "address": 5,
+        "tool": 3,
+        "instance": 0,
+        "enabled": 1,
+        "serial": "0A0B0C0D",
+        "start_ms": 0
+      },
+      "steps": [
+        {
+          "t": 10,
+          "emit": [
+            {
+              "id": "0x425",
+              "data": "030000010A0B0C0D"
+            }
+          ],
+          "may": 0
+        },
+        {
+          "t": 100,
+          "rx": {
+            "id": "0x421",
+            "data": "0000000000000000"
+          },
+          "verdict": "consume",
+          "effects": {
+            "safe_stop": 0,
+            "answer_cmd": 0,
+            "cmd_func": 0
+          },
+          "emit": [
+            {
+              "id": "0x445",
+              "data": "00000000"
+            }
+          ],
+          "may": 0
+        },
+        {
+          "t": 2000,
+          "rx": {
+            "id": "0x401",
+            "data": "010509"
+          },
+          "verdict": "consume",
+          "effects": {
+            "safe_stop": 0,
+            "answer_cmd": 0,
+            "cmd_func": 0
+          },
+          "emit": [
+            {
+              "id": "0x445",
+              "data": "01000002"
+            }
+          ],
+          "may": 1
+        },
+        {
+          "t": 2500,
+          "rx": {
+            "id": "0x120",
+            "data": "0000000000"
+          },
+          "verdict": "pass",
+          "effects": {
+            "safe_stop": 0,
+            "answer_cmd": 0,
+            "cmd_func": 0
+          },
+          "emit": [],
+          "may": 1
+        },
+        {
+          "t": 3000,
+          "emit": [
+            {
+              "id": "0x445",
+              "data": "01000003"
+            }
+          ],
+          "may": 1
+        },
+        {
+          "t": 3999,
+          "rx": {
+            "id": "0x120",
+            "data": "0000000000"
+          },
+          "verdict": "pass",
+          "effects": {
+            "safe_stop": 0,
+            "answer_cmd": 0,
+            "cmd_func": 0
+          },
+          "emit": [],
+          "may": 1
+        },
+        {
+          "t": 4000,
+          "rx": {
+            "id": "0x120",
+            "data": "0000000000"
+          },
+          "verdict": "consume",
+          "effects": {
+            "safe_stop": 0,
+            "answer_cmd": 0,
+            "cmd_func": 0
+          },
+          "emit": [
+            {
+              "id": "0x445",
+              "data": "00000004"
+            }
+          ],
+          "may": 0
+        },
+        {
+          "t": 4100,
+          "rx": {
+            "id": "0x401",
+            "data": "010501"
+          },
+          "verdict": "consume",
+          "effects": {
+            "safe_stop": 0,
+            "answer_cmd": 0,
+            "cmd_func": 0
+          },
+          "emit": [
+            {
+              "id": "0x445",
+              "data": "01000004"
+            }
+          ],
+          "may": 1
+        },
+        {
+          "t": 4200,
+          "rx": {
+            "id": "0x401",
+            "data": "010602"
+          },
+          "verdict": "consume",
+          "effects": {
+            "safe_stop": 0,
+            "answer_cmd": 0,
+            "cmd_func": 0
+          },
+          "emit": [
+            {
+              "id": "0x445",
+              "data": "00000004"
+            }
+          ],
+          "may": 0
+        },
+        {
+          "t": 4250,
+          "rx": {
+            "id": "0x401",
+            "data": "010503"
+          },
+          "verdict": "consume",
+          "effects": {
+            "safe_stop": 0,
+            "answer_cmd": 0,
+            "cmd_func": 0
+          },
+          "emit": [
+            {
+              "id": "0x445",
+              "data": "01000004"
+            }
+          ],
+          "may": 1
+        },
+        {
+          "t": 4300,
+          "rx": {
+            "id": "0x401",
+            "data": "000004"
+          },
+          "verdict": "consume",
+          "effects": {
+            "safe_stop": 0,
+            "answer_cmd": 0,
+            "cmd_func": 0
+          },
+          "emit": [
+            {
+              "id": "0x445",
+              "data": "00000004"
+            }
+          ],
+          "may": 0
+        },
+        {
+          "t": 4400,
+          "rx": {
+            "id": "0x401",
+            "data": "0105"
+          },
+          "verdict": "consume",
+          "effects": {
+            "safe_stop": 0,
+            "answer_cmd": 0,
+            "cmd_func": 0
+          },
+          "emit": [],
+          "may": 0
+        },
+        {
+          "t": 4410,
+          "rx": {
+            "id": "0x401",
+            "data": "020500"
+          },
+          "verdict": "consume",
+          "effects": {
+            "safe_stop": 0,
+            "answer_cmd": 0,
+            "cmd_func": 0
+          },
+          "emit": [],
+          "may": 0
+        },
+        {
+          "t": 4420,
+          "rx": {
+            "id": "0x401",
+            "data": "012000"
+          },
+          "verdict": "consume",
+          "effects": {
+            "safe_stop": 0,
+            "answer_cmd": 0,
+            "cmd_func": 0
+          },
+          "emit": [],
+          "may": 0
+        }
+      ]
+    },
+    {
+      "name": "a malformed select changes nothing for a selected node",
+      "node": {
+        "address": 5,
+        "tool": 3,
+        "instance": 0,
+        "enabled": 1,
+        "serial": "0A0B0C0D",
+        "start_ms": 0
+      },
+      "steps": [
+        {
+          "t": 10,
+          "emit": [
+            {
+              "id": "0x425",
+              "data": "030000010A0B0C0D"
+            }
+          ],
+          "may": 0
+        },
+        {
+          "t": 100,
+          "rx": {
+            "id": "0x421",
+            "data": "0000000000000000"
+          },
+          "verdict": "consume",
+          "effects": {
+            "safe_stop": 0,
+            "answer_cmd": 0,
+            "cmd_func": 0
+          },
+          "emit": [
+            {
+              "id": "0x445",
+              "data": "00000000"
+            }
+          ],
+          "may": 0
+        },
+        {
+          "t": 200,
+          "rx": {
+            "id": "0x401",
+            "data": "010501"
+          },
+          "verdict": "consume",
+          "effects": {
+            "safe_stop": 0,
+            "answer_cmd": 0,
+            "cmd_func": 0
+          },
+          "emit": [
+            {
+              "id": "0x445",
+              "data": "01000000"
+            }
+          ],
+          "may": 1
+        },
+        {
+          "t": 300,
+          "rx": {
+            "id": "0x401",
+            "data": "0105"
+          },
+          "verdict": "consume",
+          "effects": {
+            "safe_stop": 0,
+            "answer_cmd": 0,
+            "cmd_func": 0
+          },
+          "emit": [],
+          "may": 1
+        },
+        {
+          "t": 310,
+          "rx": {
+            "id": "0x401",
+            "data": "020500"
+          },
+          "verdict": "consume",
+          "effects": {
+            "safe_stop": 0,
+            "answer_cmd": 0,
+            "cmd_func": 0
+          },
+          "emit": [],
+          "may": 1
+        },
+        {
+          "t": 320,
+          "rx": {
+            "id": "0x401",
+            "data": "012000"
+          },
+          "verdict": "consume",
+          "effects": {
+            "safe_stop": 0,
+            "answer_cmd": 0,
+            "cmd_func": 0
+          },
+          "emit": [],
+          "may": 1
+        },
+        {
+          "t": 330,
+          "rx": {
+            "id": "0x401",
+            "data": "01050000"
+          },
+          "verdict": "consume",
+          "effects": {
+            "safe_stop": 0,
+            "answer_cmd": 0,
+            "cmd_func": 0
+          },
+          "emit": [],
+          "may": 1
+        },
+        {
+          "t": 340,
+          "rx": {
+            "id": "0x120",
+            "data": "0000000000"
+          },
+          "verdict": "pass",
+          "effects": {
+            "safe_stop": 0,
+            "answer_cmd": 0,
+            "cmd_func": 0
+          },
+          "emit": [],
+          "may": 1
+        }
+      ]
+    },
+    {
+      "name": "another board on the same address: conflict, safe state, never selected",
+      "node": {
+        "address": 5,
+        "tool": 3,
+        "instance": 0,
+        "enabled": 1,
+        "serial": "0A0B0C0D",
+        "start_ms": 0
+      },
+      "steps": [
+        {
+          "t": 10,
+          "emit": [
+            {
+              "id": "0x425",
+              "data": "030000010A0B0C0D"
+            }
+          ],
+          "may": 0
+        },
+        {
+          "t": 100,
+          "rx": {
+            "id": "0x445",
+            "data": "01000000"
+          },
+          "verdict": "consume",
+          "effects": {
+            "safe_stop": 1,
+            "answer_cmd": 0,
+            "cmd_func": 0
+          },
+          "emit": [
+            {
+              "id": "0x445",
+              "data": "04000000"
+            }
+          ],
+          "may": 0
+        },
+        {
+          "t": 200,
+          "rx": {
+            "id": "0x445",
+            "data": "01000000"
+          },
+          "verdict": "consume",
+          "effects": {
+            "safe_stop": 0,
+            "answer_cmd": 0,
+            "cmd_func": 0
+          },
+          "emit": [],
+          "may": 0
+        },
+        {
+          "t": 300,
+          "rx": {
+            "id": "0x401",
+            "data": "010503"
+          },
+          "verdict": "consume",
+          "effects": {
+            "safe_stop": 0,
+            "answer_cmd": 0,
+            "cmd_func": 0
+          },
+          "emit": [],
+          "may": 0
+        },
+        {
+          "t": 1500,
+          "rx": {
+            "id": "0x120",
+            "data": "0000000000"
+          },
+          "verdict": "consume",
+          "effects": {
+            "safe_stop": 0,
+            "answer_cmd": 0,
+            "cmd_func": 0
+          },
+          "emit": [
+            {
+              "id": "0x445",
+              "data": "04000001"
+            }
+          ],
+          "may": 0
+        },
+        {
+          "t": 1600,
+          "rx": {
+            "id": "0x465",
+            "data": "0110"
+          },
+          "verdict": "consume",
+          "effects": {
+            "safe_stop": 0,
+            "answer_cmd": 0,
+            "cmd_func": 0
+          },
+          "emit": [],
+          "may": 0
+        },
+        {
+          "t": 1700,
+          "rx": {
+            "id": "0x425",
+            "data": "0300000100000000"
+          },
+          "verdict": "consume",
+          "effects": {
+            "safe_stop": 0,
+            "answer_cmd": 0,
+            "cmd_func": 0
+          },
+          "emit": [],
+          "may": 0
+        },
+        {
+          "t": 1800,
+          "rx": {
+            "id": "0x401",
+            "data": "010504"
+          },
+          "verdict": "consume",
+          "effects": {
+            "safe_stop": 0,
+            "answer_cmd": 0,
+            "cmd_func": 0
+          },
+          "emit": [],
+          "may": 0
+        }
+      ]
+    },
+    {
+      "name": "a selected node that meets a board on its address leaves the selection",
+      "node": {
+        "address": 5,
+        "tool": 3,
+        "instance": 0,
+        "enabled": 1,
+        "serial": "0A0B0C0D",
+        "start_ms": 0
+      },
+      "steps": [
+        {
+          "t": 10,
+          "emit": [
+            {
+              "id": "0x425",
+              "data": "030000010A0B0C0D"
+            }
+          ],
+          "may": 0
+        },
+        {
+          "t": 100,
+          "rx": {
+            "id": "0x421",
+            "data": "0000000000000000"
+          },
+          "verdict": "consume",
+          "effects": {
+            "safe_stop": 0,
+            "answer_cmd": 0,
+            "cmd_func": 0
+          },
+          "emit": [
+            {
+              "id": "0x445",
+              "data": "00000000"
+            }
+          ],
+          "may": 0
+        },
+        {
+          "t": 200,
+          "rx": {
+            "id": "0x401",
+            "data": "010501"
+          },
+          "verdict": "consume",
+          "effects": {
+            "safe_stop": 0,
+            "answer_cmd": 0,
+            "cmd_func": 0
+          },
+          "emit": [
+            {
+              "id": "0x445",
+              "data": "01000000"
+            }
+          ],
+          "may": 1
+        },
+        {
+          "t": 300,
+          "rx": {
+            "id": "0x445",
+            "data": "01000000"
+          },
+          "verdict": "consume",
+          "effects": {
+            "safe_stop": 1,
+            "answer_cmd": 0,
+            "cmd_func": 0
+          },
+          "emit": [
+            {
+              "id": "0x445",
+              "data": "04000000"
+            }
+          ],
+          "may": 0
+        }
+      ]
+    },
+    {
+      "name": "safe stop is obeyed in every phase and changes no phase",
+      "node": {
+        "address": 5,
+        "tool": 3,
+        "instance": 0,
+        "enabled": 1,
+        "serial": "0A0B0C0D",
+        "start_ms": 0
+      },
+      "steps": [
+        {
+          "t": 50,
+          "rx": {
+            "id": "0x402",
+            "data": "07"
+          },
+          "verdict": "consume",
+          "effects": {
+            "safe_stop": 1,
+            "answer_cmd": 0,
+            "cmd_func": 0
+          },
+          "emit": [
+            {
+              "id": "0x425",
+              "data": "030000010A0B0C0D"
+            }
+          ],
+          "may": 0
+        },
+        {
+          "t": 60,
+          "rx": {
+            "id": "0x402",
+            "data": "0700"
+          },
+          "verdict": "consume",
+          "effects": {
+            "safe_stop": 0,
+            "answer_cmd": 0,
+            "cmd_func": 0
+          },
+          "emit": [],
+          "may": 0
+        },
+        {
+          "t": 70,
+          "rx": {
+            "id": "0x402",
+            "data": ""
+          },
+          "verdict": "consume",
+          "effects": {
+            "safe_stop": 0,
+            "answer_cmd": 0,
+            "cmd_func": 0
+          },
+          "emit": [],
+          "may": 0
+        },
+        {
+          "t": 1500,
+          "rx": {
+            "id": "0x120",
+            "data": "0000000000"
+          },
+          "verdict": "pass",
+          "effects": {
+            "safe_stop": 0,
+            "answer_cmd": 0,
+            "cmd_func": 0
+          },
+          "emit": [
+            {
+              "id": "0x445",
+              "data": "01000001"
+            }
+          ],
+          "may": 1
+        },
+        {
+          "t": 1600,
+          "rx": {
+            "id": "0x402",
+            "data": "03"
+          },
+          "verdict": "consume",
+          "effects": {
+            "safe_stop": 1,
+            "answer_cmd": 0,
+            "cmd_func": 0
+          },
+          "emit": [],
+          "may": 1
+        },
+        {
+          "t": 1700,
+          "rx": {
+            "id": "0x120",
+            "data": "0000000000"
+          },
+          "verdict": "pass",
+          "effects": {
+            "safe_stop": 0,
+            "answer_cmd": 0,
+            "cmd_func": 0
+          },
+          "emit": [],
+          "may": 1
+        }
+      ]
+    },
+    {
+      "name": "the node command answers the status query and nothing else",
+      "node": {
+        "address": 5,
+        "tool": 3,
+        "instance": 0,
+        "enabled": 1,
+        "serial": "0A0B0C0D",
+        "start_ms": 0
+      },
+      "steps": [
+        {
+          "t": 10,
+          "emit": [
+            {
+              "id": "0x425",
+              "data": "030000010A0B0C0D"
+            }
+          ],
+          "may": 0
+        },
+        {
+          "t": 20,
+          "rx": {
+            "id": "0x465",
+            "data": "0110"
+          },
+          "verdict": "consume",
+          "effects": {
+            "safe_stop": 0,
+            "answer_cmd": 1,
+            "cmd_func": 272
+          },
+          "emit": [],
+          "may": 0
+        },
+        {
+          "t": 30,
+          "rx": {
+            "id": "0x465",
+            "data": "0120"
+          },
+          "verdict": "consume",
+          "effects": {
+            "safe_stop": 0,
+            "answer_cmd": 0,
+            "cmd_func": 0
+          },
+          "emit": [],
+          "may": 0
+        },
+        {
+          "t": 40,
+          "rx": {
+            "id": "0x465",
+            "data": "01"
+          },
+          "verdict": "consume",
+          "effects": {
+            "safe_stop": 0,
+            "answer_cmd": 0,
+            "cmd_func": 0
+          },
+          "emit": [],
+          "may": 0
+        },
+        {
+          "t": 50,
+          "rx": {
+            "id": "0x466",
+            "data": "0110"
+          },
+          "verdict": "consume",
+          "effects": {
+            "safe_stop": 0,
+            "answer_cmd": 0,
+            "cmd_func": 0
+          },
+          "emit": [],
+          "may": 0
+        },
+        {
+          "t": 60,
+          "rx": {
+            "id": "0x465",
+            "data": "0110000000000000"
+          },
+          "verdict": "consume",
+          "effects": {
+            "safe_stop": 0,
+            "answer_cmd": 1,
+            "cmd_func": 272
+          },
+          "emit": [],
+          "may": 0
+        },
+        {
+          "t": 70,
+          "rx": {
+            "id": "0x464",
+            "data": "0110"
+          },
+          "verdict": "consume",
+          "effects": {
+            "safe_stop": 0,
+            "answer_cmd": 0,
+            "cmd_func": 0
+          },
+          "emit": [],
+          "may": 0
+        },
+        {
+          "t": 80,
+          "rx": {
+            "id": "0x485",
+            "data": "0110"
+          },
+          "verdict": "consume",
+          "effects": {
+            "safe_stop": 0,
+            "answer_cmd": 0,
+            "cmd_func": 0
+          },
+          "emit": [],
+          "may": 0
+        }
+      ]
+    },
+    {
+      "name": "discovery spreads the answers by address and refuses odd requests",
+      "node": {
+        "address": 5,
+        "tool": 3,
+        "instance": 0,
+        "enabled": 1,
+        "serial": "0A0B0C0D",
+        "start_ms": 0
+      },
+      "steps": [
+        {
+          "t": 10,
+          "emit": [
+            {
+              "id": "0x425",
+              "data": "030000010A0B0C0D"
+            }
+          ],
+          "may": 0
+        },
+        {
+          "t": 100,
+          "rx": {
+            "id": "0x400",
+            "data": "0102"
+          },
+          "verdict": "consume",
+          "effects": {
+            "safe_stop": 0,
+            "answer_cmd": 0,
+            "cmd_func": 0
+          },
+          "emit": [],
+          "may": 0
+        },
+        {
+          "t": 109,
+          "emit": [],
+          "may": 0
+        },
+        {
+          "t": 110,
+          "emit": [
+            {
+              "id": "0x425",
+              "data": "030000010A0B0C0D"
+            }
+          ],
+          "may": 0
+        },
+        {
+          "t": 200,
+          "rx": {
+            "id": "0x400",
+            "data": "010A"
+          },
+          "verdict": "consume",
+          "effects": {
+            "safe_stop": 0,
+            "answer_cmd": 0,
+            "cmd_func": 0
+          },
+          "emit": [],
+          "may": 0
+        },
+        {
+          "t": 249,
+          "emit": [],
+          "may": 0
+        },
+        {
+          "t": 250,
+          "emit": [
+            {
+              "id": "0x425",
+              "data": "030000010A0B0C0D"
+            }
+          ],
+          "may": 0
+        },
+        {
+          "t": 300,
+          "rx": {
+            "id": "0x400",
+            "data": "0100"
+          },
+          "verdict": "consume",
+          "effects": {
+            "safe_stop": 0,
+            "answer_cmd": 0,
+            "cmd_func": 0
+          },
+          "emit": [],
+          "may": 0
+        },
+        {
+          "t": 310,
+          "rx": {
+            "id": "0x400",
+            "data": "0133"
+          },
+          "verdict": "consume",
+          "effects": {
+            "safe_stop": 0,
+            "answer_cmd": 0,
+            "cmd_func": 0
+          },
+          "emit": [],
+          "may": 0
+        },
+        {
+          "t": 320,
+          "rx": {
+            "id": "0x400",
+            "data": "0002"
+          },
+          "verdict": "consume",
+          "effects": {
+            "safe_stop": 0,
+            "answer_cmd": 0,
+            "cmd_func": 0
+          },
+          "emit": [],
+          "may": 0
+        },
+        {
+          "t": 325,
+          "rx": {
+            "id": "0x400",
+            "data": "01"
+          },
+          "verdict": "consume",
+          "effects": {
+            "safe_stop": 0,
+            "answer_cmd": 0,
+            "cmd_func": 0
+          },
+          "emit": [],
+          "may": 0
+        },
+        {
+          "t": 330,
+          "rx": {
+            "id": "0x400",
+            "data": "0201"
+          },
+          "verdict": "consume",
+          "effects": {
+            "safe_stop": 0,
+            "answer_cmd": 0,
+            "cmd_func": 0
+          },
+          "emit": [],
+          "may": 0
+        },
+        {
+          "t": 334,
+          "emit": [],
+          "may": 0
+        },
+        {
+          "t": 335,
+          "emit": [
+            {
+              "id": "0x425",
+              "data": "030000010A0B0C0D"
+            }
+          ],
+          "may": 0
+        },
+        {
+          "t": 350,
+          "rx": {
+            "id": "0x400",
+            "data": "010200"
+          },
+          "verdict": "consume",
+          "effects": {
+            "safe_stop": 0,
+            "answer_cmd": 0,
+            "cmd_func": 0
+          },
+          "emit": [],
+          "may": 0
+        },
+        {
+          "t": 400,
+          "emit": [],
+          "may": 0
+        }
+      ]
+    },
+    {
+      "name": "address 0 answers a discovery at once, address 31 last",
+      "node": {
+        "address": 0,
+        "tool": 7,
+        "instance": 2,
+        "enabled": 1,
+        "serial": "01020304",
+        "start_ms": 0
+      },
+      "steps": [
+        {
+          "t": 0,
+          "emit": [
+            {
+              "id": "0x420",
+              "data": "0700020101020304"
+            }
+          ],
+          "may": 0
+        },
+        {
+          "t": 100,
+          "rx": {
+            "id": "0x400",
+            "data": "0102"
+          },
+          "verdict": "consume",
+          "effects": {
+            "safe_stop": 0,
+            "answer_cmd": 0,
+            "cmd_func": 0
+          },
+          "emit": [
+            {
+              "id": "0x420",
+              "data": "0700020101020304"
+            }
+          ],
+          "may": 0
+        }
+      ]
+    },
+    {
+      "name": "address 31 answers a discovery after 62 ms",
+      "node": {
+        "address": 31,
+        "tool": 9,
+        "instance": 0,
+        "enabled": 1,
+        "serial": "DEADBEEF",
+        "start_ms": 0
+      },
+      "steps": [
+        {
+          "t": 61,
+          "emit": [],
+          "may": 0
+        },
+        {
+          "t": 62,
+          "emit": [
+            {
+              "id": "0x43F",
+              "data": "09000001DEADBEEF"
+            }
+          ],
+          "may": 0
+        },
+        {
+          "t": 100,
+          "rx": {
+            "id": "0x400",
+            "data": "0102"
+          },
+          "verdict": "consume",
+          "effects": {
+            "safe_stop": 0,
+            "answer_cmd": 0,
+            "cmd_func": 0
+          },
+          "emit": [],
+          "may": 0
+        },
+        {
+          "t": 161,
+          "emit": [],
+          "may": 0
+        },
+        {
+          "t": 162,
+          "emit": [
+            {
+              "id": "0x43F",
+              "data": "09000001DEADBEEF"
+            }
+          ],
+          "may": 0
+        }
+      ]
+    },
+    {
+      "name": "a fault and its code are reported in the announcement and the status",
+      "node": {
+        "address": 5,
+        "tool": 3,
+        "instance": 0,
+        "enabled": 1,
+        "serial": "0A0B0C0D",
+        "start_ms": 0
+      },
+      "steps": [
+        {
+          "t": 10,
+          "fault": 1,
+          "error": 42,
+          "emit": [
+            {
+              "id": "0x425",
+              "data": "030200010A0B0C0D"
+            }
+          ],
+          "may": 0
+        },
+        {
+          "t": 1000,
+          "fault": 1,
+          "error": 42,
+          "emit": [
+            {
+              "id": "0x445",
+              "data": "022A0001"
+            }
+          ],
+          "may": 0
+        },
+        {
+          "t": 1500,
+          "rx": {
+            "id": "0x120",
+            "data": "0000000000"
+          },
+          "verdict": "pass",
+          "effects": {
+            "safe_stop": 0,
+            "answer_cmd": 0,
+            "cmd_func": 0
+          },
+          "fault": 1,
+          "error": 42,
+          "emit": [],
+          "may": 1
+        },
+        {
+          "t": 2000,
+          "fault": 1,
+          "error": 42,
+          "emit": [
+            {
+              "id": "0x445",
+              "data": "032A0002"
+            }
+          ],
+          "may": 1
+        },
+        {
+          "t": 3000,
+          "emit": [
+            {
+              "id": "0x445",
+              "data": "01000003"
+            }
+          ],
+          "may": 1
+        }
+      ]
+    },
+    {
+      "name": "the millisecond counter wraps in the middle of a listening window",
+      "node": {
+        "address": 5,
+        "tool": 3,
+        "instance": 0,
+        "enabled": 1,
+        "serial": "0A0B0C0D",
+        "start_ms": 4294966272
+      },
+      "steps": [
+        {
+          "t": 10,
+          "emit": [
+            {
+              "id": "0x425",
+              "data": "030000010A0B0C0D"
+            }
+          ],
+          "may": 0
+        },
+        {
+          "t": 1000,
+          "emit": [
+            {
+              "id": "0x445",
+              "data": "00000001"
+            }
+          ],
+          "may": 0
+        },
+        {
+          "t": 1023,
+          "rx": {
+            "id": "0x120",
+            "data": "0000000000"
+          },
+          "verdict": "consume",
+          "effects": {
+            "safe_stop": 0,
+            "answer_cmd": 0,
+            "cmd_func": 0
+          },
+          "emit": [],
+          "may": 0
+        },
+        {
+          "t": 1500,
+          "rx": {
+            "id": "0x120",
+            "data": "0000000000"
+          },
+          "verdict": "pass",
+          "effects": {
+            "safe_stop": 0,
+            "answer_cmd": 0,
+            "cmd_func": 0
+          },
+          "emit": [],
+          "may": 1
+        },
+        {
+          "t": 2000,
+          "emit": [
+            {
+              "id": "0x445",
+              "data": "01000002"
+            }
+          ],
+          "may": 1
+        },
+        {
+          "t": 2100,
+          "rx": {
+            "id": "0x401",
+            "data": "010505"
+          },
+          "verdict": "consume",
+          "effects": {
+            "safe_stop": 0,
+            "answer_cmd": 0,
+            "cmd_func": 0
+          },
+          "emit": [
+            {
+              "id": "0x445",
+              "data": "01000002"
+            }
+          ],
+          "may": 1
+        }
+      ]
+    },
+    {
+      "name": "a selection made across the wrap of the counter lapses on time",
+      "node": {
+        "address": 5,
+        "tool": 3,
+        "instance": 0,
+        "enabled": 1,
+        "serial": "0A0B0C0D",
+        "start_ms": 4294966272
+      },
+      "steps": [
+        {
+          "t": 10,
+          "emit": [
+            {
+              "id": "0x425",
+              "data": "030000010A0B0C0D"
+            }
+          ],
+          "may": 0
+        },
+        {
+          "t": 100,
+          "rx": {
+            "id": "0x421",
+            "data": "0000000000000000"
+          },
+          "verdict": "consume",
+          "effects": {
+            "safe_stop": 0,
+            "answer_cmd": 0,
+            "cmd_func": 0
+          },
+          "emit": [
+            {
+              "id": "0x445",
+              "data": "00000000"
+            }
+          ],
+          "may": 0
+        },
+        {
+          "t": 900,
+          "rx": {
+            "id": "0x401",
+            "data": "010501"
+          },
+          "verdict": "consume",
+          "effects": {
+            "safe_stop": 0,
+            "answer_cmd": 0,
+            "cmd_func": 0
+          },
+          "emit": [
+            {
+              "id": "0x445",
+              "data": "01000000"
+            }
+          ],
+          "may": 1
+        },
+        {
+          "t": 1900,
+          "rx": {
+            "id": "0x120",
+            "data": "0000000000"
+          },
+          "verdict": "pass",
+          "effects": {
+            "safe_stop": 0,
+            "answer_cmd": 0,
+            "cmd_func": 0
+          },
+          "emit": [
+            {
+              "id": "0x445",
+              "data": "01000001"
+            }
+          ],
+          "may": 1
+        },
+        {
+          "t": 2899,
+          "rx": {
+            "id": "0x120",
+            "data": "0000000000"
+          },
+          "verdict": "pass",
+          "effects": {
+            "safe_stop": 0,
+            "answer_cmd": 0,
+            "cmd_func": 0
+          },
+          "emit": [],
+          "may": 1
+        },
+        {
+          "t": 2900,
+          "rx": {
+            "id": "0x120",
+            "data": "0000000000"
+          },
+          "verdict": "consume",
+          "effects": {
+            "safe_stop": 0,
+            "answer_cmd": 0,
+            "cmd_func": 0
+          },
+          "emit": [
+            {
+              "id": "0x445",
+              "data": "00000002"
+            }
+          ],
+          "may": 0
+        }
+      ]
+    }
+  ]
+}
