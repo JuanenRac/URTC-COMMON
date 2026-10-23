@@ -65,6 +65,8 @@ SETS = {
     "compat": ["docs/COMPATIBILITY.md"],
     "firmware_base": ["firmware_base/urtc_crc8.h"],
     "firmware_test": ["firmware_base/urtc_test.h"],
+    "firmware_frame": ["firmware_base/urtc_frame.h", "firmware_base/urtc_rate_limiter.h"],
+    "rate_c": ["generated/rate_vectors.h"],
     "fw_vectors": ["generated/urtc_fw_vectors.h"],
 }
 

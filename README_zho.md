@@ -46,6 +46,7 @@
 * [一条总线上的多个工具头](docs/MULTINODE.md): 寻址、发现和安全规则；已在 URTC 固件中实现，位于默认关闭的开关之后，仅在计算机上测试，尚未在硬件上试过。
 * 界面辅助模块: `src/urtc_ui`：桌面程序可以共用的语言列表、状态徽章以及标识符、比特率和帧的格式化（不需要 Qt；URTC-FLASHER 和 URTC-TESTER 携带用 `vendor_copy.py --set ui` 生成的副本）。
 * 固件部件: `firmware_base/urtc_crc8.h`，把工具架和视觉串行帧的 CRC-8 集中在一处（用 `vendor_copy.py --set firmware_base` 复制），以及 `generated/urtc_fw_vectors.h`，以 C 表格形式给出固件自身必须通过的向量（版本字段、魔术载荷、CRC-8 校验值）（`--set fw_vectors`）。
+* 串行链路的帧层与速率限制器：`firmware_base/urtc_frame.h`（长度字节位于给定位置的帧的起始字节、版本、长度、完整性和 CRC-8 判定，以及反向组帧）和 `firmware_base/urtc_rate_limiter.h`（已接受消息之间的最小间隔，可跨越毫秒计数器的回绕），附 Python 参考实现（`frame_layer.py`）、速率向量，以及一个把两个头文件对照机架和视觉传感器的每个解析向量进行检验的 C 测试（用 `vendor_copy.py --set firmware_frame` 复制）
 * 固件主机测试的断言：`firmware_base/urtc_test.h` 包含 `TEST_ASSERT`，即工具架、视觉工具和工具头固件原先各自定义了三次的宏；各仓库用 `vendor_copy.py --set firmware_test` 复制它，并保留各自声明测试套件的 `test_runner.h`。
 * [一致性向量](conformance/can_vectors.json): 每个实现都必须重现的字节：每种布局、被拒绝的输入和 SLCAN 数据流。
 * [工具配置](spec/tools.json)：25 个工具配置（限值、看门狗、引脚、扩展板）以数据形式保存；`generate_tools.py` 生成 TypeScript 和 Python 表格以及[工具表](docs/TOOLS_TABLE.md)。此外还有：支持导出 CSV 和 JSON 的黑匣子读取器（`blackbox.py`）、机架模拟器（`rack_sim.py`）、根据规范生成的用于板卡模糊测试的帧（`fuzz.py`），以及由 `spec/versions.json` 生成的发布[兼容性表](docs/COMPATIBILITY.md)。

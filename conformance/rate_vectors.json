@@ -1,0 +1,114 @@
+{
+  "format": 1,
+  "about": "Decisions of the minimum-interval limiter of a link; the C header and the reference module both pass them.",
+  "cases": [
+    {
+      "name": "the first message is always accepted",
+      "min_interval_ms": 100,
+      "times_ms": [
+        0
+      ],
+      "allowed": [
+        true
+      ]
+    },
+    {
+      "name": "inside the interval refused, at the interval accepted",
+      "min_interval_ms": 100,
+      "times_ms": [
+        0,
+        50,
+        99,
+        100,
+        150,
+        199,
+        200
+      ],
+      "allowed": [
+        true,
+        false,
+        false,
+        true,
+        false,
+        false,
+        true
+      ]
+    },
+    {
+      "name": "a refused message does not move the window",
+      "min_interval_ms": 100,
+      "times_ms": [
+        1000,
+        1099,
+        1100,
+        1150,
+        1200
+      ],
+      "allowed": [
+        true,
+        false,
+        true,
+        false,
+        true
+      ]
+    },
+    {
+      "name": "an interval of zero accepts everything",
+      "min_interval_ms": 0,
+      "times_ms": [
+        5,
+        5,
+        5,
+        6
+      ],
+      "allowed": [
+        true,
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "name": "across the wrap of the millisecond counter",
+      "min_interval_ms": 100,
+      "times_ms": [
+        4294967280,
+        16,
+        83,
+        84
+      ],
+      "allowed": [
+        true,
+        false,
+        false,
+        true
+      ]
+    },
+    {
+      "name": "the largest interval",
+      "min_interval_ms": 4294967295,
+      "times_ms": [
+        0,
+        4294967294,
+        4294967295
+      ],
+      "allowed": [
+        true,
+        false,
+        true
+      ]
+    },
+    {
+      "name": "a clock that goes backwards counts as a long time ago",
+      "min_interval_ms": 10,
+      "times_ms": [
+        1000,
+        900
+      ],
+      "allowed": [
+        true,
+        true
+      ]
+    }
+  ]
+}

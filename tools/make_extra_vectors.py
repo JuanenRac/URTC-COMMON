@@ -10,6 +10,8 @@
 * ``conformance/rack_vectors.json``      serial frames, command checks, CAN data and short link scenarios of the rack
 * ``conformance/fuzz_corpus.txt``        frames for fuzzing a board made from the specification (valid, invalid and random), one per line
 * ``conformance/sensor_vectors.json``    frames and thermal readings of the sensor link of the vision head
+* ``conformance/rate_vectors.json``      decisions of the minimum-interval limiter of a link (reference: ``urtc_common.frame_layer``)
+* ``generated/rate_vectors.h``           the rate vectors as C tables (the firmware repositories that use ``urtc_rate_limiter.h`` compile them into a host test)
 * ``generated/sensor_vectors.h``         the sensor vectors as C tables (the vision repository compiles them into a host test)
 * ``generated/rack_vectors.h``           the rack vectors as C tables (the rack repository compiles them into a host test)
 * ``generated/urtc_fw_vectors.h``        the vectors of ``conformance/can_vectors.json`` that the firmware itself must pass and the check
@@ -28,6 +30,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
 from urtc_common import blackbox as bb  # noqa: E402
+from urtc_common import frame_layer as fl  # noqa: E402
 from urtc_common import fuzz  # noqa: E402
 from urtc_common import rack_sim as rk  # noqa: E402
 from urtc_common import sensor_frame as sf  # noqa: E402
@@ -38,6 +41,8 @@ RK_OUT = ROOT / "conformance" / "rack_vectors.json"
 RK_H = ROOT / "generated" / "rack_vectors.h"
 SF_OUT = ROOT / "conformance" / "sensor_vectors.json"
 SF_H = ROOT / "generated" / "sensor_vectors.h"
+RATE_OUT = ROOT / "conformance" / "rate_vectors.json"
+RATE_H = ROOT / "generated" / "rate_vectors.h"
 FW_H = ROOT / "generated" / "urtc_fw_vectors.h"
 CAN_VECTORS = ROOT / "conformance" / "can_vectors.json"
 FUZZ_OUT = ROOT / "conformance" / "fuzz_corpus.txt"
@@ -203,6 +208,24 @@ def sensor_header(v: dict) -> str:
     return "\n".join(lines)
 
 
+def rate_header(v: dict) -> str:
+    longest = max(len(c["times_ms"]) for c in v["cases"])
+    lines = [
+        "// GENERATED from spec by tools/make_extra_vectors.py - do not edit by hand.",
+        "// Copyright (C) 2026 JuanenRac (Electro Hobby 3D) <electrohobby3d@gmail.com>",
+        "// GPL-3.0-or-later - see LICENSE",
+        "#ifndef RATE_VECTORS_H", "#define RATE_VECTORS_H", "", "#include <stdint.h>", "",
+        f"typedef struct {{ const char *name; uint32_t min_interval_ms; uint8_t count; uint32_t times_ms[{longest}]; uint8_t allowed[{longest}]; }} rate_vec_case_t;",
+        "", "static const rate_vec_case_t RATE_VEC_CASES[] = {",
+    ]
+    for c in v["cases"]:
+        times = ", ".join(f"{t}u" for t in c["times_ms"])
+        allowed = ", ".join("1" if a else "0" for a in c["allowed"])
+        lines.append(f'    {{"{c["name"]}", {c["min_interval_ms"]}u, {len(c["times_ms"])}, {{{times}}}, {{{allowed}}}}},')
+    lines += ["};", "", "#define RATE_VEC_COUNT(a) ((int)(sizeof(a) / sizeof((a)[0])))", "", "#endif // RATE_VECTORS_H", ""]
+    return "\n".join(lines)
+
+
 class _Watchdog:
     """The decision of the firmware's rack_link_decide for a frame, written down independently of the C code."""
 
@@ -360,12 +383,15 @@ def fuzz_corpus() -> str:
 def outputs() -> dict[Path, str]:
     rv = rack_vectors()
     sv = sensor_vectors()
+    rate = fl.rate_vectors()
     return {
         BB_OUT: json.dumps(blackbox_vectors(), indent=2) + "\n",
         RK_OUT: json.dumps(rv, indent=2) + "\n",
         RK_H: rack_header(rv),
         SF_OUT: json.dumps(sv, indent=2) + "\n",
         SF_H: sensor_header(sv),
+        RATE_OUT: json.dumps(rate, indent=2) + "\n",
+        RATE_H: rate_header(rate),
         FW_H: fw_header(),
         FUZZ_OUT: fuzz_corpus(),
         TV_OUT: json.dumps(thermal_vectors(), indent=2) + "\n",

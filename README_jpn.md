@@ -46,6 +46,7 @@
 * [1本のバスに複数のツールヘッド](docs/MULTINODE.md): アドレス指定・検出・安全規則。URTC ファームウェアに、既定でオフのスイッチの背後で実装済みで、コンピュータ上でのみテストされ、ハードウェアでは試していません。
 * インターフェース用ヘルパー: `src/urtc_ui`: デスクトップ用プログラムが共有できる言語一覧、状態バッジ、識別子・ビットレート・フレームの書式整形（Qt不要。URTC-FLASHER と URTC-TESTER は `vendor_copy.py --set ui` で作ったコピーを持っています）。
 * ファームウェア部品: `firmware_base/urtc_crc8.h`（ラックとビジョンのシリアルフレームの CRC-8 を一か所にまとめたもの。`vendor_copy.py --set firmware_base` でコピー）と、`generated/urtc_fw_vectors.h`（ファームウェア自身が通すべきベクター。バージョン欄、マジックペイロード、CRC-8 の確認値）を C のテーブルとして提供します（`--set fw_vectors`）。
+* シリアルリンクのフレーム層とレートリミッター：`firmware_base/urtc_frame.h`（長さバイトが決まった位置にあるフレームの開始バイト、バージョン、長さ、完全性、CRC-8 の判定と、逆方向の組み立て）と `firmware_base/urtc_rate_limiter.h`（受理したメッセージ間の最小間隔。ミリ秒カウンターの桁あふれをまたいでも正しく動作）。Python のリファレンス（`frame_layer.py`）、レートのベクター、そして両ヘッダーをラックとビジョンセンサーのすべての解析ベクターに照らす C テストが付きます（`vendor_copy.py --set firmware_frame` でコピー）
 * ファームウェアのホストテスト用アサーション: `firmware_base/urtc_test.h` は `TEST_ASSERT` を収めます。ラック、ビジョンツール、ツールヘッドの各ファームウェアが 3 回定義していたマクロです。各リポジトリは `vendor_copy.py --set firmware_test` でコピーし、自分のスイートを宣言する `test_runner.h` は各自で持ちます。
 * [適合ベクトル](conformance/can_vectors.json): すべての実装が再現しなければならないバイト列：各レイアウト、拒否される入力、SLCAN ストリーム。
 * [ツールプロファイル](spec/tools.json)：25 種類のツールプロファイル（上限・下限、ウォッチドッグ、ピン、拡張ボード）をデータとして保持します。`generate_tools.py` が TypeScript と Python の表および[ツール一覧表](docs/TOOLS_TABLE.md)を生成します。ほかに、CSV と JSON に書き出せるブラックボックスの読み取り機能（`blackbox.py`）、ラックのシミュレーター（`rack_sim.py`）、仕様から作るボードのファジング用フレーム（`fuzz.py`）、`spec/versions.json` から作るリリースの[互換性表](docs/COMPATIBILITY.md)があります。
