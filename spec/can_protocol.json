@@ -4717,8 +4717,12 @@
       "implemented_by": {
         "firmware": true,
         "flasher": false,
-        "tester": false,
-        "web_studio": false
+        "tester": true,
+        "web_studio": true
+      },
+      "client_names": {
+        "tester": "CAN_ID_PID_CONFIG",
+        "web_studio": "CAN_ID_PID_CONFIG"
       }
     },
     {
@@ -4811,8 +4815,12 @@
       "implemented_by": {
         "firmware": true,
         "flasher": false,
-        "tester": false,
-        "web_studio": false
+        "tester": true,
+        "web_studio": true
+      },
+      "client_names": {
+        "tester": "CAN_ID_PID_STATE",
+        "web_studio": "CAN_ID_PID_STATE_RESP"
       }
     },
     {

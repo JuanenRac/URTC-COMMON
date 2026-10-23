@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The heater PID frames are recorded as implemented by the tester and the web studio:** `0x1B9` and `0x1BA` list URTC-TESTER and URTC-WEB-STUDIO among their implementers and the names they use (`client_names`), so the comparison with the programs next to this repository stays true; the protocol table follows.
+
 - **A CRC-8 for the repositories that frame data with it:** `firmware_base/urtc_crc8.h` holds the checksum of the rack serial frames, the vision sensor frames and the fault recorder (polynomial `0x07`, start `0x00`, no final XOR; check value `0xF4` for `123456789`), header only; `vendor_copy.py --set firmware_base` copies it, and URTC-SMART-RACK and URTC-VISION-TOOL now use it instead of two copies of the same loop.
 
 - **The vectors the firmware must pass, as C tables:** `generated/urtc_fw_vectors.h` (written by `make_extra_vectors.py`, `--check` in the CI, copied with `--set fw_vectors`) carries the identifiers of the specification, the minor and patch fields, the version ordering, the magic payloads and the CRC-8 check values taken from `conformance/can_vectors.json`; the firmware repository compiles them into a host test, so the vectors are no longer only read by the three programs.

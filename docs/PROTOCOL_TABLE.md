@@ -55,8 +55,8 @@ Every identifier of `spec/can_protocol.json`, one row each. **Dir**: H>B host to
 | `0x1AF` | FEATURES_RESP | both | any / 3 | any | `F . T W` |  |
 | `0x1B0` | ELECTROMAGNET_CMD | H>B | 1 | 13 | `F . T W` |  |
 | `0x1B8` | HEALTH_PROFILE | B>H | 8 | any | `F . . .` | no host implements it |
-| `0x1B9` | PID_CONFIG | H>B | 7 | any | `F . . .` | no host implements it |
-| `0x1BA` | PID_STATE_RESP | both | any / 8 | any | `F . . .` | no host implements it |
+| `0x1B9` | PID_CONFIG | H>B | 7 | any | `F . T W` |  |
+| `0x1BA` | PID_STATE_RESP | both | any / 8 | any | `F . T W` |  |
 | `0x1C0` | SPOT_WELD_CMD | H>B | 3 | 14 | `F . T W` |  |
 | `0x1D0` | UV_CURING_CMD | H>B | 1 | 18 | `F . T W` |  |
 | `0x1E0` | HOTAIR_CMD | H>B | 3 | 19 | `F . T W` |  |
