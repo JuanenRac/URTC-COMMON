@@ -28,9 +28,9 @@
 
 | | |
 |---|---|
-| Version | `0.0.6` |
+| Version | `0.0.7` |
 | Maturité | Ébauche |
-| Tests | 217 |
+| Tests | 337 |
 | Technologie | JSON / Python |
 | Sur matériel réel | Simulé seulement : testé avec des émulateurs, des doubles de test ou des simulateurs ; aucune exécution sur du matériel réel n'est consignée pour cette version |
 

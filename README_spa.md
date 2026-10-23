@@ -28,9 +28,9 @@
 
 | | |
 |---|---|
-| Versión | `0.0.6` |
+| Versión | `0.0.7` |
 | Madurez | Andamiaje |
-| Tests | 217 |
+| Tests | 337 |
 | Tecnología | JSON / Python |
 | En hardware real | Solo simulado: probado con emuladores, dobles de prueba o simuladores; no consta ninguna ejecución en hardware real para esta versión |
 

@@ -2,7 +2,7 @@
 
 All notable changes to this project are documented here.
 
-## [Unreleased]
+## [0.0.7] - Shared CRC-8 header, firmware test vectors and the heater PID frames in use
 
 - **The heater PID frames are recorded as implemented by the tester and the web studio:** `0x1B9` and `0x1BA` list URTC-TESTER and URTC-WEB-STUDIO among their implementers and the names they use (`client_names`), so the comparison with the programs next to this repository stays true; the protocol table follows.
 

@@ -28,9 +28,9 @@
 
 | | |
 |---|---|
-| Version | `0.0.6` |
+| Version | `0.0.7` |
 | Reifegrad | Gerüst |
-| Tests | 217 |
+| Tests | 337 |
 | Technik | JSON / Python |
 | Auf echter Hardware | Nur simuliert: gegen Emulatoren, Attrappen oder Simulatoren getestet; für diese Version ist kein Lauf auf echter Hardware vermerkt |
 
