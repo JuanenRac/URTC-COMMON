@@ -6,7 +6,7 @@ Protocol version **1** (identifiers, layouts and magic payloads of `spec/can_pro
 
 | Project | Kind | Version | Shared code |
 |---|---|---|---|
-| Tool head firmware (`URTC`) | firmware | 0.4.0 (main firmware 0.4.0, main bootloader 0.4.2, slave firmware 0.2.4, slave bootloader 0.2.6) | 0.0.7 |
+| Tool head firmware (`URTC`) | firmware | 0.4.1 (main firmware 0.4.1, main bootloader 0.4.3, slave firmware 0.2.5, slave bootloader 0.2.7) | 0.0.7 |
 | Flasher (`URTC-FLASHER`) | program | 0.4.1 | 0.0.7 |
 | Gateway in front of the bus (`URTC-GATEWAY`) | program | 0.0.2 | 0.0.7 |
 | Tester (`URTC-TESTER`) | program | 0.4.2 | 0.0.7 |

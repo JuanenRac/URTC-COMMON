@@ -6,23 +6,23 @@
       "repo": "URTC",
       "title": "Tool head firmware",
       "kind": "firmware",
-      "version": "0.4.0",
+      "version": "0.4.1",
       "components": [
         {
           "name": "URTC_MAIN_FIRMWARE",
-          "version": "0.4.0"
+          "version": "0.4.1"
         },
         {
           "name": "URTC_MAIN_BOOTLOADER",
-          "version": "0.4.2"
+          "version": "0.4.3"
         },
         {
           "name": "URTC_SLAVE_FIRMWARE",
-          "version": "0.2.4"
+          "version": "0.2.5"
         },
         {
           "name": "URTC_SLAVE_BOOTLOADER",
-          "version": "0.2.6"
+          "version": "0.2.7"
         }
       ],
       "common": "0.0.7"
