@@ -12,7 +12,7 @@
   <img src="https://img.shields.io/badge/License-GPL%203.0--or--later-blue.svg" alt="GPL 3.0 or later">
   <img src="https://img.shields.io/badge/Format-JSON%20%2B%20Python-083fa1.svg" alt="Format">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
-  <img src="https://img.shields.io/badge/Version-0.0.1-0f6cbd.svg" alt="Version">
+  <img src="https://img.shields.io/badge/Version-0.0.7-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
 
@@ -30,7 +30,7 @@
 |---|---|
 | Versão | `0.0.7` |
 | Maturidade | Estrutura inicial |
-| Testes | 532 |
+| Testes | 718 |
 | Tecnologia | JSON / Python |
 | Em hardware real | Só simulado: testado com emuladores, dublês de teste ou simuladores; não há registo de execução em hardware real para esta versão |
 
@@ -67,17 +67,18 @@ O URTC-COMMON é o lugar onde o protocolo CAN da cabeça de ferramenta é escrit
 
 ```text
 URTC-COMMON/
-├── docs/         contratos, formato da especificação, guia de migração, tabela do protocolo gerada
-├── spec/         a especificação (can_protocol.json) e o seu esquema JSON
-├── generated/    o cabeçalho C e o módulo TypeScript, escritos a partir da especificação
-├── firmware_base/ peças C partilhadas pelos repositórios de firmware (o CRC-8)
+├── docs/         contratos, formato da especificação, guia de migração, o desenho multinó, o pacote e as tabelas geradas (protocolo, ferramentas, estado, compatibilidade)
+├── spec/         a especificação (can_protocol.json) e o seu esquema JSON, os perfis de ferramenta, os dados de versão e estado e o catálogo de textos dos programas (i18n/)
+├── generated/    o cabeçalho C e o módulo TypeScript, escritos a partir da especificação, e os cabeçalhos de vetores para o firmware
+├── firmware_base/ peças C partilhadas pelos repositórios de firmware (o CRC-8, a camada de tramas, o limitador de taxa e a macro de teste)
 ├── conformance/  os vetores partilhados
-├── src/          o pacote Python: protocolo gerado, tramas, codec SLCAN, transportes, versões, executor de vetores
+├── qml/          janelas Qt Quick partilhadas pelos programas (guia rápido, cabeças de ferramenta, procura de atualizações)
+├── src/          o pacote Python: protocolo gerado, tramas, codec SLCAN, transportes, versões, executor de vetores, placa virtual, modelos do rack e dos nós, autoatualização, ajuda e a janela das cabeças de ferramenta
 ├── tools/        geradores com --check, vendor_copy.py e as verificações de CI partilhadas do ecossistema
 ├── tests/        testes unitários, a comparação com os repositórios ao lado deste e a execução dos vetores em TypeScript
 ├── images/       o banner
 ├── build.sh / build.bat, build-test.sh / build-test.bat, run.sh / run.bat
-└── urtc.project.json, pyproject.toml, CHANGELOG.md, LICENSE
+└── urtc.project.json, pyproject.toml, requirements-dev.lock, ruff.toml, CHANGELOG.md, LICENSE
 ```
 
 ## 🛠️ COMPILAÇÃO E EXECUÇÃO
@@ -90,6 +91,7 @@ python tools/make_conformance.py --check             # os vetores estão atualiz
 python -m urtc_common.cli conformance                # este pacote reproduz todos os vetores
 python tools/vendor_copy.py check TARGET --source .  # uma cópia noutro repositório não foi editada à mão nem ficou desatualizada
 python -m pytest tests -q                            # os testes unitários e a comparação com os repositórios ao lado deste
+python -m mypy                                       # a verificação de tipos de urtc_common e urtc_ui
 ```
 
 `build.sh` / `build.bat` sobem a versão um passo (o conta-quilómetros do ecossistema), instalam o pacote e executam os testes; `build-test.sh` / `build-test.bat` verificam sem alterar nenhuma versão; `run.sh` / `run.bat` iniciam a linha de comandos (`conformance`, `describe`, `decode`, `slcan`).

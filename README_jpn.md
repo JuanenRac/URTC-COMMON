@@ -12,7 +12,7 @@
   <img src="https://img.shields.io/badge/License-GPL%203.0--or--later-blue.svg" alt="GPL 3.0 or later">
   <img src="https://img.shields.io/badge/Format-JSON%20%2B%20Python-083fa1.svg" alt="Format">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
-  <img src="https://img.shields.io/badge/Version-0.0.1-0f6cbd.svg" alt="Version">
+  <img src="https://img.shields.io/badge/Version-0.0.7-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
 
@@ -30,7 +30,7 @@
 |---|---|
 | バージョン | `0.0.7` |
 | 成熟度 | 足場段階 |
-| テスト | 532 |
+| テスト | 718 |
 | 技術 | JSON / Python |
 | 実機での確認 | シミュレーションのみ：エミュレーター、模擬部品、シミュレーターで試験済み。このバージョンについて実機での動作記録はありません |
 
@@ -67,17 +67,18 @@ URTC-COMMON は、ツールヘッドの CAN プロトコルをデータとして
 
 ```text
 URTC-COMMON/
-├── docs/         コントラクト、仕様のフォーマット、移行ガイド、生成されたプロトコル表
-├── spec/         仕様（can_protocol.json）とその JSON スキーマ
-├── generated/    仕様から書き出した C ヘッダーと TypeScript モジュール
-├── firmware_base/ ファームウェアのリポジトリが共有する C 部品（CRC-8）
+├── docs/         コントラクト、仕様のフォーマット、移行ガイド、マルチノードの設計、パッケージ、生成された表（プロトコル、ツール、状態、互換性）
+├── spec/         仕様（can_protocol.json）とその JSON スキーマ、ツールプロファイル、バージョンと状態のデータ、各プログラムの文言カタログ（i18n/）
+├── generated/    仕様から書き出した C ヘッダーと TypeScript モジュール、およびファームウェア用のベクトルヘッダー
+├── firmware_base/ ファームウェアのリポジトリが共有する C 部品（CRC-8、フレーム層、レートリミッター、テスト用マクロ）
 ├── conformance/  共有ベクトル
-├── src/          Python パッケージ：生成されたプロトコル、フレーム、SLCAN コーデック、トランスポート、バージョン、ベクトル実行器
+├── qml/          プログラムが共有する Qt Quick のウィンドウ（クイックガイド、ツールヘッド、更新の確認）
+├── src/          Python パッケージ：生成されたプロトコル、フレーム、SLCAN コーデック、トランスポート、バージョン、ベクトル実行器、仮想ボード、ラックとノードのモデル、自己更新、ヘルプ、ツールヘッドのウィンドウ
 ├── tools/        --check 付きジェネレーター、vendor_copy.py、エコシステム共通の CI 検査
 ├── tests/        ユニットテスト、隣のリポジトリとの比較、ベクトルの TypeScript 実行
 ├── images/       バナー
 ├── build.sh / build.bat, build-test.sh / build-test.bat, run.sh / run.bat
-└── urtc.project.json, pyproject.toml, CHANGELOG.md, LICENSE
+└── urtc.project.json, pyproject.toml, requirements-dev.lock, ruff.toml, CHANGELOG.md, LICENSE
 ```
 
 ## 🛠️ ビルドと実行
@@ -90,6 +91,7 @@ python tools/make_conformance.py --check             # ベクトルが最新で�
 python -m urtc_common.cli conformance                # このパッケージがすべてのベクトルを再現する
 python tools/vendor_copy.py check TARGET --source .  # 他のリポジトリのコピーが手で編集されておらず、遅れてもいない
 python -m pytest tests -q                            # ユニットテストと、隣のリポジトリとの比較
+python -m mypy                                       # urtc_common と urtc_ui の型チェック
 ```
 
 `build.sh` / `build.bat` はバージョンを一段階上げ（エコシステムのオドメーター方式）、パッケージをインストールしてテストを実行します。`build-test.sh` / `build-test.bat` はバージョンを変えずに検査します。`run.sh` / `run.bat` はコマンドライン（`conformance`、`describe`、`decode`、`slcan`）を起動します。

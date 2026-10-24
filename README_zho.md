@@ -12,7 +12,7 @@
   <img src="https://img.shields.io/badge/License-GPL%203.0--or--later-blue.svg" alt="GPL 3.0 or later">
   <img src="https://img.shields.io/badge/Format-JSON%20%2B%20Python-083fa1.svg" alt="Format">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
-  <img src="https://img.shields.io/badge/Version-0.0.1-0f6cbd.svg" alt="Version">
+  <img src="https://img.shields.io/badge/Version-0.0.7-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
 
@@ -30,7 +30,7 @@
 |---|---|
 | 版本 | `0.0.7` |
 | 成熟度 | 雏形 |
-| 测试 | 532 |
+| 测试 | 718 |
 | 技术栈 | JSON / Python |
 | 真实硬件 | 仅模拟：使用模拟器、替身或仿真测试；此版本没有在真实硬件上运行的记录 |
 
@@ -67,17 +67,18 @@ URTC-COMMON 是工具头 CAN 协议以数据形式只写一次的地方，这样
 
 ```text
 URTC-COMMON/
-├── docs/         契约、规范格式、迁移指南、生成的协议表
-├── spec/         规范（can_protocol.json）及其 JSON Schema
-├── generated/    由规范生成的 C 头文件和 TypeScript 模块
-├── firmware_base/ 各固件仓库共用的 C 部件（CRC-8）
+├── docs/         契约、规范格式、迁移指南、多节点设计、软件包，以及生成的表（协议、工具、状态、兼容性）
+├── spec/         规范（can_protocol.json）及其 JSON Schema、工具配置、版本与状态数据，以及各程序的文本目录（i18n/）
+├── generated/    由规范生成的 C 头文件和 TypeScript 模块，以及供固件使用的向量头文件
+├── firmware_base/ 各固件仓库共用的 C 部件（CRC-8、帧层、速率限制器和测试宏）
 ├── conformance/  共享向量
-├── src/          Python 包：生成的协议、帧、SLCAN 编解码、传输层、版本、向量运行器
+├── qml/          各程序共用的 Qt Quick 窗口（快速指南、工具头、检查更新）
+├── src/          Python 包：生成的协议、帧、SLCAN 编解码、传输层、版本、向量运行器、虚拟板、机架与节点的模型、自我更新、帮助以及工具头窗口
 ├── tools/        带 --check 的生成器、vendor_copy.py 以及生态系统通用的 CI 检查
 ├── tests/        单元测试、与相邻仓库的比较，以及向量的 TypeScript 运行
 ├── images/       横幅
 ├── build.sh / build.bat, build-test.sh / build-test.bat, run.sh / run.bat
-└── urtc.project.json, pyproject.toml, CHANGELOG.md, LICENSE
+└── urtc.project.json, pyproject.toml, requirements-dev.lock, ruff.toml, CHANGELOG.md, LICENSE
 ```
 
 ## 🛠️ 构建与运行
@@ -90,6 +91,7 @@ python tools/make_conformance.py --check             # 向量是最新的
 python -m urtc_common.cli conformance                # 本包重现每一个向量
 python tools/vendor_copy.py check TARGET --source .  # 其他仓库中的副本没有被手工修改，也没有落后
 python -m pytest tests -q                            # 单元测试以及与相邻仓库的比较
+python -m mypy                                       # urtc_common 和 urtc_ui 的类型检查
 ```
 
 `build.sh` / `build.bat` 把版本提升一步（生态系统的里程表方案），安装软件包并运行测试；`build-test.sh` / `build-test.bat` 在不更改任何版本的情况下检查；`run.sh` / `run.bat` 启动命令行（`conformance`、`describe`、`decode`、`slcan`）。
