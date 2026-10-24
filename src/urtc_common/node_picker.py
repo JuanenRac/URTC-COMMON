@@ -316,7 +316,8 @@ def transport_io(transport, clock: Callable[[], float] = time.monotonic) -> mh.H
     inbox: list[tuple[int, int, bytes]] = []
 
     def now() -> int:
-        return int(clock() * 1000)
+        stamp = getattr(transport, "now_ms", None)
+        return int(stamp()) if stamp is not None else int(clock() * 1000)
 
     def poll() -> list:
         while True:
@@ -350,6 +351,54 @@ def config_reader_for(transport, timeout_s: float = 0.5, clock: Callable[[], flo
     return read
 
 
+class SimTransport:
+    """A transport (``send_frame``, ``read_frame``) over the modelled bus, on the clock of the model: listening for a time lets that time pass in the
+    model. For tests, pictures and trying a program with several heads and no boards (``now_ms`` is what ``transport_io`` uses as the clock)."""
+
+    def __init__(self, bus) -> None:
+        self.bus = bus
+        self.sent: list[tuple[int, bytes]] = []
+        self._inbox: list[tuple[int, int, bytes]] = []
+
+    def now_ms(self) -> int:
+        return int(self.bus.elapsed)
+
+    def open_channel(self, bitrate_code=None, listen_only: bool = False) -> None:
+        pass
+
+    def close_channel(self) -> None:
+        pass
+
+    def close(self) -> None:
+        pass
+
+    def send_frame(self, can_id: int, data: bytes = b"") -> None:
+        self.sent.append((can_id, bytes(data)))
+        self.bus.host_send(can_id, bytes(data))
+
+    def read_frame(self, timeout: float = 0.05):
+        if not self._inbox:
+            self._inbox.extend(self.bus.read_host())
+        if not self._inbox and timeout > 0:
+            self.bus.step(max(1, int(timeout * 1000)))
+            self._inbox.extend(self.bus.read_host())
+        if not self._inbox:
+            return None
+        _t, can_id, data = self._inbox.pop(0)
+        return can_id, data
+
+
+def sim_transport(addresses: tuple[int, ...] = (2, 5)):
+    """(transport, bus): a transport over a modelled bus with one head per address, already past its listening window."""
+    from . import multinode_sim as sim
+
+    bus = sim.SimBus(now_ms=0)
+    for address in addresses:
+        bus.add(sim.SimNode(address, tool=address % 8, serial=0x1000 + address, start_ms=0))
+    bus.step(100)
+    return SimTransport(bus), bus
+
+
 def sim_picker(addresses: tuple[int, ...] = (2, 5), config: dict | None = None, release_on_lapse: bool = True):
     """A picker over a modelled bus (``multinode_sim``) for tests, screenshots and trying a window without boards: (picker, bus)."""
     from . import multinode_sim as sim
@@ -364,5 +413,5 @@ def sim_picker(addresses: tuple[int, ...] = (2, 5), config: dict | None = None, 
 
 
 __all__ = [
-    "NodePicker", "NodeRow", "Notice", "NodeBlocked", "GatedTransport", "classify_node", "switch_state", "tool_name", "transport_io", "config_reader_for", "sim_picker", "empty_snapshot",
+    "NodePicker", "NodeRow", "Notice", "NodeBlocked", "GatedTransport", "classify_node", "switch_state", "tool_name", "transport_io", "config_reader_for", "sim_picker", "sim_transport", "SimTransport", "empty_snapshot",
 ]

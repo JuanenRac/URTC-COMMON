@@ -284,3 +284,15 @@ def test_the_web_studio_catalog_says_the_same_as_the_table():
     for key, value in strings.STRINGS["english"].items():
         wanted = {language: re.sub(r"\{(\w+)\}", r"{{\1}}", strings.STRINGS[language][key]) for language in strings.LANGUAGES}
         assert entries["nodes." + key[3:].lower()] == wanted, key
+
+
+def test_a_picker_over_the_simulated_transport_finds_and_selects_like_one_over_the_model():
+    transport, bus = np_.sim_transport((3, 7))
+    picker = np_.NodePicker(mh.MultinodeHost(np_.transport_io(transport)), config_reader=np_.config_reader_for(transport, timeout_s=0.05))
+    wire = np_.GatedTransport(transport, picker)
+    picker.scan()
+    assert [r.address for r in picker.rows()] == [3, 7] and picker.switch == "unknown"
+    picker.ask(7)
+    assert picker.confirm() and picker.selected == 7
+    wire.send_frame(SINGLE_HEAD, b"")
+    assert (SINGLE_HEAD, b"") in transport.sent and bus.nodes[1].obeyed and not bus.nodes[0].obeyed

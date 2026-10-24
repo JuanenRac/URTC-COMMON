@@ -192,7 +192,6 @@ def test_the_window_works_before_a_connection_and_takes_the_picker_when_one_open
     model.cancel()
     model.release()
     model.restoreReleaseOption(False)
-    assert not model.releaseOnLapse or True
     picker, _bus = npk.sim_picker((2,), config=CONFIG)
     model.attach(picker)
     assert model.connected and picker.release_on_lapse is False       # the option saved last time reaches the new picker
