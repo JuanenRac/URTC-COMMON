@@ -89,10 +89,10 @@ Dialog {
             visible: model && model.mayShowRows
             spacing: 6
             Text { Layout.preferredWidth: 80; text: model ? model.t("NP_COL_ADDRESS") : ""; color: dialog.mutedColor; font.pixelSize: 11; font.bold: true }
-            Text { Layout.fillWidth: true; Layout.preferredWidth: 160; text: model ? model.t("NP_COL_TOOL") : ""; color: dialog.mutedColor; font.pixelSize: 11; font.bold: true }
+            Text { Layout.fillWidth: true; Layout.preferredWidth: 110; text: model ? model.t("NP_COL_TOOL") : ""; color: dialog.mutedColor; font.pixelSize: 11; font.bold: true }
             Text { Layout.preferredWidth: 90; text: model ? model.t("NP_COL_SERIAL") : ""; color: dialog.mutedColor; font.pixelSize: 11; font.bold: true }
             Text { Layout.preferredWidth: 150; text: model ? model.t("NP_COL_STATE") : ""; color: dialog.mutedColor; font.pixelSize: 11; font.bold: true }
-            Item { Layout.preferredWidth: 100 }
+            Item { Layout.preferredWidth: 96 }
         }
         Repeater {
             model: dialog.model && dialog.model.mayShowRows ? dialog.model.rows : []
@@ -107,14 +107,15 @@ Dialog {
                 RowLayout {
                     anchors.fill: parent
                     anchors.leftMargin: 8
-                    anchors.rightMargin: 8
+                    anchors.rightMargin: 12
                     spacing: 6
                     Text { Layout.preferredWidth: 80; text: modelData.address; color: dialog.textColor; font.pixelSize: 13; font.bold: true }
-                    Text { Layout.fillWidth: true; Layout.preferredWidth: 160; text: modelData.tool; color: dialog.textColor; font.pixelSize: 12; elide: Text.ElideRight }
+                    Text { Layout.fillWidth: true; Layout.preferredWidth: 110; text: modelData.tool; color: dialog.textColor; font.pixelSize: 12; elide: Text.ElideRight }
                     Text { Layout.preferredWidth: 90; text: modelData.serial; color: dialog.mutedColor; font.pixelSize: 11; font.family: "Consolas" }
                     Text { Layout.preferredWidth: 150; text: modelData.status_text; color: dialog.stateColor(modelData.status); font.pixelSize: 12; font.bold: true; elide: Text.ElideRight }
                     Button {
-                        Layout.preferredWidth: 100
+                        Layout.preferredWidth: 96
+                        implicitWidth: 96
                         text: model.t("NP_BTN_SELECT")
                         enabled: modelData.selectable && !model.busy
                         onClicked: model.ask(modelData.address)
