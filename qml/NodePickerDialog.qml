@@ -86,6 +86,7 @@ Dialog {
         // the header of the table
         RowLayout {
             Layout.fillWidth: true
+            Layout.leftMargin: 9
             visible: model && model.mayShowRows
             spacing: 6
             Text { Layout.preferredWidth: 80; text: model ? model.t("NP_COL_ADDRESS") : ""; color: dialog.mutedColor; font.pixelSize: 11; font.bold: true }

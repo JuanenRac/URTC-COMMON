@@ -18,6 +18,7 @@ LANGUAGES = ("english", "spanish", "italian", "french", "german", "chinese", "ja
 STRINGS: dict[str, dict[str, str]] = {
     "english": {
         "NP_TITLE": "Tool heads on the bus",
+        "NP_BTN_OPEN": "Heads",
         "NP_BTN_FIND": "Find heads",
         "NP_BTN_SELECT": "Select",
         "NP_BTN_RELEASE": "Release",
@@ -71,6 +72,7 @@ STRINGS: dict[str, dict[str, str]] = {
     },
     "spanish": {
         "NP_TITLE": "Cabezales en el bus",
+        "NP_BTN_OPEN": "Cabezales",
         "NP_BTN_FIND": "Buscar cabezales",
         "NP_BTN_SELECT": "Seleccionar",
         "NP_BTN_RELEASE": "Soltar",
@@ -124,6 +126,7 @@ STRINGS: dict[str, dict[str, str]] = {
     },
     "italian": {
         "NP_TITLE": "Teste utensile sul bus",
+        "NP_BTN_OPEN": "Teste",
         "NP_BTN_FIND": "Cerca teste",
         "NP_BTN_SELECT": "Seleziona",
         "NP_BTN_RELEASE": "Rilascia",
@@ -177,6 +180,7 @@ STRINGS: dict[str, dict[str, str]] = {
     },
     "french": {
         "NP_TITLE": "Têtes d'outil sur le bus",
+        "NP_BTN_OPEN": "Têtes",
         "NP_BTN_FIND": "Chercher les têtes",
         "NP_BTN_SELECT": "Sélectionner",
         "NP_BTN_RELEASE": "Relâcher",
@@ -230,6 +234,7 @@ STRINGS: dict[str, dict[str, str]] = {
     },
     "german": {
         "NP_TITLE": "Werkzeugköpfe am Bus",
+        "NP_BTN_OPEN": "Köpfe",
         "NP_BTN_FIND": "Köpfe suchen",
         "NP_BTN_SELECT": "Auswählen",
         "NP_BTN_RELEASE": "Freigeben",
@@ -283,6 +288,7 @@ STRINGS: dict[str, dict[str, str]] = {
     },
     "chinese": {
         "NP_TITLE": "总线上的工具头",
+        "NP_BTN_OPEN": "工具头",
         "NP_BTN_FIND": "查找工具头",
         "NP_BTN_SELECT": "选择",
         "NP_BTN_RELEASE": "释放",
@@ -336,6 +342,7 @@ STRINGS: dict[str, dict[str, str]] = {
     },
     "japanese": {
         "NP_TITLE": "バス上のツールヘッド",
+        "NP_BTN_OPEN": "ヘッド",
         "NP_BTN_FIND": "ヘッドを探す",
         "NP_BTN_SELECT": "選択",
         "NP_BTN_RELEASE": "解除",
@@ -389,6 +396,7 @@ STRINGS: dict[str, dict[str, str]] = {
     },
     "portuguese": {
         "NP_TITLE": "Cabeças de ferramenta no barramento",
+        "NP_BTN_OPEN": "Cabeças",
         "NP_BTN_FIND": "Procurar cabeças",
         "NP_BTN_SELECT": "Selecionar",
         "NP_BTN_RELEASE": "Libertar",
