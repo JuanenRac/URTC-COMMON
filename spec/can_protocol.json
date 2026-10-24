@@ -5985,7 +5985,8 @@
         {
           "role": "response",
           "dlc": {
-            "exact": 2
+            "min": 2,
+            "max": 3
           },
           "fields": [
             {
@@ -6004,6 +6005,14 @@
               ],
               "offset": 1,
               "width": 1
+            },
+            {
+              "name": "minor_low",
+              "type": "u8",
+              "optional": true,
+              "note": "The low byte of the minor number of the slave application (its byte 8 of the version register, which the 8-byte answer to 0x221 cuts off); with the high byte, byte 7 of that answer, it is the whole minor. Absent from firmware before this byte: the minor is then not known.",
+              "offset": 2,
+              "width": 1
             }
           ],
           "examples": [
@@ -6014,12 +6023,21 @@
                 "patch": 4
               },
               "data": "0104"
+            },
+            {
+              "name": "patch 4 of version 0.2",
+              "fields": {
+                "register": 1,
+                "patch": 4,
+                "minor_low": 2
+              },
+              "data": "010402"
             }
           ]
         }
       ],
       "notes": [
-        "TX-only; nothing on the board listens for it. Sent right after the 0x221 answer for register 0x01 when the tenth byte of that register, the patch number of the slave application, is 1 to 127. A byte of 0 (what a slave application from before the field sends) is ignored and no frame follows, so a host that sees no 0x222 treats the patch as unknown."
+        "TX-only; nothing on the board listens for it. Sent right after the 0x221 answer for register 0x01 when the tenth byte of that register, the patch number of the slave application, is 1 to 127. A byte of 0 (what a slave application from before the field sends) is ignored and no frame follows, so a host that sees no 0x222 treats the patch as unknown. The third byte, when present, is the low byte of the minor number: the 0x221 answer holds only the first 8 bytes of the register and stops at the high byte of the minor, so a host that reads two bytes of 0x222 (the first release of this frame) still gets the patch and shows the minor as unknown."
       ],
       "implemented_by": {
         "firmware": true,

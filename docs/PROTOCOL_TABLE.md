@@ -74,7 +74,7 @@ Every identifier of `spec/can_protocol.json`, one row each. **Dir**: H>B host to
 | `0x219` | SLAVE_VERIFY_FAIL_REASON | both | any / 1 | any | `F L . W` |  |
 | `0x220` | SLAVE_REG_WRITE | H>B | 2-8 | any | `F . . .` | no host implements it |
 | `0x221` | SLAVE_REG_READ | both | 2 / 1-8 | any | `F . . .` | no host implements it |
-| `0x222` | SLAVE_APP_PATCH | B>H | 2 | any | `F . . .` | no host implements it |
+| `0x222` | SLAVE_APP_PATCH | B>H | 2-3 | any | `F . . .` | no host implements it |
 | `0x230` | PASTE_JETTING_CONFIG | H>B | 3 | 23 | `F . T W` |  |
 | `0x231` | PASTE_JETTING_PULSE | H>B | 3 | 23 | `F . T W` |  |
 | `0x240` | ADS1115_CONFIG | H>B | 2 | 17 | `F . T W` |  |
