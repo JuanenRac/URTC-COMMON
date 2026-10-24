@@ -170,7 +170,7 @@ def test_the_dialog_loads_opens_and_asks_for_the_confirmation_without_qml_errors
     target.mkdir()
     (target / "NodePickerDialog.qml").write_text((ROOT / "qml" / "NodePickerDialog.qml").read_text(encoding="utf-8"), encoding="utf-8")
     (target / "Window.qml").write_text(WINDOW, encoding="utf-8")
-    environment = dict(os.environ, QT_QPA_PLATFORM="offscreen", PYTHONPATH=os.pathsep.join([str(ROOT / "src"), str(ROOT / "tools")]))
+    environment = dict(os.environ, QT_QPA_PLATFORM="offscreen", PYTHONPATH=os.pathsep.join([str(ROOT / "src"), str(ROOT / "tools"), *filter(None, [os.environ.get("PYTHONPATH")])]))
     done = subprocess.run([sys.executable, "-c", HOST, str(target / "Window.qml")], capture_output=True, text=True, env=environment, timeout=120,
                           stdin=subprocess.DEVNULL)
     line = next((entry for entry in done.stdout.splitlines() if entry.startswith("RESULT ")), None)

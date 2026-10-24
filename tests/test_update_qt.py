@@ -158,7 +158,7 @@ def test_the_dialog_loads_and_opens_without_qml_errors(tmp_path):
     shutil_target.mkdir()
     (shutil_target / "UpdateDialog.qml").write_text((ROOT / "qml" / "UpdateDialog.qml").read_text(encoding="utf-8"), encoding="utf-8")
     (shutil_target / "Window.qml").write_text(WINDOW, encoding="utf-8")
-    environment = dict(os.environ, QT_QPA_PLATFORM="offscreen", PYTHONPATH=os.pathsep.join([str(ROOT / "src"), str(ROOT / "tools")]))
+    environment = dict(os.environ, QT_QPA_PLATFORM="offscreen", PYTHONPATH=os.pathsep.join([str(ROOT / "src"), str(ROOT / "tools"), *filter(None, [os.environ.get("PYTHONPATH")])]))
     done = subprocess.run([sys.executable, "-c", HOST, str(ROOT / "tests"), str(shutil_target / "Window.qml")], capture_output=True, text=True, env=environment, timeout=120)
     line = next((l for l in done.stdout.splitlines() if l.startswith("RESULT ")), None)
     assert line is not None, done.stderr[-2000:]
