@@ -39,7 +39,7 @@
       "title": "Gateway in front of the bus",
       "kind": "program",
       "version": "0.0.1",
-      "common": "0.0.6"
+      "common": "0.0.7"
     },
     {
       "repo": "URTC-TESTER",
