@@ -113,7 +113,7 @@ class NodePickerModel(QObject):
 
     @Property(bool, notify=changed)
     def releaseOnLapse(self) -> bool:
-        return bool(self._shot["release_on_lapse"])
+        return self._release_pending if self.picker is None else bool(self._shot["release_on_lapse"])
 
     @Property(bool, notify=changed)
     def mayShowRows(self) -> bool:
