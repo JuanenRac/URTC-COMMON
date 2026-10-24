@@ -31,63 +31,63 @@
       "repo": "URTC-FLASHER",
       "title": "Flasher",
       "kind": "program",
-      "version": "0.4.0",
+      "version": "0.4.1",
       "common": "0.0.7"
     },
     {
       "repo": "URTC-GATEWAY",
       "title": "Gateway in front of the bus",
       "kind": "program",
-      "version": "0.0.1",
+      "version": "0.0.2",
       "common": "0.0.7"
     },
     {
       "repo": "URTC-TESTER",
       "title": "Tester",
       "kind": "program",
-      "version": "0.4.1",
+      "version": "0.4.2",
       "common": "0.0.7"
     },
     {
       "repo": "URTC-WEB-STUDIO",
       "title": "Web studio",
       "kind": "program",
-      "version": "0.3.6",
+      "version": "0.3.7",
       "common": "0.0.7"
     },
     {
       "repo": "URTC-UPDATER",
       "title": "Updater",
       "kind": "program",
-      "version": "0.1.7",
+      "version": "0.1.8",
       "common": "0.0.7"
     },
     {
       "repo": "URTC-SMART-RACK",
       "title": "Smart rack",
       "kind": "firmware",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "common": "0.0.7"
     },
     {
       "repo": "URTC-VISION-TOOL",
       "title": "Vision tool",
       "kind": "firmware",
-      "version": "0.1.4",
+      "version": "0.1.5",
       "common": "0.0.7"
     },
     {
       "repo": "URTC-DOCS",
       "title": "Documentation generator",
       "kind": "program",
-      "version": "0.1.0"
+      "version": "0.1.1"
     },
     {
       "repo": "URTC-COMMON",
       "title": "Shared protocol and code",
       "kind": "library",
-      "version": "0.0.7",
-      "common": "0.0.7"
+      "version": "0.0.8",
+      "common": "0.0.8"
     }
   ]
 }
