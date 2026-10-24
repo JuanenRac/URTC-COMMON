@@ -18,7 +18,7 @@ ROOT = Path(__file__).resolve().parents[1]
 def test_the_specification_is_well_formed_and_every_listed_repository_has_a_section():
     spec = rs.load()
     assert rs.validate(spec) == []
-    assert [s["id"] for s in spec["sections"]] == ["updates", "first_flash", "compatibility"]
+    assert [s["id"] for s in spec["sections"]] == ["updates", "first_flash", "heads", "compatibility"]
     assert "URTC-FLASHER" in rs.repos_of(spec) and "URTC" in rs.repos_of(spec)
     for section in spec["sections"]:
         assert set(section["heading"]) == set(rs.FILES) and set(section["body"]) == set(rs.FILES)
