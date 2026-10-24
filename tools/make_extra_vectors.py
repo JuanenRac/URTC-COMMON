@@ -164,6 +164,50 @@ def blackbox_header(scenarios: list[dict]) -> str:
     return "\n".join(lines)
 
 
+def rack_stream_scenarios() -> list[dict]:
+    """Streams of bytes with the time each piece arrived, played through the deframer of the rack: the frames that come out and the counters."""
+    good = rk.encode_set_preheat(1, 0, 200)
+    second = rk.encode_set_preheat(2, 19, 300)
+    third = rk.encode_set_preheat(3, 0, 0)
+    bad_crc = good[:-1] + bytes([good[-1] ^ 0xFF])
+    bad_version = good[:1] + b"\x01" + good[2:]
+    # a header that says 3 bytes of payload, followed by a whole real frame: the first candidate swallows the start of the real frame
+    hiding = bytes([0xA5, 0x02, 0x00, 0x01, 0x03]) + second
+    scenarios = [
+        ("a frame in one piece", 20, [(0, good)]),
+        ("a frame in pieces, each within the timeout", 20, [(0, good[:2]), (10, good[2:5]), (20, good[5:])]),
+        ("two frames in one burst", 20, [(0, good + second)]),
+        ("a frame split at every byte", 20, [(i, good[i:i + 1]) for i in range(len(good))]),
+        ("noise before and between the frames", 20, [(0, b"\x00\x13\xFF" + good + b"\x42" + second)]),
+        ("a frame cut short by a silence, then a whole one", 20, [(0, good[:4]), (100, second)]),
+        ("a silence of exactly the timeout keeps the frame", 20, [(0, good[:4]), (20, good[4:])]),
+        ("a silence of one more drops it", 20, [(0, good[:4]), (21, good[4:])]),
+        ("the clock of the milliseconds wraps inside a frame", 20, [(0xFFFFFFF0, good[:4]), (4, good[4:])]),
+        ("a bad crc, then a good frame", 20, [(0, bad_crc + second)]),
+        ("a bad crc inside a burst of three frames", 20, [(0, good + bad_crc + second + third)]),
+        ("a version this rack does not speak, then a good frame", 20, [(0, bad_version + second)]),
+        ("a length of 17 is refused at once", 20, [(0, bytes([0xA5, 0x02, 0x01, 0x01, 0x11]) + second)]),
+        ("a header that hides the start of a real frame", 20, [(0, hiding)]),
+        ("thirty start bytes in a row", 20, [(0, b"\xA5" * 30)]),
+        ("a frame after thirty start bytes", 20, [(0, b"\xA5" * 30 + good)]),
+        ("a timeout of 5 ms (a faster link)", 5, [(0, good[:3]), (6, good[3:])]),
+        ("a frame of the longest payload", 20, [(0, rk.encode_frame(9, 1, bytes(range(16))))]),
+        ("a start byte alone, then silence, then a whole frame", 20, [(0, b"\xA5"), (50, good)]),
+    ]
+    out = []
+    for name, timeout, events in scenarios:
+        d = rk.StreamDeframer(timeout)
+        frames: list[bytes] = []
+        for t, chunk in events:
+            frames += d.feed(chunk, t)
+        out.append({
+            "name": name, "timeout_ms": timeout, "events": [{"time_ms": t, "hex": chunk.hex().upper()} for t, chunk in events],
+            "frames": [f.hex().upper() for f in frames],
+            "stats": {k: getattr(d.stats, k) for k in ("frames_ok", "crc_errors", "bad_headers", "resyncs", "timeouts", "dropped_bytes")},
+        })
+    return out
+
+
 def rack_vectors() -> dict:
     frames = []
     for name, seq, cmd, payload in (("set 200 C on the soldering iron", 1, 1, bytes([0, 0, 200])), ("set 0 on the hot air nozzle", 255, 1, bytes([19, 0, 0])),
@@ -220,6 +264,7 @@ def rack_vectors() -> dict:
                        "verdict": rk.verify_slot(occupied, commanded, measured, ambient, elapsed)})
     return {"format": 1, "about": "Frames, command checks, CAN data, link scenarios and thermal slot checks of the tool rack; the rack firmware and the simulator both pass them.",
             "frames": frames, "parse": parse, "validate": validate, "can": can, "scenarios": out_scen, "verify": verify,
+            "streams": rack_stream_scenarios(),
             "limits": {"ceiling_c": rk.RACK_CEILING_C, "link_timeout_ms": rk.LINK_TIMEOUT_MS, "printer_c": rk.MAX_PREHEAT_C[10]}}
 
 
@@ -349,6 +394,9 @@ def rack_header(v: dict) -> str:
         "typedef struct { const char *name; uint8_t seq, tool; uint16_t target; uint8_t data[8]; } rack_vec_can_t;",
         "typedef struct { const char *name; int occupied; int commanded_c; float measured_c; float ambient_c; uint32_t elapsed_ms; int verdict; } rack_vec_verify_t; // slot_verdict_t order",
         "typedef struct { int scenario; const char *name; uint32_t time_ms; uint8_t len; uint8_t buf[24]; int action; int tool; int temp; int ack; } rack_vec_step_t; // rack_action_t order",
+        "typedef struct { int stream; uint32_t time_ms; uint8_t len; uint8_t data[40]; } rack_vec_stream_event_t; // bytes that arrived together",
+        "typedef struct { int stream; uint8_t len; uint8_t frame[22]; } rack_vec_stream_frame_t; // a frame the deframer must hand over, in order",
+        "typedef struct { const char *name; uint32_t timeout_ms; uint32_t frames_ok, crc_errors, bad_headers, resyncs, timeouts, dropped_bytes; } rack_vec_stream_t;",
         "",
     ]
     lines.append("static const rack_vec_frame_t RACK_VEC_FRAMES[] = {")
@@ -377,6 +425,20 @@ def rack_header(v: dict) -> str:
     for c in v["verify"]:
         measured = "NAN" if c["measured_c"] is None else repr(float(c["measured_c"])) + "f"
         lines.append(f'    {{"{c["name"]}", {1 if c["occupied"] else 0}, {c["commanded_c"]}, {measured}, {float(c["ambient_c"])!r}f, {c["elapsed_ms"]}u, {rk.SLOT_VERDICTS.index(c["verdict"])}}},')
+    lines += ["};", "", "static const rack_vec_stream_t RACK_VEC_STREAMS[] = {"]
+    for s in v["streams"]:
+        st = s["stats"]
+        lines.append(f'    {{"{s["name"]}", {s["timeout_ms"]}u, {st["frames_ok"]}u, {st["crc_errors"]}u, {st["bad_headers"]}u, {st["resyncs"]}u, {st["timeouts"]}u, {st["dropped_bytes"]}u}},')
+    lines += ["};", "", "static const rack_vec_stream_event_t RACK_VEC_STREAM_EVENTS[] = {"]
+    for i, s in enumerate(v["streams"]):
+        for e in s["events"]:
+            b = bytes.fromhex(e["hex"])
+            lines.append(f'    {{{i}, {e["time_ms"]}u, {len(b)}, {arr(b)}}},')
+    lines += ["};", "", "static const rack_vec_stream_frame_t RACK_VEC_STREAM_FRAMES[] = {"]
+    for i, s in enumerate(v["streams"]):
+        for f in s["frames"]:
+            b = bytes.fromhex(f)
+            lines.append(f'    {{{i}, {len(b)}, {arr(b)}}},')
     lines += ["};", "", "#define RACK_VEC_COUNT(a) ((int)(sizeof(a) / sizeof((a)[0])))", "", "#endif // RACK_VECTORS_H", ""]
     return "\n".join(lines)
 

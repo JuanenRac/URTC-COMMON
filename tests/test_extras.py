@@ -409,3 +409,52 @@ def test_the_shared_test_header_counts_a_failed_assertion_with_the_host_compiler
     assert build.returncode == 0, build.stderr
     run = subprocess.run([str(binary)], capture_output=True, text=True)
     assert run.returncode == 0 and "FAIL: does not hold (" in run.stdout and "holds (" not in run.stdout.replace("does not hold (", "")
+
+
+# ---- the serial stream of the rack ---------------------------------------------------------------------------------------------------
+@pytest.mark.parametrize("sc", RACK["streams"], ids=lambda s: s["name"])
+def test_the_deframer_hands_over_the_frames_and_counts_what_it_drops_like_the_firmware(sc):
+    deframer = rk.StreamDeframer(sc["timeout_ms"])
+    frames = []
+    for event in sc["events"]:
+        frames += deframer.feed(bytes.fromhex(event["hex"]), event["time_ms"])
+    assert [f.hex().upper() for f in frames] == sc["frames"]
+    assert vars(deframer.stats) == sc["stats"]
+
+
+def test_the_stream_vectors_say_what_a_person_would_expect_of_a_serial_line():
+    """Written by hand, not read from the generator: the numbers a reader of rack_deframer.c works out for a few streams."""
+    by_name = {s["name"]: s for s in RACK["streams"]}
+    assert by_name["a frame in one piece"]["stats"] == {"frames_ok": 1, "crc_errors": 0, "bad_headers": 0, "resyncs": 0, "timeouts": 0, "dropped_bytes": 0}
+    # three noise bytes and one between the frames: four bytes thrown away, both frames kept
+    assert by_name["noise before and between the frames"]["stats"]["dropped_bytes"] == 4
+    assert len(by_name["noise before and between the frames"]["frames"]) == 2
+    # a frame is 9 bytes (start, version, sequence, command, length, three of payload, crc): a bad CRC throws the nine away and finds the next start byte
+    assert by_name["a bad crc, then a good frame"]["stats"] == {"frames_ok": 1, "crc_errors": 1, "bad_headers": 0, "resyncs": 1, "timeouts": 0, "dropped_bytes": 9}
+    # the silence of exactly the timeout is allowed; one millisecond more drops what was held (the four bytes of the cut frame, the five that follow are noise)
+    assert by_name["a silence of exactly the timeout keeps the frame"]["stats"]["timeouts"] == 0
+    assert by_name["a silence of one more drops it"]["stats"]["timeouts"] == 1
+    # a header that claims three bytes of payload and holds the start of a real frame: five bytes go, the real frame comes out whole
+    hiding = by_name["a header that hides the start of a real frame"]
+    assert hiding["stats"]["dropped_bytes"] == 5 and len(hiding["frames"]) == 1
+
+
+def test_the_rack_acts_on_the_commands_of_a_noisy_serial_line():
+    rack = rk.SimulatedRack()
+    rack.set_slot(0, 0, 7)
+    line = b"\x00\xFF" + rk.encode_set_preheat(1, 0, 200)[:4]
+    assert rack.receive_stream(line, 0) == []                    # the frame is not complete yet: nothing is acted on
+    replies = rack.receive_stream(rk.encode_set_preheat(1, 0, 200)[4:] + b"\x13" + rk.encode_set_preheat(2, 0, 250), 5)
+    assert [r.action for r in replies] == ["set_target", "set_target"]
+    assert rack.slots[0].target_c == 250
+    assert rack.deframer.stats.frames_ok == 2 and rack.deframer.stats.dropped_bytes == 3
+
+
+def test_a_command_cut_by_a_silence_is_not_acted_on_and_the_link_goes_on():
+    rack = rk.SimulatedRack()
+    rack.set_slot(0, 0, 7)
+    frame = rk.encode_set_preheat(1, 0, 200)
+    assert rack.receive_stream(frame[:5], 0) == []
+    assert rack.receive_stream(frame[5:], 100) == []              # the rest arrives after the timeout: the first half was dropped
+    assert rack.slots[0].target_c == 0
+    assert [r.action for r in rack.receive_stream(rk.encode_set_preheat(2, 0, 180), 110)] == ["set_target"]
