@@ -22,9 +22,9 @@ def test_the_specification_is_well_formed_and_every_listed_repository_has_a_sect
     spec = rs.load()
     assert rs.validate(spec) == []
     assert [s["id"] for s in spec["sections"] if not s["id"].startswith("status_")] == ["updates", "first_flash", "heads", "compatibility"]
-    # every repository of the family has its own status table, with the same rows lit in the same eight languages
+    # nine repositories have their own status table (the README of URTC-DOCS is written by its own generator), with the same rows lit in the same eight languages
     status = [s for s in spec["sections"] if s["id"].startswith("status_")]
-    assert len(status) == 10 and all(len(s["repos"]) == 1 and s["emoji"] == "💡" for s in status)
+    assert len(status) == 9 and all(len(s["repos"]) == 1 and s["emoji"] == "💡" for s in status)
     for section in status:
         assert all(("🟢" in row or "🟡" in row or "🟠" in row or "🔴" in row) for row in section["body"]["english"].splitlines()[4:])
         assert len({body.count(NL) for body in section["body"].values()}) == 1

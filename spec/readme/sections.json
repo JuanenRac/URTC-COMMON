@@ -363,33 +363,6 @@
       "repos": [
         "URTC-GATEWAY"
       ]
-    },
-    {
-      "id": "status_docs",
-      "emoji": "💡",
-      "heading": {
-        "english": "Project status",
-        "spanish": "Estado del proyecto",
-        "german": "Projektstatus",
-        "french": "État du projet",
-        "italian": "Stato del progetto",
-        "japanese": "プロジェクトの状況",
-        "chinese": "项目状态",
-        "portuguese": "Estado do projeto"
-      },
-      "body": {
-        "english": "🟢 done and verified · 🟡 works, with known limits · 🟠 half done or not verified · 🔴 not done or not working. Nothing is green if it never ran on real hardware.\n\n| Part | Status | What the repository can show |\n| --- | :---: | --- |\n| Software | 🟡 | Generates and checks files from the shared specification; no hardware involved. |\n| Tests | 🟢 | The test suite passes in the CI on every push. |\n| Documentation | 🟡 | README in eight languages and reference documents; the translations were not reviewed by native speakers. |\n",
-        "spanish": "🟢 hecho y verificado · 🟡 funciona, con límites conocidos · 🟠 a medias o sin verificar · 🔴 sin hacer o sin funcionar. Nada es verde si nunca corrió en hardware real.\n\n| Parte | Estado | Lo que el repositorio puede demostrar |\n| --- | :---: | --- |\n| Software | 🟡 | Genera y comprueba ficheros a partir de la especificación compartida; no interviene hardware. |\n| Pruebas | 🟢 | La batería de pruebas pasa en la CI en cada subida. |\n| Documentación | 🟡 | README en ocho idiomas y documentos de referencia; las traducciones no las ha revisado ningún hablante nativo. |\n",
-        "german": "🟢 fertig und überprüft · 🟡 funktioniert, mit bekannten Grenzen · 🟠 halb fertig oder nicht überprüft · 🔴 nicht gemacht oder funktioniert nicht. Nichts ist grün, wenn es nie auf echter Hardware lief.\n\n| Teil | Status | Was das Repository belegen kann |\n| --- | :---: | --- |\n| Software | 🟡 | Erzeugt und prüft Dateien aus der gemeinsamen Spezifikation; keine Hardware beteiligt. |\n| Tests | 🟢 | Die Testsuite besteht bei jedem Push in der CI. |\n| Dokumentation | 🟡 | README in acht Sprachen und Referenzdokumente; die Übersetzungen wurden nicht von Muttersprachlern geprüft. |\n",
-        "french": "🟢 fait et vérifié · 🟡 fonctionne, avec des limites connues · 🟠 à moitié fait ou non vérifié · 🔴 non fait ou non fonctionnel. Rien n'est vert si cela n'a jamais tourné sur du vrai matériel.\n\n| Partie | État | Ce que le dépôt peut démontrer |\n| --- | :---: | --- |\n| Logiciel | 🟡 | Génère et vérifie des fichiers à partir de la spécification partagée ; aucun matériel impliqué. |\n| Tests | 🟢 | La suite de tests passe dans la CI à chaque push. |\n| Documentation | 🟡 | README en huit langues et documents de référence ; les traductions n'ont pas été relues par des locuteurs natifs. |\n",
-        "italian": "🟢 fatto e verificato · 🟡 funziona, con limiti noti · 🟠 a metà o non verificato · 🔴 non fatto o non funzionante. Nulla è verde se non ha mai girato su hardware reale.\n\n| Parte | Stato | Ciò che il repository può dimostrare |\n| --- | :---: | --- |\n| Software | 🟡 | Genera e verifica file dalla specifica condivisa; nessun hardware coinvolto. |\n| Test | 🟢 | La suite di test passa nella CI a ogni push. |\n| Documentazione | 🟡 | README in otto lingue e documenti di riferimento; le traduzioni non sono state riviste da madrelingua. |\n",
-        "japanese": "🟢 完了・検証済み · 🟡 動作するが既知の制限あり · 🟠 途中、または未検証 · 🔴 未実施または動作しない。実機で一度も動いていないものは緑になりません。\n\n| 項目 | 状態 | リポジトリが示せること |\n| --- | :---: | --- |\n| ソフトウェア | 🟡 | 共通仕様からファイルを生成・検証します。ハードウェアは関与しません。 |\n| テスト | 🟢 | テストスイートはプッシュごとに CI で通ります。 |\n| ドキュメント | 🟡 | 8 言語の README と参照ドキュメントがあります。翻訳はネイティブによるレビューを受けていません。 |\n",
-        "chinese": "🟢 已完成并已验证 · 🟡 可用，但有已知限制 · 🟠 做了一半或未验证 · 🔴 未完成或不能用。从未在真实硬件上运行过的内容不会是绿色。\n\n| 部分 | 状态 | 仓库能够证明的内容 |\n| --- | :---: | --- |\n| 软件 | 🟡 | 根据共用规范生成并检查文件；不涉及硬件。 |\n| 测试 | 🟢 | 每次推送时测试套件都会在 CI 中通过。 |\n| 文档 | 🟡 | 提供八种语言的 README 和参考文档；翻译未经母语者审阅。 |\n",
-        "portuguese": "🟢 feito e verificado · 🟡 funciona, com limites conhecidos · 🟠 a meio ou por verificar · 🔴 por fazer ou a não funcionar. Nada é verde se nunca correu em hardware real.\n\n| Parte | Estado | O que o repositório consegue demonstrar |\n| --- | :---: | --- |\n| Software | 🟡 | Gera e verifica ficheiros a partir da especificação partilhada; não envolve hardware. |\n| Testes | 🟢 | A bateria de testes passa na CI em cada envio. |\n| Documentação | 🟡 | README em oito línguas e documentos de referência; as traduções não foram revistas por falantes nativos. |\n"
-      },
-      "repos": [
-        "URTC-DOCS"
-      ]
     }
   ]
 }
