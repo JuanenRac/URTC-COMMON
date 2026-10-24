@@ -15,10 +15,19 @@ import readme_sections as rs
 ROOT = Path(__file__).resolve().parents[1]
 
 
+NL = chr(10)
+
+
 def test_the_specification_is_well_formed_and_every_listed_repository_has_a_section():
     spec = rs.load()
     assert rs.validate(spec) == []
-    assert [s["id"] for s in spec["sections"]] == ["updates", "first_flash", "heads", "compatibility"]
+    assert [s["id"] for s in spec["sections"] if not s["id"].startswith("status_")] == ["updates", "first_flash", "heads", "compatibility"]
+    # every repository of the family has its own status table, with the same rows lit in the same eight languages
+    status = [s for s in spec["sections"] if s["id"].startswith("status_")]
+    assert len(status) == 10 and all(len(s["repos"]) == 1 and s["emoji"] == "💡" for s in status)
+    for section in status:
+        assert all(("🟢" in row or "🟡" in row or "🟠" in row or "🔴" in row) for row in section["body"]["english"].splitlines()[4:])
+        assert len({body.count(NL) for body in section["body"].values()}) == 1
     assert "URTC-FLASHER" in rs.repos_of(spec) and "URTC" in rs.repos_of(spec)
     for section in spec["sections"]:
         assert set(section["heading"]) == set(rs.FILES) and set(section["body"]) == set(rs.FILES)
@@ -39,7 +48,7 @@ README = "# Title\n\nText.\n\n## 🔗 Related\n\nLinks.\n\n## 📜 LICENSE\n\nGP
 
 def test_the_sections_go_before_the_license_heading_once_and_nothing_else_changes():
     spec = rs.load()
-    wanted = rs.sections_of(spec, "URTC-FLASHER")
+    wanted = [s for s in rs.sections_of(spec, "URTC-FLASHER") if not s["id"].startswith("status_")]
     once = rs.render(README, wanted, "english")
     assert once.startswith("# Title\n\nText.\n\n## 🔗 Related\n\nLinks.\n\n<!-- urtc-section:updates -->\n## 🔄 How it updates")
     assert once.endswith("<!-- /urtc-section:compatibility -->\n\n## 📜 LICENSE\n\nGPL.\n")
@@ -102,3 +111,12 @@ def test_the_readme_files_of_the_repositories_next_to_this_one_carry_the_section
         pytest.skip("the repositories are not next to this one")
     found, _missing = rs.differences(spec, base)
     assert found == [], "\n".join(found[:12])
+
+
+def test_the_repositories_next_to_this_one_carry_the_current_sections():
+    """Where the family is checked out side by side, no README is behind the specification (skipped in a lone checkout)."""
+    spec = rs.load()
+    if not all((rs.ROOT.parent / repo).is_dir() for repo in rs.repos_of(spec)):
+        pytest.skip("the other repositories are not next to this one")
+    found, _missing = rs.differences(spec, rs.ROOT.parent)
+    assert found == []

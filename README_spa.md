@@ -127,6 +127,20 @@ Dónde leer más:
 
 **JuanenRac (Electro Hobby 3D)** · electrohobby3d@gmail.com
 
+<!-- urtc-section:status_common -->
+## 💡 Estado del proyecto
+
+🟢 hecho y verificado · 🟡 funciona, con límites conocidos · 🟠 a medias o sin verificar · 🔴 sin hacer o sin funcionar. Nada es verde si nunca corrió en hardware real.
+
+| Parte | Estado | Lo que el repositorio puede demostrar |
+| --- | :---: | --- |
+| Software | 🟡 | Código compartido que usan los demás programas; comprobado solo con pruebas en un PC. |
+| Pruebas | 🟢 | La batería de pruebas pasa en la CI en cada subida. |
+| Seguridad | 🟡 | Las versiones se firman con Ed25519 y se comprueban antes de usarlas; el manejo de las claves no lo ha revisado nadie más. |
+| Documentación | 🟡 | README en ocho idiomas y documentos de referencia; las traducciones no las ha revisado ningún hablante nativo. |
+
+<!-- /urtc-section:status_common -->
+
 ## 📜 LICENCIA
 
 GPL-3.0-or-later - véase [LICENSE](LICENSE).

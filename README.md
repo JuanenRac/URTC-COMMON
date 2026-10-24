@@ -127,6 +127,20 @@ Where to read more:
 
 **JuanenRac (Electro Hobby 3D)** · electrohobby3d@gmail.com
 
+<!-- urtc-section:status_common -->
+## 💡 Project status
+
+🟢 done and verified · 🟡 works, with known limits · 🟠 half done or not verified · 🔴 not done or not working. Nothing is green if it never ran on real hardware.
+
+| Part | Status | What the repository can show |
+| --- | :---: | --- |
+| Software | 🟡 | Shared code used by the other programs; checked only by tests on a PC. |
+| Tests | 🟢 | The test suite passes in the CI on every push. |
+| Security | 🟡 | Releases are signed with Ed25519 and checked before use; the key handling was not reviewed by anyone else. |
+| Documentation | 🟡 | README in eight languages and reference documents; the translations were not reviewed by native speakers. |
+
+<!-- /urtc-section:status_common -->
+
 ## 📜 LICENSE
 
 GPL-3.0-or-later - see [LICENSE](LICENSE).

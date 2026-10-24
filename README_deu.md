@@ -127,6 +127,20 @@ Wo man mehr liest:
 
 **JuanenRac (Electro Hobby 3D)** · electrohobby3d@gmail.com
 
+<!-- urtc-section:status_common -->
+## 💡 Projektstatus
+
+🟢 fertig und überprüft · 🟡 funktioniert, mit bekannten Grenzen · 🟠 halb fertig oder nicht überprüft · 🔴 nicht gemacht oder funktioniert nicht. Nichts ist grün, wenn es nie auf echter Hardware lief.
+
+| Teil | Status | Was das Repository belegen kann |
+| --- | :---: | --- |
+| Software | 🟡 | Gemeinsamer Code der anderen Programme; nur durch Tests am PC geprüft. |
+| Tests | 🟢 | Die Testsuite besteht bei jedem Push in der CI. |
+| Sicherheit | 🟡 | Releases werden mit Ed25519 signiert und vor der Nutzung geprüft; der Umgang mit den Schlüsseln wurde von niemand anderem geprüft. |
+| Dokumentation | 🟡 | README in acht Sprachen und Referenzdokumente; die Übersetzungen wurden nicht von Muttersprachlern geprüft. |
+
+<!-- /urtc-section:status_common -->
+
 ## 📜 LIZENZ
 
 GPL-3.0-or-later - siehe [LICENSE](LICENSE).
