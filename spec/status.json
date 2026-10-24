@@ -1,0 +1,92 @@
+{
+  "format": 1,
+  "projects": [
+    {
+      "repo": "URTC",
+      "title": "Tool head firmware",
+      "maturity": "functional",
+      "evidence": "host-test",
+      "pending": [
+        "no populated board exists yet, so it has never run on a real board"
+      ]
+    },
+    {
+      "repo": "URTC-FLASHER",
+      "title": "Flasher",
+      "maturity": "functional",
+      "evidence": "simulator",
+      "pending": [
+        "exercised only against a simulated bootloader, never against a real board"
+      ]
+    },
+    {
+      "repo": "URTC-GATEWAY",
+      "title": "Gateway in front of the bus",
+      "maturity": "scaffolding",
+      "evidence": "host-test",
+      "pending": [
+        "Host-tested only: no bus, adapter or board has been used"
+      ]
+    },
+    {
+      "repo": "URTC-TESTER",
+      "title": "Tester",
+      "maturity": "functional",
+      "evidence": "simulator",
+      "pending": [
+        "exercised only against fake transports and never against a real board"
+      ]
+    },
+    {
+      "repo": "URTC-WEB-STUDIO",
+      "title": "Web studio",
+      "maturity": "functional",
+      "evidence": "simulator",
+      "pending": [
+        "the Web Serial path has never been run against a USB-CAN adapter"
+      ]
+    },
+    {
+      "repo": "URTC-UPDATER",
+      "title": "Updater",
+      "maturity": "established",
+      "evidence": "host-test",
+      "pending": []
+    },
+    {
+      "repo": "URTC-SMART-RACK",
+      "title": "Smart rack",
+      "maturity": "functional",
+      "evidence": "host-test",
+      "pending": [
+        "Real CAN/F-RAM/GPIO I/O to drive tool tracking and pre-heating needs a real PCB, which does not exist yet"
+      ]
+    },
+    {
+      "repo": "URTC-VISION-TOOL",
+      "title": "Vision tool",
+      "maturity": "functional",
+      "evidence": "host-test",
+      "pending": [
+        "host-tested on a PC only and never run on a board or with a real sensor",
+        "real dual-modal capture and per-pixel calibration still need a real PCB and real cameras"
+      ]
+    },
+    {
+      "repo": "URTC-DOCS",
+      "title": "Documentation generator",
+      "maturity": "scaffolding",
+      "evidence": "host-test",
+      "pending": [
+        "Scaffolding on purpose: the nightly comparison of all the repositories has not yet been exercised over time"
+      ]
+    },
+    {
+      "repo": "URTC-COMMON",
+      "title": "Shared protocol and code",
+      "maturity": "scaffolding",
+      "evidence": "host-test",
+      "pending": []
+    }
+  ]
+}

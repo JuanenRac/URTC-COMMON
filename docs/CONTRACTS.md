@@ -35,6 +35,8 @@ All multi-byte fields are big-endian.
 | `src/urtc_common/protocol.py` | `tools/generate_constants.py` | the same, and the vectors run through Python |
 | `docs/PROTOCOL_TABLE.md` | `tools/generate_constants.py` | `--check` |
 | The generated blocks of `docs/CANBUS.TXT` of the firmware repository | `tools/generate_canbus_doc.py` | `--check`, `tests/test_canbus_doc.py`, and a digest in each marker that the firmware repository tests |
+| The tool table of `docs/TOOLS.TXT` of the firmware repository | `tools/generate_tools_doc.py` | `--check` (also the order and the expansion board named by the prose), `tests/test_tools_doc.py`, and a digest in the marker that the firmware repository tests |
+| `docs/STATUS.md` (what has run and what is pending) | `tools/status_table.py` | `--check`, `--check --siblings` in the nightly comparison, `tests/test_status_table.py` |
 | The wheel, the source archive and `urtc_can_ids.h` of a release | `tools/make_release_artifacts.py` | `verify`, `reproduce`, `smoke`, `tests/test_release_artifacts.py` (see `docs/PACKAGE.md`) |
 | `conformance/can_vectors.json` | `tools/make_conformance.py` | `--check` and both runners |
 
