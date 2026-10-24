@@ -58,6 +58,7 @@ SETS = {
     "fuzz": ["src/urtc_common/fuzz.py", "conformance/fuzz_corpus.txt"],
     "virtual_board": ["src/urtc_common/virtual_board.py"],
     "update": ["src/urtc_common/self_update.py", "src/urtc_common/update_service.py", "src/urtc_common/update_controller.py", "src/urtc_common/launcher.py"],
+    "signing": ["src/urtc_common/record_signing.py"],
     "update_qt": ["src/urtc_common/update_qt.py", "src/urtc_common/update_strings.py"],
     "update_qml": ["qml/UpdateDialog.qml"],
     "package_tool": ["tools/make_update_package.py"],
