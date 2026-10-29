@@ -98,7 +98,7 @@ def make_workspace(tmp_path: Path, *, flasher_fw="0.3.9", web_fw="0.4.1", head="
         folder.mkdir(parents=True)
         if version:
             (folder / f"URTC_MAIN_FIRMWARE_v{version}.bin").write_bytes(b"x")
-            (folder / f"URTC_MAIN_FIRMWARE_v0.1.0.bin").write_bytes(b"x")
+            (folder / "URTC_MAIN_FIRMWARE_v0.1.0.bin").write_bytes(b"x")
     return tmp_path
 
 
