@@ -4,6 +4,7 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The README follows the universal layout in the eight languages:** the sections are in the fixed order with their fixed names, the Architecture and the Repository Structure are drawn from `docs/architecture.json` and `docs/structure.json` by `tools/make_architecture.py` and `tools/make_structure.py`, and the sections for tests, build, roadmap, languages and contributing are new.
 - **The layout of the README is checked in the CI:** the validator runs `tools/universal_readme_check.py` and lists, as a warning, what differs from the universal layout of the README.
 - **Project status is the second section of the README,** right after At a glance, in the eight languages.
 - **The shared README sections go where the universal layout wants them:** Project status right after At a glance with the traffic-light icon, and How it updates, Several tool heads on one bus, First run without hardware and Requirements & compatibility as parts of Architecture, Features and Quick start once a README has those sections (before that they stay where they were); the eight languages of a repository always agree on the place.

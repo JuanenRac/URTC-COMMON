@@ -13,6 +13,7 @@
   <img src="https://img.shields.io/badge/Format-JSON%20%2B%20Python-083fa1.svg" alt="Format">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
   <img src="https://img.shields.io/badge/Version-0.0.8-0f6cbd.svg" alt="Version">
+  <img src="https://img.shields.io/badge/Tests-713-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
 
@@ -30,9 +31,11 @@
 |---|---|
 | Versão | `0.0.8` |
 | Maturidade | Estrutura inicial |
-| Testes | 718 |
+| Testes | 713 |
 | Tecnologia | JSON / Python |
 | Em hardware real | Só simulado: testado com emuladores, dublês de teste ou simuladores; não há registo de execução em hardware real para esta versão |
+
+**Ir para:** [Visão geral](#-visão-geral) · [Arquitetura](#-arquitetura) · [Início rápido](#-início-rápido) · [Testes](#-testes) · [Estrutura](#-estrutura-do-repositório) · [Relacionados](#-projetos-relacionados)
 
 <!-- urtc-section:status_common -->
 ## 🚦 Estado do projeto
@@ -63,7 +66,7 @@ O protocolo CAN da cabeça de ferramenta, escrito uma só vez como dados, e tudo
 * A camada de trama e o limitador de cadência das ligações série: `firmware_base/urtc_frame.h` (byte inicial, versão, comprimento, completude e CRC-8 de uma trama cujo byte de comprimento está numa posição dada, e o caminho inverso) e `firmware_base/urtc_rate_limiter.h` (o intervalo mínimo entre mensagens aceites, através do retorno a zero do contador de milissegundos), com uma referência em Python (`frame_layer.py`), vetores de cadência e um teste em C que sujeita ambos os cabeçalhos a cada vetor de análise do rack e do sensor de visão (copiados com `vendor_copy.py --set firmware_frame`)
 * Um glossário das expressões que vários programas dizem: `spec/i18n/glossary.json` nomeia cada uma uma só vez, nas oito línguas, e lista as chaves do flasher, do tester, do estúdio web e do updater que a têm de dizer assim (Fechar, Atualizar, Limpar, PID do aquecedor, Pesquisa de portas ...); `tools/i18n_glossary.py` verifica o ficheiro, verifica os programas ao lado deste repositório (maiúsculas, acentos e pontuação são perdoados, uma palavra diferente não) e reescreve as linhas dos ficheiros `.lng` e `.json` que diferem; a comparação noturna executa-o
 * Uma só fonte para os ficheiros de idioma: `spec/i18n/catalog/<programa>.json` guarda todos os textos do flasher, do tester, do web studio e do atualizador nos oito idiomas (um texto que o glossário nomeia é uma referência a ele); `tools/i18n_generate.py sync` escreve os ficheiros `.lng`, `.json` e `.py` de cada programa com um lock (`urtc_i18n.lock.json`) e um teste próprio, e `check` (também na comparação noturna) falha quando um ficheiro não é o que o catálogo gera.
-* O guia rápido dentro dos programas e as secções de README que partilham: `help_text.py` (cinco passos curtos para cada um de flasher, tester e atualizador nas oito línguas), `help_qt.py` e `qml/HelpDialog.qml` (a janela de ajuda; copiados com `--set help` e `--set help_qml`), e `spec/readme/sections.json` com `tools/readme_sections.py` («Como se atualiza», «Primeira gravação sem hardware» e «Compatibilidade», escritas uma só vez nas oito línguas e colocadas entre comentários marcadores antes do título da licença dos ficheiros README dos repositórios que as listam; `check` corre na comparação noturna)
+* O guia rápido dentro dos programas e as secções de README que partilham: `help_text.py` (cinco passos curtos para cada um de flasher, tester e atualizador nas oito línguas), `help_qt.py` e `qml/HelpDialog.qml` (a janela de ajuda; copiados com `--set help` e `--set help_qml`), e `spec/readme/sections.json` com `tools/readme_sections.py` (o Estado do projeto de cada programa e as partes que vários README partilham, escritas uma só vez nas oito línguas e colocadas entre comentários marcadores no seu lugar da estrutura; `check` corre na comparação noturna)
 * A asserção dos testes de host do firmware: `firmware_base/urtc_test.h` contém `TEST_ASSERT`, a macro que o firmware do rack, da ferramenta de visão e da cabeça definia três vezes; cada repositório copia-a com `vendor_copy.py --set firmware_test` e mantém o seu próprio `test_runner.h` com as suas suites.
 * [Vetores de conformidade](conformance/can_vectors.json): os bytes que toda a implementação deve reproduzir: cada estrutura, as recusas e os fluxos SLCAN.
 * [Perfis de ferramenta](spec/tools.json): os 25 perfis de ferramenta (limites, watchdog, pinos, placa de expansão) como dados; o `generate_tools.py` escreve as tabelas de TypeScript e Python e [a tabela de ferramentas](docs/TOOLS_TABLE.md). Também aqui: o leitor da caixa negra com exportação para CSV e JSON (`blackbox.py`), o simulador do rack (`rack_sim.py`), tramas para testar uma placa com fuzzing, criadas a partir da especificação (`fuzz.py`) e a [tabela de compatibilidade](docs/COMPATIBILITY.md) de uma versão, criada a partir de `spec/versions.json`; e a [tabela de estado](docs/STATUS.md) do que já correu e do que ainda falta, criada a partir dos manifestos dos repositórios (`status_table.py`).
@@ -77,25 +80,15 @@ O protocolo CAN da cabeça de ferramenta, escrito uma só vez como dados, e tudo
 
 O URTC-COMMON é o lugar onde o protocolo CAN da cabeça de ferramenta é escrito uma só vez, como dados, para que o firmware, o URTC-FLASHER, o URTC-TESTER e o URTC-WEB-STUDIO deixem de manter quatro leituras distintas do mesmo texto. Contém a especificação, o que dela se gera, os vetores que toda a implementação deve reproduzir e a camada de transporte que as duas ferramentas Python partilham. Por si só não altera o comportamento de nenhuma delas: cada repositório adota-o passo a passo (ver docs/MIGRATION.md).
 
-## 📂 Estrutura do repositório
+## 🏛️ Arquitetura
 
-```text
-URTC-COMMON/
-├── docs/         contratos, formato da especificação, guia de migração, o desenho multinó, o pacote e as tabelas geradas (protocolo, ferramentas, estado, compatibilidade)
-├── spec/         a especificação (can_protocol.json) e o seu esquema JSON, os perfis de ferramenta, os dados de versão e estado e o catálogo de textos dos programas (i18n/)
-├── generated/    o cabeçalho C e o módulo TypeScript, escritos a partir da especificação, e os cabeçalhos de vetores para o firmware
-├── firmware_base/ peças C partilhadas pelos repositórios de firmware (o CRC-8, a camada de tramas, o limitador de taxa e a macro de teste)
-├── conformance/  os vetores partilhados
-├── qml/          janelas Qt Quick partilhadas pelos programas (guia rápido, cabeças de ferramenta, procura de atualizações)
-├── src/          o pacote Python: protocolo gerado, tramas, codec SLCAN, transportes, versões, executor de vetores, placa virtual, modelos do rack e dos nós, autoatualização, ajuda e a janela das cabeças de ferramenta
-├── tools/        geradores com --check, vendor_copy.py e as verificações de CI partilhadas do ecossistema
-├── tests/        testes unitários, a comparação com os repositórios ao lado deste e a execução dos vetores em TypeScript
-├── images/       o banner
-├── build.sh / build.bat, build-test.sh / build-test.bat, run.sh / run.bat
-└── urtc.project.json, pyproject.toml, requirements-dev.lock, ruff.toml, CHANGELOG.md, LICENSE
-```
+<p align="center">
+  <img src="images/architecture.svg" alt="Arquitetura de URTC-COMMON: quem o usa, o que contém e de que depende" width="100%">
+</p>
 
-## 🛠️ COMPILAÇÃO E EXECUÇÃO
+Como as partes deste repositório se encaixam: quem o usa, o que contém e de que depende. A imagem é desenhada a partir de `docs/architecture.json` e verificada com o código.
+
+## 🚀 Início rápido
 
 **Requisitos:** Python 3.10 ou superior; pytest e jsonschema para os testes; Node 22.18 ou superior para executar o TypeScript gerado contra os vetores (opcional)
 
@@ -108,7 +101,66 @@ python -m pytest tests -q                            # os testes unitários e a 
 python -m mypy                                       # a verificação de tipos de urtc_common e urtc_ui
 ```
 
-`build.sh` / `build.bat` sobem a versão um passo (o conta-quilómetros do ecossistema), instalam o pacote e executam os testes; `build-test.sh` / `build-test.bat` verificam sem alterar nenhuma versão; `run.sh` / `run.bat` iniciam a linha de comandos (`conformance`, `describe`, `decode`, `slcan`).
+## 🧪 Testes
+
+O conjunto tem 713 testes (`python -m pytest tests -q`). Verificam a especificação contra o seu esquema, os ficheiros C, TypeScript e Python gerados contra o que os geradores escrevem, os vetores de conformidade em Python, em TypeScript com Node e em C com um compilador do computador, o codec SLCAN e os transportes com simulações, a placa virtual, o fluxo de autoatualização assinada e a comparação com os repositórios obtidos ao lado deste. Alguns testes são ignorados quando falta uma ferramenta opcional (Node, um compilador de C, PySide6) ou um repositório vizinho. `python -m mypy` verifica os tipos do pacote.
+
+## 🏗️ Compilação e publicação
+
+`build.sh` / `build.bat` instalam o pacote e executam os testes; `build-test.sh` / `build-test.bat` verificam sem alterar nenhuma versão; `run.sh` / `run.bat` arrancam a linha de comandos (`conformance`, `describe`, `decode`, `slcan`). Cada release anexa uma roda Python assinada (`urtc-common`, que não está no PyPI), um arquivo de código-fonte assinado e o cabeçalho C gerado assinado, construídos de forma reprodutível por `tools/make_release_artifacts.py` (`build`, `verify`, `reproduce`, `smoke`); veja [o guia do pacote](docs/PACKAGE.md).
+
+## 📂 Estrutura do repositório
+
+<p align="center">
+  <img src="images/repository-structure.svg" alt="Estrutura do repositório URTC-COMMON" width="100%">
+</p>
+
+<details>
+<summary>Versão em texto da árvore</summary>
+
+```text
+URTC-COMMON/
+├── spec/                                            a especificação, os perfis de ferramenta, as versões e o catálogo de textos
+├── src/urtc_common/                                 o pacote Python: protocolo, SLCAN, transportes, placa virtual e autoatualização
+├── tools/                                           geradores com --check, vendor_copy.py e as verificações de CI partilhadas
+├── docs/                                            contratos, formato, guia de migração e tabelas geradas
+├── conformance/                                     os vetores partilhados
+├── generated/                                       cabeçalho C, módulo TypeScript e cabeçalhos de vetores
+├── firmware_base/                                   partes em C partilhadas pelos repositórios de firmware
+├── qml/                                             janelas Qt Quick partilhadas pelos programas
+├── tests/                                           testes unitários e a comparação com os repositórios vizinhos
+├── .github/                                         fluxo de CI e modelos de issues e pull requests
+├── images/                                          faixa e imagens deste README
+├── build.sh build.bat                               scripts de compilação
+├── build-test.sh build-test.bat                     scripts de compilação e testes que não alteram nada no repositório
+├── test.sh test.bat                                 executam os testes
+├── run.sh run.bat                                   arrancam o programa
+├── urtc.project.json                                manifesto: versão, papel, maturidade e comando de compilação
+├── CHANGELOG.md                                     o que mudou em cada versão
+├── SECURITY.md SUPPORT.md LICENSE                   política de segurança, suporte e licença
+├── CONTRIBUTING.md CODE_OF_CONDUCT.md               como contribuir e código de conduta
+├── .gitattributes .gitignore                        definições do Git
+├── bump_version.py bump_manifest_version.py         scripts que sobem a versão
+└── pyproject.toml requirements-dev.lock ruff.toml   pacote, ferramentas fixadas e definições de lint
+```
+
+</details>
+
+## 🗺️ Roteiro e limites conhecidos
+
+**Limites conhecidos hoje**
+
+* Nada disto foi executado numa placa nem num adaptador CAN: os transportes são testados com simulações, e a especificação diz, para cada identificador, que implementações o definem, pelo que as lacunas se veem.
+* O firmware e os transportes mantêm as suas próprias cópias do protocolo até cada um migrar; hoje só o URTC-FLASHER, o URTC-TESTER e o URTC-WEB-STUDIO usam este repositório.
+* Os testes que comparam a especificação com os outros repositórios leem o seu texto quando estão obtidos ao lado deste, e são ignorados caso contrário.
+
+**A seguir**
+
+* Levar cada repositório para a especificação passo a passo ([guia de migração](docs/MIGRATION.md)).
+
+## 🌍 Idiomas
+
+O README e os textos existem em inglês, espanhol, francês, italiano, alemão, chinês, japonês e português europeu.
 
 ## 🔗 Projetos relacionados
 
@@ -124,7 +176,7 @@ O URTC é feito de repositórios independentes, cada um com a sua versão, os se
 * **[ARMOR-DOCS](https://github.com/JuanenRac/ARMOR-DOCS)** - a mesma ideia para o ecossistema de segurança A.R.M.O.R.
 * **[JuanenRac](https://github.com/JuanenRac/JuanenRac)** - o perfil e o painel de estado de todos os ecossistemas
 
-## 📚 Documentação e comunidade
+## 📚 Documentação
 
 Onde ler mais:
 
@@ -136,6 +188,13 @@ Onde ler mais:
 * [Registo de alterações deste repositório](CHANGELOG.md)
 * [Licença (GPL-3.0-or-later)](LICENSE)
 * Perguntas, ideias e relatórios: electrohobby3d@gmail.com
+
+## 🤝 Contribuir e comunidade
+
+* Antes de um pull request execute `URTC_CI=1 python tools/ci_validate.py`: tem de passar. Veja [CONTRIBUTING.md](CONTRIBUTING.md) e o [código de conduta](CODE_OF_CONDUCT.md).
+* O README existe em oito idiomas: uma alteração ao texto faz-se nos oito ficheiros, e as secções partilhadas com outros repositórios são escritas por `tools/readme_sections.py` do URTC-COMMON.
+* Não descreva como a funcionar numa placa aquilo que só foi compilado.
+* Comunique uma vulnerabilidade em privado: [SECURITY.md](SECURITY.md). Perguntas, ideias e relatórios: electrohobby3d@gmail.com ([SUPPORT.md](SUPPORT.md)).
 
 ## 👤 AUTOR
 

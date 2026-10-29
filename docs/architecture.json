@@ -1,0 +1,225 @@
+{
+  "repo": "URTC-COMMON",
+  "ecosystem": "urtc",
+  "tagline": "The CAN protocol of the tool head written once as data, with its generators, vectors and shared Python parts.",
+  "description": "URTC-COMMON holds the specification of the CAN protocol (spec/can_protocol.json), generators that write the C header, the TypeScript module and the Python module, conformance vectors, the Python package with the SLCAN codec, the transports, a virtual board and the signed self-update flow, and vendor_copy.py, which puts checked copies into the other repositories. Everything is tested on a computer; nothing has been run against a real board or a CAN adapter.",
+  "columns": [
+    "WHO USES IT",
+    "THIS REPOSITORY",
+    "WHAT IT TOUCHES"
+  ],
+  "nodes": [
+    {
+      "id": "py",
+      "column": 0,
+      "level": "external",
+      "title": "FLASHER, TESTER",
+      "lines": [
+        "Python programs: ids, vectors,",
+        "framing and transports as",
+        "copies kept equal by a lock"
+      ]
+    },
+    {
+      "id": "web",
+      "column": 0,
+      "level": "external",
+      "title": "URTC-WEB-STUDIO",
+      "lines": [
+        "the generated TypeScript module",
+        "and the shared vectors"
+      ]
+    },
+    {
+      "id": "fw",
+      "column": 0,
+      "level": "external",
+      "title": "Firmware and rack",
+      "lines": [
+        "CRC-8, frame layer and rate",
+        "limiter headers; the firmware",
+        "keeps its own protocol copy"
+      ]
+    },
+    {
+      "id": "spec",
+      "column": 1,
+      "level": "contract",
+      "title": "can_protocol.json",
+      "lines": [
+        "every identifier with direction,",
+        "length rule, layout, gates and",
+        "who implements it"
+      ],
+      "code": [
+        "spec/can_protocol.json",
+        "spec/can_protocol.schema.json"
+      ]
+    },
+    {
+      "id": "gen",
+      "column": 1,
+      "level": "tested",
+      "title": "Generators",
+      "lines": [
+        "C header, TypeScript, Python and",
+        "tables; --check compares them",
+        "with what is on disk"
+      ],
+      "code": [
+        "tools/generate_constants.py",
+        "tools/make_conformance.py"
+      ]
+    },
+    {
+      "id": "lib",
+      "column": 1,
+      "level": "tested",
+      "title": "urtc_common package",
+      "lines": [
+        "framing, SLCAN, transports,",
+        "virtual board, models of",
+        "the rack and the nodes"
+      ],
+      "code": [
+        "src/urtc_common/slcan.py",
+        "src/urtc_common/transports.py",
+        "src/urtc_common/virtual_board.py"
+      ]
+    },
+    {
+      "id": "vec",
+      "column": 1,
+      "level": "contract",
+      "title": "Conformance vectors",
+      "lines": [
+        "the bytes every implementation",
+        "must reproduce, refusals and",
+        "SLCAN streams included"
+      ],
+      "code": [
+        "conformance/can_vectors.json"
+      ]
+    },
+    {
+      "id": "vend",
+      "column": 1,
+      "level": "contract",
+      "title": "vendor_copy.py",
+      "lines": [
+        "puts parts into another repository",
+        "with a lock file and checks that",
+        "the copy was not edited"
+      ],
+      "code": [
+        "tools/vendor_copy.py"
+      ]
+    },
+    {
+      "id": "upd",
+      "column": 1,
+      "level": "tested",
+      "title": "Self-update flow",
+      "lines": [
+        "SHA-256 and Ed25519 check,",
+        "confirmation, rollback; the",
+        "caller passes the network"
+      ],
+      "code": [
+        "src/urtc_common/self_update.py",
+        "src/urtc_common/update_service.py"
+      ]
+    },
+    {
+      "id": "can",
+      "column": 2,
+      "level": "untested",
+      "title": "CAN bus, SLCAN adapter",
+      "lines": [
+        "transports are tested with fakes;",
+        "never run on a real adapter",
+        "or a real board"
+      ]
+    },
+    {
+      "id": "gh",
+      "column": 2,
+      "level": "external",
+      "title": "GitHub releases",
+      "lines": [
+        "signed update packages; the",
+        "fetch is passed in by the",
+        "program that calls the flow"
+      ]
+    },
+    {
+      "id": "doc",
+      "column": 2,
+      "level": "external",
+      "title": "URTC docs/CANBUS.TXT",
+      "lines": [
+        "reference tables written from",
+        "the specification, prose left",
+        "alone"
+      ],
+      "code": [
+        "tools/generate_canbus_doc.py"
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "from": "py",
+      "to": "vend",
+      "label": "copies",
+      "level": "tested"
+    },
+    {
+      "from": "web",
+      "to": "gen",
+      "label": "TypeScript",
+      "level": "tested"
+    },
+    {
+      "from": "fw",
+      "to": "vec",
+      "label": "C tables",
+      "level": "tested"
+    },
+    {
+      "from": "spec",
+      "to": "gen",
+      "level": "tested"
+    },
+    {
+      "from": "gen",
+      "to": "vec",
+      "level": "tested"
+    },
+    {
+      "from": "lib",
+      "to": "can",
+      "label": "SLCAN",
+      "level": "untested"
+    },
+    {
+      "from": "upd",
+      "to": "gh",
+      "label": "signed zip",
+      "level": "tested"
+    },
+    {
+      "from": "gen",
+      "to": "doc",
+      "label": "tables",
+      "level": "tested"
+    }
+  ],
+  "legend": {
+    "tested": "covered by tests on a computer",
+    "contract": "the source of the rest",
+    "untested": "has not run on real hardware",
+    "external": "another repository or a device"
+  },
+  "footer": "No board and no CAN adapter has run any of this yet."
+}

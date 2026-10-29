@@ -13,6 +13,7 @@
   <img src="https://img.shields.io/badge/Format-JSON%20%2B%20Python-083fa1.svg" alt="Format">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
   <img src="https://img.shields.io/badge/Version-0.0.8-0f6cbd.svg" alt="Version">
+  <img src="https://img.shields.io/badge/Tests-713-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
 
@@ -30,9 +31,11 @@
 |---|---|
 | 版本 | `0.0.8` |
 | 成熟度 | 雏形 |
-| 测试 | 718 |
+| 测试 | 713 |
 | 技术栈 | JSON / Python |
 | 真实硬件 | 仅模拟：使用模拟器、替身或仿真测试；此版本没有在真实硬件上运行的记录 |
+
+**跳转到：** [概述](#-概述) · [架构](#-架构) · [快速开始](#-快速开始) · [测试](#-测试) · [结构](#-仓库结构) · [相关项目](#-相关项目)
 
 <!-- urtc-section:status_common -->
 ## 🚦 项目状态
@@ -48,7 +51,7 @@
 
 <!-- /urtc-section:status_common -->
 
-## 🎯 简介
+## 🎯 概述
 
 工具头的 CAN 协议只写一次，以数据形式保存，并由它派生出所有内容：
 
@@ -63,7 +66,7 @@
 * 串行链路的帧层与速率限制器：`firmware_base/urtc_frame.h`（长度字节位于给定位置的帧的起始字节、版本、长度、完整性和 CRC-8 判定，以及反向组帧）和 `firmware_base/urtc_rate_limiter.h`（已接受消息之间的最小间隔，可跨越毫秒计数器的回绕），附 Python 参考实现（`frame_layer.py`）、速率向量，以及一个把两个头文件对照机架和视觉传感器的每个解析向量进行检验的 C 测试（用 `vendor_copy.py --set firmware_frame` 复制）
 * 多个程序共用语句的术语表：`spec/i18n/glossary.json` 用八种语言把每条语句只定义一次，并列出必须这样表述的刷写器、测试器、网页工作室和更新器的键（关闭、刷新、清除、加热器 PID、端口搜索 等）；`tools/i18n_glossary.py` 检查该文件，检查与本仓库相邻的程序（大小写、重音和标点的差异可以容忍，不同的词则不行），并改写 `.lng` 和 `.json` 文件中有差异的行；夜间比对也会运行它
 * 语言文件的唯一来源：`spec/i18n/catalog/<程序>.json` 以八种语言保存刷写器、测试器、Web 工作室和更新器的所有文本（术语表列出的文本是对它的引用）；`tools/i18n_generate.py sync` 为每个程序写出 `.lng`、`.json` 和 `.py` 文件，并附带锁文件（`urtc_i18n.lock.json`）和自己的测试，`check`（也在夜间比较中运行）会在文件与目录生成的内容不一致时失败。
-* 程序内的快速指南与共享的 README 章节：`help_text.py`（为刷写器、测试器和更新器各写的五个简短步骤，八种语言）、`help_qt.py` 和 `qml/HelpDialog.qml`（帮助窗口；用 `--set help` 和 `--set help_qml` 复制），以及 `spec/readme/sections.json` 与 `tools/readme_sections.py`（“如何更新”“无硬件的首次刷写”和“兼容性”，用八种语言只写一次，并用标记注释放在列出它们的仓库的 README 文件的许可证标题之前；`check` 在夜间比对中运行）
+* 程序内的快速指南与共享的 README 章节：`help_text.py`（为刷写器、测试器和更新器各写的五个简短步骤，八种语言）、`help_qt.py` 和 `qml/HelpDialog.qml`（帮助窗口；用 `--set help` 和 `--set help_qml` 复制），以及 `spec/readme/sections.json` 与 `tools/readme_sections.py`（各程序的项目状态以及多个 README 共用的部分，用八种语言只写一次，并用标记注释放在结构中的相应位置；`check` 在夜间比对中运行）
 * 固件主机测试的断言：`firmware_base/urtc_test.h` 包含 `TEST_ASSERT`，即工具架、视觉工具和工具头固件原先各自定义了三次的宏；各仓库用 `vendor_copy.py --set firmware_test` 复制它，并保留各自声明测试套件的 `test_runner.h`。
 * [一致性向量](conformance/can_vectors.json): 每个实现都必须重现的字节：每种布局、被拒绝的输入和 SLCAN 数据流。
 * [工具配置](spec/tools.json)：25 个工具配置（限值、看门狗、引脚、扩展板）以数据形式保存；`generate_tools.py` 生成 TypeScript 和 Python 表格以及[工具表](docs/TOOLS_TABLE.md)。此外还有：支持导出 CSV 和 JSON 的黑匣子读取器（`blackbox.py`）、机架模拟器（`rack_sim.py`）、根据规范生成的用于板卡模糊测试的帧（`fuzz.py`），以及由 `spec/versions.json` 生成的发布[兼容性表](docs/COMPATIBILITY.md)，以及由各仓库清单生成的、说明已运行内容与尚未完成内容的[状态表](docs/STATUS.md)（`status_table.py`）。
@@ -77,25 +80,15 @@
 
 URTC-COMMON 是工具头 CAN 协议以数据形式只写一次的地方，这样固件、URTC-FLASHER、URTC-TESTER 和 URTC-WEB-STUDIO 就不必再各自维护同一份文字的四种解读。它包含规范、由规范生成的内容、每个实现都必须重现的向量，以及两个 Python 工具共用的传输层。它本身不会改变其中任何一个的行为：各仓库逐步采用它（参见 docs/MIGRATION.md）。
 
-## 📂 仓库结构
+## 🏛️ 架构
 
-```text
-URTC-COMMON/
-├── docs/         契约、规范格式、迁移指南、多节点设计、软件包，以及生成的表（协议、工具、状态、兼容性）
-├── spec/         规范（can_protocol.json）及其 JSON Schema、工具配置、版本与状态数据，以及各程序的文本目录（i18n/）
-├── generated/    由规范生成的 C 头文件和 TypeScript 模块，以及供固件使用的向量头文件
-├── firmware_base/ 各固件仓库共用的 C 部件（CRC-8、帧层、速率限制器和测试宏）
-├── conformance/  共享向量
-├── qml/          各程序共用的 Qt Quick 窗口（快速指南、工具头、检查更新）
-├── src/          Python 包：生成的协议、帧、SLCAN 编解码、传输层、版本、向量运行器、虚拟板、机架与节点的模型、自我更新、帮助以及工具头窗口
-├── tools/        带 --check 的生成器、vendor_copy.py 以及生态系统通用的 CI 检查
-├── tests/        单元测试、与相邻仓库的比较，以及向量的 TypeScript 运行
-├── images/       横幅
-├── build.sh / build.bat, build-test.sh / build-test.bat, run.sh / run.bat
-└── urtc.project.json, pyproject.toml, requirements-dev.lock, ruff.toml, CHANGELOG.md, LICENSE
-```
+<p align="center">
+  <img src="images/architecture.svg" alt="URTC-COMMON 的架构：谁在使用、包含什么、依赖什么" width="100%">
+</p>
 
-## 🛠️ 构建与运行
+本仓库各部分如何协作：谁在使用它、它包含什么、它依赖什么。图片由 `docs/architecture.json` 绘制，并与代码核对。
+
+## 🚀 快速开始
 
 **要求：** Python 3.10 或更高版本；测试需要 pytest 和 jsonschema；用生成的 TypeScript 运行向量需要 Node 22.18 或更高版本（可选）
 
@@ -108,7 +101,66 @@ python -m pytest tests -q                            # 单元测试以及与相�
 python -m mypy                                       # urtc_common 和 urtc_ui 的类型检查
 ```
 
-`build.sh` / `build.bat` 把版本提升一步（生态系统的里程表方案），安装软件包并运行测试；`build-test.sh` / `build-test.bat` 在不更改任何版本的情况下检查；`run.sh` / `run.bat` 启动命令行（`conformance`、`describe`、`decode`、`slcan`）。
+## 🧪 测试
+
+测试套件共有 713 个测试（`python -m pytest tests -q`）。它们检查：规范是否符合其模式；生成的 C、TypeScript 和 Python 文件是否与生成器写出的一致；用 Python、用 Node 运行的 TypeScript 和用主机编译器编译的 C 来核对一致性向量；SLCAN 编解码器和使用模拟对象的传输层；虚拟板；经过签名的自更新流程；以及与放在本仓库旁边的各仓库的比较。缺少可选工具（Node、C 编译器、PySide6）或相邻仓库时，部分测试会被跳过。`python -m mypy` 检查软件包的类型。
+
+## 🏗️ 构建与发布
+
+`build.sh` / `build.bat` 安装软件包并运行测试；`build-test.sh` / `build-test.bat` 只检查，不改变任何版本；`run.sh` / `run.bat` 启动命令行（`conformance`、`describe`、`decode`、`slcan`）。每个发布版都附带经过签名的 Python wheel（`urtc-common`，不在 PyPI 上）、签名的源码压缩包和签名的生成 C 头文件，由 `tools/make_release_artifacts.py`（`build`、`verify`、`reproduce`、`smoke`）可复现地构建；参见[软件包指南](docs/PACKAGE.md)。
+
+## 📂 仓库结构
+
+<p align="center">
+  <img src="images/repository-structure.svg" alt="URTC-COMMON 的仓库结构" width="100%">
+</p>
+
+<details>
+<summary>目录树的文本版</summary>
+
+```text
+URTC-COMMON/
+├── spec/                                            规范、工具配置、版本数据和文本目录
+├── src/urtc_common/                                 Python 包：协议、SLCAN、传输、虚拟板、自更新
+├── tools/                                           带 --check 的生成器、vendor_copy.py 以及共用的 CI 检查
+├── docs/                                            合约、格式、迁移指南和生成的表格
+├── conformance/                                     共用向量
+├── generated/                                       C 头文件、TypeScript 模块和向量头文件
+├── firmware_base/                                   固件仓库共用的 C 代码
+├── qml/                                             各程序共用的 Qt Quick 窗口
+├── tests/                                           单元测试及与相邻仓库的比较
+├── .github/                                         CI 工作流以及 Issue 和 Pull Request 模板
+├── images/                                          横幅和本 README 的图片
+├── build.sh build.bat                               构建脚本
+├── build-test.sh build-test.bat                     构建并测试的脚本，不会修改仓库内容
+├── test.sh test.bat                                 运行测试
+├── run.sh run.bat                                   启动程序
+├── urtc.project.json                                清单：版本、角色、成熟度和构建命令
+├── CHANGELOG.md                                     每个版本的变更
+├── SECURITY.md SUPPORT.md LICENSE                   安全政策、支持和许可证
+├── CONTRIBUTING.md CODE_OF_CONDUCT.md               如何参与贡献和行为准则
+├── .gitattributes .gitignore                        Git 设置
+├── bump_version.py bump_manifest_version.py         提升版本号的脚本
+└── pyproject.toml requirements-dev.lock ruff.toml   软件包、锁定的工具和 lint 设置
+```
+
+</details>
+
+## 🗺️ 路线图与已知限制
+
+**目前已知的限制**
+
+* 这里的一切都没有在真实的板子或 CAN 适配器上运行过：传输层用模拟对象测试，规范会为每个标识符说明由哪些实现定义，因此缺口一目了然。
+* 固件和传输层在各自迁移之前仍保留自己的协议副本；目前只有 URTC-FLASHER、URTC-TESTER 和 URTC-WEB-STUDIO 使用本仓库。
+* 把规范与其他仓库比较的测试，在那些仓库被检出到本仓库旁边时读取其文本，否则跳过。
+
+**下一步**
+
+* 让每个仓库逐步迁移到规范上（[迁移指南](docs/MIGRATION.md)）。
+
+## 🌍 语言
+
+README 和文本提供英语、西班牙语、法语、意大利语、德语、汉语、日语和欧洲葡萄牙语版本。
 
 ## 🔗 相关项目
 
@@ -124,7 +176,7 @@ URTC 由相互独立的仓库组成，每个仓库都有自己的版本、测试
 * **[ARMOR-DOCS](https://github.com/JuanenRac/ARMOR-DOCS)** - 同样的思路，用于 A.R.M.O.R. 安防生态
 * **[JuanenRac](https://github.com/JuanenRac/JuanenRac)** - 所有生态的个人主页和状态面板
 
-## 📚 文档与社区
+## 📚 文档
 
 更多阅读：
 
@@ -136,6 +188,13 @@ URTC 由相互独立的仓库组成，每个仓库都有自己的版本、测试
 * [本仓库的变更日志](CHANGELOG.md)
 * [许可证（GPL-3.0-or-later）](LICENSE)
 * 问题、想法和报告：electrohobby3d@gmail.com
+
+## 🤝 参与贡献与社区
+
+* 提交 Pull Request 之前请运行 `URTC_CI=1 python tools/ci_validate.py`：必须通过。参见 [CONTRIBUTING.md](CONTRIBUTING.md) 和[行为准则](CODE_OF_CONDUCT.md)。
+* README 有八种语言：修改文字时要同步修改全部八个文件，与其他仓库共用的章节由 URTC-COMMON 的 `tools/readme_sections.py` 写入。
+* 不要把仅仅构建过的东西描述为已在板子上运行。
+* 请私下报告漏洞：[SECURITY.md](SECURITY.md)。问题、想法和报告：electrohobby3d@gmail.com（[SUPPORT.md](SUPPORT.md)）。
 
 ## 👤 作者
 
