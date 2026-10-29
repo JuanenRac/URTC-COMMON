@@ -70,6 +70,7 @@ SETS = {
     "firmware_base": ["firmware_base/urtc_crc8.h"],
     "firmware_test": ["firmware_base/urtc_test.h"],
     "firmware_frame": ["firmware_base/urtc_frame.h", "firmware_base/urtc_rate_limiter.h"],
+    "firmware_ring": ["firmware_base/urtc_ring.h"],
     "rate_c": ["generated/rate_vectors.h"],
     "blackbox_c": ["generated/blackbox_vectors.h"],
     "fw_vectors": ["generated/urtc_fw_vectors.h"],
