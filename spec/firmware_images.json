@@ -1,0 +1,10 @@
+{
+  "format": 1,
+  "about": "How the files of a firmware release are named: one pattern for the image and the files that travel with it. The programs and the documents read the generated modules (tools/generate_tools.py), not their own copy of the pattern.",
+  "prefix": "URTC",
+  "boards": ["MAIN", "SLAVE"],
+  "kinds": ["FIRMWARE", "BOOTLOADER"],
+  "version": "\\d+(?:\\.\\d+)+",
+  "image_extension": ".bin",
+  "sidecar_suffixes": [".sha256", ".manifest.json", ".sig"]
+}

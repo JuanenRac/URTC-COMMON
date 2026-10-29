@@ -31,6 +31,8 @@ ROOT = Path(__file__).resolve().parents[1]
 SPEC = ROOT / "spec" / "tools.json"
 PROTOCOL = ROOT / "spec" / "can_protocol.json"
 BANNER = "GENERATED from spec/tools.json by tools/generate_tools.py - do not edit by hand."
+IMAGES = ROOT / "spec" / "firmware_images.json"
+IMAGES_BANNER = "GENERATED from spec/firmware_images.json by tools/generate_tools.py - do not edit by hand."
 KINDS = ("motion", "telemetry", "external", "actuator")
 EXPANSION = ("none", "recommended", "required")
 
@@ -151,12 +153,88 @@ def _c_ids(doc: dict, protocol: dict) -> str:
               f"#define URTC_TOOL_ID_FIRST_INVALID {invalid[0]['id'] if invalid else last + 1}u", "#define URTC_TOOL_ID_FREE_CONFIG 31u", "#define URTC_TOOL_ID_MASK 0x1Fu", "", "#endif /* URTC_TOOL_IDS_H */", ""]
     return "\n".join(lines)
 
+def load_images() -> dict:
+    return json.loads(IMAGES.read_text(encoding="utf-8"))
+
+
+def validate_images(doc: dict) -> list[str]:
+    problems: list[str] = []
+    for key in ("prefix", "boards", "kinds", "version", "image_extension", "sidecar_suffixes"):
+        if key not in doc:
+            problems.append(f"firmware_images.json has no {key}")
+    if problems:
+        return problems
+    if not all(isinstance(name, str) and name.isupper() and name.isalpha() for name in doc["boards"] + doc["kinds"] + [doc["prefix"]]):
+        problems.append("the prefix, the boards and the kinds are capital letters")
+    if not doc["image_extension"].startswith(".") or any(not suffix.startswith(".") for suffix in doc["sidecar_suffixes"]):
+        problems.append("an extension or a suffix starts with a dot")
+    if len(set(doc["sidecar_suffixes"])) != len(doc["sidecar_suffixes"]):
+        problems.append("a suffix is listed twice")
+    return problems
+
+
+def _image_regex(doc: dict) -> str:
+    return f"^{doc['prefix']}_({'|'.join(doc['boards'])})_({'|'.join(doc['kinds'])})_v({doc['version']})" + doc["image_extension"].replace(".", "\\.") + "$"
+
+
+def _images_py(doc: dict) -> str:
+    return (
+        '"""' + IMAGES_BANNER + "\n\nHow the files of a firmware release are named (standard library only).\n"
+        "Copyright (C) 2026 JuanenRac (Electro Hobby 3D) <electrohobby3d@gmail.com>\n"
+        'GPL-3.0-or-later - see LICENSE\n"""\n'
+        "from __future__ import annotations\n\nimport re\n\n"
+        f"PREFIX = {doc['prefix']!r}\nBOARDS = {tuple(doc['boards'])!r}\nKINDS = {tuple(doc['kinds'])!r}\n"
+        f"IMAGE_EXTENSION = {doc['image_extension']!r}\nSIDECAR_SUFFIXES = {tuple(doc['sidecar_suffixes'])!r}\n"
+        f"IMAGE_NAME = re.compile({_image_regex(doc)!r}, re.IGNORECASE)\n\n\n"
+        "def image_name(board: str, kind: str, version: str) -> str:\n"
+        '    """``URTC_MAIN_FIRMWARE_v0.4.1.bin`` from its parts; a board or kind that is not listed is refused."""\n'
+        "    if board.upper() not in BOARDS or kind.upper() not in KINDS or not re.fullmatch(r\"" + doc["version"] + "\", version):\n"
+        '        raise ValueError(f"not a firmware image: {board!r} {kind!r} {version!r}")\n'
+        '    return f"{PREFIX}_{board.upper()}_{kind.upper()}_v{version}{IMAGE_EXTENSION}"\n\n\n'
+        "def parse_image_name(name: str) -> tuple[str, str, str] | None:\n"
+        '    """``(board, kind, version)`` of an image file name, or None when it is not one (a sidecar is not an image)."""\n'
+        "    match = IMAGE_NAME.fullmatch(name)\n"
+        "    return (match.group(1).upper(), match.group(2).upper(), match.group(3)) if match else None\n\n\n"
+        "def sidecar_names(image: str) -> tuple[str, ...]:\n"
+        '    """The files that travel with an image: its name plus each suffix."""\n'
+        "    return tuple(image + suffix for suffix in SIDECAR_SUFFIXES)\n\n\n"
+        "def is_sidecar(name: str) -> bool:\n"
+        "    return name.endswith(SIDECAR_SUFFIXES)\n"
+    )
+
+
+def _images_ts(doc: dict) -> str:
+    regex = _image_regex(doc).replace("/", "\\/")
+    return (
+        f"// {IMAGES_BANNER}\n"
+        "// Copyright (C) 2026 JuanenRac (Electro Hobby 3D) <electrohobby3d@gmail.com>\n"
+        "// GPL-3.0-or-later - see LICENSE\n\n"
+        f"export const FIRMWARE_PREFIX = {json.dumps(doc['prefix'])};\n"
+        f"export const FIRMWARE_BOARDS = {json.dumps(doc['boards'])} as const;\n"
+        f"export const FIRMWARE_KINDS = {json.dumps(doc['kinds'])} as const;\n"
+        f"export const FIRMWARE_IMAGE_EXTENSION = {json.dumps(doc['image_extension'])};\n"
+        f"export const FIRMWARE_SIDECAR_SUFFIXES = {json.dumps(doc['sidecar_suffixes'])} as const;\n"
+        f"export const FIRMWARE_IMAGE_NAME = /{regex}/i;\n\n"
+        "export interface FirmwareImageName { board: (typeof FIRMWARE_BOARDS)[number]; kind: (typeof FIRMWARE_KINDS)[number]; version: string }\n\n"
+        "/** The parts of an image file name, or null when the name is not an image (a sidecar is not an image). */\n"
+        "export function parseFirmwareImageName(name: string): FirmwareImageName | null {\n"
+        "  const m = FIRMWARE_IMAGE_NAME.exec(name);\n"
+        "  return m ? { board: m[1].toUpperCase() as FirmwareImageName['board'], kind: m[2].toUpperCase() as FirmwareImageName['kind'], version: m[3] } : null;\n"
+        "}\n\n"
+        "/** The name of the file that travels with an image, for one suffix of FIRMWARE_SIDECAR_SUFFIXES. */\n"
+        "export function firmwareSidecarName(image: string, suffix: (typeof FIRMWARE_SIDECAR_SUFFIXES)[number]): string {\n"
+        "  return image + suffix;\n"
+        "}\n"
+    )
+
 def outputs(doc: dict) -> dict[Path, str]:
     return {
         ROOT / "generated" / "urtcTools.ts": _ts(doc),
         ROOT / "src" / "urtc_common" / "tools_catalog.py": _py(doc),
         ROOT / "docs" / "TOOLS_TABLE.md": _md(doc),
         ROOT / "generated" / "urtc_tool_ids.h": _c_ids(doc, json.loads(PROTOCOL.read_text(encoding="utf-8"))),
+        ROOT / "src" / "urtc_common" / "firmware_names.py": _images_py(load_images()),
+        ROOT / "generated" / "firmwareNames.ts": _images_ts(load_images()),
     }
 
 
@@ -165,7 +243,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--check", action="store_true", help="write nothing; fail when a generated file is out of date")
     args = parser.parse_args(argv)
     doc = load()
-    problems = validate(doc, json.loads(PROTOCOL.read_text(encoding="utf-8")))
+    problems = validate(doc, json.loads(PROTOCOL.read_text(encoding="utf-8"))) + validate_images(load_images())
     if problems:
         print("TOOLS=FAIL " + "; ".join(problems), file=sys.stderr)
         return 1
