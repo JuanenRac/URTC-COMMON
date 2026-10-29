@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The compatibility matrix can be read by a program:** `generated/compat.json` is written (and checked) by `tools/compat_table.py` from `spec/versions.json`, and `urtc_common.compat` compares it with the folders next to a program: one row per project (as released, newer, older, not installed or version unknown, never a match when the version cannot be read), the copy of the shared code each carries, and the firmware that URTC-FLASHER and URTC-WEB-STUDIO bundle against the firmware of the tool head repository. `compat_qt.CompatModel` and `qml/CompatDialog.qml` show it read-only in the eight languages; `vendor_copy.py` has the sets `compat_data`, `compat_qt` and `compat_qml`.
+
 - **Related Projects lists the URTC family:** the section names the repositories of URTC by group, each with one short line about what it is for, and, in one short line each, the sister projects (independent ecosystems of the same author that share the base and the tools), in the eight languages. It no longer says that URTC is part of another ecosystem.
 - **The README follows the universal layout in the eight languages:** the sections are in the fixed order with their fixed names, the Architecture and the Repository Structure are drawn from `docs/architecture.json` and `docs/structure.json` by `tools/make_architecture.py` and `tools/make_structure.py`, and the sections for tests, build, roadmap, languages and contributing are new.
 - **The layout of the README is checked in the CI:** the validator runs `tools/universal_readme_check.py` and lists, as a warning, what differs from the universal layout of the README.

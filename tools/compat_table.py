@@ -27,6 +27,7 @@ ROOT = Path(__file__).resolve().parents[1]
 VERSIONS = ROOT / "spec" / "versions.json"
 PROTOCOL = ROOT / "spec" / "can_protocol.json"
 OUT = ROOT / "docs" / "COMPATIBILITY.md"
+DATA_OUT = ROOT / "generated" / "compat.json"
 BANNER = "GENERATED from spec/versions.json by tools/compat_table.py - do not edit by hand."
 REPOS = (
     ("URTC", "Tool head firmware", "firmware"), ("URTC-FLASHER", "Flasher", "program"), ("URTC-GATEWAY", "Gateway in front of the bus", "program"), ("URTC-TESTER", "Tester", "program"),
@@ -83,6 +84,11 @@ def render(doc: dict) -> str:
     return "\n".join(lines)
 
 
+def render_data(doc: dict) -> str:
+    """The machine-readable matrix the programs carry (the same document as spec/versions.json)."""
+    return json.dumps(doc, indent=2) + "\n"
+
+
 def check(doc: dict, siblings: Path | None) -> list[str]:
     problems = []
     protocol = json.loads(PROTOCOL.read_text(encoding="utf-8"))["protocol_version"]
@@ -90,6 +96,8 @@ def check(doc: dict, siblings: Path | None) -> list[str]:
         problems.append(f"protocol_version is {doc['protocol_version']} but the specification says {protocol}")
     if not OUT.is_file() or OUT.read_bytes().decode("utf-8") != render(doc):
         problems.append("docs/COMPATIBILITY.md is out of date (run python tools/compat_table.py --write)")
+    if not DATA_OUT.is_file() or DATA_OUT.read_bytes().decode("utf-8") != render_data(doc):
+        problems.append("generated/compat.json is out of date (run python tools/compat_table.py --write)")
     if siblings is not None:
         live = {p["repo"]: p for p in refresh(siblings)["projects"]}
         for p in doc["projects"]:
@@ -113,7 +121,8 @@ def main(argv: list[str] | None = None) -> int:
     doc = load()
     if args.write or args.refresh:
         OUT.write_bytes(render(doc).encode("utf-8"))
-        print("wrote docs/COMPATIBILITY.md")
+        DATA_OUT.write_bytes(render_data(doc).encode("utf-8"))
+        print("wrote docs/COMPATIBILITY.md and generated/compat.json")
     if args.markdown:
         sys.stdout.write(render(doc))
     if args.check:
