@@ -29,6 +29,8 @@ urtc-common = "urtc_common.cli:main"
 where = ["src"]
 
 [tool.mypy]
+# the shared picture tools are copied from the family's canonical copy and are not edited (or linted) here
+exclude = ['^tools/(_readme_svg|make_architecture|make_structure)\.py$']
 files = ["src/urtc_common", "src/urtc_ui"]
 # pyserial and python-can ship no type information
 ignore_missing_imports = true
