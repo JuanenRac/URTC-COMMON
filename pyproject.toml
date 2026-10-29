@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "urtc-common"
-version = "0.0.8"
+version = "0.0.9"
 description = "The URTC CAN protocol as data: a machine-readable specification, generated constants and frame codecs for C, Python and TypeScript, shared conformance vectors and a shared Python transport layer."
 readme = "README.md"
 requires-python = ">=3.10"

@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [0.0.9] - A common evidence format, the compatibility matrix, the firmware file names and the tool identifiers from the spec
+
 - **The names of the files of a firmware release are written once:** `spec/firmware_images.json` holds the pattern of an image name and the files that travel with it, `tools/generate_tools.py` writes `src/urtc_common/firmware_names.py` and `generated/firmwareNames.ts` from it, the compatibility check reads the bundled firmware with it, and the tests compare it with the images of the flasher and with the suffixes the flasher and the web studio use (`vendor_copy.py` sets `firmware_names_ts` and, with the compatibility code, `compat_data`).
 - **The tool identifiers are generated for the C repositories too:** `tools/generate_tools.py` writes `generated/urtc_tool_ids.h` (one macro per tool profile, the count, the last profile, the first unassigned value and the free-configuration value) from `spec/tools.json`, `vendor_copy.py` has the set `tool_ids_c`, and the tests compare the numbering with the tool head firmware and with the rack.
 - **One shape for the records of the programs:** `urtc_common.evidence` and `spec/evidence.schema.json` define `urtc-evidence/1` (tool, time, subject, transport, files with their hashes, outcome, and a digest of the record) with a strict check that refuses unknown fields and malformed hashes, and turn the update report of the flasher, the result record of the tester and a line of the install log of the updater into it without changing them; `docs/EVIDENCE.md` describes it and `vendor_copy.py` has the set `evidence`.
@@ -16,6 +18,10 @@ All notable changes to this project are documented here.
 - **The shared README sections go where the universal layout wants them:** Project status right after At a glance with the traffic-light icon, and How it updates, Several tool heads on one bus, First run without hardware and Requirements & compatibility as parts of Architecture, Features and Quick start once a README has those sections (before that they stay where they were); the eight languages of a repository always agree on the place.
 - **Downloads are hardened further:** a redirect is followed only to another allowed https host (never to plain http or to a host outside the list), the bytes really written while extracting a package count towards the size limit (not only the size the archive announces), and the folder of a newly created record-signing key is private to the person. Negative tests cover each rule.
 - **A shared byte ring for the firmware:** `firmware_base/urtc_ring.h` is the single-producer / single-consumer ring that a receive interrupt fills and the main loop empties (release/acquire indices, power-of-two size, a count of dropped bytes), with its rules tested one by one and, on a POSIX host, by a real producer thread against a real consumer thread. A firmware repository copies it with `vendor_copy.py sync TARGET --set firmware_ring`.
+
+## [0.0.9]
+
+- Build version synchronized with `urtc.project.json` and the repository-native version source.
 
 ## [0.0.8] - The serial line of the rack in the model and in the vectors and the table of what has run and what is pending is generat
 
