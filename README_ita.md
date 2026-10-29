@@ -34,6 +34,20 @@
 | Tecnologia | JSON / Python |
 | Su hardware reale | Solo simulato: provato con emulatori, test double o simulatori; per questa versione non risulta alcuna esecuzione su hardware reale |
 
+<!-- urtc-section:status_common -->
+## 🚦 Stato del progetto
+
+🟢 fatto e verificato · 🟡 funziona, con limiti noti · 🟠 a metà o non verificato · 🔴 non fatto o non funzionante. Nulla è verde se non ha mai girato su hardware reale.
+
+| Parte | Stato | Ciò che il repository può dimostrare |
+| --- | :---: | --- |
+| Software | 🟡 | Codice condiviso dagli altri programmi; verificato solo con test su PC. |
+| Test | 🟢 | La suite di test passa nella CI a ogni push. |
+| Sicurezza | 🟡 | Le versioni sono firmate con Ed25519 e verificate prima dell'uso; la gestione delle chiavi non è stata rivista da nessun altro. |
+| Documentazione | 🟡 | README in otto lingue e documenti di riferimento; le traduzioni non sono state riviste da madrelingua. |
+
+<!-- /urtc-section:status_common -->
+
 ## 🎯 Panoramica
 
 Il protocollo CAN della testa utensile, scritto una sola volta come dati, e tutto ciò che ne deriva:
@@ -126,20 +140,6 @@ Dove leggere di più:
 ## 👤 AUTORE
 
 **JuanenRac (Electro Hobby 3D)** · electrohobby3d@gmail.com
-
-<!-- urtc-section:status_common -->
-## 💡 Stato del progetto
-
-🟢 fatto e verificato · 🟡 funziona, con limiti noti · 🟠 a metà o non verificato · 🔴 non fatto o non funzionante. Nulla è verde se non ha mai girato su hardware reale.
-
-| Parte | Stato | Ciò che il repository può dimostrare |
-| --- | :---: | --- |
-| Software | 🟡 | Codice condiviso dagli altri programmi; verificato solo con test su PC. |
-| Test | 🟢 | La suite di test passa nella CI a ogni push. |
-| Sicurezza | 🟡 | Le versioni sono firmate con Ed25519 e verificate prima dell'uso; la gestione delle chiavi non è stata rivista da nessun altro. |
-| Documentazione | 🟡 | README in otto lingue e documenti di riferimento; le traduzioni non sono state riviste da madrelingua. |
-
-<!-- /urtc-section:status_common -->
 
 ## 📜 LICENZA
 

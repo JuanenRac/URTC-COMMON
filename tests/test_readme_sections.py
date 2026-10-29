@@ -24,7 +24,7 @@ def test_the_specification_is_well_formed_and_every_listed_repository_has_a_sect
     assert [s["id"] for s in spec["sections"] if not s["id"].startswith("status_")] == ["updates", "first_flash", "heads", "compatibility"]
     # nine repositories have their own status table (the README of URTC-DOCS is written by its own generator), with the same rows lit in the same eight languages
     status = [s for s in spec["sections"] if s["id"].startswith("status_")]
-    assert len(status) == 9 and all(len(s["repos"]) == 1 and s["emoji"] == "💡" for s in status)
+    assert len(status) == 9 and all(len(s["repos"]) == 1 and s["emoji"] == "🚦" and s["universal"] == {"after": "glance"} for s in status)
     for section in status:
         assert all(("🟢" in row or "🟡" in row or "🟠" in row or "🔴" in row) for row in section["body"]["english"].splitlines()[4:])
         assert len({body.count(NL) for body in section["body"].values()}) == 1
@@ -69,6 +69,62 @@ def test_an_edited_or_moved_section_is_put_back_and_the_line_endings_of_the_file
 def test_a_readme_without_a_license_heading_is_refused():
     with pytest.raises(ValueError):
         rs.render("# Title\n\nText.\n", rs.sections_of(rs.load(), "URTC"), "english")
+
+
+UNIVERSAL = ("# Title\n\n## 📋 At a glance\n\n| | |\n|---|---|\n\n## 🎯 Overview\n\nText.\n\n## 🏛️ Architecture\n\nDiagram.\n\n## ✨ Features\n\nThings.\n\n"
+             "```text\n## 🚀 Quick start\n```\n\n## 🚀 Quick start\n\nRun it.\n\n## 🧪 Testing\n\nTests.\n\n## 📜 LICENSE\n\nGPL.\n")
+
+
+def test_in_a_readme_with_the_universal_sections_the_blocks_go_to_their_place():
+    wanted = rs.sections_of(rs.load(), "URTC-FLASHER")
+    status = rs.sections_of(rs.load(), "URTC-FLASHER")[-1]
+    assert status["id"] == "status_flasher"
+    text = rs.render(UNIVERSAL, wanted, "english")
+    order, fence = [], False
+    for line in text.split("\n"):
+        if line.startswith("```"):
+            fence = not fence
+        elif not fence and line.startswith("##"):
+            order.append(line)
+    assert order[:3] == ["## 📋 At a glance", "## 🚦 Project status", "## 🎯 Overview"]
+    assert order.index("### How it updates") == order.index("## 🏛️ Architecture") + 1
+    assert order.index("### Several tool heads on one bus") == order.index("## ✨ Features") + 1
+    quick = order.index("## 🚀 Quick start")
+    assert order[quick + 1:quick + 3] == ["### First run without hardware", "### Requirements & compatibility"]
+    assert order[quick + 3] == "## 🧪 Testing" and order[-1] == "## 📜 LICENSE"
+    assert text.count("## 🚀 Quick start") == 2   # the one inside the code block is left alone
+    assert rs.render(text, wanted, "english") == text
+    assert "### Requisitos y compatibilidad" in rs.render(UNIVERSAL.replace("Quick start", "Inicio rápido"), wanted, "spanish")
+
+
+def test_a_roadmap_that_uses_the_same_icon_is_not_taken_for_quick_start():
+    old = "# T\n\n## 📋 At a glance\n\nx\n\n## 🚀 ROADMAP\n\nlater\n\n## 📜 LICENSE\n\nGPL.\n"
+    text = rs.render(old, rs.sections_of(rs.load(), "URTC-UPDATER"), "english")
+    assert "### Requirements & compatibility" not in text and "## 🧩 Compatibility" in text   # kept where it was, before the license
+    assert text.index("## 🚦 Project status") < text.index("## 🚀 ROADMAP")                       # but the status is the second section
+
+
+def test_every_language_places_its_blocks_like_the_english_readme_does(tmp_path):
+    """A translation whose old heading happens to carry the name of a universal section must not get its blocks in another place than the English one."""
+    old_english = "# T\n\n## 📋 At a glance\n\nx\n\n## 🚀 Getting Started\n\nrun\n\n## 📜 LICENSE\n\nGPL.\n"
+    old_chinese = old_english.replace("At a glance", "速览").replace("Getting Started", "快速开始")
+    folder = tmp_path / "URTC-UPDATER"
+    folder.mkdir()
+    for language, name in rs.FILES.items():
+        (folder / name).write_text(old_chinese if language == "chinese" else old_english, encoding="utf-8")
+    rs.apply(rs.load(), "URTC-UPDATER", tmp_path)
+    english, chinese = (folder / "README.md").read_text(encoding="utf-8"), (folder / "README_zho.md").read_text(encoding="utf-8")
+    assert "### " not in english and "### " not in chinese
+    assert chinese.index("urtc-section:compatibility") > chinese.index("快速开始")   # before the license, as in English
+    assert chinese.index("urtc-section:compatibility") > chinese.index("## 📜") - 400 and chinese.count("urtc-section:compatibility") == 2
+
+
+def test_a_universal_place_must_be_well_formed():
+    base = dict(rs.load()["sections"][1])
+    assert any("universal place" in p for p in rs.validate({"sections": [{**base, "universal": {"after": "nowhere"}}]}))
+    assert any("universal place" in p for p in rs.validate({"sections": [{**base, "universal": {"after": "glance", "in": "features"}}]}))
+    assert any("universal heading" in p for p in rs.validate({"sections": [{**base, "universal": {"in": "features", "heading": {"english": "x"}}}]}))
+    assert any("does not belong" in p for p in rs.validate({"sections": [{**base, "body": {**base["body"], "english": "an Odo" + "meter rule"}}]}))
 
 
 def fake_repo(base: Path, repo: str) -> None:

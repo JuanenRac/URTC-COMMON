@@ -1,6 +1,6 @@
 {
   "format": 1,
-  "about": "Sections that several README files carry, written once in the eight languages. tools/readme_sections.py puts each between two marker comments before the license heading of the README of every repository that lists it, and checks that they are there and equal.",
+  "about": "Sections that several README files carry, written once in the eight languages. tools/readme_sections.py puts each between two marker comments in its place in the universal layout of the README (Project status right after At a glance; the others as a part inside Architecture, Features or Quick start) and, in a README that does not have that section yet, before the license heading of the README of every repository that lists it, and checks that they are there and equal.",
   "sections": [
     {
       "id": "updates",
@@ -29,6 +29,19 @@
         "japanese": "このプログラムは自分自身の新しいバージョンを探せます。「更新を確認」ボタンは GitHub に一度だけ問い合わせ、お使いのシステム向けで新しい場合にだけ署名付きパッケージを提案します。確認を有効にしない限り、何も自動では確認もインストールもされず、更新にはあなたの確認が必要です。パッケージは SHA-256 と、プログラムに固定されたリリース鍵の署名に一致しなければなりません。前のバージョンは保持され、新しいバージョンが起動しない場合は自動的に復元されます。`urtc-updater --cli package list|check|install|rollback` はコマンドラインからフラッシャーとテスターに対して同じことを行い、`install --file` はネットワークなしで動作します。",
         "chinese": "本程序可以查找自身的较新版本：“检查更新”按钮只向 GitHub 查询一次，只有当包适用于您的系统且更新时才会提供已签名的包。除非您打开检查，否则不会自行检查或安装，更新需要您的确认。包必须与其 SHA-256 以及程序中固定的发布密钥签名一致；上一版本会保留，新版本无法启动时会自动恢复。`urtc-updater --cli package list|check|install|rollback` 可在命令行中为刷写器和测试器完成同样的操作，`install --file` 无需网络即可使用。",
         "portuguese": "Este programa pode procurar uma versão mais recente de si próprio: o botão «Procurar atualizações» pergunta uma vez ao GitHub e só propõe um pacote assinado se for para o seu sistema e mais recente. Nada é verificado nem instalado por si só, a não ser que ative a verificação, e uma atualização precisa da sua confirmação. O pacote tem de coincidir com o seu SHA-256 e com a assinatura da chave das versões fixada no programa; a versão anterior é guardada e reposta sozinha se a nova não arrancar. `urtc-updater --cli package list|check|install|rollback` faz o mesmo na linha de comandos para o flasher e o tester, e `install --file` funciona sem rede."
+      },
+      "universal": {
+        "in": "architecture",
+        "heading": {
+          "english": "How it updates",
+          "spanish": "Cómo se actualiza",
+          "german": "So wird aktualisiert",
+          "french": "Comment il se met à jour",
+          "italian": "Come si aggiorna",
+          "japanese": "更新のしくみ",
+          "chinese": "如何更新",
+          "portuguese": "Como se atualiza"
+        }
       }
     },
     {
@@ -56,6 +69,19 @@
         "japanese": "1. 仮想ボードを起動します：`python -m urtc_can.virtual_board`。\n2. 別のターミナルで `URTC_VIRTUAL_PORT=socket://127.0.0.1:7777` を設定してフラッシャーを起動します。仮想ボードがポート一覧に表示されます。\n3. それを選んで接続を押し、`firmware/` からイメージを選び（または参照して）CAN-OTA 開始を押します。\n4. 仮想ボードは、実機と同じサイズ、署名、バージョンの検査を行いながら更新全体を受け付けます。これはモデルであり、実機では動かしていません。",
         "chinese": "1. 启动虚拟开发板：`python -m urtc_can.virtual_board`。\n2. 在另一个终端设置 `URTC_VIRTUAL_PORT=socket://127.0.0.1:7777` 并启动刷写器：虚拟开发板会出现在端口列表中。\n3. 选中它，点击连接，从 `firmware/` 选择镜像（或浏览选择），然后点击开始 CAN-OTA。\n4. 虚拟开发板会接受完整更新，并像真实开发板一样检查大小、签名和版本。它只是一个模型：以上均未在开发板上运行过。",
         "portuguese": "1. Arranque a placa virtual: `python -m urtc_can.virtual_board`.\n2. Noutro terminal defina `URTC_VIRTUAL_PORT=socket://127.0.0.1:7777` e arranque o flasher: a placa virtual está na lista de portas.\n3. Selecione-a, carregue em Ligar, escolha uma imagem de `firmware/` (ou procure uma) e carregue em Iniciar CAN-OTA.\n4. A placa virtual aceita a atualização completa, com as mesmas verificações de tamanho, assinatura e versão de uma real. É um modelo: nada disto correu numa placa."
+      },
+      "universal": {
+        "in": "quickstart",
+        "heading": {
+          "english": "First run without hardware",
+          "spanish": "Primer arranque sin hardware",
+          "german": "Erster Start ohne Hardware",
+          "french": "Premier démarrage sans matériel",
+          "italian": "Primo avvio senza hardware",
+          "japanese": "ハードウェアなしの初回実行",
+          "chinese": "无硬件的首次运行",
+          "portuguese": "Primeiro arranque sem hardware"
+        }
       }
     },
     {
@@ -85,7 +111,20 @@
         "URTC-FLASHER",
         "URTC-TESTER",
         "URTC-WEB-STUDIO"
-      ]
+      ],
+      "universal": {
+        "in": "features",
+        "heading": {
+          "english": "Several tool heads on one bus",
+          "spanish": "Varios cabezales en un bus",
+          "german": "Mehrere Werkzeugköpfe an einem Bus",
+          "french": "Plusieurs têtes d'outil sur un bus",
+          "italian": "Più teste utensile su un bus",
+          "japanese": "1本のバスに複数のツールヘッド",
+          "chinese": "一条总线上的多个工具头",
+          "portuguese": "Várias cabeças de ferramenta num barramento"
+        }
+      }
     },
     {
       "id": "compatibility",
@@ -119,11 +158,24 @@
         "japanese": "どのバージョンの URTC プログラムが連携して動作し、それぞれがどのプロトコルバージョンを話すかは、URTC-COMMON が生成する互換性表に載っています：[docs/COMPATIBILITY.md](https://github.com/JuanenRac/URTC/blob/main/docs/COMPATIBILITY.md)。",
         "chinese": "哪些版本的 URTC 程序可以配合使用、各自使用哪个协议版本，列在 URTC-COMMON 生成的兼容性表中：[docs/COMPATIBILITY.md](https://github.com/JuanenRac/URTC/blob/main/docs/COMPATIBILITY.md)。",
         "portuguese": "As versões dos programas URTC que funcionam em conjunto, e a versão do protocolo que cada uma fala, constam da tabela de compatibilidade que o URTC-COMMON gera: [docs/COMPATIBILITY.md](https://github.com/JuanenRac/URTC/blob/main/docs/COMPATIBILITY.md)."
+      },
+      "universal": {
+        "in": "quickstart",
+        "heading": {
+          "english": "Requirements & compatibility",
+          "spanish": "Requisitos y compatibilidad",
+          "german": "Voraussetzungen und Kompatibilität",
+          "french": "Prérequis et compatibilité",
+          "italian": "Requisiti e compatibilità",
+          "japanese": "要件と互換性",
+          "chinese": "要求与兼容性",
+          "portuguese": "Requisitos e compatibilidade"
+        }
       }
     },
     {
       "id": "status_firmware",
-      "emoji": "💡",
+      "emoji": "🚦",
       "heading": {
         "english": "Project status",
         "spanish": "Estado del proyecto",
@@ -146,11 +198,14 @@
       },
       "repos": [
         "URTC"
-      ]
+      ],
+      "universal": {
+        "after": "glance"
+      }
     },
     {
       "id": "status_common",
-      "emoji": "💡",
+      "emoji": "🚦",
       "heading": {
         "english": "Project status",
         "spanish": "Estado del proyecto",
@@ -173,11 +228,14 @@
       },
       "repos": [
         "URTC-COMMON"
-      ]
+      ],
+      "universal": {
+        "after": "glance"
+      }
     },
     {
       "id": "status_flasher",
-      "emoji": "💡",
+      "emoji": "🚦",
       "heading": {
         "english": "Project status",
         "spanish": "Estado del proyecto",
@@ -200,11 +258,14 @@
       },
       "repos": [
         "URTC-FLASHER"
-      ]
+      ],
+      "universal": {
+        "after": "glance"
+      }
     },
     {
       "id": "status_tester",
-      "emoji": "💡",
+      "emoji": "🚦",
       "heading": {
         "english": "Project status",
         "spanish": "Estado del proyecto",
@@ -227,11 +288,14 @@
       },
       "repos": [
         "URTC-TESTER"
-      ]
+      ],
+      "universal": {
+        "after": "glance"
+      }
     },
     {
       "id": "status_web_studio",
-      "emoji": "💡",
+      "emoji": "🚦",
       "heading": {
         "english": "Project status",
         "spanish": "Estado del proyecto",
@@ -254,11 +318,14 @@
       },
       "repos": [
         "URTC-WEB-STUDIO"
-      ]
+      ],
+      "universal": {
+        "after": "glance"
+      }
     },
     {
       "id": "status_updater",
-      "emoji": "💡",
+      "emoji": "🚦",
       "heading": {
         "english": "Project status",
         "spanish": "Estado del proyecto",
@@ -281,11 +348,14 @@
       },
       "repos": [
         "URTC-UPDATER"
-      ]
+      ],
+      "universal": {
+        "after": "glance"
+      }
     },
     {
       "id": "status_vision_tool",
-      "emoji": "💡",
+      "emoji": "🚦",
       "heading": {
         "english": "Project status",
         "spanish": "Estado del proyecto",
@@ -308,11 +378,14 @@
       },
       "repos": [
         "URTC-VISION-TOOL"
-      ]
+      ],
+      "universal": {
+        "after": "glance"
+      }
     },
     {
       "id": "status_smart_rack",
-      "emoji": "💡",
+      "emoji": "🚦",
       "heading": {
         "english": "Project status",
         "spanish": "Estado del proyecto",
@@ -335,11 +408,14 @@
       },
       "repos": [
         "URTC-SMART-RACK"
-      ]
+      ],
+      "universal": {
+        "after": "glance"
+      }
     },
     {
       "id": "status_gateway",
-      "emoji": "💡",
+      "emoji": "🚦",
       "heading": {
         "english": "Project status",
         "spanish": "Estado del proyecto",
@@ -362,7 +438,10 @@
       },
       "repos": [
         "URTC-GATEWAY"
-      ]
+      ],
+      "universal": {
+        "after": "glance"
+      }
     }
   ]
 }

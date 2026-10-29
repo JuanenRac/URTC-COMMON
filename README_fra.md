@@ -34,6 +34,20 @@
 | Technologie | JSON / Python |
 | Sur matériel réel | Simulé seulement : testé avec des émulateurs, des doubles de test ou des simulateurs ; aucune exécution sur du matériel réel n'est consignée pour cette version |
 
+<!-- urtc-section:status_common -->
+## 🚦 État du projet
+
+🟢 fait et vérifié · 🟡 fonctionne, avec des limites connues · 🟠 à moitié fait ou non vérifié · 🔴 non fait ou non fonctionnel. Rien n'est vert si cela n'a jamais tourné sur du vrai matériel.
+
+| Partie | État | Ce que le dépôt peut démontrer |
+| --- | :---: | --- |
+| Logiciel | 🟡 | Code partagé par les autres programmes ; vérifié seulement par des tests sur PC. |
+| Tests | 🟢 | La suite de tests passe dans la CI à chaque push. |
+| Sécurité | 🟡 | Les versions sont signées en Ed25519 et vérifiées avant usage ; la gestion des clés n'a été relue par personne d'autre. |
+| Documentation | 🟡 | README en huit langues et documents de référence ; les traductions n'ont pas été relues par des locuteurs natifs. |
+
+<!-- /urtc-section:status_common -->
+
 ## 🎯 Vue d'ensemble
 
 Le protocole CAN de la tête d'outil, écrit une seule fois comme données, et tout ce qui en découle :
@@ -126,20 +140,6 @@ Pour en savoir plus :
 ## 👤 AUTEUR
 
 **JuanenRac (Electro Hobby 3D)** · electrohobby3d@gmail.com
-
-<!-- urtc-section:status_common -->
-## 💡 État du projet
-
-🟢 fait et vérifié · 🟡 fonctionne, avec des limites connues · 🟠 à moitié fait ou non vérifié · 🔴 non fait ou non fonctionnel. Rien n'est vert si cela n'a jamais tourné sur du vrai matériel.
-
-| Partie | État | Ce que le dépôt peut démontrer |
-| --- | :---: | --- |
-| Logiciel | 🟡 | Code partagé par les autres programmes ; vérifié seulement par des tests sur PC. |
-| Tests | 🟢 | La suite de tests passe dans la CI à chaque push. |
-| Sécurité | 🟡 | Les versions sont signées en Ed25519 et vérifiées avant usage ; la gestion des clés n'a été relue par personne d'autre. |
-| Documentation | 🟡 | README en huit langues et documents de référence ; les traductions n'ont pas été relues par des locuteurs natifs. |
-
-<!-- /urtc-section:status_common -->
 
 ## 📜 LICENCE
 

@@ -34,6 +34,20 @@
 | Stack | JSON / Python |
 | On real hardware | Simulated only: tested against emulators, fakes or simulators; no run on real hardware is recorded for this version |
 
+<!-- urtc-section:status_common -->
+## 🚦 Project status
+
+🟢 done and verified · 🟡 works, with known limits · 🟠 half done or not verified · 🔴 not done or not working. Nothing is green if it never ran on real hardware.
+
+| Part | Status | What the repository can show |
+| --- | :---: | --- |
+| Software | 🟡 | Shared code used by the other programs; checked only by tests on a PC. |
+| Tests | 🟢 | The test suite passes in the CI on every push. |
+| Security | 🟡 | Releases are signed with Ed25519 and checked before use; the key handling was not reviewed by anyone else. |
+| Documentation | 🟡 | README in eight languages and reference documents; the translations were not reviewed by native speakers. |
+
+<!-- /urtc-section:status_common -->
+
 ## 🎯 Overview
 
 The CAN protocol of the tool head, written once as data, and everything that follows from it:
@@ -126,20 +140,6 @@ Where to read more:
 ## 👤 AUTHOR
 
 **JuanenRac (Electro Hobby 3D)** · electrohobby3d@gmail.com
-
-<!-- urtc-section:status_common -->
-## 💡 Project status
-
-🟢 done and verified · 🟡 works, with known limits · 🟠 half done or not verified · 🔴 not done or not working. Nothing is green if it never ran on real hardware.
-
-| Part | Status | What the repository can show |
-| --- | :---: | --- |
-| Software | 🟡 | Shared code used by the other programs; checked only by tests on a PC. |
-| Tests | 🟢 | The test suite passes in the CI on every push. |
-| Security | 🟡 | Releases are signed with Ed25519 and checked before use; the key handling was not reviewed by anyone else. |
-| Documentation | 🟡 | README in eight languages and reference documents; the translations were not reviewed by native speakers. |
-
-<!-- /urtc-section:status_common -->
 
 ## 📜 LICENSE
 
