@@ -15,4 +15,5 @@ docs/COMPATIBILITY.md text eol=lf
 docs/TOOLS_TABLE.md text eol=lf
 docs/STATUS.md text eol=lf
 src/urtc_common/tools_catalog.py text eol=lf
+src/urtc_common/firmware_names.py text eol=lf
 conformance/fuzz_corpus.txt text eol=lf
