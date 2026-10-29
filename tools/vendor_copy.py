@@ -70,6 +70,7 @@ SETS = {
     "compat_data": ["src/urtc_common/compat.py", "generated/compat.json"],
     "compat_qt": ["src/urtc_common/compat_qt.py"],
     "compat_qml": ["qml/CompatDialog.qml"],
+    "evidence": ["src/urtc_common/evidence.py"],
     "firmware_base": ["firmware_base/urtc_crc8.h"],
     "firmware_test": ["firmware_base/urtc_test.h"],
     "firmware_frame": ["firmware_base/urtc_frame.h", "firmware_base/urtc_rate_limiter.h"],
