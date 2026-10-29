@@ -482,3 +482,16 @@ def test_a_package_file_is_refused_for_another_program_system_version_or_without
     (lonely / (package.name + ".sha256")).write_text((package.parent / (package.name + ".sha256")).read_text())
     (lonely / (package.name + ".sig")).write_text(bytes(64).hex() + "\n")
     refused(copy, "bad_signature")
+
+
+def test_a_redirect_to_plain_http_or_to_another_host_is_refused_and_one_to_a_release_host_is_followed():
+    import urllib.request
+
+    handler = svc._CheckedRedirects()
+    request = urllib.request.Request("https://github.com/JuanenRac/x/releases/download/v1/x.zip")
+    for target in ("http://objects.githubusercontent.com/x", "https://evil.example/x", "ftp://github.com/x"):
+        with pytest.raises(su.UpdateError) as caught:
+            handler.redirect_request(request, None, 302, "Found", {}, target)
+        assert caught.value.code == "bad_host"
+    followed = handler.redirect_request(request, None, 302, "Found", {}, "https://objects.githubusercontent.com/x")
+    assert followed is not None and followed.full_url == "https://objects.githubusercontent.com/x"

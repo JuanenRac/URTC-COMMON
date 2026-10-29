@@ -95,3 +95,10 @@ def test_environment_names_the_key_file(tmp_path, monkeypatch):
     assert rs.default_key_path() == path
     signed = rs.sign_session(MANIFEST)
     assert path.is_file() and rs.verify_session(signed)
+
+
+@pytest.mark.skipif(sys.platform == "win32", reason="POSIX permission bits")
+def test_a_new_key_folder_is_private_to_the_person(tmp_path):
+    key = tmp_path / "keys" / "records.key"
+    rs.load_seed(key, create=True)
+    assert stat.S_IMODE(key.parent.stat().st_mode) == 0o700

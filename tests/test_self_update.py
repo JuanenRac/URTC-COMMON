@@ -382,3 +382,40 @@ def test_the_history_survives_a_damaged_line(tmp_path):
     with open(tmp_path / "root" / "history.jsonl", "a", encoding="utf-8") as handle:
         handle.write("{broken\n")
     assert len(su.read_history(tmp_path / "root")) == 1
+
+
+# ---- hardening that does not depend on what the archive announces -------------------------------------------------
+def test_the_bytes_really_written_count_towards_the_limit_not_the_size_the_archive_announces(monkeypatch):
+    monkeypatch.setattr(su, "MAX_EXTRACTED_BYTES", 100)
+    out = io.BytesIO()
+    assert su._copy_bounded(io.BytesIO(b"x" * 60), out, 40) == 60
+    with pytest.raises(su.UpdateError) as caught:
+        su._copy_bounded(io.BytesIO(b"x" * 61), io.BytesIO(), 40)
+    assert caught.value.code == "too_big"
+
+
+def test_an_archive_that_expands_past_the_limit_is_refused_and_nothing_is_kept_as_installed(tmp_path, monkeypatch):
+    monkeypatch.setattr(su, "MAX_EXTRACTED_BYTES", 50)
+    archive = tmp_path / "big.zip"
+    archive.write_bytes(make_zip(extra={"data.bin": b"x" * 200}))
+    with pytest.raises(su.UpdateError) as caught:
+        su.safe_extract(archive, tmp_path / "out")
+    assert caught.value.code == "too_big"
+
+
+def test_a_zip_with_a_symbolic_link_is_refused(tmp_path):
+    archive = tmp_path / "link.zip"
+    with zipfile.ZipFile(archive, "w") as zf:
+        info = zipfile.ZipInfo("lnk")
+        info.external_attr = (0o120777 << 16)
+        zf.writestr(info, "/etc/passwd")
+    with pytest.raises(su.UpdateError) as caught:
+        su.safe_extract(archive, tmp_path / "out")
+    assert caught.value.code == "unsafe_member"
+    assert not (tmp_path / "out" / "lnk").exists()
+
+
+def test_an_embedded_nul_or_an_empty_name_is_refused(tmp_path):
+    for name in ("a\x00b", ""):
+        with pytest.raises(su.UpdateError):
+            su._safe_target(tmp_path, name)

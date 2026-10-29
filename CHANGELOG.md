@@ -8,6 +8,7 @@ All notable changes to this project are documented here.
 - **The layout of the README is checked in the CI:** the validator runs `tools/universal_readme_check.py` and lists, as a warning, what differs from the universal layout of the README.
 - **Project status is the second section of the README,** right after At a glance, in the eight languages.
 - **The shared README sections go where the universal layout wants them:** Project status right after At a glance with the traffic-light icon, and How it updates, Several tool heads on one bus, First run without hardware and Requirements & compatibility as parts of Architecture, Features and Quick start once a README has those sections (before that they stay where they were); the eight languages of a repository always agree on the place.
+- **Downloads are hardened further:** a redirect is followed only to another allowed https host (never to plain http or to a host outside the list), the bytes really written while extracting a package count towards the size limit (not only the size the archive announces), and the folder of a newly created record-signing key is private to the person. Negative tests cover each rule.
 
 ## [0.0.8] - The serial line of the rack in the model and in the vectors and the table of what has run and what is pending is generat
 
