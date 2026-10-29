@@ -135,11 +135,28 @@ def _md(doc: dict) -> str:
     return "\n".join(lines) + "\n"
 
 
+def _c_ids(doc: dict, protocol: dict) -> str:
+    """The identifiers of the tool profiles as C macros: the numbering the tool head, the rack and the vision tool share."""
+    invalid = [t for t in protocol["tools"] if t["id"] >= len(doc["tools"])]
+    lines = [
+        f"/* {BANNER}", " * Copyright (C) 2026 JuanenRac (Electro Hobby 3D) <electrohobby3d@gmail.com>", " * GPL-3.0-or-later - see LICENSE", " *",
+        " * The five-bit tool identifier of a tool head (its ID jumpers, or the byte stored in its F-RAM): 0 .. URTC_TOOL_ID_LAST are tool profiles, the values",
+        " * after them up to 30 are not assigned to any tool, and 31 means a free configuration (the tool is chosen by a value stored in the head).", " */",
+        "#ifndef URTC_TOOL_IDS_H", "#define URTC_TOOL_IDS_H", "",
+    ]
+    for t in doc["tools"]:
+        lines.append(f"#define URTC_TOOL_ID_{t['name']} {t['id']}u")
+    last = doc["tools"][-1]["id"]
+    lines += ["", f"#define URTC_TOOL_ID_COUNT {len(doc['tools'])}u", f"#define URTC_TOOL_ID_LAST {last}u",
+              f"#define URTC_TOOL_ID_FIRST_INVALID {invalid[0]['id'] if invalid else last + 1}u", "#define URTC_TOOL_ID_FREE_CONFIG 31u", "#define URTC_TOOL_ID_MASK 0x1Fu", "", "#endif /* URTC_TOOL_IDS_H */", ""]
+    return "\n".join(lines)
+
 def outputs(doc: dict) -> dict[Path, str]:
     return {
         ROOT / "generated" / "urtcTools.ts": _ts(doc),
         ROOT / "src" / "urtc_common" / "tools_catalog.py": _py(doc),
         ROOT / "docs" / "TOOLS_TABLE.md": _md(doc),
+        ROOT / "generated" / "urtc_tool_ids.h": _c_ids(doc, json.loads(PROTOCOL.read_text(encoding="utf-8"))),
     }
 
 

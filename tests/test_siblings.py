@@ -392,6 +392,48 @@ def test_the_firmware_multinode_switch_frames_are_the_ones_of_the_specification(
     message = table[0x1AC]
     assert message["layouts"][0]["dlc"] == {"exact": 6} and message["firmware_accepts_dlc"] == {"exact": 6}
     magic = next(f for f in message["layouts"][0]["fields"] if f["name"] == "magic")["fixed"]
-    comparison = " && ".join(f"rxData\[{i}\] == 0x{b:02X}" for i, b in enumerate(bytes.fromhex(magic)))
+    comparison = " && ".join(rf"rxData\[{i}\] == 0x{b:02X}" for i, b in enumerate(bytes.fromhex(magic)))
     assert re.search(comparison, source, re.I)
     assert re.search(r"StdId\s*[!=]=\s*0x1AD", source)
+
+# ---------------------------------------------------------------------------------------------------------------------
+# the tool identifiers of the C firmware repositories
+# ---------------------------------------------------------------------------------------------------------------------
+def tool_id_macros(path: Path) -> dict[str, int]:
+    return {m.group(1): int(m.group(2), 0) for m in re.finditer(r"(?m)^#define\s+(TOOL_ID_\w+|URTC_TOOL_ID_\w+)\s+(?:\()?(0x[0-9A-Fa-f]+|\d+)u?\)?\s*(?://.*)?$", text(path))}
+
+
+def generated_tool_ids() -> dict[str, int]:
+    return tool_id_macros(Path(__file__).resolve().parents[1] / "generated" / "urtc_tool_ids.h")
+
+
+def test_the_generated_tool_identifiers_follow_the_tool_file(spec):
+    ids = generated_tool_ids()
+    for tool in spec["tools"]:
+        if tool["id"] < ids["URTC_TOOL_ID_COUNT"]:
+            assert ids[f"URTC_TOOL_ID_{tool['name']}"] == tool["id"]
+    assert ids["URTC_TOOL_ID_LAST"] == ids["URTC_TOOL_ID_COUNT"] - 1 < ids["URTC_TOOL_ID_FIRST_INVALID"] <= 30
+    assert ids["URTC_TOOL_ID_FREE_CONFIG"] == ids["URTC_TOOL_ID_MASK"] == 31
+
+
+def test_the_smart_rack_takes_its_tool_identifiers_from_the_generated_header(sibling):
+    generated = generated_tool_ids()
+    ids, limits = text(sibling("URTC-SMART-RACK/src/tool_id.h")), text(sibling("URTC-SMART-RACK/src/tool_limits.h"))
+    assert '#include "urtc_tool_ids.h"' in ids and '#include "urtc_tool_ids.h"' in limits
+    for source, name, shared in (
+        (ids, "TOOL_ID_URTC_LAST", "URTC_TOOL_ID_LAST"), (ids, "TOOL_ID_FREE_CONFIG", "URTC_TOOL_ID_FREE_CONFIG"), (ids, "TOOL_ID_MASK", "URTC_TOOL_ID_MASK"),
+        (limits, "TOOL_ID_SOLDERING_IRON", "URTC_TOOL_ID_SOLDERING_IRON"), (limits, "TOOL_ID_3D_PRINTER", "URTC_TOOL_ID_PRINTER_3D"), (limits, "TOOL_ID_HOTAIR_REWORK", "URTC_TOOL_ID_HOTAIR_REWORK"),
+    ):
+        assert re.search(rf"(?m)^#define\s+{name}\s+{shared}\b", source), f"{name} must be {shared}"
+        assert shared in generated, f"{shared} is not in the generated header"
+    assert tool_id_macros(sibling("URTC-SMART-RACK/src/urtc_tool_ids.h")) == generated, "the copy of the header in the rack differs from the generated one"
+
+def test_the_tool_head_firmware_numbers_the_tools_the_same_way(sibling):
+    source = text(sibling("URTC/src/F303-master/firmware_common.h"))
+    generated = generated_tool_ids()
+    found = {m.group(1): int(m.group(2)) for m in re.finditer(r"(?m)^\s*TOOL_(?:MODE_)?(\w+)\s*=\s*(\d+)", source)}
+    assert found, "the tool enumeration of the firmware is no longer written as NAME = number"
+    shared = {name: number for name, number in found.items() if f"URTC_TOOL_ID_{name}" in generated}
+    assert shared, "no tool name of the firmware matches the tool file"
+    for name, number in shared.items():
+        assert generated[f"URTC_TOOL_ID_{name}"] == number, name
