@@ -13,7 +13,7 @@
   <img src="https://img.shields.io/badge/Format-JSON%20%2B%20Python-083fa1.svg" alt="Format">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
   <img src="https://img.shields.io/badge/Version-0.0.8-0f6cbd.svg" alt="Version">
-  <img src="https://img.shields.io/badge/Tests-713-2ea44f.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Tests-718-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
 
@@ -31,7 +31,7 @@
 |---|---|
 | Version | `0.0.8` |
 | Reifegrad | Gerüst |
-| Tests | 713 |
+| Tests | 718 |
 | Technik | JSON / Python |
 | Auf echter Hardware | Nur simuliert: gegen Emulatoren, Attrappen oder Simulatoren getestet; für diese Version ist kein Lauf auf echter Hardware vermerkt |
 
@@ -103,7 +103,7 @@ python -m mypy                                       # die Typprüfung von urtc_
 
 ## 🧪 Tests
 
-Die Suite hat 713 Tests (`python -m pytest tests -q`). Sie prüfen die Spezifikation gegen ihr Schema, die erzeugten C-, TypeScript- und Python-Dateien gegen das, was die Generatoren schreiben, die Konformitätsvektoren in Python, in TypeScript mit Node und in C mit einem Host-Compiler, den SLCAN-Codec und die Transporte mit Attrappen, die virtuelle Platine, den signierten Selbstaktualisierungsablauf und den Vergleich mit den Repositorys, die neben diesem ausgecheckt sind. Einige Tests werden übersprungen, wenn ein optionales Werkzeug (Node, ein C-Compiler, PySide6) oder ein Nachbar-Repository fehlt. `python -m mypy` prüft die Typen des Pakets.
+Die Suite hat 718 Tests (`python -m pytest tests -q`). Sie prüfen die Spezifikation gegen ihr Schema, die erzeugten C-, TypeScript- und Python-Dateien gegen das, was die Generatoren schreiben, die Konformitätsvektoren in Python, in TypeScript mit Node und in C mit einem Host-Compiler, den SLCAN-Codec und die Transporte mit Attrappen, die virtuelle Platine, den signierten Selbstaktualisierungsablauf und den Vergleich mit den Repositorys, die neben diesem ausgecheckt sind. Einige Tests werden übersprungen, wenn ein optionales Werkzeug (Node, ein C-Compiler, PySide6) oder ein Nachbar-Repository fehlt. `python -m mypy` prüft die Typen des Pakets.
 
 ## 🏗️ Build und Veröffentlichung
 

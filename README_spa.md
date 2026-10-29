@@ -13,7 +13,7 @@
   <img src="https://img.shields.io/badge/Format-JSON%20%2B%20Python-083fa1.svg" alt="Format">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
   <img src="https://img.shields.io/badge/Version-0.0.8-0f6cbd.svg" alt="Version">
-  <img src="https://img.shields.io/badge/Tests-713-2ea44f.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Tests-718-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
 
@@ -31,7 +31,7 @@
 |---|---|
 | Versión | `0.0.8` |
 | Madurez | Andamiaje |
-| Tests | 713 |
+| Tests | 718 |
 | Tecnología | JSON / Python |
 | En hardware real | Solo simulado: probado con emuladores, dobles de prueba o simuladores; no consta ninguna ejecución en hardware real para esta versión |
 
@@ -103,7 +103,7 @@ python -m mypy                                       # la comprobación de tipos
 
 ## 🧪 Pruebas
 
-La suite tiene 713 pruebas (`python -m pytest tests -q`). Comprueban la especificación contra su esquema, los archivos generados en C, TypeScript y Python contra lo que escriben los generadores, los vectores de conformidad en Python, en TypeScript con Node y en C con un compilador del equipo, el códec SLCAN y los transportes con simulados, la placa virtual, el flujo de autoactualización firmada y la comparación con los repositorios que estén junto a este. Algunas pruebas se omiten si falta una herramienta opcional (Node, un compilador de C, PySide6) o un repositorio vecino. `python -m mypy` revisa los tipos del paquete.
+La suite tiene 718 pruebas (`python -m pytest tests -q`). Comprueban la especificación contra su esquema, los archivos generados en C, TypeScript y Python contra lo que escriben los generadores, los vectores de conformidad en Python, en TypeScript con Node y en C con un compilador del equipo, el códec SLCAN y los transportes con simulados, la placa virtual, el flujo de autoactualización firmada y la comparación con los repositorios que estén junto a este. Algunas pruebas se omiten si falta una herramienta opcional (Node, un compilador de C, PySide6) o un repositorio vecino. `python -m mypy` revisa los tipos del paquete.
 
 ## 🏗️ Compilación y publicación
 
