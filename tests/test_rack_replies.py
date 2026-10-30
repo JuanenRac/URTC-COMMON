@@ -84,3 +84,14 @@ def test_the_simulated_rack_gives_the_replies_of_the_shared_scenarios():
 def test_every_reason_is_in_the_shared_vectors():
     seen = {rk.parse_reply(bytes.fromhex(step["reply"]))["reason"] for scenario in VECTORS["scenarios"] for step in scenario["steps"] if step["reply"]}
     assert seen == set(rk.REPLY_CODES)
+
+
+def test_the_interval_between_commands_can_be_changed_or_switched_off():
+    rack = rk.SimulatedRack(min_interval_ms=0)
+    assert rack.receive(rk.encode_set_preheat(1, 0, 200), 0).reason == "applied"
+    assert rack.receive(rk.encode_set_preheat(2, 0, 210), 1).reason == "applied"        # no limit: nothing is held
+    slow = rk.SimulatedRack(min_interval_ms=500)
+    assert slow.receive(rk.encode_set_preheat(1, 0, 200), 0).reason == "applied"
+    assert slow.receive(rk.encode_set_preheat(2, 0, 210), 200).reason == "held_rate"    # each held frame keeps the link alive (the watchdog is 250 ms)
+    assert slow.receive(rk.encode_set_preheat(2, 0, 210), 400).reason == "held_rate"
+    assert slow.receive(rk.encode_set_preheat(2, 0, 210), 500).reason == "applied"

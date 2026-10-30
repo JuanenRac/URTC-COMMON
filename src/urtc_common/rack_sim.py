@@ -272,6 +272,7 @@ class SimulatedRack:
     """What a rack does with the frames it receives. Time is passed in; nothing here reads a clock."""
 
     preheat_max_ms: int | None = PREHEAT_MAX_MS
+    min_interval_ms: int = COMMAND_MIN_INTERVAL_MS  # the least time between two commands accepted for one tool; 0 = no limit
     slots: list[Slot] = field(default_factory=lambda: [Slot() for _ in range(SLOTS)])
     last_rx_ms: int | None = None
     last_seq: dict[int, int] = field(default_factory=dict)
@@ -377,7 +378,7 @@ class SimulatedRack:
         if prev is not None and (((seq - prev) & 0xFF) == 0 or ((seq - prev) & 0xFF) >= 128):
             return told(Reply("ack", "none", tool, None, "retransmission already applied"), "repeat")
         last = self.last_accept_ms.get(tool)
-        if last is not None and ((now_ms - last) & 0xFFFFFFFF) < COMMAND_MIN_INTERVAL_MS:
+        if self.min_interval_ms > 0 and last is not None and ((now_ms - last) & 0xFFFFFFFF) < self.min_interval_ms:
             return told(Reply("nack", "none", tool, None, "held: too soon after the previous command for this tool"), "held_rate")
         self.last_accept_ms[tool] = now_ms
         self.last_seq[tool] = seq
