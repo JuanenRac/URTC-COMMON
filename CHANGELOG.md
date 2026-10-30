@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The steps of a test plan are worded in the eight languages:** the catalog of the tester has the texts of every message a plan step gives (answers missing, wrong tool, old firmware, value out of range, operator confirmation and the rest), with the portuguese of Portugal.
+
 ## [0.1.0] - Free configuration of a head as a contract, the history of the evidence, the rack reasons in eight languages, a rack simulator that answers like the rack and the lights of Project status following the manifest
 
 - **Free configuration of a head (jumpers `0x1F`) is a contract:** a rack no longer takes that reading for "no tool": it asks the head with `0x1A3`, accepts only an answer that names a tool (`0x1F` and a selection of 1 to 25) and keeps the head in the safe state, with no target and no pre-heat order, until then. `docs/FREE_TOOL.md` fixes the rules (the query, which answers are valid, timeout, attempts, back-off and refresh, and what a change of tool or a lost answer does); `rack_sim` has `classify_jumper`, `parse_free_tool_reply`, `FreeToolConfig`, `FreeToolResolver` and the slot calls `set_slot_jumpers`, `free_tool_step` and `slot_identity`; `conformance/rack_vectors.json` and `generated/rack_vectors.h` carry the jumper readings, the answers and fourteen query scenarios (also across the wrap of the clock) that the rack firmware replays.
