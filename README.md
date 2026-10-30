@@ -45,7 +45,7 @@
 | Part | Status | What the repository can show |
 | --- | :---: | --- |
 | Software | 🟡 | Shared code used by the other programs; checked only by tests on a PC. |
-| Tests | 🟢 | The test suite passes in the CI on every push. |
+| Tests | 🟡 | The test suite passes in the CI on every push. |
 | Security | 🟡 | Releases are signed with Ed25519 and checked before use; the key handling was not reviewed by anyone else. |
 | Documentation | 🟡 | README in eight languages and reference documents; the translations were not reviewed by native speakers. |
 

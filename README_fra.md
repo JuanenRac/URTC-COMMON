@@ -45,7 +45,7 @@
 | Partie | État | Ce que le dépôt peut démontrer |
 | --- | :---: | --- |
 | Logiciel | 🟡 | Code partagé par les autres programmes ; vérifié seulement par des tests sur PC. |
-| Tests | 🟢 | La suite de tests passe dans la CI à chaque push. |
+| Tests | 🟡 | La suite de tests passe dans la CI à chaque push. |
 | Sécurité | 🟡 | Les versions sont signées en Ed25519 et vérifiées avant usage ; la gestion des clés n'a été relue par personne d'autre. |
 | Documentation | 🟡 | README en huit langues et documents de référence ; les traductions n'ont pas été relues par des locuteurs natifs. |
 

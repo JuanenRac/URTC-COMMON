@@ -45,7 +45,7 @@
 | Parte | Estado | Lo que el repositorio puede demostrar |
 | --- | :---: | --- |
 | Software | 🟡 | Código compartido que usan los demás programas; comprobado solo con pruebas en un PC. |
-| Pruebas | 🟢 | La batería de pruebas pasa en la CI en cada subida. |
+| Pruebas | 🟡 | La batería de pruebas pasa en la CI en cada subida. |
 | Seguridad | 🟡 | Las versiones se firman con Ed25519 y se comprueban antes de usarlas; el manejo de las claves no lo ha revisado nadie más. |
 | Documentación | 🟡 | README en ocho idiomas y documentos de referencia; las traducciones no las ha revisado ningún hablante nativo. |
 

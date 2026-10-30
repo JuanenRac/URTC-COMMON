@@ -45,7 +45,7 @@
 | Parte | Stato | Ciò che il repository può dimostrare |
 | --- | :---: | --- |
 | Software | 🟡 | Codice condiviso dagli altri programmi; verificato solo con test su PC. |
-| Test | 🟢 | La suite di test passa nella CI a ogni push. |
+| Test | 🟡 | La suite di test passa nella CI a ogni push. |
 | Sicurezza | 🟡 | Le versioni sono firmate con Ed25519 e verificate prima dell'uso; la gestione delle chiavi non è stata rivista da nessun altro. |
 | Documentazione | 🟡 | README in otto lingue e documenti di riferimento; le traduzioni non sono state riviste da madrelingua. |
 

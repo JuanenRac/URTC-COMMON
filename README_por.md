@@ -45,7 +45,7 @@
 | Parte | Estado | O que o repositório consegue demonstrar |
 | --- | :---: | --- |
 | Software | 🟡 | Código partilhado pelos outros programas; verificado só com testes num PC. |
-| Testes | 🟢 | A bateria de testes passa na CI em cada envio. |
+| Testes | 🟡 | A bateria de testes passa na CI em cada envio. |
 | Segurança | 🟡 | As versões são assinadas com Ed25519 e verificadas antes de usar; o tratamento das chaves não foi revisto por mais ninguém. |
 | Documentação | 🟡 | README em oito línguas e documentos de referência; as traduções não foram revistas por falantes nativos. |
 

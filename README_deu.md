@@ -45,7 +45,7 @@
 | Teil | Status | Was das Repository belegen kann |
 | --- | :---: | --- |
 | Software | 🟡 | Gemeinsamer Code der anderen Programme; nur durch Tests am PC geprüft. |
-| Tests | 🟢 | Die Testsuite besteht bei jedem Push in der CI. |
+| Tests | 🟡 | Die Testsuite besteht bei jedem Push in der CI. |
 | Sicherheit | 🟡 | Releases werden mit Ed25519 signiert und vor der Nutzung geprüft; der Umgang mit den Schlüsseln wurde von niemand anderem geprüft. |
 | Dokumentation | 🟡 | README in acht Sprachen und Referenzdokumente; die Übersetzungen wurden nicht von Muttersprachlern geprüft. |
 
