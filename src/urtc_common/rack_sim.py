@@ -425,7 +425,7 @@ class SimulatedRack:
         kind, tool = classify_jumper(raw_bits)
         self.free.pop(slot, None)
         self.invalid_slots.discard(slot)
-        if kind == "direct":
+        if tool is not None:
             self.set_slot(slot, tool, serial)
         else:
             self.set_slot(slot, TOOL_ID_NONE)
@@ -442,7 +442,7 @@ class SimulatedRack:
         if resolver is None:
             return False, "none"
         query, event = resolver.step(now_ms, reply)
-        if event in ("resolved", "changed"):
+        if event in ("resolved", "changed") and resolver.tool is not None:
             self.set_slot(slot, resolver.tool)
         elif event == "lost":
             self.set_slot(slot, TOOL_ID_NONE)
