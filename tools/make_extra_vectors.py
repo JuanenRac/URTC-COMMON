@@ -208,6 +208,51 @@ def rack_stream_scenarios() -> list[dict]:
     return out
 
 
+FREE_EVENT_ORDER = ("none", "resolved", "confirmed", "changed", "lost")  # free_tool_event_t of the rack firmware
+FREE_KIND_ORDER = ("direct", "free", "invalid")  # free_tool_kind_t of the rack firmware
+
+FREE_REPLIES = (
+    ("tool 3 chosen", "1F04"), ("tool 0 chosen", "1F01"), ("last tool (24) chosen", "1F19"), ("not set", "1F00"),
+    ("selection 26 names no tool", "1F1A"), ("selection 255", "1FFF"), ("jumpers do not read 31", "0A04"), ("jumpers read 30", "1E04"),
+    ("one byte only", "1F"), ("empty", ""), ("a trailing byte is ignored", "1F04AA"),
+)
+
+
+def free_tool_vectors() -> dict:
+    """Free configuration of a head (jumpers 31): how a jumper reading is classified, which answers of 0x1A3 name a tool, and short
+    scenarios of the query (timeout, retries, back-off, refresh, change of tool, loss) played by the reference model."""
+    cfg0 = rk.FreeToolConfig()
+    jumpers = [{"raw": raw, "kind": rk.classify_jumper(raw)[0], "tool": rk.classify_jumper(raw)[1]} for raw in (*range(32), 0x3F, 0xFF, 0x20)]
+    replies = [{"name": n, "payload": h, "tool": rk.parse_free_tool_reply(bytes.fromhex(h))} for n, h in FREE_REPLIES]
+    wrap = 0xFFFFFF00
+    plans = [
+        ("answered at once", {}, [(0, None), (100, "1F04"), (200, None)]),
+        ("silent head: three queries, then a pause, then a new round", {}, [(0, None), (249, None), (250, None), (500, None), (750, None), (2749, None), (2750, None)]),
+        ("answer after the pause", {}, [(0, None), (250, None), (500, None), (750, None), (2750, None), (2800, "1F0B")]),
+        ("selection not set", {}, [(0, None), (50, "1F00"), (2049, None), (2050, None)]),
+        ("answer of a head that is not in free mode", {}, [(0, None), (50, "0A04"), (2050, None)]),
+        ("short and oversized selections are refused", {}, [(0, None), (10, "1F"), (20, "1F1A"), (30, "1F19")]),
+        ("refresh confirms the same tool", {}, [(0, None), (10, "1F04"), (5009, None), (5010, None), (5020, "1F04"), (10019, None), (10020, None)]),
+        ("hot change of tool", {}, [(0, None), (10, "1F04"), (5010, None), (5020, "1F0B"), (5030, None)]),
+        ("answer withdrawn: not set again", {}, [(0, None), (10, "1F04"), (5010, None), (5020, "1F00"), (7019, None), (7020, None)]),
+        ("silent refresh withdraws the identity", {}, [(0, None), (10, "1F04"), (5010, None), (5260, None), (5510, None), (5760, None), (7760, None)]),
+        ("unsolicited answer is used", {}, [(30, "1F03"), (31, None), (40, "1F03")]),
+        ("refresh switched off", {"refresh_period_ms": 0}, [(0, None), (10, "1F04"), (100000, None)]),
+        ("one attempt per round", {"max_attempts": 1, "query_timeout_ms": 100, "retry_backoff_ms": 500}, [(0, None), (99, None), (100, None), (599, None), (600, None)]),
+        ("the clock wraps in the middle of a round", {}, [(wrap, None), (0xFFFFFFFA, None), (0xF4, None), (0x1EE, None), (0x9C0, None)]),
+    ]
+    out = []
+    for name, over, steps in plans:
+        cfg = rk.FreeToolConfig(**{**cfg0.__dict__, **over})
+        res = rk.FreeToolResolver(cfg)
+        rows = []
+        for t, h in steps:
+            query, event = res.step(t, None if h is None else bytes.fromhex(h))
+            rows.append({"time_ms": t, "reply": h, "query": query, "event": event, "tool": -1 if res.tool is None else res.tool})
+        out.append({"name": name, "config": cfg.__dict__, "steps": rows})
+    return {"defaults": cfg0.__dict__, "jumpers": jumpers, "replies": replies, "scenarios": out}
+
+
 def rack_vectors() -> dict:
     frames = []
     for name, seq, cmd, payload in (("set 200 C on the soldering iron", 1, 1, bytes([0, 0, 200])), ("set 0 on the hot air nozzle", 255, 1, bytes([19, 0, 0])),
@@ -271,7 +316,7 @@ def rack_vectors() -> dict:
                        "verdict": rk.verify_slot(occupied, commanded, measured, ambient, elapsed)})
     return {"format": 1, "about": "Frames, command checks, CAN data, link scenarios and thermal slot checks of the tool rack; the rack firmware and the simulator both pass them.",
             "frames": frames, "parse": parse, "validate": validate, "can": can, "scenarios": out_scen, "verify": verify,
-            "streams": rack_stream_scenarios(),
+            "streams": rack_stream_scenarios(), "free_tool": free_tool_vectors(),
             "limits": {"ceiling_c": rk.RACK_CEILING_C, "link_timeout_ms": rk.LINK_TIMEOUT_MS, "printer_c": rk.MAX_PREHEAT_C[10]}}
 
 
@@ -419,6 +464,11 @@ def rack_header(v: dict) -> str:
         "typedef struct { int scenario; const char *name; uint32_t time_ms; uint8_t len; uint8_t buf[24]; int action; int tool; int temp; int ack; uint8_t reply_len; uint8_t reply[9]; } rack_vec_step_t; // rack_action_t order; the reply frame (none: length 0)",
         "typedef struct { int stream; uint32_t time_ms; uint8_t len; uint8_t data[40]; } rack_vec_stream_event_t; // bytes that arrived together",
         "typedef struct { int stream; uint8_t len; uint8_t frame[22]; } rack_vec_stream_frame_t; // a frame the deframer must hand over, in order",
+        "typedef struct { uint32_t query_timeout_ms; uint8_t max_attempts; uint32_t retry_backoff_ms, refresh_period_ms; } rack_vec_free_config_t;",
+        "typedef struct { int raw; int kind; int tool; } rack_vec_free_jumper_t; // free_tool_kind_t order",
+        "typedef struct { const char *name; uint8_t len; uint8_t payload[4]; int tool; } rack_vec_free_reply_t; // -1: names no tool",
+        "typedef struct { const char *name; rack_vec_free_config_t config; } rack_vec_free_scenario_t;",
+        "typedef struct { int scenario; uint32_t time_ms; int has_reply; uint8_t len; uint8_t reply[4]; int query; int event; int tool; } rack_vec_free_step_t; // free_tool_event_t order; tool -1: no identity",
         "typedef struct { const char *name; uint32_t timeout_ms; uint32_t frames_ok, crc_errors, bad_headers, resyncs, timeouts, dropped_bytes; } rack_vec_stream_t;",
         "",
     ]
@@ -449,6 +499,26 @@ def rack_header(v: dict) -> str:
     for c in v["verify"]:
         measured = "NAN" if c["measured_c"] is None else repr(float(c["measured_c"])) + "f"
         lines.append(f'    {{"{c["name"]}", {1 if c["occupied"] else 0}, {c["commanded_c"]}, {measured}, {float(c["ambient_c"])!r}f, {c["elapsed_ms"]}u, {rk.SLOT_VERDICTS.index(c["verdict"])}}},')
+    ft = v["free_tool"]
+
+    def fcfg(c: dict) -> str:
+        return f'{{{c["query_timeout_ms"]}u, {c["max_attempts"]}, {c["retry_backoff_ms"]}u, {c["refresh_period_ms"]}u}}'
+
+    lines += ["};", "", f"static const rack_vec_free_config_t RACK_VEC_FREE_DEFAULTS = {fcfg(ft['defaults'])};", "", "static const rack_vec_free_jumper_t RACK_VEC_FREE_JUMPERS[] = {"]
+    for j in ft["jumpers"]:
+        lines.append(f'    {{{j["raw"]}, {FREE_KIND_ORDER.index(j["kind"])}, {-1 if j["tool"] is None else j["tool"]}}},')
+    lines += ["};", "", "static const rack_vec_free_reply_t RACK_VEC_FREE_REPLIES[] = {"]
+    for r in ft["replies"]:
+        b = bytes.fromhex(r["payload"])
+        lines.append(f'    {{"{r["name"]}", {len(b)}, {arr(b)}, {-1 if r["tool"] is None else r["tool"]}}},')
+    lines += ["};", "", "static const rack_vec_free_scenario_t RACK_VEC_FREE_SCENARIOS[] = {"]
+    for sc in ft["scenarios"]:
+        lines.append(f'    {{"{sc["name"]}", {fcfg(sc["config"])}}},')
+    lines += ["};", "", "static const rack_vec_free_step_t RACK_VEC_FREE_STEPS[] = {"]
+    for i, sc in enumerate(ft["scenarios"]):
+        for st in sc["steps"]:
+            b = bytes.fromhex(st["reply"] or "")
+            lines.append(f'    {{{i}, {st["time_ms"]}u, {0 if st["reply"] is None else 1}, {len(b)}, {arr(b)}, {1 if st["query"] else 0}, {FREE_EVENT_ORDER.index(st["event"])}, {st["tool"]}}},')
     lines += ["};", "", "static const rack_vec_stream_t RACK_VEC_STREAMS[] = {"]
     for s in v["streams"]:
         st = s["stats"]

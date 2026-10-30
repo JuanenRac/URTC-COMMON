@@ -76,6 +76,10 @@ Two links of the family do not travel on the CAN bus of the tool head but follow
 
 Version 1 of both frames was little-endian. A receiver at version 2 refuses a version 1 frame as an unsupported version, so an old sender can never be read as a different number. The CAN protocol of the tool head itself is unchanged (`protocol_version` stays at 1).
 
+## Free configuration of a head
+
+A head whose five ID jumpers all read 1 (`0x1F`) takes its tool from a register of its own F-RAM. A rack must not take that reading for "no tool" and must not guess: it asks with `0x1A3`, accepts only an answer that names a tool (`0x1F` followed by a selection of 1 to 25), and until then keeps the head in the safe state, with no target and no pre-heat order. The timing of the query lives in a configuration structure, not in the logic. The rules are in [`FREE_TOOL.md`](FREE_TOOL.md); `rack_sim.py` models them and `conformance/rack_vectors.json` (key `free_tool`) holds the vectors that the rack firmware replays.
+
 ## Known gaps and differences
 
 These are facts the specification records instead of hiding. None of them is changed by this repository.
