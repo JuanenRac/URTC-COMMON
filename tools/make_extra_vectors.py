@@ -244,6 +244,13 @@ def rack_vectors() -> dict:
             (0, rk.encode_set_preheat(50, 19, 300)), (100, rk.encode_set_preheat(50, 19, 300)), (1000, rk.encode_set_preheat(50, 19, 300))]},
         {"name": "noise changes nothing", "steps": [
             (0, rk.encode_set_preheat(1, 0, 200)), (10, b"\xA5\x01\x02"), (20, rk.encode_frame(2, 0x7E, b"")), (30, rk.encode_set_preheat(1, 6, 100))]},
+        {"name": "every refusal says why", "steps": [
+            (0, rk.encode_frame(1, 1, b"")), (10, rk.encode_frame(2, 1, bytes([0, 0]))), (20, rk.encode_set_preheat(3, 31, 0)),
+            (30, rk.encode_set_preheat(4, 0, 401)), (40, rk.encode_set_preheat(5, 27, 0)), (50, rk.encode_set_preheat(6, 6, 100)),
+            (60, rk.encode_frame(7, 0x40, bytes([1, 2])))]},
+        {"name": "a command that comes too soon is held and the next one is obeyed", "steps": [
+            (0, rk.encode_set_preheat(1, 0, 200)), (5, rk.encode_set_preheat(2, 0, 250)), (19, rk.encode_set_preheat(2, 0, 250)),
+            (20, rk.encode_set_preheat(2, 0, 250)), (25, rk.encode_set_preheat(1, 19, 300))]},
     ]
     out_scen = []
     for sc in scenarios:
@@ -354,29 +361,45 @@ class _Watchdog:
     def __init__(self) -> None:
         self.last_rx: int | None = None
         self.seq: dict[int, int] = {}
+        self.accepted: dict[int, int] = {}
 
     def decide(self, buf: bytes, now: int) -> dict:
-        none = {"action": "none", "tool": 0, "temp": 0, "ack": 0}
+        """The decision for a frame and the reply frame (hex) the rack sends for it; "" when nobody is told."""
+        none = {"action": "none", "tool": 0, "temp": 0, "ack": 0, "reply": ""}
         status, frame = rk.parse_frame(buf)
         if frame is None:
             return none
         if self.last_rx is not None and now - self.last_rx >= rk.LINK_TIMEOUT_MS:
             self.seq.clear()
+            self.accepted.clear()
         self.last_rx = now
+        seq = frame["seq"]
+
+        def reply(reason: str, tool: int) -> str:
+            return rk.encode_reply(seq, frame["cmd"], tool, reason).hex().upper()
+
         if frame["cmd"] != rk.CMD_SET_PREHEAT:
-            return none
+            return {**none, "reply": reply("unknown_command", rk.REPLY_TOOL_NONE)}
+        if not frame["payload"]:
+            return {**none, "reply": reply("wrong_length", rk.REPLY_TOOL_NONE)}
+        sent_tool = frame["payload"][0]
         status, tool, target = rk.validate_set_preheat(frame["payload"])
         if status != "ok":
-            if frame["payload"] and frame["payload"][0] <= rk.TOOL_ID_LAST:
-                return {"action": "safe_state", "tool": frame["payload"][0], "temp": 0, "ack": 0}
-            return none
+            told = reply(rk.STATUS_TO_REPLY[status], sent_tool)
+            if sent_tool <= rk.TOOL_ID_LAST:
+                return {"action": "safe_state", "tool": sent_tool, "temp": 0, "ack": 0, "reply": told}
+            return {**none, "reply": told}
         prev = self.seq.get(tool)
         if prev is not None:
-            d = (frame["seq"] - prev) & 0xFF
+            d = (seq - prev) & 0xFF
             if d == 0 or d >= 128:
-                return {**none, "ack": 1}
-        self.seq[tool] = frame["seq"]
-        return {"action": "set_target", "tool": tool, "temp": target, "ack": 1}
+                return {**none, "ack": 1, "reply": reply("repeat", tool)}
+        last = self.accepted.get(tool)
+        if last is not None and ((now - last) & 0xFFFFFFFF) < rk.COMMAND_MIN_INTERVAL_MS:
+            return {**none, "reply": reply("held_rate", tool)}
+        self.accepted[tool] = now
+        self.seq[tool] = seq
+        return {"action": "set_target", "tool": tool, "temp": target, "ack": 1, "reply": reply("applied", tool)}
 
 
 def rack_header(v: dict) -> str:
@@ -393,7 +416,7 @@ def rack_header(v: dict) -> str:
         "typedef struct { const char *name; uint8_t len; uint8_t payload[4]; int status; int tool; int target; } rack_vec_validate_t; // rack_command_status_t order",
         "typedef struct { const char *name; uint8_t seq, tool; uint16_t target; uint8_t data[8]; } rack_vec_can_t;",
         "typedef struct { const char *name; int occupied; int commanded_c; float measured_c; float ambient_c; uint32_t elapsed_ms; int verdict; } rack_vec_verify_t; // slot_verdict_t order",
-        "typedef struct { int scenario; const char *name; uint32_t time_ms; uint8_t len; uint8_t buf[24]; int action; int tool; int temp; int ack; } rack_vec_step_t; // rack_action_t order",
+        "typedef struct { int scenario; const char *name; uint32_t time_ms; uint8_t len; uint8_t buf[24]; int action; int tool; int temp; int ack; uint8_t reply_len; uint8_t reply[9]; } rack_vec_step_t; // rack_action_t order; the reply frame (none: length 0)",
         "typedef struct { int stream; uint32_t time_ms; uint8_t len; uint8_t data[40]; } rack_vec_stream_event_t; // bytes that arrived together",
         "typedef struct { int stream; uint8_t len; uint8_t frame[22]; } rack_vec_stream_frame_t; // a frame the deframer must hand over, in order",
         "typedef struct { const char *name; uint32_t timeout_ms; uint32_t frames_ok, crc_errors, bad_headers, resyncs, timeouts, dropped_bytes; } rack_vec_stream_t;",
@@ -420,7 +443,8 @@ def rack_header(v: dict) -> str:
     for i, sc in enumerate(v["scenarios"]):
         for s in sc["steps"]:
             b = bytes.fromhex(s["frame"])
-            lines.append(f'    {{{i}, "{sc["name"]}", {s["time_ms"]}, {len(b)}, {arr(b)}, {ACTION_ORDER.index(s["action"])}, {s["tool"]}, {s["temp"]}, {s["ack"]}}},')
+            reply = bytes.fromhex(s["reply"])
+            lines.append(f'    {{{i}, "{sc["name"]}", {s["time_ms"]}, {len(b)}, {arr(b)}, {ACTION_ORDER.index(s["action"])}, {s["tool"]}, {s["temp"]}, {s["ack"]}, {len(reply)}, {arr(reply)}}},')
     lines += ["};", "", "static const rack_vec_verify_t RACK_VEC_VERIFY[] = {"]
     for c in v["verify"]:
         measured = "NAN" if c["measured_c"] is None else repr(float(c["measured_c"])) + "f"

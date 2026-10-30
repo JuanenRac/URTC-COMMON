@@ -22,8 +22,21 @@ def generated(name: str):
     return _NAMESPACE[name]
 
 
+_CAN_ID_HEADER = Path(__file__).resolve().parent.parent / "generated" / "urtc_can_ids.h"
+_CAN_ID_VALUES: dict[str, str] = {}
+
+
+def expand_can_id_macros(source: str) -> str:
+    """The firmware names its identifiers with the URTC_CAN_ID_ macros of the generated header; the cross-checks below read numbers, so a macro is written out as its value."""
+    if not _CAN_ID_VALUES:
+        for name, value in re.findall(r"#define (URTC_CAN_ID_\w+) (0x[0-9A-Fa-f]+)u", _CAN_ID_HEADER.read_text(encoding="utf-8")):
+            _CAN_ID_VALUES[name] = value
+    return re.sub(r"\bURTC_CAN_ID_\w+\b", lambda m: _CAN_ID_VALUES.get(m.group(0), m.group(0)), source)
+
+
 def text(path: Path) -> str:
-    return path.read_text(encoding="utf-8", errors="replace")
+    content = path.read_text(encoding="utf-8", errors="replace")
+    return expand_can_id_macros(content) if path.suffix in (".c", ".h") and "urtc_can_ids.h" not in path.name else content
 
 
 def python_ints(path: Path, prefix: str = "") -> dict[str, int]:

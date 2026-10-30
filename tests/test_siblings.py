@@ -275,10 +275,13 @@ def test_hardware_ids_and_patch_constants_agree(spec, sibling):
     assert web["PATCH_FLAG_ACCEPTS_IN_END_UPDATE"] == const["PATCH_FLAG_ACCEPTS_IN_END_UPDATE"]
     boot = c_defines(sibling(BOOT_COMMON))
     assert boot["THIS_HARDWARE_ID"] == const["HARDWARE_ID_MAIN"]
-    wire = c_defines(sibling(VERSION_WIRE))
-    assert wire["URTC_PATCH_UNKNOWN"] == const["PATCH_UNKNOWN"] and wire["URTC_MINOR_PATCH_FLAG"] == const["PATCH_FLAG"] and wire["URTC_PATCH_MAX"] == const["PATCH_MAX"]
-    assert wire["URTC_PATCH_FLAG_END_UPDATE_PATCH"] == const["PATCH_FLAG_ACCEPTS_IN_END_UPDATE"]
-    assert wire["URTC_SLAVE_VERSION_EXT_MARKER"] == const["SLAVE_VERSION_EXT_MARKER"]
+    # the wire header takes its constants from the copy of the generated header that the firmware includes
+    wire_source = text(sibling(VERSION_WIRE))
+    assert '#include "urtc_can_ids.h"' in wire_source and re.search(r"URTC_MINOR_PATCH_FLAG\s+URTC_PATCH_FLAG\b", wire_source)
+    ids = c_defines(sibling("URTC/src/common/urtc_can_ids.h"))
+    assert ids["URTC_PATCH_UNKNOWN"] == const["PATCH_UNKNOWN"] and ids["URTC_PATCH_FLAG"] == const["PATCH_FLAG"] and ids["URTC_PATCH_MAX"] == const["PATCH_MAX"]
+    assert ids["URTC_PATCH_FLAG_ACCEPTS_IN_END_UPDATE"] == const["PATCH_FLAG_ACCEPTS_IN_END_UPDATE"]
+    assert ids["URTC_SLAVE_VERSION_EXT_MARKER"] == const["SLAVE_VERSION_EXT_MARKER"]
 
 
 def test_the_slave_hardware_id_of_the_slave_firmware(spec, sibling):

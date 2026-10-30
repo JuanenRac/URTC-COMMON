@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The rack simulator answers like the rack:** `rack_sim` now writes and reads the reply frame of the rack (an acknowledgement `0x81` for an applied command or a repeat, a refusal `0x82` with the reason: wrong length, tool absent, temperature out of range, tool invalid, not heatable, held for coming too soon, unknown command), holds a second command for one tool that comes within 20 ms of the previous one as the firmware does, and every step of the shared link scenarios in `conformance/rack_vectors.json` carries the reply frame that the rack firmware reproduces byte for byte (two scenarios were added: every refusal with its reason, and a command that comes too soon). `encode_reply` and `parse_reply` are what the programs use to read the answer.
+
 ## [0.0.9] - A common evidence format, the compatibility matrix, the firmware file names and the tool identifiers from the spec
 
 - **The names of the files of a firmware release are written once:** `spec/firmware_images.json` holds the pattern of an image name and the files that travel with it, `tools/generate_tools.py` writes `src/urtc_common/firmware_names.py` and `generated/firmwareNames.ts` from it, the compatibility check reads the bundled firmware with it, and the tests compare it with the images of the flasher and with the suffixes the flasher and the web studio use (`vendor_copy.py` sets `firmware_names_ts` and, with the compatibility code, `compat_data`).

@@ -442,11 +442,12 @@ def test_the_stream_vectors_say_what_a_person_would_expect_of_a_serial_line():
 def test_the_rack_acts_on_the_commands_of_a_noisy_serial_line():
     rack = rk.SimulatedRack()
     rack.set_slot(0, 0, 7)
+    rack.set_slot(1, 19, 8)
     line = b"\x00\xFF" + rk.encode_set_preheat(1, 0, 200)[:4]
     assert rack.receive_stream(line, 0) == []                    # the frame is not complete yet: nothing is acted on
-    replies = rack.receive_stream(rk.encode_set_preheat(1, 0, 200)[4:] + b"\x13" + rk.encode_set_preheat(2, 0, 250), 5)
+    replies = rack.receive_stream(rk.encode_set_preheat(1, 0, 200)[4:] + b"\x13" + rk.encode_set_preheat(2, 19, 250), 5)
     assert [r.action for r in replies] == ["set_target", "set_target"]
-    assert rack.slots[0].target_c == 250
+    assert rack.slots[0].target_c == 200 and rack.slots[1].target_c == 250
     assert rack.deframer.stats.frames_ok == 2 and rack.deframer.stats.dropped_bytes == 3
 
 
