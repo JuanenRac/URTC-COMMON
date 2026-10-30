@@ -4,11 +4,17 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [0.1.0] - Free configuration of a head as a contract, the history of the evidence, the rack reasons in eight languages, a rack simulator that answers like the rack and the lights of Project status following the manifest
+
 - **Free configuration of a head (jumpers `0x1F`) is a contract:** a rack no longer takes that reading for "no tool": it asks the head with `0x1A3`, accepts only an answer that names a tool (`0x1F` and a selection of 1 to 25) and keeps the head in the safe state, with no target and no pre-heat order, until then. `docs/FREE_TOOL.md` fixes the rules (the query, which answers are valid, timeout, attempts, back-off and refresh, and what a change of tool or a lost answer does); `rack_sim` has `classify_jumper`, `parse_free_tool_reply`, `FreeToolConfig`, `FreeToolResolver` and the slot calls `set_slot_jumpers`, `free_tool_step` and `slot_identity`; `conformance/rack_vectors.json` and `generated/rack_vectors.h` carry the jumper readings, the answers and fourteen query scenarios (also across the wrap of the clock) that the rack firmware replays.
 - **The lights of Project status follow the evidence of the manifest:** the manifest says how far the repository has been shown to work (`evidence`: `host-test`, `simulator`, `bench` or `field`) and the validator fails when a light is above what that evidence and the maturity allow (`tools/status_lights.py`), so a green that never ran on real hardware cannot come back.
 - **A history of the evidence of every program:** `evidence_history` reads a folder of `urtc-evidence/1` records (`.json` and `.jsonl`), checks each one, and lists them newest first with filters (kind, outcome, tool, time, text), a summary and a text, CSV or JSON output; a record edited after it was written, a file that is not JSON or a record of another format is listed as not valid with what is wrong, never skipped. It reads only, and it is part of the `evidence` set that the programs copy. The flasher, the tester and the updater each have a command for it.
 - **The rack reasons are worded in the eight languages for the tester and the web studio:** the catalogs of the two programs have the nine reasons of a reply (applied, repeat, wrong length, tool absent, temperature out of range, tool invalid, not heatable, held for coming too soon, unknown command), and the simulator takes the minimum interval between commands as a setting (`min_interval_ms`, 0 = no limit).
 - **The rack simulator answers like the rack:** `rack_sim` now writes and reads the reply frame of the rack (an acknowledgement `0x81` for an applied command or a repeat, a refusal `0x82` with the reason: wrong length, tool absent, temperature out of range, tool invalid, not heatable, held for coming too soon, unknown command), holds a second command for one tool that comes within 20 ms of the previous one as the firmware does, and every step of the shared link scenarios in `conformance/rack_vectors.json` carries the reply frame that the rack firmware reproduces byte for byte (two scenarios were added: every refusal with its reason, and a command that comes too soon). `encode_reply` and `parse_reply` are what the programs use to read the answer.
+
+## [0.1.0]
+
+- Build version synchronized with `urtc.project.json` and the repository-native version source.
 
 ## [0.0.9] - A common evidence format, the compatibility matrix, the firmware file names and the tool identifiers from the spec
 
