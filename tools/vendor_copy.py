@@ -71,7 +71,7 @@ SETS = {
     "firmware_names_ts": ["generated/firmwareNames.ts"],
     "compat_qt": ["src/urtc_common/compat_qt.py"],
     "compat_qml": ["qml/CompatDialog.qml"],
-    "evidence": ["src/urtc_common/evidence.py"],
+    "evidence": ["src/urtc_common/evidence.py", "src/urtc_common/evidence_history.py"],
     "tool_ids_c": ["generated/urtc_tool_ids.h"],
     "firmware_base": ["firmware_base/urtc_crc8.h"],
     "firmware_test": ["firmware_base/urtc_test.h"],
