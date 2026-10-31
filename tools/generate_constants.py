@@ -101,6 +101,15 @@ def mn_params(frame: dict) -> list[tuple[str, str]]:
     return [(f["name"], "bytes" if f["type"] == "bytes" else "int") for f in frame["layout"]["fields"]]
 
 
+def rack_key(frame: dict) -> str:
+    return "rack_" + frame["name"].lower()
+
+
+def rack_params(frame: dict) -> list[tuple[str, str]]:
+    """(name, kind) of the values a rack builder takes: the fixed bytes are filled in, so they are not a parameter."""
+    return [(f["name"], "bytes" if f["type"] == "bytes" else "int") for f in frame["layout"]["fields"] if "fixed" not in f]
+
+
 def runtime_field(field: dict) -> dict:
     """The part of a field the encoder and the decoder need, as plain data."""
     data = {"name": field["name"], "type": field["type"], "offset": field["offset"]}
@@ -140,6 +149,14 @@ def runtime_layouts(spec: dict) -> dict[str, dict]:
                 "dlc": layout["dlc"],
                 "fields": fields,
             }
+    for frame in spec.get("rack", {}).get("frames", []):
+        layout = frame["layout"]
+        out[rack_key(frame)] = {
+            "id": int(frame["id"], 16),
+            "role": layout["role"],
+            "dlc": layout["dlc"],
+            "fields": [runtime_field(field) for field in layout["fields"]],
+        }
     for frame in spec.get("multinode", {}).get("frames", []):
         layout = frame["layout"]
         out[mn_key(frame)] = {
@@ -438,6 +455,47 @@ def render_python_multinode(spec: dict) -> list[str]:
     return lines
 
 
+def render_python_rack(spec: dict) -> list[str]:
+    rack = spec.get("rack")
+    if not rack:
+        return []
+    lines: list[str] = []
+    add = lines.append
+    add("# ---------------------------------------------------------------------------")
+    add("# " + rack["title"] + ": see docs/PROTOCOL_TABLE.md")
+    add("# ---------------------------------------------------------------------------")
+    for const in rack["constants"]:
+        add(f"{const['name']} = {const_value(const['value'])}  # {const['title']}" + (f" ({const['unit']})" if const.get("unit") else ""))
+    add(f"RACK_ID_FIRST = {hex_id(int(rack['range']['first'], 16))}  # first identifier reserved for the rack")
+    add(f"RACK_ID_LAST = {hex_id(int(rack['range']['last'], 16))}  # last identifier reserved for the rack")
+    for frame in rack["frames"]:
+        add(f"RACK_ID_{frame['name']} = {hex_id(int(frame['id'], 16))}  # {frame['title']}")
+    for reason in rack["reply_reasons"]:
+        add(f"RACK_REPLY_{reason['name']} = {reason['value']}  # {reason['kind']}: {reason['title']}")
+    add("RACK_REPLY_REASONS = " + pyrepr({r["value"]: r["name"].lower() for r in rack["reply_reasons"]}))
+    add("RACK_REPLY_ACKNOWLEDGEMENTS = " + pyrepr(tuple(r["value"] for r in rack["reply_reasons"] if r["kind"] == "acknowledgement")))
+    add("RACK_NAMES = " + pyrepr({int(f["id"], 16): f["name"] for f in rack["frames"]}))
+    add("RACK_DIRECTIONS = " + pyrepr({int(f["id"], 16): f["direction"] for f in rack["frames"]}))
+    add("")
+    add("")
+    for frame in rack["frames"]:
+        key = rack_key(frame)
+        params = rack_params(frame)
+        sig = ", ".join(f"{n}: {'bytes' if k == 'bytes' else 'int'}" for n, k in params)
+        call = ", ".join(f"{n}={n}" for n, _ in params)
+        add(f"def encode_{key}({sig}) -> tuple[int, bytes]:")
+        add(f'    """{frame["title"]} ({hex_id(int(frame["id"], 16))}, {frame["layout"]["role"]})."""')
+        add(f'    return encode("{key}", {call})')
+        add("")
+        add("")
+        add(f"def decode_{key}(data: bytes, strict: bool = False) -> dict | None:")
+        add(f'    """Fields of {hex_id(int(frame["id"], 16))}, or None when the payload is too short."""')
+        add(f'    return decode("{key}", data, strict)')
+        add("")
+        add("")
+    return lines
+
+
 def render_python(spec: dict) -> str:
     enums = spec["enums"]
     layouts = runtime_layouts(spec)
@@ -549,6 +607,7 @@ def render_python(spec: dict) -> str:
             add(f'    return decode("{key}", data, strict)')
             add("")
             add("")
+    lines.extend(render_python_rack(spec))
     lines.extend(render_python_multinode(spec))
     return "\n".join(lines).rstrip("\n") + "\n"
 
@@ -795,6 +854,46 @@ def render_typescript_multinode(spec: dict) -> list[str]:
     return lines
 
 
+def render_typescript_rack(spec: dict) -> list[str]:
+    rack = spec.get("rack")
+    if not rack:
+        return []
+    lines: list[str] = []
+    add = lines.append
+    add("// ---------------------------------------------------------------------------")
+    add("// " + rack["title"] + ": see docs/PROTOCOL_TABLE.md")
+    add("// ---------------------------------------------------------------------------")
+    for const in rack["constants"]:
+        add(f"export const {const['name']} = {const_value(const['value'])}; // {const['title']}" + (f" ({const['unit']})" if const.get("unit") else ""))
+    add(f"export const RACK_ID_FIRST = {hex_id(int(rack['range']['first'], 16))}; // first identifier reserved for the rack")
+    add(f"export const RACK_ID_LAST = {hex_id(int(rack['range']['last'], 16))}; // last identifier reserved for the rack")
+    for frame in rack["frames"]:
+        add(f"export const RACK_ID_{frame['name']} = {hex_id(int(frame['id'], 16))}; // {frame['title']}")
+    for reason in rack["reply_reasons"]:
+        add(f"export const RACK_REPLY_{reason['name']} = {reason['value']}; // {reason['kind']}: {reason['title']}")
+    add("export const RACK_REPLY_REASONS: Record<number, string> = " + jsrepr({str(r["value"]): r["name"].lower() for r in rack["reply_reasons"]}) + ";")
+    add("export const RACK_REPLY_ACKNOWLEDGEMENTS: number[] = " + jsrepr([r["value"] for r in rack["reply_reasons"] if r["kind"] == "acknowledgement"]) + ";")
+    add("export const RACK_NAMES: Record<number, string> = " + jsrepr({str(int(f["id"], 16)): f["name"] for f in rack["frames"]}) + ";")
+    add("export const RACK_DIRECTIONS: Record<number, string> = " + jsrepr({str(int(f["id"], 16)): f["direction"] for f in rack["frames"]}) + ";")
+    add("")
+    for frame in rack["frames"]:
+        key = rack_key(frame)
+        cname = camel(key)
+        cname = cname[0].upper() + cname[1:]
+        params = [f"{camel(n)}: {'number[] | Uint8Array' if k == 'bytes' else 'number'}" for n, k in rack_params(frame)]
+        inner = ", ".join(f"{n}: {camel(n)}" for n, _ in rack_params(frame))
+        add(f"/** {frame['title']} ({hex_id(int(frame['id'], 16))}, {frame['layout']['role']}). */")
+        add(f"export function encode{cname}({', '.join(params)}): {{ id: number; data: number[] }} {{")
+        add(f"  return encode('{key}', {{ {inner} }});")
+        add("}")
+        add(f"/** Fields of {hex_id(int(frame['id'], 16))}, or null when the payload is too short. */")
+        add(f"export function decode{cname}(data: ArrayLike<number>, strict = false): Fields | null {{")
+        add(f"  return decode('{key}', data, strict);")
+        add("}")
+        add("")
+    return lines
+
+
 def render_typescript(spec: dict) -> str:
     enums = spec["enums"]
     layouts = runtime_layouts(spec)
@@ -885,6 +984,7 @@ def render_typescript(spec: dict) -> str:
             add(f"  return decode('{key}', data, strict);")
             add("}")
             add("")
+    lines.extend(render_typescript_rack(spec))
     lines.extend(render_typescript_multinode(spec))
     return "\n".join(lines).rstrip("\n") + "\n"
 
@@ -946,6 +1046,24 @@ def render_c(spec: dict) -> str:
         for entry in block["entries"]:
             add(f"#define {prefixes[key]}{entry['name']} 0x{entry['id']:02X}u")
     add("")
+    rack = spec.get("rack")
+    if rack:
+        add("/* --- " + rack["title"] + ": see docs/PROTOCOL_TABLE.md --- */")
+        for const in rack["constants"]:
+            add(f"#define URTC_{const['name']} 0x{const['value']:X}u  /* {const['title']} */")
+        add(f"#define URTC_RACK_ID_FIRST 0x{int(rack['range']['first'], 16):03X}u  /* first identifier reserved for the rack */")
+        add(f"#define URTC_RACK_ID_LAST 0x{int(rack['range']['last'], 16):03X}u  /* last identifier reserved for the rack */")
+        for frame in rack["frames"]:
+            add(f"#define URTC_RACK_ID_{frame['name']} 0x{int(frame['id'], 16):03X}u  /* {frame['title']} */")
+            key = rack_key(frame).upper()
+            low, high = dlc_min_max(frame["layout"]["dlc"])
+            add(f"#define URTC_DLC_{key}_MIN {low}u")
+            add(f"#define URTC_DLC_{key}_MAX {high}u")
+            for field in frame["layout"]["fields"]:
+                add(f"#define URTC_{key}_{field['name'].upper()}_OFFSET {field['offset']}u")
+        for reason in rack["reply_reasons"]:
+            add(f"#define URTC_RACK_REPLY_{reason['name']} {reason['value']}u  /* {reason['kind']}: {reason['title']} */")
+        add("")
     mn = spec.get("multinode")
     if mn:
         add("/* --- multinode extension (" + mn.get("status_title", mn["status"].replace("_", " ")) + "): see docs/MULTINODE.md --- */")
@@ -1020,6 +1138,24 @@ def render_table(spec: dict) -> str:
         )
     lines += ["", f"{len(spec['messages'])} identifiers, {len(spec['tools'])} tool values, "
               f"{sum(len(b['entries']) for b in spec['registers'].values())} slave registers, {len(spec['magic_payloads'])} magic payloads.", ""]
+    rack = spec.get("rack")
+    if rack:
+        lines += [
+            "## Tool rack",
+            "",
+            f"{rack['title']}. {rack['about']}",
+            "",
+            "| ID | Name | Dir | DLC | Notes |",
+            "|---|---|---|---|---|",
+        ]
+        arrows_rack = {"host_to_rack": "H>R", "rack_to_host": "R>H"}
+        for frame in rack["frames"]:
+            lines.append(f"| `{frame['id']}` | RACK_{frame['name']} | {arrows_rack[frame['direction']]} | {dlc_text(frame['layout']['dlc'])} | {frame['title']} |")
+        lines += ["", "Reply payload: byte 0 the command answered, byte 1 the tool (255 = none), byte 2 the reason.", "",
+                  "| Reason | Name | Kind | Meaning |", "|---|---|---|---|"]
+        for reason in rack["reply_reasons"]:
+            lines.append(f"| {reason['value']} | {reason['name']} | {reason['kind']} | {reason['title']} |")
+        lines.append("")
     mn = spec.get("multinode")
     if mn:
         lines += [

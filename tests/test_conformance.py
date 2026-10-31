@@ -47,6 +47,7 @@ def test_the_file_is_what_the_specification_produces(spec, vectors):
 
 def test_every_layout_of_the_specification_has_an_encode_and_a_decode_vector(spec, vectors):
     layouts = {make_conformance.layout_key(m, layout) for m in spec["messages"] for layout in m["layouts"]}
+    layouts |= {"rack_" + f["name"].lower() for f in spec["rack"]["frames"]}   # the frames of the rack have the same vectors
     assert {e["layout"] for e in vectors["frames_encode"]} == layouts
     assert {e["layout"] for e in vectors["frames_decode"]} == layouts
 

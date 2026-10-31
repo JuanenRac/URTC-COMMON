@@ -107,6 +107,29 @@ Every identifier of `spec/can_protocol.json`, one row each. **Dir**: H>B host to
 
 96 identifiers, 26 tool values, 23 slave registers, 4 magic payloads.
 
+## Tool rack
+
+Frames of the tool rack (URTC-SMART-RACK). The two CAN frames of the tool rack: the pre-heat order the host sends and the reply the rack gives to a command, an acknowledgement or a refusal with its reason. They sit in the block of identifiers 0x260 to 0x26F reserved for the rack, apart from the messages above: the tool head does not answer them, and a gateway forwards the reply towards the network and refuses the order and the reply towards the bus. The reply is the same three bytes as the payload of the acknowledgement (0x81) and refusal (0x82) frames of the serial link of the rack; on CAN the kind is told by the reason. There is no sequence number in the CAN reply: a sender matches it with its order by the command and the tool.
+
+| ID | Name | Dir | DLC | Notes |
+|---|---|---|---|---|
+| `0x260` | RACK_SET_PREHEAT | H>R | 8 | Pre-heat order for one tool of the rack |
+| `0x261` | RACK_REPLY | R>H | 3 | Reply of the rack to a command: acknowledgement or refusal with the reason |
+
+Reply payload: byte 0 the command answered, byte 1 the tool (255 = none), byte 2 the reason.
+
+| Reason | Name | Kind | Meaning |
+|---|---|---|---|
+| 0 | APPLIED | acknowledgement | The command was applied |
+| 1 | REPEAT | acknowledgement | The same command again (a repeat): nothing changes, the sender is told it arrived |
+| 2 | WRONG_LENGTH | refusal | The payload does not have the length the command needs |
+| 3 | TOOL_ABSENT | refusal | The slot named has no tool |
+| 4 | TEMP_OUT_OF_RANGE | refusal | The temperature is above the limit of the tool |
+| 5 | TOOL_INVALID | refusal | The tool byte names no tool |
+| 6 | NOT_HEATABLE | refusal | The tool has no heater and takes only 0 |
+| 7 | HELD_RATE | refusal | The command came too soon after the last one accepted for that tool |
+| 8 | UNKNOWN_COMMAND | refusal | The rack does not know the command |
+
 ## Multinode extension
 
 Several tool heads on one bus. Status: **implemented in the firmware behind a switch that is off by default, tested on the host only**. These identifiers are not in the table above and are not tested on boards. See `docs/MULTINODE.md`.

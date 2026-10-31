@@ -71,10 +71,11 @@ Two links of the family do not travel on the CAN bus of the tool head but follow
 
 | Link | Frame | Version | Vectors | Reference |
 |---|---|---|---|---|
+| Tool rack, CAN | order `0x260` (8 bytes: tool, target in whole degrees big-endian, sequence, 4 bytes of zero) and reply `0x261` (3 bytes: the command answered, the tool byte, the reason; no sequence number) | `rack` of the specification | `conformance/rack_vectors.json` (`can_replies`), `conformance/can_vectors.json`, `generated/rack_vectors.h` | `protocol.py`, `rack_sim.py` |
 | Tool rack, serial | start byte `0xA5`, version, sequence, command, length, payload, CRC-8; the temperature of `SET_PREHEAT` is two bytes, big-endian | rack serial frame version 2 | `conformance/rack_vectors.json`, `generated/rack_vectors.h` | `rack_sim.py` |
 | Vision head, sensor | start byte `0xB6`, version, sensor, sequence, timestamp (four bytes, big-endian), length, payload, CRC-8; a thermal reading is a signed 16-bit number in hundredths of a degree, big-endian | sensor frame version 2 | `conformance/sensor_vectors.json`, `generated/sensor_vectors.h` | `sensor_frame.py` |
 
-Version 1 of both frames was little-endian. A receiver at version 2 refuses a version 1 frame as an unsupported version, so an old sender can never be read as a different number. The CAN protocol of the tool head itself is unchanged (`protocol_version` stays at 1).
+Version 1 of both frames was little-endian. A receiver at version 2 refuses a version 1 frame as an unsupported version, so an old sender can never be read as a different number. The CAN protocol of the tool head itself is unchanged (`protocol_version` stays at 1); the rack frames are an additive section of the specification and the reply is the same three bytes as the payload of the serial acknowledgement and refusal.
 
 ## Free configuration of a head
 

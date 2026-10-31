@@ -72,7 +72,7 @@ The frames are counted per rule and per direction. A chance below 1000 takes one
 
 They act on the frames sent to the node (no `direction`) and are answered by the bus itself.
 
-`reject` refuses a command and says why. `id` is the command, `reason` is one of the refusals of the rack (`wrong_length`, `tool_absent`, `temp_out_of_range`, `tool_invalid`, `not_heatable`, `held_rate`, `unknown_command`), `reply_id` is the identifier the refusal is sent with (the rack contract fixes the payload, not an identifier for the CAN form, so the scenario names it). The payload is three bytes, as in the reply frame of the rack: the command answered (`cmd`, default `0x01`), the first data byte of the command it refused (`0xFF` if none) and the code of the reason. The command does not reach the node unless `"deliver": true`.
+`reject` refuses a command and says why. `id` is the command, `reason` is one of the refusals of the rack (`wrong_length`, `tool_absent`, `temp_out_of_range`, `tool_invalid`, `not_heatable`, `held_rate`, `unknown_command`), `reply_id` is optional: the refusal is sent with the identifier the specification fixes for the reply of the rack, `0x261`, unless the rule names another one (to test a program against a reply on an identifier it should ignore). The payload is three bytes, as in the reply frame of the rack: the command answered (`cmd`, default `0x01`), the first data byte of the command it refused (`0xFF` if none) and the code of the reason. The command does not reach the node unless `"deliver": true`.
 
 `free_tool` is a head whose ID jumpers read `0x1F` (see [FREE_TOOL.md](FREE_TOOL.md)). It answers `0x1A3` (the query) with a frame of `0x1A3` and takes `0x1A2` (the write). `answer` is what it says:
 

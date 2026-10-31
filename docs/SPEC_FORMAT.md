@@ -27,6 +27,21 @@ GPL-3.0-or-later - see LICENSE
 | `procedures` | The version query, the minor field and the version order, in words and data. |
 | `slcan` | The SLCAN subset: rules, commands, bitrate codes, buffer limit. |
 | `messages` | One record per identifier, sorted by identifier. |
+| `rack` | The two CAN frames of the tool rack, apart from `messages` (see below). Optional for a reader; added without raising `format`. |
+| `multinode` | The extension that lets several heads share a bus (see `MULTINODE.md`). |
+
+## The rack section
+
+`rack` holds what the tool rack (URTC-SMART-RACK) puts on the bus. It is not part of `messages` because the tool head does not answer these identifiers and the counts the other documents quote (96 identifiers) are those of the head.
+
+| Key | Meaning |
+|---|---|
+| `range` | `first` and `last`: the block of identifiers `0x260` to `0x26F` reserved for the rack. Every frame of the section is inside it and no message of the head is. |
+| `constants` | `RACK_*` numbers (the command code of the pre-heat order, the tool byte that means no tool, the length of the reply). |
+| `reply_reasons` | The codes of byte 2 of the reply, each with a `kind` (`acknowledgement` or `refusal`) and a title. Codes are contiguous from 0; the order is the one of the firmware (`rack_reply_code_t`). |
+| `frames` | `0x260` `SET_PREHEAT` (host to rack, 8 bytes) and `0x261` `REPLY` (rack to host, 3 bytes: the command answered, the tool byte, the reason). A frame has a `layout` like the layouts of a message, so the generators give it `encode_rack_*` and `decode_rack_*` and the conformance vectors cover it. |
+
+The generated code names the identifiers `RACK_ID_SET_PREHEAT` and `RACK_ID_REPLY` (in C, `URTC_RACK_ID_*`); the prefix `CAN_ID_` stays for the messages of the head. A gateway forwards `0x261` towards the network and refuses `0x260` and `0x261` towards the bus. `tests/test_rack_frames.py` checks that no identifier of any group (messages, rack, multinode ranges, magic payloads, free-tool pair, bootloader) is also one of another.
 
 ## A message
 
@@ -105,7 +120,7 @@ A layout is one shape of payload. A message has one layout, or several when the 
 1. Edit `spec/can_protocol.json`. Give every layout at least one example; put hand-written `data` on the ones that matter for safety.
 2. Run `python tools/generate_constants.py`, then `python tools/make_conformance.py`.
 3. Run `python -m pytest tests -q`. A new identifier fails the statistics test on purpose; update the numbers it quotes and the ones in [`CONTRACTS.md`](CONTRACTS.md).
-4. If the change is not additive, raise `format` or `protocol_version`, the schema and the changelog together.
+4. If the change is not additive, raise `format` or `protocol_version`, the schema and the changelog together. A new optional section (as `multinode` and `rack` were) is additive: `format` and `protocol_version` stay, and the schema, the changelog and this page say so.
 5. Each migrated repository then runs its own `check` and picks the new copy up (see [`MIGRATION.md`](MIGRATION.md)).
 
 The values under `implemented_by` and `client_names` are not guessed: `tests/test_siblings.py` reads the other repositories and fails when they stop agreeing, so an implementation that gains or loses an identifier shows up as a failing test here.

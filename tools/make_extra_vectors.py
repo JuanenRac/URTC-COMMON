@@ -279,6 +279,23 @@ def rack_vectors() -> dict:
     for name, seq, tool, target in (("soldering 250", 4, 0, 250), ("hot air 350", 200, 19, 350), ("off", 0, 5, 0)):
         can.append({"name": name, "id": rk.CAN_ID_SET_PREHEAT, "seq": seq, "tool": tool, "target": target,
                     "data": rk.encode_set_preheat_can(seq, tool, target).hex().upper()})
+    # The reply of the rack on CAN (0x261): one vector for each of the nine reasons, and frames that are not a reply.
+    can_replies = []
+    for code, reason in enumerate(rk.REPLY_CODES):
+        tool = 0xFF if reason == "unknown_command" else code
+        cmd = 0x40 if reason == "unknown_command" else rk.CMD_SET_PREHEAT
+        data = rk.encode_reply_can(cmd, tool, reason)
+        can_replies.append({"name": f"{reason}", "id": rk.CAN_ID_REPLY, "cmd": cmd, "tool": tool, "code": code, "ack": reason in rk.REPLY_ACKNOWLEDGEMENTS,
+                            "data": data.hex().upper()})
+    can_replies_rejected = [
+        {"name": "two bytes", "id": rk.CAN_ID_REPLY, "data": "0100"},
+        {"name": "four bytes", "id": rk.CAN_ID_REPLY, "data": "01000000"},
+        {"name": "empty", "id": rk.CAN_ID_REPLY, "data": ""},
+        {"name": "reason 9, the first that does not exist", "id": rk.CAN_ID_REPLY, "data": "010009"},
+        {"name": "reason 255, which the rack never sends", "id": rk.CAN_ID_REPLY, "data": "0100FF"},
+        {"name": "the order identifier, not the reply", "id": rk.CAN_ID_SET_PREHEAT, "data": "010000"},
+        {"name": "the next identifier, which is free", "id": rk.CAN_ID_REPLY + 1, "data": "010000"},
+    ]
     # Short link scenarios: each step is (time, frame) and the decision the firmware takes.
     scenarios = [
         {"name": "apply, retransmit, stale, new", "steps": [
@@ -315,7 +332,7 @@ def rack_vectors() -> dict:
         verify.append({"name": name, "occupied": occupied, "commanded_c": commanded, "measured_c": measured, "ambient_c": ambient, "elapsed_ms": elapsed,
                        "verdict": rk.verify_slot(occupied, commanded, measured, ambient, elapsed)})
     return {"format": 1, "about": "Frames, command checks, CAN data, link scenarios and thermal slot checks of the tool rack; the rack firmware and the simulator both pass them.",
-            "frames": frames, "parse": parse, "validate": validate, "can": can, "scenarios": out_scen, "verify": verify,
+            "frames": frames, "parse": parse, "validate": validate, "can": can, "can_replies": can_replies, "can_replies_rejected": can_replies_rejected, "scenarios": out_scen, "verify": verify,
             "streams": rack_stream_scenarios(), "free_tool": free_tool_vectors(),
             "limits": {"ceiling_c": rk.RACK_CEILING_C, "link_timeout_ms": rk.LINK_TIMEOUT_MS, "printer_c": rk.MAX_PREHEAT_C[10]}}
 
@@ -460,6 +477,8 @@ def rack_header(v: dict) -> str:
         "typedef struct { const char *name; uint8_t len; uint8_t buf[24]; int status; } rack_vec_parse_t; // protocol_status_t order",
         "typedef struct { const char *name; uint8_t len; uint8_t payload[4]; int status; int tool; int target; } rack_vec_validate_t; // rack_command_status_t order",
         "typedef struct { const char *name; uint8_t seq, tool; uint16_t target; uint8_t data[8]; } rack_vec_can_t;",
+        "typedef struct { const char *name; uint16_t id; uint8_t cmd, tool, code; int ack; uint8_t data[3]; } rack_vec_can_reply_t; // a well-formed reply (0x261): rack_reply_code_t order",
+        "typedef struct { const char *name; uint16_t id; uint8_t len; uint8_t data[8]; } rack_vec_can_reply_bad_t; // a frame that is not a reply",
         "typedef struct { const char *name; int occupied; int commanded_c; float measured_c; float ambient_c; uint32_t elapsed_ms; int verdict; } rack_vec_verify_t; // slot_verdict_t order",
         "typedef struct { int scenario; const char *name; uint32_t time_ms; uint8_t len; uint8_t buf[24]; int action; int tool; int temp; int ack; uint8_t reply_len; uint8_t reply[9]; } rack_vec_step_t; // rack_action_t order; the reply frame (none: length 0)",
         "typedef struct { int stream; uint32_t time_ms; uint8_t len; uint8_t data[40]; } rack_vec_stream_event_t; // bytes that arrived together",
@@ -489,6 +508,13 @@ def rack_header(v: dict) -> str:
     lines += ["};", "", "static const rack_vec_can_t RACK_VEC_CAN[] = {"]
     for c in v["can"]:
         lines.append(f'    {{"{c["name"]}", {c["seq"]}, {c["tool"]}, {c["target"]}, {arr(bytes.fromhex(c["data"]))}}},')
+    lines += ["};", "", "static const rack_vec_can_reply_t RACK_VEC_CAN_REPLIES[] = {"]
+    for c in v["can_replies"]:
+        lines.append(f'    {{"{c["name"]}", 0x{c["id"]:03X}, {c["cmd"]}, {c["tool"]}, {c["code"]}, {1 if c["ack"] else 0}, {arr(bytes.fromhex(c["data"]))}}},')
+    lines += ["};", "", "static const rack_vec_can_reply_bad_t RACK_VEC_CAN_REPLIES_BAD[] = {"]
+    for c in v["can_replies_rejected"]:
+        b = bytes.fromhex(c["data"])
+        lines.append(f'    {{"{c["name"]}", 0x{c["id"]:03X}, {len(b)}, {arr(b)}}},')
     lines += ["};", "", "static const rack_vec_step_t RACK_VEC_STEPS[] = {"]
     for i, sc in enumerate(v["scenarios"]):
         for s in sc["steps"]:

@@ -121,7 +121,9 @@ BAD = [
     ("mute per_mille", doc({"fault": "mute", "per_mille": 10})),
     ("reject no id", doc({"fault": "reject", "reason": "tool_absent", "reply_id": 0x261})),
     ("reject acknowledgement reason", doc({"fault": "reject", "id": 0x260, "reason": "applied", "reply_id": 0x261})),
-    ("reject no reply id", doc({"fault": "reject", "id": 0x260, "reason": "tool_absent"})),
+    ("reject reply id out of range", doc({"fault": "reject", "id": 0x260, "reason": "tool_absent", "reply_id": 0x800})),
+    ("reject reply id not a number", doc({"fault": "reject", "id": 0x260, "reason": "tool_absent", "reply_id": "reply"})),
+    ("reject reply id null", doc({"fault": "reject", "id": 0x260, "reason": "tool_absent", "reply_id": None})),
     ("reject direction", doc({"fault": "reject", "id": 0x260, "reason": "tool_absent", "reply_id": 0x261, "direction": "rx"})),
     ("free_tool no answer", doc({"fault": "free_tool"})),
     ("free_tool valid without tool", doc({"fault": "free_tool", "answer": "valid"})),
@@ -243,17 +245,39 @@ def test_mute_stops_the_answers_for_a_while():
 
 
 def test_reject_answers_with_the_reason_and_keeps_the_order_from_the_node():
-    bus, node, _ = make([{"fault": "reject", "id": 0x260, "reason": "held_rate", "reply_id": 0x261}])
+    bus, node, _ = make([{"fault": "reject", "id": 0x260, "reason": "held_rate"}])    # no reply_id: the standard identifier of the reply of the rack
     bus.send_frame(0x260, rk.encode_set_preheat_can(1, 0, 300))
     frames = drain(bus)
     code = rk.REPLY_CODES.index("held_rate")
     assert frames == [(0x261, bytes([rk.CMD_SET_PREHEAT, 0, code]))] and node.sent == []
     assert rk.REPLY_CODES == bs.REPLY_CODES and rk.CMD_SET_PREHEAT == bs.CMD_SET_PREHEAT and rk.CAN_ID_SET_PREHEAT == bs.CAN_ID_SET_PREHEAT
+    assert rk.CAN_ID_REPLY == bs.CAN_ID_REPLY == 0x261
+    assert rk.parse_reply_can(*frames[0]) == {"ack": False, "cmd": 1, "tool": 0, "code": code, "reason": "held_rate"}
+
+
+def test_reject_without_a_reply_id_is_valid_and_an_explicit_one_still_works():
+    assert bs.validate(doc({"fault": "reject", "id": 0x260, "reason": "tool_absent"})) == []
+    bus, _, _ = make([{"fault": "reject", "id": 0x260, "reason": "tool_absent", "reply_id": 0x3F0}])
+    bus.send_frame(0x260, rk.encode_set_preheat_can(1, 0, 300))
+    assert [can_id for can_id, _ in drain(bus)] == [0x3F0]                           # another identifier, named on purpose
+    bus, _, _ = make([{"fault": "reject", "id": 0x260, "reason": "tool_absent", "reply_id": 0x261}])
+    bus.send_frame(0x260, rk.encode_set_preheat_can(1, 0, 300))
+    assert [can_id for can_id, _ in drain(bus)] == [0x261]                           # naming the standard one is the same as leaving it out
+
+
+def test_a_generated_reject_leaves_the_reply_id_out_unless_another_one_is_asked_for():
+    for seed in range(40):
+        for rule in bs.generate(seed, kinds=("reject",), rules=4).faults:
+            assert "reply_id" not in rule
+        for rule in bs.generate(seed, kinds=("reject",), rules=4, reply_id=0x3F0).faults:
+            assert rule["reply_id"] == 0x3F0
+        for rule in bs.generate(seed, kinds=("reject",), rules=4, reply_id=0x261).faults:
+            assert "reply_id" not in rule
 
 
 @pytest.mark.parametrize("reason", bs.REFUSAL_REASONS)
 def test_every_refusal_reason_is_a_refusal_of_the_rack(reason):
-    bus, _, _ = make([{"fault": "reject", "id": 0x260, "reason": reason, "reply_id": 0x261}])
+    bus, _, _ = make([{"fault": "reject", "id": 0x260, "reason": reason}])
     bus.send_frame(0x260, rk.encode_set_preheat_can(1, 0, 300))
     payload = drain(bus)[0][1]
     frame = rk.encode_reply(1, payload[0], payload[1], reason)
@@ -261,7 +285,7 @@ def test_every_refusal_reason_is_a_refusal_of_the_rack(reason):
 
 
 def test_reject_with_deliver_still_reaches_the_node():
-    bus, node, _ = make([{"fault": "reject", "id": 0x260, "reason": "tool_absent", "reply_id": 0x261, "deliver": True}])
+    bus, node, _ = make([{"fault": "reject", "id": 0x260, "reason": "tool_absent", "deliver": True}])
     bus.send_frame(0x260, bytes(8))
     assert node.sent == [(0x260, bytes(8))]
 

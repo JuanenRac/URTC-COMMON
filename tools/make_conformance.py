@@ -133,7 +133,9 @@ def hex_id(value: int) -> str:
 def build(spec: dict) -> dict:
     enums = {e["name"]: e for e in spec["enums"]}
     encode, decode, rejected = [], [], []
-    for message in spec["messages"]:
+    # The frames of the tool rack are not messages of the tool head but have the same layouts, so they get the same vectors.
+    rack_messages = [{"id": f["id"], "name": "RACK_" + f["name"], "layouts": [f["layout"]]} for f in spec.get("rack", {}).get("frames", [])]
+    for message in spec["messages"] + rack_messages:
         for layout in message["layouts"]:
             key = layout_key(message, layout)
             frame_id = message["id"]
@@ -173,8 +175,10 @@ def build(spec: dict) -> dict:
                     if field["type"] == "bytes":
                         if "fixed" in field:
                             wrong = dict(first)
-                            wrong[field["name"]] = "00" * (len(field["fixed"]) // 2)
-                            rejected.append({"name": f"{message['name']}: a payload that is not the magic one", "message": message["name"], "layout": key, "fields": wrong})
+                            zeros = "00" * (len(field["fixed"]) // 2)
+                            wrong[field["name"]] = zeros if field["fixed"] != zeros else "FF" * (len(field["fixed"]) // 2)   # never the fixed value itself
+                            what = "a fixed field that is not its fixed value" if message["name"].startswith("RACK_") else "a payload that is not the magic one"
+                            rejected.append({"name": f"{message['name']}: {what}", "message": message["name"], "layout": key, "fields": wrong})
                         continue
                     if field["name"] not in first:
                         continue

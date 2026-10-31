@@ -8177,5 +8177,230 @@
       }
     ],
     "status_title": "implemented in the firmware behind a switch that is off by default, tested on the host only"
+  },
+  "rack": {
+    "title": "Frames of the tool rack (URTC-SMART-RACK)",
+    "about": "The two CAN frames of the tool rack: the pre-heat order the host sends and the reply the rack gives to a command, an acknowledgement or a refusal with its reason. They sit in the block of identifiers 0x260 to 0x26F reserved for the rack, apart from the messages above: the tool head does not answer them, and a gateway forwards the reply towards the network and refuses the order and the reply towards the bus. The reply is the same three bytes as the payload of the acknowledgement (0x81) and refusal (0x82) frames of the serial link of the rack; on CAN the kind is told by the reason. There is no sequence number in the CAN reply: a sender matches it with its order by the command and the tool.",
+    "range": {
+      "first": "0x260",
+      "last": "0x26F"
+    },
+    "constants": [
+      {
+        "name": "RACK_CMD_SET_PREHEAT",
+        "value": 1,
+        "title": "Command code of the pre-heat order in the first byte of a reply"
+      },
+      {
+        "name": "RACK_TOOL_NONE",
+        "value": 255,
+        "title": "Tool byte of a reply to a command that carried no tool"
+      },
+      {
+        "name": "RACK_REPLY_LENGTH",
+        "value": 3,
+        "title": "Length of the reply payload",
+        "unit": "bytes"
+      }
+    ],
+    "reply_reasons": [
+      {
+        "value": 0,
+        "name": "APPLIED",
+        "kind": "acknowledgement",
+        "title": "The command was applied"
+      },
+      {
+        "value": 1,
+        "name": "REPEAT",
+        "kind": "acknowledgement",
+        "title": "The same command again (a repeat): nothing changes, the sender is told it arrived"
+      },
+      {
+        "value": 2,
+        "name": "WRONG_LENGTH",
+        "kind": "refusal",
+        "title": "The payload does not have the length the command needs"
+      },
+      {
+        "value": 3,
+        "name": "TOOL_ABSENT",
+        "kind": "refusal",
+        "title": "The slot named has no tool"
+      },
+      {
+        "value": 4,
+        "name": "TEMP_OUT_OF_RANGE",
+        "kind": "refusal",
+        "title": "The temperature is above the limit of the tool"
+      },
+      {
+        "value": 5,
+        "name": "TOOL_INVALID",
+        "kind": "refusal",
+        "title": "The tool byte names no tool"
+      },
+      {
+        "value": 6,
+        "name": "NOT_HEATABLE",
+        "kind": "refusal",
+        "title": "The tool has no heater and takes only 0"
+      },
+      {
+        "value": 7,
+        "name": "HELD_RATE",
+        "kind": "refusal",
+        "title": "The command came too soon after the last one accepted for that tool"
+      },
+      {
+        "value": 8,
+        "name": "UNKNOWN_COMMAND",
+        "kind": "refusal",
+        "title": "The rack does not know the command"
+      }
+    ],
+    "frames": [
+      {
+        "id": "0x260",
+        "name": "SET_PREHEAT",
+        "title": "Pre-heat order for one tool of the rack",
+        "direction": "host_to_rack",
+        "layout": {
+          "role": "request",
+          "dlc": {
+            "exact": 8
+          },
+          "fields": [
+            {
+              "name": "tool",
+              "type": "u8",
+              "offset": 0,
+              "width": 1,
+              "title": "Tool (slot) number"
+            },
+            {
+              "name": "target_c",
+              "type": "u16",
+              "offset": 1,
+              "width": 2,
+              "range": [
+                0,
+                65535
+              ],
+              "unit": "C",
+              "title": "Target temperature, 0 = off"
+            },
+            {
+              "name": "sequence",
+              "type": "u8",
+              "offset": 3,
+              "width": 1,
+              "title": "Sequence number against replays"
+            },
+            {
+              "name": "padding",
+              "type": "bytes",
+              "offset": 4,
+              "length": 4,
+              "fixed": "00000000"
+            }
+          ],
+          "examples": [
+            {
+              "name": "soldering iron to 250 C",
+              "fields": {
+                "tool": 0,
+                "target_c": 250,
+                "sequence": 4
+              },
+              "data": "0000FA0400000000"
+            }
+          ]
+        },
+        "notes": [
+          "Handled by the rack only; the tool head ignores it."
+        ]
+      },
+      {
+        "id": "0x261",
+        "name": "REPLY",
+        "title": "Reply of the rack to a command: acknowledgement or refusal with the reason",
+        "direction": "rack_to_host",
+        "layout": {
+          "role": "response",
+          "dlc": {
+            "exact": 3
+          },
+          "fields": [
+            {
+              "name": "command",
+              "type": "u8",
+              "offset": 0,
+              "width": 1,
+              "title": "Command answered (1 = SET_PREHEAT); an unknown command is returned as it came"
+            },
+            {
+              "name": "tool",
+              "type": "u8",
+              "offset": 1,
+              "width": 1,
+              "title": "Tool byte the command carried, 255 if it carried none"
+            },
+            {
+              "name": "reason",
+              "type": "u8",
+              "offset": 2,
+              "width": 1,
+              "range": [
+                0,
+                8
+              ],
+              "title": "Reason code, see reply_reasons: 0 and 1 acknowledge, 2 to 8 refuse"
+            }
+          ],
+          "examples": [
+            {
+              "name": "applied on tool 0",
+              "fields": {
+                "command": 1,
+                "tool": 0,
+                "reason": 0
+              },
+              "data": "010000"
+            },
+            {
+              "name": "tool absent in the slot",
+              "fields": {
+                "command": 1,
+                "tool": 0,
+                "reason": 3
+              },
+              "data": "010003"
+            },
+            {
+              "name": "temperature out of range on tool 10",
+              "fields": {
+                "command": 1,
+                "tool": 10,
+                "reason": 4
+              },
+              "data": "010A04"
+            },
+            {
+              "name": "unknown command, no tool",
+              "fields": {
+                "command": 64,
+                "tool": 255,
+                "reason": 8
+              },
+              "data": "40FF08"
+            }
+          ]
+        },
+        "notes": [
+          "The rack never sends 255 as the reason; a reason above 8 is a malformed frame."
+        ]
+      }
+    ]
   }
 }

@@ -226,15 +226,35 @@ def render_multinode(spec: dict) -> list[str]:
     return lines + table(["ID", "Name", "Direction", "DLC", "Title"], rows)
 
 
+def render_rack(spec: dict) -> list[str]:
+    rack = spec["rack"]
+    lines = [f"{rack['title']}. {rack['about']}", ""]
+    directions = {"host_to_rack": "host to rack", "rack_to_host": "rack to host"}
+    lines += table(["ID", "Name", "Direction", "DLC", "Title"],
+                   [[f["id"], f["name"], directions[f["direction"]], dlc_text(f["layout"]["dlc"]), f["title"]] for f in rack["frames"]])
+    for f in rack["frames"]:
+        lines += ["", f"{f['id']} {f['name']} - {f['title']}", ""]
+        lines += table(["Byte", "Width", "Type", "Field", "Values", "Note"], field_rows(f["layout"]))
+        for example in f["layout"].get("examples", []):
+            values = ", ".join(f"{k}={v}" for k, v in example["fields"].items())
+            lines += ["", f"Example {example['name']}: data {example['data']} ({values})"]
+        for note in f.get("notes", []):
+            lines += ["", f"Note: {note}"]
+    lines += ["", "Reasons of the reply (byte 2 of 0x261):", ""]
+    lines += table(["Code", "Name", "Kind", "Meaning"], [[r["value"], r["name"], r["kind"], r["title"]] for r in rack["reply_reasons"]])
+    return lines
+
+
 RENDERERS = {
     "summary": render_summary, "index": render_index, "layouts": render_layouts, "tools": render_tools, "enums": render_enums,
     "constants": render_constants, "magic": render_magic, "registers": render_registers, "procedures": render_procedures,
-    "multinode": render_multinode,
+    "multinode": render_multinode, "rack": render_rack,
 }
 TITLES = {
     "summary": "A. Summary", "index": "B. Index of identifiers", "layouts": "C. Field layouts and examples", "tools": "D. Tool profiles",
     "enums": "E. Enumerations", "constants": "F. Constants", "magic": "G. Magic payloads", "registers": "H. Registers of the expansion slave",
     "procedures": "I. Procedures", "multinode": "J. Several heads on one bus (multinode)",
+    "rack": "K. Tool rack frames (0x260-0x261)",
 }
 
 
