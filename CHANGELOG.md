@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The type check passes with newer PySide6:** the Qt objects name the type of a `Property` as a text (`"QVariantList"`), which Qt accepts and the stubs of newer PySide6 versions reject (nine `arg-type` messages in four modules). The configuration of the type checker leaves out that one kind of message (`arg-type`) in those four modules only, with the reason written next to it; every other check still runs there and nothing outside them is relaxed. The code is unchanged.
+
 - **A trust store of public keys for evidence signatures:** `record_signing.trust_store_from_config` reads `trusted_keys` (alias to public key in hexadecimal, public keys only; an entry that is not one is left out and named without its value), and `evidence_state` gains two states for a good signature: `trusted` (the key is in the store, the alias says whose) and `unknown_key` (it is not); a public key given explicitly still wins over the store, a signature that fails is `invalid` whatever the store says, and an empty store is no store. The history and the report say "Signed by <alias>" or "Valid signature, unknown key" in the eight languages (Portuguese of Portugal), the summary counts the new states, and the History window gains a Signature column (the Qt object takes the store and an explicit key). `record_signing.signing_settings` reads the `sign_evidence` switch the programs share (on only when exactly `true`). The slow check of a signature is made once per record.
 - **The texts of the tester** gain the label of the switch that signs its evidence in the Qt interface, in the eight languages.
 
