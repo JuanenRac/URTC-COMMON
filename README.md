@@ -13,7 +13,7 @@
   <img src="https://img.shields.io/badge/Format-JSON%20%2B%20Python-083fa1.svg" alt="Format">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
   <img src="https://img.shields.io/badge/Version-0.0.8-0f6cbd.svg" alt="Version">
-  <img src="https://img.shields.io/badge/Tests-948-2ea44f.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Tests-1398-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
 
@@ -31,7 +31,7 @@
 |---|---|
 | Version | `0.1.1` |
 | Maturity | Scaffolding |
-| Tests | 948 |
+| Tests | 1398 |
 | Stack | JSON / Python |
 | On real hardware | Simulated only: tested against emulators, fakes or simulators; no run on real hardware is recorded for this version |
 
@@ -71,6 +71,7 @@ The CAN protocol of the tool head, written once as data, and everything that fol
 * [Conformance vectors](conformance/can_vectors.json): the bytes every implementation must reproduce: every layout, the refusals and the SLCAN streams.
 * [Tool profiles](spec/tools.json): the 25 tool profiles (limits, watchdog, pins, expansion board) as data; `generate_tools.py` writes the TypeScript and Python tables and [the tool table](docs/TOOLS_TABLE.md). Also here: the fault recorder reader with CSV and JSON export (`blackbox.py`), the rack simulator (`rack_sim.py`), frames for fuzzing a board made from the specification (`fuzz.py`) and the [compatibility table](docs/COMPATIBILITY.md) of a release, made from `spec/versions.json`; and the [status table](docs/STATUS.md) of what has run and what is still pending, made from the manifests of the repositories (`status_table.py`).
 * [Free configuration of a head](docs/FREE_TOOL.md): what a rack does with a head whose ID jumpers read `0x1F`: it asks (`0x1A3`), checks the answer and uses the identity like one read from jumpers; until then the head stays in the safe state. Modelled in `rack_sim.py`, with shared vectors (`conformance/rack_vectors.json`) that the rack firmware replays.
+* [Scenarios for the simulated bus](docs/BUS_SCENARIOS.md): the faults of a CAN bus in a JSON file (`urtc-scenario/1`): frames lost, repeated, reordered, delayed, lost in bursts or cut short, a node that stays silent or refuses a command with its reason, and a head in free configuration that answers `0x1A3` and `0x1A2` in different ways. `bus_scenario.py` checks the file strictly, applies it to any simulated transport and generates test scenarios from a seed; the same seed gives the same frames. Off unless asked for; the flasher and the tester run their plans against it with `--scenario` and leave an evidence record that says it was a simulation.
 * **Virtual board and companion links:** `virtual_board.py` serves a board behind an SLCAN adapter on a TCP port (`python -m urtc_common.virtual_board`); type `socket://127.0.0.1:7777` where a tool asks for a serial port and the flasher, the tester and the gateway run end to end with no hardware. `sensor_frame.py` is the reference of the vision sensor frame; it and the rack serial frame are version 2, big-endian like the bus, with their vectors (`conformance/sensor_vectors.json`, `generated/sensor_vectors.h`).
 * **Self-update from a signed package:** `self_update.py` is the whole flow for a program that updates itself from a GitHub release, with no network and no window of its own (the caller passes the fetch and the progress): it offers only a strictly higher version with a package for the platform, downloads from the hosts of GitHub's release downloads only, checks the announced size and SHA-256 and the Ed25519 signature of `urtc-pkg/1|app|version|platform|sha256|size` against the key pinned in the program, extracts without ever leaving the folder (no `..`, absolute path, link or device), refuses to install while an operation on the bus is running, keeps the two latest releases, rolls back by itself when the first start fails and records every step. Standard library only; copied with `vendor_copy.py --set update`.
 * **The "Check for updates" menu of the programs, ready to draw:** `update_service.py` holds the options (all conservative: no check unless the person asks, `auto_check` off, `require_confirmation` on, no option to skip the checksum or the signature or to add a host; settings and `URTC_UPDATE_*` variables, the environment wins and `lowering_warnings` says when a run lowers a protection), the Ed25519 key of the releases pinned with its identifier, and the steps `check` / `prepare` / `install` / `rollback`; `update_controller.py` is the state machine a window draws (checking, available, downloading, ready, installing, installed, with a progress and a coded error) and installs only after `confirm_install`; `launcher.py` runs the release `current.txt` points to and goes back to the previous one when a first start fails; `tools/make_update_package.py` builds the reproducible `.zip` / `.tar.gz` of a release with its `.sha256` and `.sig` and checks it with the pinned key. Copied with `vendor_copy.py --set update`.
@@ -108,7 +109,7 @@ python -m mypy                                       # the type check of urtc_co
 
 ## 🧪 Testing
 
-The suite has 948 tests (`python -m pytest tests -q`). They check the specification against its schema, the generated C, TypeScript and Python files against what the generators write, the conformance vectors in Python, in TypeScript with Node and in C with a host compiler, the SLCAN codec and the transports with fakes, the virtual board, the signed self-update flow, and the comparison with the repositories checked out next to this one. A few tests skip where an optional tool (Node, a C compiler, PySide6) or a neighbouring repository is missing. `python -m mypy` type-checks the package.
+The suite has 1398 tests (`python -m pytest tests -q`). They check the specification against its schema, the generated C, TypeScript and Python files against what the generators write, the conformance vectors in Python, in TypeScript with Node and in C with a host compiler, the SLCAN codec and the transports with fakes, the virtual board, the signed self-update flow, and the comparison with the repositories checked out next to this one. A few tests skip where an optional tool (Node, a C compiler, PySide6) or a neighbouring repository is missing. `python -m mypy` type-checks the package.
 
 ## 🏗️ Build & Release
 

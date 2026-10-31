@@ -13,7 +13,7 @@
   <img src="https://img.shields.io/badge/Format-JSON%20%2B%20Python-083fa1.svg" alt="Format">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
   <img src="https://img.shields.io/badge/Version-0.0.8-0f6cbd.svg" alt="Version">
-  <img src="https://img.shields.io/badge/Tests-948-2ea44f.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Tests-1398-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
 
@@ -31,7 +31,7 @@
 |---|---|
 | Versione | `0.1.1` |
 | Maturità | Impalcatura |
-| Test | 948 |
+| Test | 1398 |
 | Tecnologia | JSON / Python |
 | Su hardware reale | Solo simulato: provato con emulatori, test double o simulatori; per questa versione non risulta alcuna esecuzione su hardware reale |
 
@@ -71,6 +71,7 @@ Il protocollo CAN della testa utensile, scritto una sola volta come dati, e tutt
 * [Vettori di conformità](conformance/can_vectors.json): i byte che ogni implementazione deve riprodurre: ogni struttura, i rifiuti e i flussi SLCAN.
 * [Profili degli utensili](spec/tools.json): i 25 profili degli utensili (limiti, watchdog, pin, scheda di espansione) come dati; `generate_tools.py` scrive le tabelle TypeScript e Python e [la tabella degli utensili](docs/TOOLS_TABLE.md). Inoltre: il lettore della scatola nera con esportazione in CSV e JSON (`blackbox.py`), il simulatore del rack (`rack_sim.py`), frame per il fuzzing di una scheda creati dalla specifica (`fuzz.py`) e la [tabella di compatibilità](docs/COMPATIBILITY.md) di una release, creata da `spec/versions.json`; e la [tabella di stato](docs/STATUS.md) di ciò che è stato eseguito e di ciò che manca ancora, creata dai manifest dei repository (`status_table.py`).
 * [Configurazione libera di una testa](docs/FREE_TOOL.md): cosa fa un rack con una testa i cui jumper di ID leggono `0x1F`: interroga (`0x1A3`), verifica la risposta e usa l'identità come quella di una testa letta dai jumper; fino ad allora la testa resta nello stato sicuro. Modellato in `rack_sim.py`, con vettori condivisi (`conformance/rack_vectors.json`) che il firmware del rack riproduce.
+* [Scenari del bus simulato](docs/BUS_SCENARIOS.md): i guasti di un bus CAN in un file JSON (`urtc-scenario/1`): frame persi, ripetuti, riordinati, ritardati, persi a raffiche o accorciati, un nodo che resta in silenzio o rifiuta un comando con il suo motivo, e una testa in configurazione libera che risponde a `0x1A3` e `0x1A2` in modi diversi. `bus_scenario.py` controlla il file con rigore, lo applica a qualsiasi trasporto simulato e genera scenari di prova da un seed; lo stesso seed dà gli stessi frame. Disattivato salvo richiesta; il flasher e il tester eseguono i loro piani contro di esso con `--scenario` e lasciano un record di evidenza che dice che era una simulazione.
 * **Scheda virtuale e collegamenti complementari:** `virtual_board.py` serve una scheda dietro un adattatore SLCAN su una porta TCP (`python -m urtc_common.virtual_board`); digita `socket://127.0.0.1:7777` dove uno strumento chiede una porta seriale e il flasher, il tester e il gateway funzionano da un capo all'altro senza hardware. `sensor_frame.py` è il riferimento della trama del sensore della testa di visione; essa e la trama seriale del rack sono in versione 2, big-endian come il bus, con i loro vettori (`conformance/sensor_vectors.json`, `generated/sensor_vectors.h`).
 * **Autoaggiornamento da un pacchetto firmato:** `self_update.py` è l'intero flusso per un programma che si aggiorna da solo da una release GitHub, senza rete né finestra proprie (chi lo chiama passa il download e l'avanzamento): offre solo una versione strettamente maggiore con pacchetto per la piattaforma, scarica solo dagli host di download delle release GitHub, controlla la dimensione annunciata, lo SHA-256 e la firma Ed25519 di `urtc-pkg/1|app|versione|piattaforma|sha256|dimensione` con la chiave fissata nel programma, estrae senza mai uscire dalla cartella (niente `..`, percorso assoluto, collegamento o dispositivo), rifiuta di installare finché è in corso un'operazione sul bus, conserva le due ultime release, torna indietro da sola se il primo avvio fallisce e registra ogni passo. Solo libreria standard; si copia con `vendor_copy.py --set update`.
 * **Il menu «Cerca aggiornamenti» dei programmi, pronto da disegnare:** `update_service.py` contiene le opzioni (tutte prudenti: nessun controllo senza richiesta della persona, `auto_check` spento, `require_confirmation` acceso, nessuna opzione per saltare il checksum o la firma né per aggiungere un host; impostazioni e variabili `URTC_UPDATE_*`, l'ambiente prevale e `lowering_warnings` segnala quando un'esecuzione abbassa una protezione), la chiave Ed25519 delle release fissata con il suo identificativo e i passi `check` / `prepare` / `install` / `rollback`; `update_controller.py` è la macchina a stati che una finestra disegna (controllo, disponibile, download, pronto, installazione, installato, con avanzamento ed errore codificato) e installa solo dopo `confirm_install`; `launcher.py` avvia la release indicata da `current.txt` e torna alla precedente se un primo avvio fallisce; `tools/make_update_package.py` costruisce lo `.zip` / `.tar.gz` riproducibile di una release con `.sha256` e `.sig` e lo verifica con la chiave fissata. Copiato con `vendor_copy.py --set update`.
@@ -108,7 +109,7 @@ python -m mypy                                       # il controllo dei tipi di 
 
 ## 🧪 Test
 
-La suite ha 948 test (`python -m pytest tests -q`). Verificano la specifica rispetto al suo schema, i file C, TypeScript e Python generati rispetto a ciò che scrivono i generatori, i vettori di conformità in Python, in TypeScript con Node e in C con un compilatore del computer, il codec SLCAN e i trasporti con finti, la scheda virtuale, il flusso di aggiornamento automatico firmato e il confronto con i repository clonati accanto a questo. Alcuni test vengono saltati quando manca uno strumento opzionale (Node, un compilatore C, PySide6) o un repository vicino. `python -m mypy` controlla i tipi del pacchetto.
+La suite ha 1398 test (`python -m pytest tests -q`). Verificano la specifica rispetto al suo schema, i file C, TypeScript e Python generati rispetto a ciò che scrivono i generatori, i vettori di conformità in Python, in TypeScript con Node e in C con un compilatore del computer, il codec SLCAN e i trasporti con finti, la scheda virtuale, il flusso di aggiornamento automatico firmato e il confronto con i repository clonati accanto a questo. Alcuni test vengono saltati quando manca uno strumento opzionale (Node, un compilatore C, PySide6) o un repository vicino. `python -m mypy` controlla i tipi del pacchetto.
 
 ## 🏗️ Compilazione e rilascio
 

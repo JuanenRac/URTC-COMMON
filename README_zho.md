@@ -13,7 +13,7 @@
   <img src="https://img.shields.io/badge/Format-JSON%20%2B%20Python-083fa1.svg" alt="Format">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
   <img src="https://img.shields.io/badge/Version-0.0.8-0f6cbd.svg" alt="Version">
-  <img src="https://img.shields.io/badge/Tests-948-2ea44f.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Tests-1398-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
 
@@ -31,7 +31,7 @@
 |---|---|
 | 版本 | `0.1.1` |
 | 成熟度 | 雏形 |
-| 测试 | 948 |
+| 测试 | 1398 |
 | 技术栈 | JSON / Python |
 | 真实硬件 | 仅模拟：使用模拟器、替身或仿真测试；此版本没有在真实硬件上运行的记录 |
 
@@ -71,6 +71,7 @@
 * [一致性向量](conformance/can_vectors.json): 每个实现都必须重现的字节：每种布局、被拒绝的输入和 SLCAN 数据流。
 * [工具配置](spec/tools.json)：25 个工具配置（限值、看门狗、引脚、扩展板）以数据形式保存；`generate_tools.py` 生成 TypeScript 和 Python 表格以及[工具表](docs/TOOLS_TABLE.md)。此外还有：支持导出 CSV 和 JSON 的黑匣子读取器（`blackbox.py`）、机架模拟器（`rack_sim.py`）、根据规范生成的用于板卡模糊测试的帧（`fuzz.py`），以及由 `spec/versions.json` 生成的发布[兼容性表](docs/COMPATIBILITY.md)，以及由各仓库清单生成的、说明已运行内容与尚未完成内容的[状态表](docs/STATUS.md)（`status_table.py`）。
 * [刀头的自由配置](docs/FREE_TOOL.md)：机架如何处理 ID 跳线读数为 `0x1F` 的刀头：先发出查询（`0x1A3`），校验应答，再像通过跳线读取的刀头一样使用该身份；在此之前刀头保持安全状态。已在 `rack_sim.py` 中建模，并有机架固件回放的共享向量（`conformance/rack_vectors.json`）。
+* [模拟总线场景](docs/BUS_SCENARIOS.md)：用 JSON 文件（`urtc-scenario/1`）描述 CAN 总线的故障：帧丢失、重复、乱序、延迟、成串丢失或被截短，节点保持沉默或拒绝命令并说明原因，以及处于自由配置、以不同方式回应 `0x1A3` 和 `0x1A2` 的刀头。`bus_scenario.py` 严格检查文件，将其应用于任何模拟传输，并根据种子生成测试场景；相同种子给出相同的帧。除非要求，否则不启用；烧录器和测试器用 `--scenario` 针对它运行各自的计划，并留下注明这是模拟的证据记录。
 * **虚拟板与辅助链路：** `virtual_board.py` 在 TCP 端口上提供一块位于 SLCAN 适配器之后的板子（`python -m urtc_common.virtual_board`）；在工具要求串口的地方输入 `socket://127.0.0.1:7777`，刷写器、测试器和网关即可在没有硬件的情况下端到端运行。`sensor_frame.py` 是视觉头传感器帧的参考实现；它和机架串口帧都是版本 2，与总线一样采用大端序，并附有各自的向量（`conformance/sensor_vectors.json`、`generated/sensor_vectors.h`）。
 * **从已签名的包自我更新：** `self_update.py` 是程序从 GitHub 发布版自我更新的完整流程，自身不涉及网络和窗口（下载与进度由调用方传入）：只提供平台对应包且版本严格更高的更新，只从 GitHub 发布下载所用的主机下载，用程序中固定的密钥核对公布的大小、SHA-256 以及 `urtc-pkg/1|应用|版本|平台|sha256|大小` 的 Ed25519 签名，解压时绝不离开目标文件夹（不允许 `..`、绝对路径、链接或设备），总线上有操作进行时拒绝安装，保留最近两个发布版，首次启动失败时自动回退，并记录每一步。仅用标准库；用 `vendor_copy.py --set update` 复制。
 * **程序的“检查更新”菜单，可直接绘制：** `update_service.py` 包含选项（全部保守：本人不要求就不检查，`auto_check` 关闭，`require_confirmation` 开启，没有跳过校验和或签名的选项，也不能添加主机；设置与 `URTC_UPDATE_*` 环境变量，环境变量优先，某次运行降低保护时 `lowering_warnings` 会提示）、连同标识符固定的发布 Ed25519 密钥，以及 `check` / `prepare` / `install` / `rollback` 各步骤；`update_controller.py` 是窗口绘制的状态机（检查中、可用、下载中、就绪、安装中、已安装，带进度和编码错误），只有 `confirm_install` 之后才安装；`launcher.py` 启动 `current.txt` 指向的发布版，首次启动失败时退回上一个；`tools/make_update_package.py` 生成发布版可复现的 `.zip` / `.tar.gz` 及其 `.sha256` 和 `.sig`，并用固定的密钥验证。用 `vendor_copy.py --set update` 复制。
@@ -108,7 +109,7 @@ python -m mypy                                       # urtc_common 和 urtc_ui �
 
 ## 🧪 测试
 
-测试套件共有 948 个测试（`python -m pytest tests -q`）。它们检查：规范是否符合其模式；生成的 C、TypeScript 和 Python 文件是否与生成器写出的一致；用 Python、用 Node 运行的 TypeScript 和用主机编译器编译的 C 来核对一致性向量；SLCAN 编解码器和使用模拟对象的传输层；虚拟板；经过签名的自更新流程；以及与放在本仓库旁边的各仓库的比较。缺少可选工具（Node、C 编译器、PySide6）或相邻仓库时，部分测试会被跳过。`python -m mypy` 检查软件包的类型。
+测试套件共有 1398 个测试（`python -m pytest tests -q`）。它们检查：规范是否符合其模式；生成的 C、TypeScript 和 Python 文件是否与生成器写出的一致；用 Python、用 Node 运行的 TypeScript 和用主机编译器编译的 C 来核对一致性向量；SLCAN 编解码器和使用模拟对象的传输层；虚拟板；经过签名的自更新流程；以及与放在本仓库旁边的各仓库的比较。缺少可选工具（Node、C 编译器、PySide6）或相邻仓库时，部分测试会被跳过。`python -m mypy` 检查软件包的类型。
 
 ## 🏗️ 构建与发布
 

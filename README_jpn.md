@@ -13,7 +13,7 @@
   <img src="https://img.shields.io/badge/Format-JSON%20%2B%20Python-083fa1.svg" alt="Format">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
   <img src="https://img.shields.io/badge/Version-0.0.8-0f6cbd.svg" alt="Version">
-  <img src="https://img.shields.io/badge/Tests-948-2ea44f.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Tests-1398-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
 
@@ -31,7 +31,7 @@
 |---|---|
 | バージョン | `0.1.1` |
 | 成熟度 | 足場段階 |
-| テスト | 948 |
+| テスト | 1398 |
 | 技術 | JSON / Python |
 | 実機での確認 | シミュレーションのみ：エミュレーター、模擬部品、シミュレーターで試験済み。このバージョンについて実機での動作記録はありません |
 
@@ -71,6 +71,7 @@
 * [適合ベクトル](conformance/can_vectors.json): すべての実装が再現しなければならないバイト列：各レイアウト、拒否される入力、SLCAN ストリーム。
 * [ツールプロファイル](spec/tools.json)：25 種類のツールプロファイル（上限・下限、ウォッチドッグ、ピン、拡張ボード）をデータとして保持します。`generate_tools.py` が TypeScript と Python の表および[ツール一覧表](docs/TOOLS_TABLE.md)を生成します。ほかに、CSV と JSON に書き出せるブラックボックスの読み取り機能（`blackbox.py`）、ラックのシミュレーター（`rack_sim.py`）、仕様から作るボードのファジング用フレーム（`fuzz.py`）、`spec/versions.json` から作るリリースの[互換性表](docs/COMPATIBILITY.md)と、各リポジトリのマニフェストから作る、実行済みの内容と未了の内容の[状態表](docs/STATUS.md)（`status_table.py`）があります。
 * [ヘッドのフリー構成](docs/FREE_TOOL.md): IDジャンパが `0x1F` を示すヘッドをラックがどう扱うか。ラックは問い合わせ(`0x1A3`)、応答を検証し、ジャンパで読み取ったヘッドと同じように識別情報を使います。それまでヘッドは安全状態のままです。`rack_sim.py` でモデル化し、ラックのファームウェアが再生する共有ベクタ(`conformance/rack_vectors.json`)を備えます。
+* [シミュレートされたバスのシナリオ](docs/BUS_SCENARIOS.md)：CAN バスの障害を JSON ファイル（`urtc-scenario/1`）で記述します。フレームの欠落・重複・順序入れ替え・遅延・バースト欠落・短縮、無応答のノードや理由付きでコマンドを拒否するノード、`0x1A3` と `0x1A2` にさまざまな形で応答する自由構成のヘッドを扱えます。`bus_scenario.py` はファイルを厳密に検査し、任意のシミュレート転送に適用し、シードからテスト用シナリオを生成します。同じシードなら同じフレームになります。求めない限り無効で、フラッシャーとテスターは `--scenario` でプランを実行し、シミュレーションだったことを記したエビデンス記録を残します。
 * **仮想ボードと補助リンク:** `virtual_board.py` は SLCAN アダプターの背後にあるボードを TCP ポートで提供します (`python -m urtc_common.virtual_board`)。ツールがシリアルポートを尋ねる場所に `socket://127.0.0.1:7777` を入力すると、フラッシャー、テスター、ゲートウェイがハードウェアなしで最初から最後まで動きます。`sensor_frame.py` はビジョンヘッドのセンサーフレームのリファレンスで、これとラックのシリアルフレームはバス同様にビッグエンディアンのバージョン 2 で、ベクトル (`conformance/sensor_vectors.json`、`generated/sensor_vectors.h`) があります。
 * **署名付きパッケージからの自己更新:** `self_update.py` は、GitHub のリリースから自分自身を更新するプログラムのための一連の流れ全体です。独自のネットワークやウィンドウは持たず（呼び出し側がダウンロードと進捗を渡します）、プラットフォーム向けパッケージのある厳密に高いバージョンだけを提示し、GitHub のリリースダウンロード用ホストからだけ取得し、告知されたサイズ、SHA-256、プログラムに固定された鍵による `urtc-pkg/1|アプリ|バージョン|プラットフォーム|sha256|サイズ` の Ed25519 署名を確認し、フォルダーの外に出ずに展開し（`..`、絶対パス、リンク、デバイスは不可）、バス上の操作が実行中はインストールを拒否し、直近 2 つのリリースを保持し、最初の起動に失敗したら自動で戻し、すべての手順を記録します。標準ライブラリのみ。`vendor_copy.py --set update` でコピーします。
 * **描画するだけで使える、プログラムの「更新を確認」メニュー:** `update_service.py` にオプション（すべて保守的: 本人が求めない限り確認しない、`auto_check` は無効、`require_confirmation` は有効、チェックサムや署名を省く設定もホストを追加する設定もない。設定と `URTC_UPDATE_*` 環境変数があり、環境変数が優先され、実行が保護を下げると `lowering_warnings` が知らせる）、識別子付きで固定したリリースの Ed25519 鍵、`check` / `prepare` / `install` / `rollback` の各手順があります。`update_controller.py` はウィンドウが描画する状態機械（確認中、更新あり、ダウンロード中、準備完了、インストール中、完了。進捗とコード化されたエラー付き）で、`confirm_install` の後にだけインストールします。`launcher.py` は `current.txt` が指すリリースを起動し、初回起動に失敗すると前のリリースに戻します。`tools/make_update_package.py` はリリースの再現可能な `.zip` / `.tar.gz` を `.sha256` と `.sig` 付きで作り、固定した鍵で検証します。`vendor_copy.py --set update` でコピーします。
@@ -108,7 +109,7 @@ python -m mypy                                       # urtc_common と urtc_ui �
 
 ## 🧪 テスト
 
-テストスイートは 948 件です（`python -m pytest tests -q`）。仕様とそのスキーマ、生成された C・TypeScript・Python ファイルとジェネレーターの出力、Python・Node 上の TypeScript・ホストコンパイラ上の C での適合ベクトル、SLCAN コーデックと模擬を使ったトランスポート、仮想ボード、署名付き自己更新の流れ、そしてこのリポジトリの隣にチェックアウトされたリポジトリとの比較を検査します。任意のツール（Node、C コンパイラ、PySide6）や隣のリポジトリがない場合、一部のテストはスキップされます。`python -m mypy` がパッケージの型を検査します。
+テストスイートは 1398 件です（`python -m pytest tests -q`）。仕様とそのスキーマ、生成された C・TypeScript・Python ファイルとジェネレーターの出力、Python・Node 上の TypeScript・ホストコンパイラ上の C での適合ベクトル、SLCAN コーデックと模擬を使ったトランスポート、仮想ボード、署名付き自己更新の流れ、そしてこのリポジトリの隣にチェックアウトされたリポジトリとの比較を検査します。任意のツール（Node、C コンパイラ、PySide6）や隣のリポジトリがない場合、一部のテストはスキップされます。`python -m mypy` がパッケージの型を検査します。
 
 ## 🏗️ ビルドとリリース
 

@@ -13,7 +13,7 @@
   <img src="https://img.shields.io/badge/Format-JSON%20%2B%20Python-083fa1.svg" alt="Format">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
   <img src="https://img.shields.io/badge/Version-0.0.8-0f6cbd.svg" alt="Version">
-  <img src="https://img.shields.io/badge/Tests-948-2ea44f.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Tests-1398-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
 
@@ -31,7 +31,7 @@
 |---|---|
 | Version | `0.1.1` |
 | Reifegrad | Gerüst |
-| Tests | 948 |
+| Tests | 1398 |
 | Technik | JSON / Python |
 | Auf echter Hardware | Nur simuliert: gegen Emulatoren, Attrappen oder Simulatoren getestet; für diese Version ist kein Lauf auf echter Hardware vermerkt |
 
@@ -71,6 +71,7 @@ Das CAN-Protokoll des Werkzeugkopfs, einmal als Daten geschrieben, und alles, wa
 * [Konformitätsvektoren](conformance/can_vectors.json): die Bytes, die jede Implementierung reproduzieren muss: jeder Aufbau, die Ablehnungen und die SLCAN-Datenströme.
 * [Werkzeugprofile](spec/tools.json): die 25 Werkzeugprofile (Grenzen, Watchdog, Pins, Erweiterungsplatine) als Daten; `generate_tools.py` schreibt die TypeScript- und Python-Tabellen und [die Werkzeugtabelle](docs/TOOLS_TABLE.md). Außerdem: der Leser der Blackbox mit CSV- und JSON-Export (`blackbox.py`), der Rack-Simulator (`rack_sim.py`), aus der Spezifikation erzeugte Frames zum Fuzzing einer Platine (`fuzz.py`) und die [Kompatibilitätstabelle](docs/COMPATIBILITY.md) einer Version, erzeugt aus `spec/versions.json`; und die [Statustabelle](docs/STATUS.md) dessen, was gelaufen ist und was noch aussteht, erzeugt aus den Manifesten der Repositories (`status_table.py`).
 * [Freie Konfiguration eines Kopfes](docs/FREE_TOOL.md): was ein Rack mit einem Kopf tut, dessen ID-Jumper `0x1F` lesen: Es fragt nach (`0x1A3`), prüft die Antwort und verwendet die Identität wie die eines per Jumper gelesenen Kopfes; bis dahin bleibt der Kopf im sicheren Zustand. Modelliert in `rack_sim.py`, mit gemeinsamen Vektoren (`conformance/rack_vectors.json`), die die Rack-Firmware nachspielt.
+* [Szenarien für den simulierten Bus](docs/BUS_SCENARIOS.md): die Fehler eines CAN-Busses in einer JSON-Datei (`urtc-scenario/1`): Frames gehen verloren, werden wiederholt, vertauscht, verzögert, in Bursts verloren oder verkürzt, ein Knoten schweigt oder lehnt einen Befehl mit Grund ab, und ein Kopf in freier Konfiguration antwortet auf `0x1A3` und `0x1A2` auf unterschiedliche Weise. `bus_scenario.py` prüft die Datei streng, wendet sie auf jeden simulierten Transport an und erzeugt aus einem Seed Testszenarien; derselbe Seed ergibt dieselben Frames. Aus, solange man es nicht verlangt; Flasher und Tester führen ihre Pläne mit `--scenario` dagegen aus und hinterlassen einen Nachweis, der festhält, dass es eine Simulation war.
 * **Virtuelle Platine und Zusatzverbindungen:** `virtual_board.py` stellt eine Platine hinter einem SLCAN-Adapter an einem TCP-Port bereit (`python -m urtc_common.virtual_board`); wo ein Werkzeug einen seriellen Port verlangt, `socket://127.0.0.1:7777` eingeben, und Flasher, Tester und Gateway laufen ohne Hardware durchgängig. `sensor_frame.py` ist die Referenz des Sensorrahmens des Vision-Kopfes; er und der serielle Rahmen des Racks sind Version 2, Big-Endian wie der Bus, mit ihren Vektoren (`conformance/sensor_vectors.json`, `generated/sensor_vectors.h`).
 * **Selbstaktualisierung aus einem signierten Paket:** `self_update.py` ist der gesamte Ablauf für ein Programm, das sich aus einem GitHub-Release selbst aktualisiert, ohne eigenes Netzwerk und Fenster (der Aufrufer übergibt Download und Fortschritt): Es bietet nur eine strikt höhere Version mit Paket für die Plattform an, lädt nur von den Hosts der GitHub-Release-Downloads, prüft angekündigte Größe, SHA-256 und die Ed25519-Signatur von `urtc-pkg/1|App|Version|Plattform|sha256|Größe` gegen den im Programm fest hinterlegten Schlüssel, entpackt ohne je den Ordner zu verlassen (kein `..`, kein absoluter Pfad, kein Link, kein Gerät), verweigert die Installation, solange eine Operation auf dem Bus läuft, behält die zwei neuesten Releases, geht von selbst zurück, wenn der erste Start scheitert, und protokolliert jeden Schritt. Nur Standardbibliothek; kopiert mit `vendor_copy.py --set update`.
 * **Das Menü „Nach Updates suchen“ der Programme, zum Zeichnen bereit:** `update_service.py` enthält die Optionen (alle vorsichtig: keine Prüfung, wenn die Person sie nicht verlangt, `auto_check` aus, `require_confirmation` an, keine Option, Prüfsumme oder Signatur zu überspringen oder einen Host hinzuzufügen; Einstellungen und `URTC_UPDATE_*`-Variablen, die Umgebung gewinnt und `lowering_warnings` meldet, wenn ein Lauf einen Schutz senkt), den angehefteten Ed25519-Schlüssel der Releases samt Kennung und die Schritte `check` / `prepare` / `install` / `rollback`; `update_controller.py` ist der Zustandsautomat, den ein Fenster zeichnet (Prüfen, verfügbar, Download, bereit, Installation, installiert, mit Fortschritt und kodiertem Fehler) und installiert erst nach `confirm_install`; `launcher.py` startet das Release, auf das `current.txt` zeigt, und kehrt zum vorherigen zurück, wenn ein Erststart scheitert; `tools/make_update_package.py` baut das reproduzierbare `.zip` / `.tar.gz` eines Releases mit `.sha256` und `.sig` und prüft es mit dem angehefteten Schlüssel. Kopiert mit `vendor_copy.py --set update`.
@@ -108,7 +109,7 @@ python -m mypy                                       # die Typprüfung von urtc_
 
 ## 🧪 Tests
 
-Die Suite hat 948 Tests (`python -m pytest tests -q`). Sie prüfen die Spezifikation gegen ihr Schema, die erzeugten C-, TypeScript- und Python-Dateien gegen das, was die Generatoren schreiben, die Konformitätsvektoren in Python, in TypeScript mit Node und in C mit einem Host-Compiler, den SLCAN-Codec und die Transporte mit Attrappen, die virtuelle Platine, den signierten Selbstaktualisierungsablauf und den Vergleich mit den Repositorys, die neben diesem ausgecheckt sind. Einige Tests werden übersprungen, wenn ein optionales Werkzeug (Node, ein C-Compiler, PySide6) oder ein Nachbar-Repository fehlt. `python -m mypy` prüft die Typen des Pakets.
+Die Suite hat 1398 Tests (`python -m pytest tests -q`). Sie prüfen die Spezifikation gegen ihr Schema, die erzeugten C-, TypeScript- und Python-Dateien gegen das, was die Generatoren schreiben, die Konformitätsvektoren in Python, in TypeScript mit Node und in C mit einem Host-Compiler, den SLCAN-Codec und die Transporte mit Attrappen, die virtuelle Platine, den signierten Selbstaktualisierungsablauf und den Vergleich mit den Repositorys, die neben diesem ausgecheckt sind. Einige Tests werden übersprungen, wenn ein optionales Werkzeug (Node, ein C-Compiler, PySide6) oder ein Nachbar-Repository fehlt. `python -m mypy` prüft die Typen des Pakets.
 
 ## 🏗️ Build und Veröffentlichung
 
