@@ -18,13 +18,16 @@ The description for other languages is `spec/evidence.schema.json`; the code is 
 | `transport` | how the board was reached: `adapter`, `bus`, `bitrate` |
 | `artifacts` | the files involved, each with `name`, `sha256` and, when known, `bytes` |
 | `detail` | a short text (500 characters at most) |
-| `evidence_sha256` | SHA-256 of the record without this field, as compact JSON with the keys sorted |
+| `evidence_sha256` | SHA-256 of the record without this field and without `signature`, as compact JSON with the keys sorted |
+| `signature` | optional: `algorithm` (`Ed25519`), `key_id`, `public_key` and `signature` (hexadecimal), made over `evidence_sha256`; see below |
 
 A field that is not known is left out, never written empty. A field that is not in the table, an unknown `kind` or `outcome` and a malformed hash make the record invalid: a reader never guesses.
 
 ## What the digest means
 
-`evidence_sha256` shows that the record was not changed after it was written. It does not say who wrote it. A program that needs that signs the record with the key of the user (`record_signing`) and keeps the signature next to it.
+`evidence_sha256` shows that the record was not changed after it was written. It does not say who wrote it. A program that needs that signs the record with the key of the user (`record_signing.sign_evidence`) and the signature goes in the optional `signature` block of the record.
+
+**The signature.** It is Ed25519 over the message `urtc-record/1`, `evidence` and the `evidence_sha256`, so it covers the whole record (the digest covers every other field) and does not change the digest: an unsigned record and the same record signed have the same `evidence_sha256`. `verify` only checks that a block is well formed (a malformed block makes the record invalid); `record_signing.evidence_state` checks the signature itself and answers `unsigned`, `valid`, `other_key` (a good signature, but not by the public key the reader gave) or `invalid`. A record that fails its own check is never called signed-valid, and a copy of the program that has no `record_signing` says `unchecked` instead of guessing. What it proves: the record and the key belong together and nothing was edited after it was signed. What it does not: who is behind the key. The key is a seed in a file of the user (`~/.urtc-keys/records_ed25519.key`, or the file named by `URTC_RECORD_KEY_FILE`) and is never printed. A program signs only when its setting says so (the tester: `sign_evidence` in its configuration, off by default); the report and the history show the state of every signature, and a reader who knows the public key of the signer gives it (`--public-key`) so that a signature by another key is told apart.
 
 ## Converting the records that exist
 
