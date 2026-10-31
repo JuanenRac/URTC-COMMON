@@ -144,6 +144,7 @@ URTC-COMMON/
 ├── urtc.project.json                                Manifest: Version, Rolle, Reifegrad und Build-Befehl
 ├── CHANGELOG.md                                     was sich in jeder Version geändert hat
 ├── SECURITY.md SUPPORT.md LICENSE                   Sicherheitsrichtlinie, Support und Lizenz
+├── NOTICE                                           Lizenzen der enthaltenen Fremdteile
 ├── CONTRIBUTING.md CODE_OF_CONDUCT.md               wie man mitwirkt, und der Verhaltenskodex
 ├── .gitattributes .gitignore                        Git-Einstellungen
 ├── bump_version.py bump_manifest_version.py         Skripte, die die Version erhöhen
