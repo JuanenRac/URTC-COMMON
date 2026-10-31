@@ -29,7 +29,7 @@
 
 | | |
 |---|---|
-| Version | `0.1.1` |
+| Version | `0.1.2` |
 | Maturité | Ébauche |
 | Tests | 1398 |
 | Technologie | JSON / Python |

@@ -29,7 +29,7 @@
 
 | | |
 |---|---|
-| Version | `0.1.1` |
+| Version | `0.1.2` |
 | Reifegrad | Gerüst |
 | Tests | 1398 |
 | Technik | JSON / Python |

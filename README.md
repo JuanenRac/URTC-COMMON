@@ -29,7 +29,7 @@
 
 | | |
 |---|---|
-| Version | `0.1.1` |
+| Version | `0.1.2` |
 | Maturity | Scaffolding |
 | Tests | 1398 |
 | Stack | JSON / Python |
