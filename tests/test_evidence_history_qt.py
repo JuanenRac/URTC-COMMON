@@ -234,3 +234,20 @@ def test_the_dialog_loads_and_opens_without_qml_errors(tmp_path):
     problems = [m for m in result["messages"] if ".qml" in m or "QML" in m]
     assert problems == [], " | ".join(problems)
     assert result["opened"] and result["rows"] == 2 and result["title"] == "操作历史"
+
+
+def test_the_report_button_writes_the_report_files_with_every_record_and_does_not_touch_the_records(tmp_path):
+    folder = make_folder(tmp_path)
+    before = {p.name: p.read_bytes() for p in folder.glob("*.json")}
+    model = EvidenceHistoryModel(lambda: folder, lambda: "portuguese")
+    model.setOnlyInvalid(True)
+    assert model.reportText == "Relatório" and model.reportStatus == ""
+    model.writeReport()
+    page = (folder / "evidence_report.html").read_text(encoding="utf-8")
+    assert page.count('<section class="record') == 4 and "NÃO VÁLIDO" in page and (folder / "evidence_report.pdf").read_bytes().startswith(b"%PDF-")
+    assert model.reportStatus.startswith("Relatório escrito: ") and {p.name: p.read_bytes() for p in folder.glob("*.json")} == before
+    model.writeReport()                                   # the report files are not records: a second run gives the same bytes
+    assert (folder / "evidence_report.html").read_text(encoding="utf-8") == page
+    missing = EvidenceHistoryModel(lambda: tmp_path / "nothing", lambda: "english")
+    missing.writeReport()
+    assert missing.reportStatus.startswith("The report could not be written")
