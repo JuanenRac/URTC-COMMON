@@ -72,6 +72,7 @@ SETS = {
     "compat_qt": ["src/urtc_common/compat_qt.py"],
     "compat_qml": ["qml/CompatDialog.qml"],
     "evidence": ["src/urtc_common/evidence.py", "src/urtc_common/evidence_history.py"],
+    "release_notes": ["tools/changelog_section.py"],
     "history_qt": ["src/urtc_common/evidence_history_qt.py", "src/urtc_common/evidence_history_strings.py"],
     "history_qml": ["qml/EvidenceHistoryDialog.qml"],
     "tool_ids_c": ["generated/urtc_tool_ids.h"],
