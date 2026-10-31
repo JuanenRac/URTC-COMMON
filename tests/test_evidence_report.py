@@ -139,10 +139,10 @@ def test_the_pdf_is_well_formed(tmp_path):
     assert f"Page 1 of {pages}".encode() in pdf
 
 
-def test_the_pdf_survives_parentheses_backslashes_and_other_scripts(tmp_path):
-    odd = record("2026-02-01T10:00:00Z", name="a(b)c\\d \u65e5\u672c")
-    pdf = evidence_report.to_pdf(entries_of(folder_with(tmp_path, {"o.json": odd})), "japanese")   # the PDF falls back to the English texts
-    assert b"a\\(b\\)c\\\\d" in pdf and b"?" in pdf and b"Evidence report" in pdf
+def test_the_pdf_survives_parentheses_and_backslashes(tmp_path):
+    odd = record("2026-02-01T10:00:00Z", name="a(b)c\\d")
+    pdf = evidence_report.to_pdf(entries_of(folder_with(tmp_path, {"o.json": odd})))
+    assert b"a\\(b\\)c\\\\d" in pdf and b"Evidence report" in pdf and b"/FontFile2" not in pdf
 
 
 def test_every_language_has_the_same_keys_and_placeholders():
