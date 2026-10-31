@@ -4,10 +4,15 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [0.1.3] - Evidence records can carry an Ed25519 signature that the history and the report show, the font subsets of the PDF report cover the new texts and the trace viewer of the web studio has its texts in the eight languages
+
 - **Evidence records can carry an Ed25519 signature:** `urtc-evidence/1` has an optional `signature` block (algorithm, key id, public key and signature) made over `evidence_sha256`, outside the digest, so a signed record keeps the digest it had and an unsigned one is still valid. `record_signing.sign_evidence` signs only a record that is valid, `verify_evidence` and `evidence_state` answer `unsigned`, `valid`, `other_key` (a good signature, but not by the public key the reader trusts) or `invalid`, and a malformed block makes the record not valid. The history lists the state of each signature and its JSON carries it; the HTML, text and PDF report show it for every record (a summary line, a column, a field, and a banner for a signature that does not match), in the eight languages (Portuguese of Portugal), and say what a signature proves and what it does not. A copy of the program that has no signing module says "not checked", never "valid". The seed of the key is never printed.
 - **The font subsets of the PDF report were regenerated** from the pinned Noto Sans CJK sources so that the new Chinese and Japanese texts are inside them.
 - **The texts of the web studio for the CAN trace viewer** gain the keys of the virtual table (keyboard help, row announcement, sort buttons), the new formats (candump, JSON lines) and the reasons a line is refused, and the signature states of the evidence list, in the eight languages.
 
+## [0.1.3]
+
+- Build version synchronized with `urtc.project.json` and the repository-native version source.
 
 ## [0.1.2] - The reply of the tool rack gets its own CAN identifier, the evidence report prints Chinese and Japanese, the history tells the files that are not evidence from the evidence and the simulated bus runs scenarios
 

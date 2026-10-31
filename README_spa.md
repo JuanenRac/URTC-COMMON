@@ -29,7 +29,7 @@
 
 | | |
 |---|---|
-| Versión | `0.1.2` |
+| Versión | `0.1.3` |
 | Madurez | Andamiaje |
 | Tests | 1398 |
 | Tecnología | JSON / Python |
