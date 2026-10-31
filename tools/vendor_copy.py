@@ -72,6 +72,8 @@ SETS = {
     "compat_qt": ["src/urtc_common/compat_qt.py"],
     "compat_qml": ["qml/CompatDialog.qml"],
     "evidence": ["src/urtc_common/evidence.py", "src/urtc_common/evidence_history.py"],
+    "history_qt": ["src/urtc_common/evidence_history_qt.py", "src/urtc_common/evidence_history_strings.py"],
+    "history_qml": ["qml/EvidenceHistoryDialog.qml"],
     "tool_ids_c": ["generated/urtc_tool_ids.h"],
     "firmware_base": ["firmware_base/urtc_crc8.h"],
     "firmware_test": ["firmware_base/urtc_test.h"],

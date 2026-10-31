@@ -4,6 +4,7 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **A window with the history of the evidence, the same for every program:** `EvidenceHistoryDialog.qml` with its Qt object (`evidence_history_qt.py`) and its texts in the eight languages (`evidence_history_strings.py`, portuguese of Portugal) lists the `urtc-evidence/1` records of a folder newest first, with the kind, the result, the tool, the board, the versions and whether each record still passes its check; a record edited after it was written, a file that is not JSON or a record of another format is shown as not valid with what is wrong. It can be filtered by result, by text and to only the records that fail, reads again each time it opens, shows at most 500 rows (and says how many there are) and changes nothing on disk. `tools/vendor_copy.py` has the sets `history_qt` and `history_qml` for the programs that carry it.
 - **The steps of a test plan are worded in the eight languages:** the catalog of the tester has the texts of every message a plan step gives (answers missing, wrong tool, old firmware, value out of range, operator confirmation and the rest), with the portuguese of Portugal.
 
 ## [0.1.0] - Free configuration of a head as a contract, the history of the evidence, the rack reasons in eight languages, a rack simulator that answers like the rack and the lights of Project status following the manifest
