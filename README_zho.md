@@ -13,7 +13,7 @@
   <img src="https://img.shields.io/badge/Format-JSON%20%2B%20Python-083fa1.svg" alt="Format">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
   <img src="https://img.shields.io/badge/Version-0.0.8-0f6cbd.svg" alt="Version">
-  <img src="https://img.shields.io/badge/Tests-902-2ea44f.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Tests-948-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
 
@@ -31,7 +31,7 @@
 |---|---|
 | 版本 | `0.1.0` |
 | 成熟度 | 雏形 |
-| 测试 | 902 |
+| 测试 | 948 |
 | 技术栈 | JSON / Python |
 | 真实硬件 | 仅模拟：使用模拟器、替身或仿真测试；此版本没有在真实硬件上运行的记录 |
 
@@ -108,7 +108,7 @@ python -m mypy                                       # urtc_common 和 urtc_ui �
 
 ## 🧪 测试
 
-测试套件共有 902 个测试（`python -m pytest tests -q`）。它们检查：规范是否符合其模式；生成的 C、TypeScript 和 Python 文件是否与生成器写出的一致；用 Python、用 Node 运行的 TypeScript 和用主机编译器编译的 C 来核对一致性向量；SLCAN 编解码器和使用模拟对象的传输层；虚拟板；经过签名的自更新流程；以及与放在本仓库旁边的各仓库的比较。缺少可选工具（Node、C 编译器、PySide6）或相邻仓库时，部分测试会被跳过。`python -m mypy` 检查软件包的类型。
+测试套件共有 948 个测试（`python -m pytest tests -q`）。它们检查：规范是否符合其模式；生成的 C、TypeScript 和 Python 文件是否与生成器写出的一致；用 Python、用 Node 运行的 TypeScript 和用主机编译器编译的 C 来核对一致性向量；SLCAN 编解码器和使用模拟对象的传输层；虚拟板；经过签名的自更新流程；以及与放在本仓库旁边的各仓库的比较。缺少可选工具（Node、C 编译器、PySide6）或相邻仓库时，部分测试会被跳过。`python -m mypy` 检查软件包的类型。
 
 ## 🏗️ 构建与发布
 

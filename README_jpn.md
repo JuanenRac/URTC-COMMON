@@ -13,7 +13,7 @@
   <img src="https://img.shields.io/badge/Format-JSON%20%2B%20Python-083fa1.svg" alt="Format">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
   <img src="https://img.shields.io/badge/Version-0.0.8-0f6cbd.svg" alt="Version">
-  <img src="https://img.shields.io/badge/Tests-902-2ea44f.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Tests-948-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
 
@@ -31,7 +31,7 @@
 |---|---|
 | バージョン | `0.1.0` |
 | 成熟度 | 足場段階 |
-| テスト | 902 |
+| テスト | 948 |
 | 技術 | JSON / Python |
 | 実機での確認 | シミュレーションのみ：エミュレーター、模擬部品、シミュレーターで試験済み。このバージョンについて実機での動作記録はありません |
 
@@ -108,7 +108,7 @@ python -m mypy                                       # urtc_common と urtc_ui �
 
 ## 🧪 テスト
 
-テストスイートは 902 件です（`python -m pytest tests -q`）。仕様とそのスキーマ、生成された C・TypeScript・Python ファイルとジェネレーターの出力、Python・Node 上の TypeScript・ホストコンパイラ上の C での適合ベクトル、SLCAN コーデックと模擬を使ったトランスポート、仮想ボード、署名付き自己更新の流れ、そしてこのリポジトリの隣にチェックアウトされたリポジトリとの比較を検査します。任意のツール（Node、C コンパイラ、PySide6）や隣のリポジトリがない場合、一部のテストはスキップされます。`python -m mypy` がパッケージの型を検査します。
+テストスイートは 948 件です（`python -m pytest tests -q`）。仕様とそのスキーマ、生成された C・TypeScript・Python ファイルとジェネレーターの出力、Python・Node 上の TypeScript・ホストコンパイラ上の C での適合ベクトル、SLCAN コーデックと模擬を使ったトランスポート、仮想ボード、署名付き自己更新の流れ、そしてこのリポジトリの隣にチェックアウトされたリポジトリとの比較を検査します。任意のツール（Node、C コンパイラ、PySide6）や隣のリポジトリがない場合、一部のテストはスキップされます。`python -m mypy` がパッケージの型を検査します。
 
 ## 🏗️ ビルドとリリース
 

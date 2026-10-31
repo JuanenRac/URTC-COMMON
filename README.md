@@ -13,7 +13,7 @@
   <img src="https://img.shields.io/badge/Format-JSON%20%2B%20Python-083fa1.svg" alt="Format">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
   <img src="https://img.shields.io/badge/Version-0.0.8-0f6cbd.svg" alt="Version">
-  <img src="https://img.shields.io/badge/Tests-902-2ea44f.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Tests-948-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
 
@@ -31,7 +31,7 @@
 |---|---|
 | Version | `0.1.0` |
 | Maturity | Scaffolding |
-| Tests | 902 |
+| Tests | 948 |
 | Stack | JSON / Python |
 | On real hardware | Simulated only: tested against emulators, fakes or simulators; no run on real hardware is recorded for this version |
 
@@ -108,7 +108,7 @@ python -m mypy                                       # the type check of urtc_co
 
 ## 🧪 Testing
 
-The suite has 902 tests (`python -m pytest tests -q`). They check the specification against its schema, the generated C, TypeScript and Python files against what the generators write, the conformance vectors in Python, in TypeScript with Node and in C with a host compiler, the SLCAN codec and the transports with fakes, the virtual board, the signed self-update flow, and the comparison with the repositories checked out next to this one. A few tests skip where an optional tool (Node, a C compiler, PySide6) or a neighbouring repository is missing. `python -m mypy` type-checks the package.
+The suite has 948 tests (`python -m pytest tests -q`). They check the specification against its schema, the generated C, TypeScript and Python files against what the generators write, the conformance vectors in Python, in TypeScript with Node and in C with a host compiler, the SLCAN codec and the transports with fakes, the virtual board, the signed self-update flow, and the comparison with the repositories checked out next to this one. A few tests skip where an optional tool (Node, a C compiler, PySide6) or a neighbouring repository is missing. `python -m mypy` type-checks the package.
 
 ## 🏗️ Build & Release
 
