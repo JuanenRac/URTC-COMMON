@@ -251,3 +251,32 @@ def test_the_report_button_writes_the_report_files_with_every_record_and_does_no
     missing = EvidenceHistoryModel(lambda: tmp_path / "nothing", lambda: "english")
     missing.writeReport()
     assert missing.reportStatus.startswith("The report could not be written")
+
+
+def test_the_window_counts_and_lists_the_other_records_apart_and_never_calls_them_not_valid(tmp_path):
+    folder = make_folder(tmp_path)
+    (folder / "urtc_update_report_x.json").write_text(json.dumps({
+        "tool": "URTC Flasher", "tool_version": "0.4.3", "timestamp_utc": "2026-01-05T10:00:00Z", "target": "s", "image": {"file": "fw.bin"}, "result": "OK",
+        "report_sha256": SHA}), encoding="utf-8")
+    (folder / "ping_1.json").write_text(json.dumps({
+        "test_name": "ping", "outcome": "PASS", "adapter": "simulate", "firmware_version": "0.4.1", "bus": "can", "bitrate": 500000, "log_file": "ping.log",
+        "log_sha256": SHA}), encoding="utf-8")
+    model = EvidenceHistoryModel(lambda: folder, lambda: "english")
+    assert len(model.rows) == 4 and all(r["file"] not in ("ping_1.json", "urtc_update_report_x.json") for r in model.rows)
+    assert model.othersCount == 2 and "2 other record(s)" in model.summaryText and model.summaryText.startswith("4 of 4 record(s) shown; 2 valid, 2 not valid")
+    assert "ping_1.json  -  test result record" in model.othersText and "urtc_update_report_x.json  -  update report" in model.othersText
+    model.setOnlyInvalid(True)
+    assert sorted(r["file"] for r in model.rows) == ["broken.json", "c.json"] and model.othersCount == 2     # a filter does not hide them
+    model.setOnlyInvalid(False)
+    model.setQuery("ping")
+    assert model.rows == [] and model.othersCount == 2
+
+
+def test_a_folder_with_only_other_records_says_so_in_the_window(tmp_path):
+    folder = tmp_path / "only"
+    folder.mkdir()
+    (folder / "ping_1.json").write_text(json.dumps({
+        "test_name": "ping", "outcome": "PASS", "adapter": "simulate", "firmware_version": "0.4.1", "bus": "can", "bitrate": 500000, "log_file": "ping.log",
+        "log_sha256": SHA}), encoding="utf-8")
+    model = EvidenceHistoryModel(lambda: folder, lambda: "portuguese")
+    assert model.rows == [] and model.emptyText == st.text("portuguese", "EH_ONLY_OTHERS") and "ping_1.json" in model.othersText
