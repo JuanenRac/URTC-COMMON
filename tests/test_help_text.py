@@ -71,7 +71,7 @@ def test_the_guide_names_the_updates_in_the_words_of_the_update_window():
 def test_the_updater_guide_covers_the_list_the_install_the_way_back_the_packages_and_the_security_in_every_language():
     for language in ht.LANGUAGES:
         sections = ht.GUIDES["updater"][language]
-        assert len(sections) == 5, language
+        assert len(sections) == 7, language
         text = joined("updater", language)
         assert "SHA-256" in text and "FLASHER" in text and "TESTER" in text, language
         assert update_strings.STRINGS[language]["UPD_TITLE"].lower() in text.lower() or language in {"chinese", "japanese"}, language
@@ -89,7 +89,7 @@ def test_the_model_gives_the_title_the_close_button_and_the_sections_in_the_lang
     language = ["spanish"]
     model = help_qt.HelpModel("flasher", lambda: language[0])
     assert model.title == "Ayuda" and model.closeText == "Cerrar"
-    assert len(model.sections) == 6 and model.sections[0]["title"] == "Conectar"
+    assert len(model.sections) == 7 and model.sections[0]["title"] == "Conectar"
     seen = []
     model.changed.connect(lambda: seen.append(1))
     language[0] = "german"
