@@ -4,11 +4,17 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [0.1.1] - A window with the history of the evidence shared by every program, a History step in the quick guide, the steps of a test plan in the eight languages and release notes that carry the compatibility table
+
 - **The quick guide has a History step, and the updater's a Firmware step:** the guides of the flasher, the tester and the updater in the eight languages (portuguese of Portugal) say what the History button shows (the evidence records, newest first, each one checked, filtered by result and text, read only), and the guide of the updater says what the Firmware button does (checks the release signature of an image and opens the Flasher with it selected, writing nothing to a board). `docs/EVIDENCE.md` describes the listing of a folder, the History window and its command line forms, and the Compatibility section of the READMEs says how the notes of a release carry the compatibility table.
 - **The updater's security texts follow its new defaults:** the catalog of the updater says that signed commits and the question before the build check are on by default, and the message of a run with nobody to ask names the three ways to answer in advance.
 - **A window with the history of the evidence, the same for every program:** `EvidenceHistoryDialog.qml` with its Qt object (`evidence_history_qt.py`) and its texts in the eight languages (`evidence_history_strings.py`, portuguese of Portugal) lists the `urtc-evidence/1` records of a folder newest first, with the kind, the result, the tool, the board, the versions and whether each record still passes its check; a record edited after it was written, a file that is not JSON or a record of another format is shown as not valid with what is wrong. It can be filtered by result, by text and to only the records that fail, reads again each time it opens, shows at most 500 rows (and says how many there are) and changes nothing on disk. `tools/vendor_copy.py` has the sets `history_qt` and `history_qml` for the programs that carry it.
 - **The steps of a test plan are worded in the eight languages:** the catalog of the tester has the texts of every message a plan step gives (answers missing, wrong tool, old firmware, value out of range, operator confirmation and the rest), with the portuguese of Portugal.
 - **The notes of a release of a program can carry the compatibility table:** `tools/changelog_section.py` (the section of the CHANGELOG of one version, and with `--compat` the generated table of `docs/COMPATIBILITY.md` after it) is now here too, in the set `release_notes` of `tools/vendor_copy.py`, so the flasher, the tester and the updater can print the body of their release the way the firmware repository does; it stops with a message when the version has no section or the table is missing.
+
+## [0.1.1]
+
+- Build version synchronized with `urtc.project.json` and the repository-native version source.
 
 ## [0.1.0] - Free configuration of a head as a contract, the history of the evidence, the rack reasons in eight languages, a rack simulator that answers like the rack and the lights of Project status following the manifest
 
