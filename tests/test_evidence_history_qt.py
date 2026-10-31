@@ -146,7 +146,7 @@ def test_the_window_reads_again_when_asked_and_follows_the_language(tmp_path):
     language[0] = "german"
     model.languageChanged()
     assert seen and model.title == "Verlauf der Vorgänge" and model.rows[0]["kindText"] == "Flash" and model.rows[0]["outcomeText"] == "Bestanden"
-    assert model.outcomeChoices[0] == "Alle" and len(model.outcomeChoices) == 1 + len(evidence.OUTCOMES) and len(model.headers) == 7
+    assert model.outcomeChoices[0] == "Alle" and len(model.outcomeChoices) == 1 + len(evidence.OUTCOMES) and len(model.headers) == 8
     assert model.rows[0]["checkText"] == "Gültig"
 
 
