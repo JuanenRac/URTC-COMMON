@@ -336,3 +336,63 @@ def test_the_command_line_subcommand_reports_a_bad_option(capsys):
 
     assert cli.main(["virtual-board", "--firmware-version", "x", "--port", "0"]) == 2
     assert "VIRTUAL_BOARD=FAIL" in capsys.readouterr().err
+
+
+# =============================================================================
+# the firmware's own virtual board, built from a checkout of the URTC repository (--firmware-repo)
+# =============================================================================
+def _stand_in_builder(tmp_path, body: str):
+    """A folder that looks like a URTC checkout: its tools/fuzz_virtual_board.py is the stand-in the body writes."""
+    script = tmp_path / "tools" / "fuzz_virtual_board.py"
+    script.parent.mkdir(parents=True)
+    script.write_text("import sys\n" + body, encoding="utf-8")
+    return tmp_path
+
+
+def test_the_command_of_the_firmware_board_is_what_the_builder_prints_plus_the_tool_and_features(tmp_path):
+    from urtc_common.virtual_board import firmware_board_command
+
+    repo = _stand_in_builder(tmp_path, "print('noise')\nprint('VIRTUAL_BOARD_COMMAND=[\"wsl\", \"--\", \"./board\"]')\n")
+    assert firmware_board_command(repo, tool=5, features=0x0F, build_dir=tmp_path / "out") == ["wsl", "--", "./board", "5", "15"]
+
+
+def test_the_firmware_board_says_why_it_cannot_be_built(tmp_path):
+    from urtc_common.virtual_board import FirmwareBoardError, firmware_board_command
+
+    with pytest.raises(FirmwareBoardError, match="not found"):
+        firmware_board_command(tmp_path / "nowhere")
+    with pytest.raises(FirmwareBoardError, match="compiler"):
+        firmware_board_command(_stand_in_builder(tmp_path / "a", "sys.exit(2)\n"), build_dir=tmp_path / "o1")
+    with pytest.raises(FirmwareBoardError, match="did not build"):
+        firmware_board_command(_stand_in_builder(tmp_path / "b", "print('boom')\nsys.exit(1)\n"), build_dir=tmp_path / "o2")
+    with pytest.raises(FirmwareBoardError, match="how to run"):
+        firmware_board_command(_stand_in_builder(tmp_path / "c", "print('nothing useful')\n"), build_dir=tmp_path / "o3")
+    with pytest.raises(FirmwareBoardError, match="between 0 and 24"):
+        firmware_board_command(_stand_in_builder(tmp_path / "d", "pass\n"), tool=30)
+
+
+def test_main_refuses_both_ways_to_name_the_program_and_a_checkout_without_the_builder(capsys, tmp_path):
+    assert main(["--port", "0", "--firmware-repo", str(tmp_path), "--exec", "x"]) == 2
+    assert main(["--port", "0", "--firmware-repo", str(tmp_path)]) == 2
+    assert "VIRTUAL_BOARD=FAIL" in capsys.readouterr().err
+
+
+def test_the_real_firmware_receive_path_answers_through_the_bridge(sibling):
+    """Needs the URTC repository next to this one and a host C compiler (WSL on Windows): builds tests/virtual_board.c and talks to it over TCP."""
+    from urtc_common.virtual_board import FirmwareBoardError, firmware_board_command
+
+    repo = sibling("URTC/tools/fuzz_virtual_board.py").parents[1]
+    try:
+        command = firmware_board_command(repo, tool=5)
+    except FirmwareBoardError as exc:
+        pytest.skip(str(exc))
+    with VirtualBoardServer(command=command) as server:
+        port = transports.SLCAN(server.url, serial_module=SERIAL_MODULE, settle_seconds=0)
+        try:
+            port.open_channel()
+            port.send_frame(protocol.CAN_ID_QUERY_ACTIVE_TOOL)
+            frames = _collect(port, 1, timeout=30.0)
+        finally:
+            port.close()
+    assert frames and frames[0][0] == protocol.CAN_ID_ACTIVE_TOOL_RESP
+    assert 5 in frames[0][1]
