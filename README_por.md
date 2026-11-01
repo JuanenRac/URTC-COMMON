@@ -29,7 +29,7 @@
 
 | | |
 |---|---|
-| Versão | `0.1.3` |
+| Versão | `0.1.4` |
 | Maturidade | Estrutura inicial |
 | Testes | 1398 |
 | Tecnologia | JSON / Python |

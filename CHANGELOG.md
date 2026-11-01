@@ -4,11 +4,17 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [0.1.4] - The PDF report prints the common Chinese and Japanese characters of both levels, the evidence signature can be read against a store of trusted public keys, the history shows who signed and the Qt files of the shared windows type-check
+
 - **The font of the PDF report holds the second level of GB 2312 and of JIS X 0208:** the embedded subsets of Noto Sans CJK now hold both levels of both national standards (6763 hanzi in the Chinese subset, 6355 kanji in the Japanese one) besides the text of the catalogs, so most names of people and places print as they are written instead of as a square. Traditional Chinese forms, rare kanji outside JIS X 0208 and other scripts still print as the visible square with the note that counts them. The cost: the font data grows from 1.32 MB to 2.53 MB (1.31 MB for Chinese and 1.22 MB for Japanese, deflated), the module from 1.97 MB to 3.71 MB in each program that carries it, and a PDF that embeds a subset from about 0.6-0.74 MB to about 1.2-1.3 MB (a report with no Chinese or Japanese text embeds no font and is under 60 KB); the limits are fixed in the tests (2.8 MB of font data, 4.2 MB of module, 1.5 MB per PDF). The output stays deterministic: the same records give the same bytes, and the tool that makes the module gives the same data every time.
 - **The type check passes with newer PySide6:** the Qt objects name the type of a `Property` as a text (`"QVariantList"`), which Qt accepts and the stubs of newer PySide6 versions reject (nine `arg-type` messages in four modules). The configuration of the type checker leaves out that one kind of message (`arg-type`) in those four modules only, with the reason written next to it; every other check still runs there and nothing outside them is relaxed. The code is unchanged.
 
 - **A trust store of public keys for evidence signatures:** `record_signing.trust_store_from_config` reads `trusted_keys` (alias to public key in hexadecimal, public keys only; an entry that is not one is left out and named without its value), and `evidence_state` gains two states for a good signature: `trusted` (the key is in the store, the alias says whose) and `unknown_key` (it is not); a public key given explicitly still wins over the store, a signature that fails is `invalid` whatever the store says, and an empty store is no store. The history and the report say "Signed by <alias>" or "Valid signature, unknown key" in the eight languages (Portuguese of Portugal), the summary counts the new states, and the History window gains a Signature column (the Qt object takes the store and an explicit key). `record_signing.signing_settings` reads the `sign_evidence` switch the programs share (on only when exactly `true`). The slow check of a signature is made once per record.
 - **The texts of the tester** gain the label of the switch that signs its evidence in the Qt interface, in the eight languages.
+
+## [0.1.4]
+
+- Build version synchronized with `urtc.project.json` and the repository-native version source.
 
 ## [0.1.3] - Evidence records can carry an Ed25519 signature that the history and the report show, the font subsets of the PDF report cover the new texts and the trace viewer of the web studio has its texts in the eight languages
 
