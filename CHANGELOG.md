@@ -4,6 +4,7 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The virtual board can also bridge to the twin of the bootloader:** `urtc-virtual-board --firmware-repo DIR --firmware-bootloader` builds `tests/virtual_bootloader.c` of the URTC repository through its `tools/bootloader_twin.py` (inside WSL on Windows) and bridges to it, so the flasher, the tester and the gateway can talk to the real C of the master's bootloader: its listening window, signature and CRC checks, flash and reset. `firmware_board_command(..., bootloader=True)` returns the command; a test flashes a signed image through it over TCP and sees the bootloader accept it.
 - **The virtual board can run the firmware's own receive path without any manual build:** `urtc-virtual-board --firmware-repo DIR` (`DIR` is a checkout of the URTC repository) asks the builder of that repository to compile `tests/virtual_board.c` (inside WSL on Windows, where its fake flash needs a 64-bit Linux), starts it with the tool profile of `--tool` and the optional features of `--features`, and bridges the SLCAN port to it exactly as `--exec` does. The tests cover the command it builds and every way the build can fail, and one test runs the real firmware board over TCP when the URTC repository and a host C compiler are there.
 
 ## [0.1.6] - A test result can be unknown, in the evidence record, the history and the report of the eight languages
