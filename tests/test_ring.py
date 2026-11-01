@@ -51,6 +51,23 @@ def test_a_producer_thread_and_a_consumer_thread_keep_every_byte_in_order(tmp_pa
     assert "all ring tests pass" in run.stdout
 
 
+@pytest.mark.skipif(sys.platform == "win32", reason="the thread sanitizer needs POSIX threads")
+def test_the_thread_sanitizer_finds_no_race_between_the_producer_and_the_consumer(tmp_path):
+    compiler = shutil.which("cc") or shutil.which("gcc")
+    if compiler is None:
+        pytest.skip("no host C compiler")
+    binary = tmp_path / "ring_tsan"
+    build = subprocess.run([compiler, "-std=c11", "-O1", "-g", f"-I{ROOT / 'firmware_base'}", "-DURTC_RING_THREADS", str(ROOT / "tests" / "c" / "test_ring.c"),
+                            "-o", str(binary), "-fsanitize=thread", "-pthread"], capture_output=True, text=True)
+    if build.returncode != 0:
+        pytest.skip("no thread sanitizer in this compiler")
+    run = subprocess.run([str(binary)], capture_output=True, text=True, timeout=300)
+    if "unexpected memory mapping" in run.stdout + run.stderr:
+        pytest.skip("the thread sanitizer cannot map its memory on this kernel")
+    assert "data race" not in run.stderr, run.stderr[-1500:]
+    assert run.returncode == 0, run.stdout + run.stderr
+
+
 def test_the_copy_set_carries_the_header_and_nothing_else():
     sys.path.insert(0, str(ROOT / "tools"))
     import vendor_copy

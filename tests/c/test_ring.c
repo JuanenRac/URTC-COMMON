@@ -18,13 +18,14 @@
 #define STRESS_BYTES 3000000u
 static urtc_ring_t stress_ring;
 static uint8_t stress_storage[64];
+static uint32_t producer_refused;                       // written by the producer thread only, read after the join
 
 static void *producer(void *arg)
 {
     (void)arg;
     for (uint32_t i = 0; i < STRESS_BYTES; i++) {
         while (!urtc_ring_put(&stress_ring, (uint8_t)(i * 7u + (i >> 8)))) {
-            // full: the consumer is behind; try again (the drop counter counts these)
+            producer_refused++;   // full: the consumer is behind; try again (the drop counter counts these)
         }
     }
     return NULL;
@@ -35,10 +36,11 @@ static void stress(int *failures)
     pthread_t thread;
     urtc_ring_init(&stress_ring, stress_storage, 64);
     pthread_create(&thread, NULL, producer, NULL);
-    uint32_t seen = 0;
+    uint32_t seen = 0, reported = 0;
     bool in_order = true;
     while (seen < STRESS_BYTES) {
         uint8_t byte;
+        reported += urtc_ring_take_dropped(&stress_ring);   // the consumer reads the counter the producer writes, while it writes it
         if (urtc_ring_get(&stress_ring, &byte)) {
             if (byte != (uint8_t)(seen * 7u + (seen >> 8))) {
                 in_order = false;
@@ -47,6 +49,8 @@ static void stress(int *failures)
         }
     }
     pthread_join(thread, NULL);
+    reported += urtc_ring_take_dropped(&stress_ring);
+    TEST_ASSERT((uint16_t)(reported - producer_refused) == 0u, "the consumer is told about every byte the producer was refused (the counter is 16 bits wide: exact up to a multiple of 65536)");
     TEST_ASSERT(in_order, "three million bytes cross two threads in order, none lost, none repeated");
     TEST_ASSERT(urtc_ring_count(&stress_ring) == 0, "the ring ends empty");
 }
