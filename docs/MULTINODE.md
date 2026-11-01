@@ -131,11 +131,11 @@ The design left some points open. The firmware does this:
 | URTC (firmware) | Read the address into the node state; implement legacy-mode listening, DISCOVER, SELECT with timeout, NODE_INFO/STATUS/CMD/RESP, SAFE_STOP; ignore single-head identifiers when unselected; conflict detection; host tests and a two-board bench test. | The node side, behind the switch, with host tests that replay the shared scenarios. The two-board bench test is not done. |
 | URTC-COMMON | Specification, generated constants and builders, vectors, host helpers. | Yes (this repository), with the model of nodes and the host session (`multinode_sim`, `multinode_host`) that the programs below can copy with `vendor_copy.py --set multinode`. |
 | URTC-FLASHER | Discover and list nodes; SELECT and confirm before every update; never flash an unselected or conflicting node. | The window that finds the heads and selects one (`node_picker`, set `node_picker`), a gate that refuses single-head frames while several heads are on the bus and none is confirmed, the texts in the eight languages and a section of the quick guide. Tried against the model only. |
-| URTC-TESTER | Node list and a node chooser in the bus monitor; per-node status; test one node at a time. | The same window and gate as the flasher. Per-node status in the bus monitor is not done. |
+| URTC-TESTER | Node list and a node chooser in the bus monitor; per-node status; test one node at a time. | The same window and gate as the flasher, and a bus monitor that follows each node: rows carry the node (`N03`), the filter keeps the frames of some nodes (`n3 n12`) and a summary gives the frames per second and the share of the bus of each node (`node_monitor`, set `node_monitor`). Tried against the model of the bus only. |
 | URTC-WEB-STUDIO | Same node list over WebSerial; SELECT before the update; show the notice when more than one node answers. | The same list, confirmation, states and notices in TypeScript, held to the same vectors. Tried against a model of the bus only. |
 | URTC-SMART-RACK | Uses its own serial link now; join the bus as a node only when its board exists. | Nothing. |
 | URTC-VISION-TOOL | Reuses the thermal tool profile; one node among others; large transfers need SELECT. | Nothing. |
-| HYDRA-UMC adapter | Carry the extension identifiers through the CAN adapter; expose the node table; keep one active tool per cell. | Nothing. |
+| HYDRA-UMC adapter | Carry the extension identifiers through the CAN adapter; expose the node table; keep one active tool per cell. | Nothing: no program of the HYDRA-UMC family speaks to URTC heads today, so there is no adapter to extend; which repository would host one is a decision for the owner. |
 
 ## Open points
 

@@ -95,6 +95,7 @@ SETS = {
         "conformance/multinode_vectors.json", "conformance/multinode_scenarios.json",
     ],
     "multinode_c": ["generated/multinode_scenarios.h"],
+    "node_monitor": ["src/urtc_common/node_monitor.py"],
     "slave_version": ["conformance/slave_version_vectors.json"],
     "node_picker": [
         "src/urtc_common/node_picker.py", "src/urtc_common/node_picker_strings.py", "src/urtc_common/node_picker_qt.py",
