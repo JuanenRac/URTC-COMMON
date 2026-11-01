@@ -126,14 +126,19 @@ def test_a_file_edited_by_hand_is_found(tmp_path):
 
 
 def test_the_program_side_test_passes_in_a_synced_folder_and_fails_after_an_edit(tmp_path):
+    import os
     import subprocess
 
     program = "URTC-FLASHER"
     (tmp_path / program).mkdir()
     gen.sync(program, tmp_path)
     run = [sys.executable, "-m", "pytest", "-q", "-p", "no:cacheprovider", str(tmp_path / program / "tests" / "test_i18n_generated.py")]
-    assert subprocess.run(run, capture_output=True, text=True, check=False).returncode == 0
+    # The folder under test needs no plugin of the machine; loading them made the run take half a minute and fail on machines whose plugins are broken.
+    env = {**os.environ, "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1"}
+    env.pop("PYTEST_ADDOPTS", None)
+    launch = {"capture_output": True, "text": True, "check": False, "env": env, "cwd": tmp_path, "timeout": 300}
+    assert subprocess.run(run, **launch).returncode == 0
     target = tmp_path / program / "language" / "english.lng"
     target.write_text(target.read_text(encoding="utf-8") + "EXTRA=1\n", encoding="utf-8")
-    result = subprocess.run(run, capture_output=True, text=True, check=False)
+    result = subprocess.run(run, **launch)
     assert result.returncode != 0 and "english.lng differs from the lock" in result.stdout

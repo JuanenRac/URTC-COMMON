@@ -24,6 +24,7 @@ FLASHER_PROTOCOL = "URTC-FLASHER/flasher_protocol.py"
 TESTER_CONFIG = "URTC-TESTER/tester_config.py"
 WEB_IDS = "URTC-WEB-STUDIO/src/lib/canIds.ts"
 WEB_FLASHER = "URTC-WEB-STUDIO/src/lib/flasher.ts"
+WEB_PROFILES = "URTC-WEB-STUDIO/src/lib/generated/urtcTools.ts"
 WEB_LIMITS = "URTC-WEB-STUDIO/src/lib/toolLimits.ts"
 FIRMWARE = "URTC/src/F303-master"
 BOOT_COMMON = "URTC/src/F303-master/boot/bootloader_common.h"
@@ -180,7 +181,10 @@ def test_motion_tool_sets_match_the_routing_table_of_the_firmware(spec, sibling)
     tester = text(sibling(TESTER_CONFIG))
     assert {int(x) for x in re.search(r"MOTION_TOOL_IDS = \{([^}]*)\}", tester).group(1).split(",")} == motion
     web = text(sibling(WEB_IDS))
-    assert {int(x) for x in re.search(r"MOTION_TOOL_IDS = new Set\(\[([^\]]*)\]", web).group(1).split(",")} == motion
+    own = {int(x) for x in re.search(r"OWN_COMMAND_MOTION_TOOL_IDS[^=]*=\s*new Set\(\[([^\]]*)\]", web).group(1).split(",")}
+    profiles = text(sibling(WEB_PROFILES))
+    listing = json.loads(re.search(r"URTC_TOOL_PROFILES: UrtcToolProfile\[\] = (\[.*?\n\]);", profiles, re.S).group(1))
+    assert {p["id"] for p in listing if p["kind"] == "motion"} - own == motion
 
 
 def routed_tools(source: str) -> dict[str, set[int]]:
