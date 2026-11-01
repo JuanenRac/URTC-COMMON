@@ -10,8 +10,8 @@
     "Python"
   ],
   "deployment_target": "user-pc",
-  "maturity": "scaffolding",
-  "evidence": "host-test",
+  "maturity": "functional",
+  "evidence": "simulator",
   "family": "URTC Tool Platform",
   "parent": null,
   "build": "python tools/build_test.py",
