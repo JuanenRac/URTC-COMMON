@@ -174,10 +174,73 @@ def test_a_long_line_is_wrapped_inside_the_page(tmp_path):
     assert pdf.text().count("长") == 400
 
 
-def test_the_size_of_the_pdf_and_of_the_font_data_stays_reasonable(tmp_path):
+# The explicit limits of the size: the font data of the two subsets, the module that carries it (each program copies it) and a PDF that embeds a subset. They were
+# measured with the first and second level of GB 2312 and JIS X 0208 in the subsets (about 2.5 MB of font data, 3.7 MB of module, 1.3 MB per PDF); a change that
+# makes any of them grow past the limit must be a decision, not an accident.
+FONT_DATA_LIMIT = 2_800_000
+MODULE_LIMIT = 4_200_000
+PDF_LIMIT = 1_500_000
+
+
+def test_the_size_of_the_pdf_and_of_the_font_data_stays_within_the_limits(tmp_path):
     entries = entries_of(tmp_path, a=record("2026-01-01T10:00:00Z", CHINESE_NAME))
-    assert len(evidence_report.to_pdf(entries, "chinese")) < 1_000_000 and len(evidence_report.to_pdf(entries, "japanese")) < 900_000
-    assert sum(len(fonts.font(name)["ttf"]) for name in fonts.NAMES) < 2_000_000
+    for language in ("chinese", "japanese", "english"):
+        assert len(evidence_report.to_pdf(entries, language)) < PDF_LIMIT, language
+    assert sum(len(fonts.font(name)["ttf"]) for name in fonts.NAMES) < FONT_DATA_LIMIT
+    assert (HERE.parent / "src" / "urtc_common" / "evidence_report_fonts.py").stat().st_size < MODULE_LIMIT
+
+
+def test_a_report_without_cjk_text_embeds_no_font(tmp_path):
+    entries = entries_of(tmp_path, a=record("2026-01-01T10:00:00Z", "plain-board"))
+    assert len(evidence_report.to_pdf(entries, "english")) < 60_000
+
+
+def _decoded(codec: str, first: int, last: int) -> set[int]:
+    """The characters of the double-byte rows ``first``..``last`` of a national standard, as the standard library decodes them (as the tool that makes the subsets does)."""
+    found = set()
+    for lead in range(first, last + 1):
+        for trail in range(0x40, 0xFF):
+            try:
+                char = bytes([lead, trail]).decode(codec)
+            except UnicodeDecodeError:
+                continue
+            if len(char) == 1:
+                found.add(ord(char))
+    return found
+
+
+def test_the_chinese_subset_holds_both_levels_of_gb_2312():
+    glyphs = fonts.font("sc")["glyphs"]
+    level_one, level_two = _decoded("gb2312", 0xB0, 0xD7), _decoded("gb2312", 0xD8, 0xF7)
+    assert len(level_one) == 3755 and len(level_two) == 3008        # the sizes of the two levels of the standard
+    assert not sorted(c for c in level_one | level_two if c not in glyphs)
+
+
+def test_the_japanese_subset_holds_both_levels_of_jis_x_0208():
+    glyphs = fonts.font("jp")["glyphs"]
+    kanji = _decoded("shift_jis", 0x88, 0x9F) | _decoded("shift_jis", 0xE0, 0xEA)
+    assert len(kanji) == 6355                                       # level 1 (2965) and level 2 (3390)
+    assert not sorted(c for c in kanji if c not in glyphs)
+
+
+def test_a_level_two_character_is_printed_and_read_back_not_replaced(tmp_path):
+    level_two = {"chinese": ("sc", _decoded("gb2312", 0xD8, 0xF7)), "japanese": ("jp", _decoded("shift_jis", 0x98, 0x9F) | _decoded("shift_jis", 0xE0, 0xEA))}
+    for language, (name, characters) in level_two.items():
+        probes = [chr(code) for code in sorted(characters)]
+        for probe in (probes[0], probes[len(probes) // 2], probes[-1]):
+            assert ord(probe) in fonts.font(name)["glyphs"]
+        folder = tmp_path / language
+        folder.mkdir()
+        entries = entries_of(folder, a=record("2026-01-01T10:00:00Z", "".join(probes[0:1] + probes[len(probes) // 2:len(probes) // 2 + 1] + probes[-1:])))
+        text = Pdf(evidence_report.to_pdf(entries, language)).text()
+        assert probes[0] in text and probes[-1] in text and "□" not in text, language
+
+
+def test_what_is_still_missing_is_a_visible_square_with_the_note(tmp_path):
+    # Traditional forms are not in the Simplified Chinese subset, and a character outside both standards (a rare kanji of Unicode extension B) is in neither
+    entries = entries_of(tmp_path, a=record("2026-01-01T10:00:00Z", "體" + chr(0x20BB7)))
+    text = Pdf(evidence_report.to_pdf(entries, "chinese")).text()
+    assert "□" in text and st.text("chinese", "ER_PDF_SUBST", count=2) in text
 
 
 def test_the_subsets_hold_every_character_of_every_catalog_in_every_language():

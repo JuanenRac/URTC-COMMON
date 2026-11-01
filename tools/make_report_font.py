@@ -26,8 +26,9 @@ The tool checks the SHA-256 of each downloaded file against the pinned values, m
 stores each subset deflate-compressed (the PDF embeds those bytes as they are, so the same module always gives the same PDF).
 
 Glyphs kept: ASCII, Latin-1, the usual punctuation and symbols, the CJK punctuation, the kana, the full-width forms, every character of the text catalogs of the
-report and of the history window in the eight languages, and the kanji/hanzi of the first level of the national standards (JIS X 0208 level 1 for the Japanese
-subset, GB 2312 level 1 for the Chinese one), which cover the everyday words of operator names and notes. A character that is not in the subset is printed by the
+report and of the history window in the eight languages, and the kanji/hanzi of the first AND second level of the national standards (JIS X 0208 levels 1 and 2, 6355 kanji,
+for the Japanese subset; GB 2312 levels 1 and 2, 6763 hanzi, for the Chinese one), which cover the everyday words and the usual names of people and places in operator
+names and notes. What is still missing (Traditional Chinese forms, rare kanji outside JIS X 0208, characters of the other countries) is printed as a visible square. A character that is not in the subset is printed by the
 report as a visible replacement and the report says so.
 """
 from __future__ import annotations
@@ -76,8 +77,8 @@ def catalog_characters() -> set[int]:
     return {c for c in found if c >= 0x20}
 
 
-def level_one(codec: str, first: int, last: int) -> set[int]:
-    """The characters of the first level of a national standard, decoded with the codec of the standard library."""
+def decoded_range(codec: str, first: int, last: int) -> set[int]:
+    """The characters of the double-byte rows with lead bytes ``first``..``last`` of a national standard, decoded with the codec of the standard library."""
     found: set[int] = set()
     for lead in range(first, last + 1):
         for trail in range(0x40, 0xFF):
@@ -93,8 +94,10 @@ def level_one(codec: str, first: int, last: int) -> set[int]:
 def wanted(kind: str) -> set[int]:
     base = set(PUNCTUATION) | catalog_characters()
     if kind == "sc":
-        return base | level_one("gb2312", 0xB0, 0xD7)    # rows 16-55 of GB 2312: level 1 (3755 hanzi)
-    return base | level_one("shift_jis", 0x88, 0x98)    # JIS X 0208 level 1 kanji (2965), lead bytes 0x88-0x98 (partly level 2 at 0x98)
+        # rows 16-87 of GB 2312: level 1 (3755 hanzi, rows 16-55) and level 2 (3008 hanzi, rows 56-87)
+        return base | decoded_range("gb2312", 0xB0, 0xF7)
+    # JIS X 0208 kanji in Shift JIS: level 1 (2965) is lead bytes 0x88-0x98 up to 0x98 0x72 and level 2 (3390) the rest of 0x98 and 0x99-0x9F and 0xE0-0xEA
+    return base | decoded_range("shift_jis", 0x88, 0x9F) | decoded_range("shift_jis", 0xE0, 0xEA)
 
 
 def build(path: Path, characters: set[int]) -> tuple[bytes, dict[int, tuple[int, int]], str]:
