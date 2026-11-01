@@ -4,9 +4,15 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [0.1.5] - One evidence file can be checked on its own, two hostile inputs no longer end in an exception and the parsers have deterministic property tests
+
 - **One evidence file can be checked on its own:** `evidence_history.load_file(path)` reads the records of one `.json` or `.jsonl` file and checks them as a folder is checked (the programs use it for `--verify FILE`).
 - **Two hostile inputs no longer end in an exception:** an evidence file and a bus scenario nested thousands of levels deep are refused with their own message (the depth the interpreter allows differs between versions and platforms).
 - **Deterministic property tests of the parsers:** seeded noise and mutated valid inputs hold that the evidence checker, the signature check, the trust store, the bus scenario and the adapter line reader never raise, never accept what they should refuse, and that what they accept round-trips.
+
+## [0.1.5]
+
+- Build version synchronized with `urtc.project.json` and the repository-native version source.
 
 ## [0.1.4] - The PDF report prints the common Chinese and Japanese characters of both levels, the evidence signature can be read against a store of trusted public keys, the history shows who signed and the Qt files of the shared windows type-check
 
