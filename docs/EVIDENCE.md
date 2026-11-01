@@ -10,7 +10,7 @@ The description for other languages is `spec/evidence.schema.json`; the code is 
 |---|---|
 | `format` | always `urtc-evidence/1` |
 | `kind` | `flash`, `test`, `install` or `session` |
-| `outcome` | `pass`, `fail`, `error` or `skipped` |
+| `outcome` | `pass`, `fail`, `error`, `skipped` or `unknown` (the evidence cannot say: absent evidence is `unknown`, never `pass`) |
 | `timestamp_utc` | ISO 8601 time with `Z` or an offset |
 | `tool`, `tool_version` | the program that wrote the record |
 | `operator` | the user name, when known |

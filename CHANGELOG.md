@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **A result can be "unknown":** the evidence record gains the outcome `unknown` (the evidence cannot say, for instance a frame that arrived but cannot be read or a tool that has nothing to measure), next to `pass`, `fail`, `error` and `skipped`; the schema, the document of the format, the filter and the counts of the history and the report know it, and its word is in the eight languages (Portuguese of Portugal).
+
 ## [0.1.5] - One evidence file can be checked on its own, two hostile inputs no longer end in an exception and the parsers have deterministic property tests
 
 - **One evidence file can be checked on its own:** `evidence_history.load_file(path)` reads the records of one `.json` or `.jsonl` file and checks them as a folder is checked (the programs use it for `--verify FILE`).

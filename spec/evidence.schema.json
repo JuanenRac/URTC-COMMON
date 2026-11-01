@@ -8,7 +8,7 @@
   "properties": {
     "format": {"const": "urtc-evidence/1"},
     "kind": {"enum": ["flash", "test", "install", "session"]},
-    "outcome": {"enum": ["pass", "fail", "error", "skipped"]},
+    "outcome": {"enum": ["pass", "fail", "error", "skipped", "unknown"]},
     "timestamp_utc": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?(Z|[+-]\\d{2}:\\d{2})$"},
     "tool": {"type": "string", "minLength": 1},
     "tool_version": {"type": "string", "minLength": 1},
