@@ -47,6 +47,8 @@
 | Software | 🟡 | Shared code used by the other programs; checked only by tests on a PC. |
 | Tests | 🟢 | The test suite passes in the CI on every push. |
 | Security | 🟡 | Releases are signed with Ed25519 and checked before use; the key handling was not reviewed by anyone else. |
+| Interface and protocols | 🟡 | The routes or messages it offers are documented and tested with a client; not every client has used them yet |
+| Deployment | 🟠 | Published as a release; installing it on a clean machine is documented but not recorded |
 | Documentation | 🟡 | README in eight languages and reference documents; the translations were not reviewed by native speakers. |
 
 <!-- /urtc-section:status_common -->

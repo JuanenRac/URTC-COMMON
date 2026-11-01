@@ -47,6 +47,8 @@
 | Software | 🟡 | Codice condiviso dagli altri programmi; verificato solo con test su PC. |
 | Test | 🟢 | La suite di test passa nella CI a ogni push. |
 | Sicurezza | 🟡 | Le versioni sono firmate con Ed25519 e verificate prima dell'uso; la gestione delle chiavi non è stata rivista da nessun altro. |
+| Interfaccia e protocolli | 🟡 | Le rotte o i messaggi offerti sono documentati e provati con un client; non tutti i client li hanno ancora usati |
+| Distribuzione | 🟠 | Pubblicato come release; l'installazione su una macchina pulita è documentata ma non registrata |
 | Documentazione | 🟡 | README in otto lingue e documenti di riferimento; le traduzioni non sono state riviste da madrelingua. |
 
 <!-- /urtc-section:status_common -->

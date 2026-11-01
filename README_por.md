@@ -47,6 +47,8 @@
 | Software | 🟡 | Código partilhado pelos outros programas; verificado só com testes num PC. |
 | Testes | 🟢 | A bateria de testes passa na CI em cada envio. |
 | Segurança | 🟡 | As versões são assinadas com Ed25519 e verificadas antes de usar; o tratamento das chaves não foi revisto por mais ninguém. |
+| Interface e protocolos | 🟡 | As rotas ou mensagens que oferece estão documentadas e testadas com um cliente; ainda nem todos os clientes as usaram |
+| Implantação | 🟠 | Publicado como release; instalá-lo numa máquina limpa está documentado mas não registado |
 | Documentação | 🟡 | README em oito línguas e documentos de referência; as traduções não foram revistas por falantes nativos. |
 
 <!-- /urtc-section:status_common -->

@@ -47,6 +47,8 @@
 | Logiciel | 🟡 | Code partagé par les autres programmes ; vérifié seulement par des tests sur PC. |
 | Tests | 🟢 | La suite de tests passe dans la CI à chaque push. |
 | Sécurité | 🟡 | Les versions sont signées en Ed25519 et vérifiées avant usage ; la gestion des clés n'a été relue par personne d'autre. |
+| Interface et protocoles | 🟡 | Les routes ou les messages proposés sont documentés et testés avec un client ; tous les clients ne les ont pas encore utilisés |
+| Déploiement | 🟠 | Publié comme release ; l'installation sur une machine propre est documentée mais non consignée |
 | Documentation | 🟡 | README en huit langues et documents de référence ; les traductions n'ont pas été relues par des locuteurs natifs. |
 
 <!-- /urtc-section:status_common -->

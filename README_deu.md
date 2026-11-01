@@ -47,6 +47,8 @@
 | Software | 🟡 | Gemeinsamer Code der anderen Programme; nur durch Tests am PC geprüft. |
 | Tests | 🟢 | Die Testsuite besteht bei jedem Push in der CI. |
 | Sicherheit | 🟡 | Releases werden mit Ed25519 signiert und vor der Nutzung geprüft; der Umgang mit den Schlüsseln wurde von niemand anderem geprüft. |
+| Schnittstelle und Protokolle | 🟡 | Die angebotenen Routen oder Nachrichten sind dokumentiert und mit einem Client getestet; noch nicht jeder Client hat sie benutzt |
+| Bereitstellung | 🟠 | Als Release veröffentlicht; die Installation auf einem frischen Rechner ist dokumentiert, aber nicht vermerkt |
 | Dokumentation | 🟡 | README in acht Sprachen und Referenzdokumente; die Übersetzungen wurden nicht von Muttersprachlern geprüft. |
 
 <!-- /urtc-section:status_common -->
