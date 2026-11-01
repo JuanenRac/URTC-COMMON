@@ -13,7 +13,7 @@
   <img src="https://img.shields.io/badge/Format-JSON%20%2B%20Python-083fa1.svg" alt="Format">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
   <img src="https://img.shields.io/badge/Version-0.0.8-0f6cbd.svg" alt="Version">
-  <img src="https://img.shields.io/badge/Tests-1984-2ea44f.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Tests-1993-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
 
@@ -31,7 +31,7 @@
 |---|---|
 | Version | `0.1.6` |
 | Maturity | Scaffolding |
-| Tests | 1984 |
+| Tests | 1993 |
 | Stack | JSON / Python |
 | On real hardware | Simulated only: tested against emulators, fakes or simulators; no run on real hardware is recorded for this version |
 
@@ -68,6 +68,7 @@ The CAN protocol of the tool head, written once as data, and everything that fol
 * One source for the language files: `spec/i18n/catalog/<program>.json` holds every text of the flasher, the tester, the web studio and the updater in the eight languages (a text the glossary names is a reference to it); `tools/i18n_generate.py sync` writes the `.lng`, `.json` and `.py` files of each program with a lock (`urtc_i18n.lock.json`) and a test of its own, and `check` (also in the nightly comparison) fails when a file is not what the catalog generates.
 * The quick guide inside the programs and the README sections they share: `help_text.py` (short steps each for the flasher, the tester and the updater in the eight languages), `help_qt.py` and `qml/HelpDialog.qml` (the Help window; copied with `--set help` and `--set help_qml`), and `spec/readme/sections.json` with `tools/readme_sections.py` (the Project status of each program and the parts that several README files share, written once in the eight languages and put between marker comments in their place of the layout; `check` runs in the nightly comparison)
 * The assertion of the host tests of the firmware: `firmware_base/urtc_test.h` holds `TEST_ASSERT`, the one macro the rack, the vision tool and the tool head firmware used to define three times; each repository copies it with `vendor_copy.py --set firmware_test` and keeps its own `test_runner.h` with its suites.
+* The image header: `firmware_base/urtc_image_header.h` (a 32-byte header in front of a firmware image with the hardware it is for, the version as four components, the length and the CRC-32, and the check of a whole image), its reference `src/urtc_common/image_header.py` and the shared vectors (`conformance/image_header_vectors.json`, `generated/image_header_vectors.h`); the signature of a release covers the header, and nothing puts the header in an image yet (`docs/IMAGE_HEADER.md`).
 * [Conformance vectors](conformance/can_vectors.json): the bytes every implementation must reproduce: every layout, the refusals and the SLCAN streams.
 * [Tool profiles](spec/tools.json): the 25 tool profiles (limits, watchdog, pins, expansion board) as data; `generate_tools.py` writes the TypeScript and Python tables and [the tool table](docs/TOOLS_TABLE.md). Also here: the fault recorder reader with CSV and JSON export (`blackbox.py`), the rack simulator (`rack_sim.py`), frames for fuzzing a board made from the specification (`fuzz.py`) and the [compatibility table](docs/COMPATIBILITY.md) of a release, made from `spec/versions.json`; and the [status table](docs/STATUS.md) of what has run and what is still pending, made from the manifests of the repositories (`status_table.py`).
 * [Free configuration of a head](docs/FREE_TOOL.md): what a rack does with a head whose ID jumpers read `0x1F`: it asks (`0x1A3`), checks the answer and uses the identity like one read from jumpers; until then the head stays in the safe state. Modelled in `rack_sim.py`, with shared vectors (`conformance/rack_vectors.json`) that the rack firmware replays.
@@ -109,7 +110,7 @@ python -m mypy                                       # the type check of urtc_co
 
 ## 🧪 Testing
 
-The suite has 1984 tests (`python -m pytest tests -q`). They check the specification against its schema, the generated C, TypeScript and Python files against what the generators write, the conformance vectors in Python, in TypeScript with Node and in C with a host compiler, the SLCAN codec and the transports with fakes, the virtual board, the signed self-update flow, and the comparison with the repositories checked out next to this one. A few tests skip where an optional tool (Node, a C compiler, PySide6) or a neighbouring repository is missing. `python -m mypy` type-checks the package.
+The suite has 1993 tests (`python -m pytest tests -q`). They check the specification against its schema, the generated C, TypeScript and Python files against what the generators write, the conformance vectors in Python, in TypeScript with Node and in C with a host compiler, the SLCAN codec and the transports with fakes, the virtual board, the signed self-update flow, and the comparison with the repositories checked out next to this one. A few tests skip where an optional tool (Node, a C compiler, PySide6) or a neighbouring repository is missing. `python -m mypy` type-checks the package.
 
 ## 🏗️ Build & Release
 

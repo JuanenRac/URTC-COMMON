@@ -13,7 +13,7 @@
   <img src="https://img.shields.io/badge/Format-JSON%20%2B%20Python-083fa1.svg" alt="Format">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
   <img src="https://img.shields.io/badge/Version-0.0.8-0f6cbd.svg" alt="Version">
-  <img src="https://img.shields.io/badge/Tests-1984-2ea44f.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Tests-1993-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
 
@@ -31,7 +31,7 @@
 |---|---|
 | バージョン | `0.1.6` |
 | 成熟度 | 足場段階 |
-| テスト | 1984 |
+| テスト | 1993 |
 | 技術 | JSON / Python |
 | 実機での確認 | シミュレーションのみ：エミュレーター、模擬部品、シミュレーターで試験済み。このバージョンについて実機での動作記録はありません |
 
@@ -68,6 +68,7 @@
 * 言語ファイルの単一ソース：`spec/i18n/catalog/<プログラム>.json` がフラッシャー、テスター、Web スタジオ、アップデーターのすべてのテキストを 8 言語で保持します（用語集が挙げるテキストはその参照です）。`tools/i18n_generate.py sync` が各プログラムの `.lng`、`.json`、`.py` ファイルをロック（`urtc_i18n.lock.json`）と専用テストとともに書き出し、`check`（夜間の比較にも含まれます）はファイルがカタログの生成物と異なると失敗します。
 * プログラム内のクイックガイドと共有される README セクション：`help_text.py`（フラッシャー、テスター、アップデーターそれぞれに短い手順、8 言語）、`help_qt.py` と `qml/HelpDialog.qml`（ヘルプウィンドウ。`--set help` と `--set help_qml` でコピー）、そして `spec/readme/sections.json` と `tools/readme_sections.py`（各プログラムのプロジェクトの状況と、複数の README が共有する部分を 8 言語で一度だけ書き、マーカーコメントで挟んで構成上の所定の位置に配置します。`check` は夜間の比較で実行されます）
 * ファームウェアのホストテスト用アサーション: `firmware_base/urtc_test.h` は `TEST_ASSERT` を収めます。ラック、ビジョンツール、ツールヘッドの各ファームウェアが 3 回定義していたマクロです。各リポジトリは `vendor_copy.py --set firmware_test` でコピーし、自分のスイートを宣言する `test_runner.h` は各自で持ちます。
+* イメージヘッダー: `firmware_base/urtc_image_header.h`（ファームウェアイメージの前に置く 32 バイトのヘッダーで、対象ハードウェア、4 つの要素からなるバージョン、長さ、CRC-32 を持ち、イメージ全体の検査もできます）、そのリファレンス `src/urtc_common/image_header.py`、共有ベクトル（`conformance/image_header_vectors.json`、`generated/image_header_vectors.h`）。リリースの署名はヘッダーを対象に含みますが、まだヘッダーをイメージに入れるものはありません（`docs/IMAGE_HEADER.md`）。
 * [適合ベクトル](conformance/can_vectors.json): すべての実装が再現しなければならないバイト列：各レイアウト、拒否される入力、SLCAN ストリーム。
 * [ツールプロファイル](spec/tools.json)：25 種類のツールプロファイル（上限・下限、ウォッチドッグ、ピン、拡張ボード）をデータとして保持します。`generate_tools.py` が TypeScript と Python の表および[ツール一覧表](docs/TOOLS_TABLE.md)を生成します。ほかに、CSV と JSON に書き出せるブラックボックスの読み取り機能（`blackbox.py`）、ラックのシミュレーター（`rack_sim.py`）、仕様から作るボードのファジング用フレーム（`fuzz.py`）、`spec/versions.json` から作るリリースの[互換性表](docs/COMPATIBILITY.md)と、各リポジトリのマニフェストから作る、実行済みの内容と未了の内容の[状態表](docs/STATUS.md)（`status_table.py`）があります。
 * [ヘッドのフリー構成](docs/FREE_TOOL.md): IDジャンパが `0x1F` を示すヘッドをラックがどう扱うか。ラックは問い合わせ(`0x1A3`)、応答を検証し、ジャンパで読み取ったヘッドと同じように識別情報を使います。それまでヘッドは安全状態のままです。`rack_sim.py` でモデル化し、ラックのファームウェアが再生する共有ベクタ(`conformance/rack_vectors.json`)を備えます。
@@ -109,7 +110,7 @@ python -m mypy                                       # urtc_common と urtc_ui �
 
 ## 🧪 テスト
 
-テストスイートは 1984 件です（`python -m pytest tests -q`）。仕様とそのスキーマ、生成された C・TypeScript・Python ファイルとジェネレーターの出力、Python・Node 上の TypeScript・ホストコンパイラ上の C での適合ベクトル、SLCAN コーデックと模擬を使ったトランスポート、仮想ボード、署名付き自己更新の流れ、そしてこのリポジトリの隣にチェックアウトされたリポジトリとの比較を検査します。任意のツール（Node、C コンパイラ、PySide6）や隣のリポジトリがない場合、一部のテストはスキップされます。`python -m mypy` がパッケージの型を検査します。
+テストスイートは 1993 件です（`python -m pytest tests -q`）。仕様とそのスキーマ、生成された C・TypeScript・Python ファイルとジェネレーターの出力、Python・Node 上の TypeScript・ホストコンパイラ上の C での適合ベクトル、SLCAN コーデックと模擬を使ったトランスポート、仮想ボード、署名付き自己更新の流れ、そしてこのリポジトリの隣にチェックアウトされたリポジトリとの比較を検査します。任意のツール（Node、C コンパイラ、PySide6）や隣のリポジトリがない場合、一部のテストはスキップされます。`python -m mypy` がパッケージの型を検査します。
 
 ## 🏗️ ビルドとリリース
 

@@ -13,7 +13,7 @@
   <img src="https://img.shields.io/badge/Format-JSON%20%2B%20Python-083fa1.svg" alt="Format">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
   <img src="https://img.shields.io/badge/Version-0.0.8-0f6cbd.svg" alt="Version">
-  <img src="https://img.shields.io/badge/Tests-1984-2ea44f.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Tests-1993-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
 
@@ -31,7 +31,7 @@
 |---|---|
 | 版本 | `0.1.6` |
 | 成熟度 | 雏形 |
-| 测试 | 1984 |
+| 测试 | 1993 |
 | 技术栈 | JSON / Python |
 | 真实硬件 | 仅模拟：使用模拟器、替身或仿真测试；此版本没有在真实硬件上运行的记录 |
 
@@ -68,6 +68,7 @@
 * 语言文件的唯一来源：`spec/i18n/catalog/<程序>.json` 以八种语言保存刷写器、测试器、Web 工作室和更新器的所有文本（术语表列出的文本是对它的引用）；`tools/i18n_generate.py sync` 为每个程序写出 `.lng`、`.json` 和 `.py` 文件，并附带锁文件（`urtc_i18n.lock.json`）和自己的测试，`check`（也在夜间比较中运行）会在文件与目录生成的内容不一致时失败。
 * 程序内的快速指南与共享的 README 章节：`help_text.py`（为刷写器、测试器和更新器各写的简短步骤，八种语言）、`help_qt.py` 和 `qml/HelpDialog.qml`（帮助窗口；用 `--set help` 和 `--set help_qml` 复制），以及 `spec/readme/sections.json` 与 `tools/readme_sections.py`（各程序的项目状态以及多个 README 共用的部分，用八种语言只写一次，并用标记注释放在结构中的相应位置；`check` 在夜间比对中运行）
 * 固件主机测试的断言：`firmware_base/urtc_test.h` 包含 `TEST_ASSERT`，即工具架、视觉工具和工具头固件原先各自定义了三次的宏；各仓库用 `vendor_copy.py --set firmware_test` 复制它，并保留各自声明测试套件的 `test_runner.h`。
+* 镜像头：`firmware_base/urtc_image_header.h`（位于固件镜像之前的 32 字节头，包含目标硬件、由四个部分组成的版本、长度和 CRC-32，并可检查整个镜像）、其参考实现 `src/urtc_common/image_header.py` 以及共享向量（`conformance/image_header_vectors.json`、`generated/image_header_vectors.h`）；发布的签名覆盖该头，目前还没有任何东西把该头放进镜像（`docs/IMAGE_HEADER.md`）。
 * [一致性向量](conformance/can_vectors.json): 每个实现都必须重现的字节：每种布局、被拒绝的输入和 SLCAN 数据流。
 * [工具配置](spec/tools.json)：25 个工具配置（限值、看门狗、引脚、扩展板）以数据形式保存；`generate_tools.py` 生成 TypeScript 和 Python 表格以及[工具表](docs/TOOLS_TABLE.md)。此外还有：支持导出 CSV 和 JSON 的黑匣子读取器（`blackbox.py`）、机架模拟器（`rack_sim.py`）、根据规范生成的用于板卡模糊测试的帧（`fuzz.py`），以及由 `spec/versions.json` 生成的发布[兼容性表](docs/COMPATIBILITY.md)，以及由各仓库清单生成的、说明已运行内容与尚未完成内容的[状态表](docs/STATUS.md)（`status_table.py`）。
 * [刀头的自由配置](docs/FREE_TOOL.md)：机架如何处理 ID 跳线读数为 `0x1F` 的刀头：先发出查询（`0x1A3`），校验应答，再像通过跳线读取的刀头一样使用该身份；在此之前刀头保持安全状态。已在 `rack_sim.py` 中建模，并有机架固件回放的共享向量（`conformance/rack_vectors.json`）。
@@ -109,7 +110,7 @@ python -m mypy                                       # urtc_common 和 urtc_ui �
 
 ## 🧪 测试
 
-测试套件共有 1984 个测试（`python -m pytest tests -q`）。它们检查：规范是否符合其模式；生成的 C、TypeScript 和 Python 文件是否与生成器写出的一致；用 Python、用 Node 运行的 TypeScript 和用主机编译器编译的 C 来核对一致性向量；SLCAN 编解码器和使用模拟对象的传输层；虚拟板；经过签名的自更新流程；以及与放在本仓库旁边的各仓库的比较。缺少可选工具（Node、C 编译器、PySide6）或相邻仓库时，部分测试会被跳过。`python -m mypy` 检查软件包的类型。
+测试套件共有 1993 个测试（`python -m pytest tests -q`）。它们检查：规范是否符合其模式；生成的 C、TypeScript 和 Python 文件是否与生成器写出的一致；用 Python、用 Node 运行的 TypeScript 和用主机编译器编译的 C 来核对一致性向量；SLCAN 编解码器和使用模拟对象的传输层；虚拟板；经过签名的自更新流程；以及与放在本仓库旁边的各仓库的比较。缺少可选工具（Node、C 编译器、PySide6）或相邻仓库时，部分测试会被跳过。`python -m mypy` 检查软件包的类型。
 
 ## 🏗️ 构建与发布
 

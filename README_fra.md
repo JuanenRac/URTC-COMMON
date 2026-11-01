@@ -13,7 +13,7 @@
   <img src="https://img.shields.io/badge/Format-JSON%20%2B%20Python-083fa1.svg" alt="Format">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
   <img src="https://img.shields.io/badge/Version-0.0.8-0f6cbd.svg" alt="Version">
-  <img src="https://img.shields.io/badge/Tests-1984-2ea44f.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Tests-1993-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
 
@@ -31,7 +31,7 @@
 |---|---|
 | Version | `0.1.6` |
 | Maturité | Ébauche |
-| Tests | 1984 |
+| Tests | 1993 |
 | Technologie | JSON / Python |
 | Sur matériel réel | Simulé seulement : testé avec des émulateurs, des doubles de test ou des simulateurs ; aucune exécution sur du matériel réel n'est consignée pour cette version |
 
@@ -68,6 +68,7 @@ Le protocole CAN de la tête d'outil, écrit une seule fois comme données, et t
 * Une seule source pour les fichiers de langue : `spec/i18n/catalog/<programme>.json` contient tous les textes du flasher, du testeur, du web studio et de l'outil de mise à jour dans les huit langues (un texte que nomme le glossaire en est une référence) ; `tools/i18n_generate.py sync` écrit les fichiers `.lng`, `.json` et `.py` de chaque programme avec un lock (`urtc_i18n.lock.json`) et un test propre, et `check` (aussi dans la comparaison nocturne) échoue quand un fichier n'est pas ce que génère le catalogue.
 * Le guide rapide dans les programmes et les sections de README qu'ils partagent : `help_text.py` (de courtes étapes chacun pour le flasher, le testeur et l'outil de mise à jour dans les huit langues), `help_qt.py` et `qml/HelpDialog.qml` (la fenêtre d'aide ; copiés avec `--set help` et `--set help_qml`), et `spec/readme/sections.json` avec `tools/readme_sections.py` (l'État du projet de chaque programme et les parties que plusieurs README partagent, écrites une seule fois dans les huit langues et placées entre des commentaires repères à leur place dans la structure ; `check` tourne dans la comparaison de nuit)
 * L'assertion des tests hôte du firmware : `firmware_base/urtc_test.h` contient `TEST_ASSERT`, la macro que les firmwares du rack, de l'outil de vision et de la tête d'outil définissaient trois fois ; chaque dépôt la copie avec `vendor_copy.py --set firmware_test` et garde son propre `test_runner.h` avec ses suites.
+* L'en-tête d'image : `firmware_base/urtc_image_header.h` (un en-tête de 32 octets devant une image de firmware avec le matériel visé, la version en quatre composantes, la longueur et le CRC-32, et la vérification d'une image entière), sa référence `src/urtc_common/image_header.py` et les vecteurs partagés (`conformance/image_header_vectors.json`, `generated/image_header_vectors.h`) ; la signature d'une version couvre l'en-tête, et rien ne place encore l'en-tête dans une image (`docs/IMAGE_HEADER.md`).
 * [Vecteurs de conformité](conformance/can_vectors.json): les octets que toute implémentation doit reproduire : chaque structure, les refus et les flux SLCAN.
 * [Profils d'outil](spec/tools.json) : les 25 profils d'outil (limites, chien de garde, broches, carte d'extension) comme données ; `generate_tools.py` écrit les tables TypeScript et Python et [la table des outils](docs/TOOLS_TABLE.md). Aussi ici : le lecteur de la boîte noire avec export CSV et JSON (`blackbox.py`), le simulateur du rack (`rack_sim.py`), des trames pour tester une carte par fuzzing, produites à partir de la spécification (`fuzz.py`) et le [tableau de compatibilité](docs/COMPATIBILITY.md) d'une version, produit à partir de `spec/versions.json` ; et le [tableau d'état](docs/STATUS.md) de ce qui a tourné et de ce qui reste à faire, produit à partir des manifestes des dépôts (`status_table.py`).
 * [Configuration libre d'une tête](docs/FREE_TOOL.md) : ce que fait un rack d'une tête dont les cavaliers d'ID lisent `0x1F` : il interroge (`0x1A3`), vérifie la réponse et utilise l'identité comme celle d'une tête lue par cavaliers ; jusque-là la tête reste à l'état sûr. Modélisé dans `rack_sim.py`, avec des vecteurs partagés (`conformance/rack_vectors.json`) que le firmware du rack rejoue.
@@ -109,7 +110,7 @@ python -m mypy                                       # le contrôle des types de
 
 ## 🧪 Tests
 
-La suite compte 1984 tests (`python -m pytest tests -q`). Ils vérifient la spécification par rapport à son schéma, les fichiers C, TypeScript et Python générés par rapport à ce qu'écrivent les générateurs, les vecteurs de conformité en Python, en TypeScript avec Node et en C avec un compilateur de la machine, le codec SLCAN et les transports avec des faux, la carte virtuelle, le flux de mise à jour automatique signée et la comparaison avec les dépôts récupérés à côté de celui-ci. Quelques tests sont ignorés quand un outil optionnel (Node, un compilateur C, PySide6) ou un dépôt voisin manque. `python -m mypy` vérifie les types du paquet.
+La suite compte 1993 tests (`python -m pytest tests -q`). Ils vérifient la spécification par rapport à son schéma, les fichiers C, TypeScript et Python générés par rapport à ce qu'écrivent les générateurs, les vecteurs de conformité en Python, en TypeScript avec Node et en C avec un compilateur de la machine, le codec SLCAN et les transports avec des faux, la carte virtuelle, le flux de mise à jour automatique signée et la comparaison avec les dépôts récupérés à côté de celui-ci. Quelques tests sont ignorés quand un outil optionnel (Node, un compilateur C, PySide6) ou un dépôt voisin manque. `python -m mypy` vérifie les types du paquet.
 
 ## 🏗️ Compilation et publication
 
