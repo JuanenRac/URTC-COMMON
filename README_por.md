@@ -29,7 +29,7 @@
 
 | | |
 |---|---|
-| Versão | `0.1.6` |
+| Versão | `0.1.7` |
 | Maturidade | Estrutura inicial |
 | Testes | 1993 |
 | Tecnologia | JSON / Python |
