@@ -8,6 +8,8 @@ from __future__ import annotations
 import csv
 import io
 import json
+
+import pytest
 from pathlib import Path
 
 from urtc_common import evidence, evidence_history as history
@@ -102,3 +104,25 @@ def test_the_command_line_lists_and_fails_on_a_record_that_is_not_valid(tmp_path
     write(tmp_path, "bad.json", "{")
     assert history.main([str(tmp_path)]) == 1
     assert history.main([str(tmp_path), "--kind", "test"]) == 0
+
+
+# -- one file ---------------------------------------------------------------------------------------------------------------------------------
+def test_load_file_checks_the_records_of_one_file_like_a_folder_does(tmp_path):
+    good = evidence.build(kind="test", outcome="pass", timestamp_utc="2026-01-02T03:04:05Z", tool="T", tool_version="1.0.0")
+    edited = {**good, "outcome": "fail"}
+    path = tmp_path / "out.jsonl"
+    path.write_text(json.dumps(good) + "\n\n" + json.dumps(edited) + "\nnot json\n", encoding="utf-8")
+    entries = history.load_file(path)
+    assert [e.valid for e in entries] == [True, False, False] and [e.line for e in entries] == [1, 3, 4]
+    assert history.load_folder(tmp_path)[0].file == entries[0].file
+
+
+def test_load_file_refuses_what_is_not_a_file_or_not_json(tmp_path):
+    with pytest.raises(FileNotFoundError):
+        history.load_file(tmp_path)
+    with pytest.raises(FileNotFoundError):
+        history.load_file(tmp_path / "missing.json")
+    other = tmp_path / "notes.txt"
+    other.write_text("{}", encoding="utf-8")
+    (entry,) = history.load_file(other)
+    assert not entry.valid and "was not read" in entry.problems[0]
