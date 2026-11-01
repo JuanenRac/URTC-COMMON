@@ -444,3 +444,17 @@ def test_the_tool_head_firmware_numbers_the_tools_the_same_way(sibling):
     assert shared, "no tool name of the firmware matches the tool file"
     for name, number in shared.items():
         assert generated[f"URTC_TOOL_ID_{name}"] == number, name
+
+
+def test_the_frames_the_rack_builds_for_a_head_are_the_ones_of_the_specification(sibling):
+    from urtc_common import protocol
+
+    defined = c_defines(sibling("URTC-SMART-RACK/src/head_link.h"), "HEAD_LINK_ID_")
+    assert defined == {
+        "HEAD_LINK_ID_QUERY_ACTIVE_TOOL": protocol.CAN_ID_QUERY_ACTIVE_TOOL,
+        "HEAD_LINK_ID_ACTIVE_TOOL_RESP": protocol.CAN_ID_ACTIVE_TOOL_RESP,
+        "HEAD_LINK_ID_SOLDER_SETPOINT": protocol.CAN_ID_SOLDER_SETPOINT,
+        "HEAD_LINK_ID_THERMAL_STATS_QUERY": protocol.CAN_ID_THERMAL_STATS_QUERY,
+        "HEAD_LINK_ID_THERMAL_STATS_RESP": protocol.CAN_ID_THERMAL_STATS_RESP,
+        "HEAD_LINK_ID_HOTAIR_CMD": protocol.CAN_ID_HOTAIR_CMD,
+    }
