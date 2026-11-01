@@ -4,6 +4,10 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **One evidence file can be checked on its own:** `evidence_history.load_file(path)` reads the records of one `.json` or `.jsonl` file and checks them as a folder is checked (the programs use it for `--verify FILE`).
+- **Two hostile inputs no longer end in an exception:** an evidence file and a bus scenario nested thousands of levels deep are refused with their own message (the depth the interpreter allows differs between versions and platforms).
+- **Deterministic property tests of the parsers:** seeded noise and mutated valid inputs hold that the evidence checker, the signature check, the trust store, the bus scenario and the adapter line reader never raise, never accept what they should refuse, and that what they accept round-trips.
+
 ## [0.1.4] - The PDF report prints the common Chinese and Japanese characters of both levels, the evidence signature can be read against a store of trusted public keys, the history shows who signed and the Qt files of the shared windows type-check
 
 - **The font of the PDF report holds the second level of GB 2312 and of JIS X 0208:** the embedded subsets of Noto Sans CJK now hold both levels of both national standards (6763 hanzi in the Chinese subset, 6355 kanji in the Japanese one) besides the text of the catalogs, so most names of people and places print as they are written instead of as a square. Traditional Chinese forms, rare kanji outside JIS X 0208 and other scripts still print as the visible square with the note that counts them. The cost: the font data grows from 1.32 MB to 2.53 MB (1.31 MB for Chinese and 1.22 MB for Japanese, deflated), the module from 1.97 MB to 3.71 MB in each program that carries it, and a PDF that embeds a subset from about 0.6-0.74 MB to about 1.2-1.3 MB (a report with no Chinese or Japanese text embeds no font and is under 60 KB); the limits are fixed in the tests (2.8 MB of font data, 4.2 MB of module, 1.5 MB per PDF). The output stays deterministic: the same records give the same bytes, and the tool that makes the module gives the same data every time.
