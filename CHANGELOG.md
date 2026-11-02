@@ -4,6 +4,7 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The test count in the "At a glance" table of the README is the real one:** the number was counted by collecting the tests of the suite and written into the eight READMEs.
 ## [0.1.9] - The signing key can be announced as two fingerprints at once during a rotation window that is a parameter, with a reference rule, shared conformance vectors and a design that leaves the programmable serial to a separate production tool
 
 - **Rotation of the signing key with two fingerprints at once:** `src/urtc_common/key_rotation.py` defines what a bootloader announces and accepts while a key is being replaced: the current fingerprint and, only inside a window, the previous one (two `0x7ED` frames, the current one first, and a status on `0x7EB` with the count, the flags and the seconds left). The window is a configuration parameter (`rotation_window_s`), not a constant; a window of zero, an expired window, a clock before the start, a revoked key and an unknown fingerprint are all refused, a repeated fingerprint counts once, and the policy `ed25519_only` is never relaxed.
