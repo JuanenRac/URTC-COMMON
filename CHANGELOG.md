@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [0.1.8] - The identifiers 0x7EA to 0x7ED for the selection of a tool head by serial number, the signed record and the fingerprint of the key, an Ed25519 verifier for the bootloader with shared vectors and a programmable serial that takes the place of the folded chip identifier
+
 - **Ed25519 verification for the bootloaders, in portable C:** `firmware_base/urtc_ed25519.h` and `urtc_ed25519.c` verify an Ed25519 signature (RFC 8032) with the SHA-512 they need, refuse a scalar at or above the group order and a public key that is not reduced, and call a hook every 8 bits so a bootloader can feed its watchdog. Tested on the host against the RFC vectors and the shared ones; nothing is built for a board and nothing is flashed.
 - **The decision to install a signed image:** `firmware_base/urtc_auth.h` and `src/urtc_common/image_auth.py` define the 88-byte signed record (domain, header, payload hash, rollback counter, key id), the 76-byte record that travels with the image, a policy (Ed25519 only by default, either, HMAC only), key rotation with two trusted keys and the rollback rules; both are held to `conformance/signed_image_vectors.json`.
 - **Addressing one bootloader by its serial number:** `firmware_base/urtc_bl_select.h` and `src/urtc_common/bl_select.py` define the serial (folded from the 96-bit unique ID like the application's), a collision-free probe that finds every head on a bus, selection with timeouts, and the compatibility with bootloaders that do not know it; the proposed identifiers `0x7EA` to `0x7ED` are not in the specification yet. Held to `conformance/bootloader_select_vectors.json`.
@@ -19,6 +21,10 @@ All notable changes to this project are documented here.
 - **New vectors for the serial number:** `conformance/bootloader_select_vectors.json` (format 2) and its C table gain scenarios with a programmed serial, a damaged or blank record and a serial that is not usable, and whole-bus scenarios (one head, clashing folded serials, a programmed serial that removes the clash, two heads programmed with one serial, a programmed serial equal to another head's fold, no head announcing a serial) that the Python reference and the C host test replay.
 - **The strict policy is the default of the first bootloader of the transition:** `ed25519_only` (value `0`, fails closed) is what `URTC_AUTH_DEFAULT_POLICY` and `image_auth.POLICY_DEFAULT` name, and the design and the tests say so; `either` and `hmac_only` remain explicit choices.
 - **Texts for the programmable serial and for a bootloader that publishes no key:** the catalogs gain, in the eight languages, "serial number (programmed)", "serial number (from the unique ID of the chip)" and the log line of the flasher and the web studio that says the key is not compared when the bootloader does not publish it.
+
+## [0.1.8]
+
+- Build version synchronized with `urtc.project.json` and the repository-native version source.
 
 ## [0.1.7] - The header in front of a firmware image with four version components, a bus monitor that follows the nodes of a bus with several tool heads and a virtual board that can bridge to the twin of the bootloader
 
