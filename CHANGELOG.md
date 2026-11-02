@@ -4,9 +4,15 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [0.1.9] - The signing key can be announced as two fingerprints at once during a rotation window that is a parameter, with a reference rule, shared conformance vectors and a design that leaves the programmable serial to a separate production tool
+
 - **Rotation of the signing key with two fingerprints at once:** `src/urtc_common/key_rotation.py` defines what a bootloader announces and accepts while a key is being replaced: the current fingerprint and, only inside a window, the previous one (two `0x7ED` frames, the current one first, and a status on `0x7EB` with the count, the flags and the seconds left). The window is a configuration parameter (`rotation_window_s`), not a constant; a window of zero, an expired window, a clock before the start, a revoked key and an unknown fingerprint are all refused, a repeated fingerprint counts once, and the policy `ed25519_only` is never relaxed.
 - **Vectors and tests for the rotation window:** `conformance/key_rotation_vectors.json` (written by `tools/make_key_rotation_vectors.py`, `--check` fails when it is out of date) and `tests/test_key_rotation.py` hold the reference to hand-written expectations, including the limit cases, and check that an image signed by an expired key does not install under any policy.
 - **The design says who writes the programmable serial:** `docs/BOOTLOADER_AUTH.md` states that the serial is written only by a separate production tool, by hand and with a confirmation, never by the studio, the flasher or the updater, and lists the bootloader side of the rotation window as pending until a board is available.
+
+## [0.1.9]
+
+- Build version synchronized with `urtc.project.json` and the repository-native version source.
 
 ## [0.1.8] - The identifiers 0x7EA to 0x7ED for the selection of a tool head by serial number, the signed record and the fingerprint of the key, an Ed25519 verifier for the bootloader with shared vectors and a programmable serial that takes the place of the folded chip identifier
 

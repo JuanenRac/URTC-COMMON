@@ -29,7 +29,7 @@
 
 | | |
 |---|---|
-| Version | `0.1.8` |
+| Version | `0.1.9` |
 | Maturité | Fonctionnel |
 | Tests | 2027 |
 | Technologie | JSON / Python |
