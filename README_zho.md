@@ -71,6 +71,7 @@
 * 程序内的快速指南与共享的 README 章节：`help_text.py`（为刷写器、测试器和更新器各写的简短步骤，八种语言）、`help_qt.py` 和 `qml/HelpDialog.qml`（帮助窗口；用 `--set help` 和 `--set help_qml` 复制），以及 `spec/readme/sections.json` 与 `tools/readme_sections.py`（各程序的项目状态以及多个 README 共用的部分，用八种语言只写一次，并用标记注释放在结构中的相应位置；`check` 在夜间比对中运行）
 * 固件主机测试的断言：`firmware_base/urtc_test.h` 包含 `TEST_ASSERT`，即工具架、视觉工具和工具头固件原先各自定义了三次的宏；各仓库用 `vendor_copy.py --set firmware_test` 复制它，并保留各自声明测试套件的 `test_runner.h`。
 * 镜像头：`firmware_base/urtc_image_header.h`（位于固件镜像之前的 32 字节头，包含目标硬件、由四个部分组成的版本、长度和 CRC-32，并可检查整个镜像）、其参考实现 `src/urtc_common/image_header.py` 以及共享向量（`conformance/image_header_vectors.json`、`generated/image_header_vectors.h`）；发布的签名覆盖该头，目前还没有任何东西把该头放进镜像（`docs/IMAGE_HEADER.md`）。
+* 引导程序标识与镜像认证：`firmware_base/urtc_ed25519.h`、`urtc_auth.h` 和 `urtc_bl_select.h`（Ed25519 验证器、带回滚计数器的已签名镜像安装判定，以及在多工具头总线上按序列号寻址单个引导程序），及其 Python 参考实现和共用向量；参见 [docs/BOOTLOADER_AUTH.md](docs/BOOTLOADER_AUTH.md)。仅在主机上设计和测试：尚无电路板运行它。
 * [一致性向量](conformance/can_vectors.json): 每个实现都必须重现的字节：每种布局、被拒绝的输入和 SLCAN 数据流。
 * [工具配置](spec/tools.json)：25 个工具配置（限值、看门狗、引脚、扩展板）以数据形式保存；`generate_tools.py` 生成 TypeScript 和 Python 表格以及[工具表](docs/TOOLS_TABLE.md)。此外还有：支持导出 CSV 和 JSON 的黑匣子读取器（`blackbox.py`）、机架模拟器（`rack_sim.py`）、根据规范生成的用于板卡模糊测试的帧（`fuzz.py`），以及由 `spec/versions.json` 生成的发布[兼容性表](docs/COMPATIBILITY.md)，以及由各仓库清单生成的、说明已运行内容与尚未完成内容的[状态表](docs/STATUS.md)（`status_table.py`）。
 * [刀头的自由配置](docs/FREE_TOOL.md)：机架如何处理 ID 跳线读数为 `0x1F` 的刀头：先发出查询（`0x1A3`），校验应答，再像通过跳线读取的刀头一样使用该身份；在此之前刀头保持安全状态。已在 `rack_sim.py` 中建模，并有机架固件回放的共享向量（`conformance/rack_vectors.json`）。

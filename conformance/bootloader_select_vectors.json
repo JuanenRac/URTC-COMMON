@@ -1,0 +1,758 @@
+{
+  "format": 1,
+  "about": "One bootloader answering the frames of 0x7EA and gating the single-head frames, step by step. Proposed identifiers 0x7EA to 0x7ED.",
+  "scenarios": [
+    {
+      "name": "a bootloader nobody addresses behaves as it always did",
+      "uid": [
+        "0x11111111",
+        "0x22222222",
+        "0x33333333"
+      ],
+      "serial": "0xCCCCCCCC",
+      "steps": [
+        {
+          "kind": "gate",
+          "t": 100,
+          "id": 2040,
+          "busy": false,
+          "reply": "",
+          "accept": true,
+          "selected": false,
+          "addressed": false
+        },
+        {
+          "kind": "gate",
+          "t": 200,
+          "id": 2032,
+          "busy": false,
+          "reply": "",
+          "accept": true,
+          "selected": false,
+          "addressed": false
+        },
+        {
+          "kind": "gate",
+          "t": 30000,
+          "id": 2033,
+          "busy": false,
+          "reply": "",
+          "accept": true,
+          "selected": false,
+          "addressed": false
+        },
+        {
+          "kind": "gate",
+          "t": 30001,
+          "id": 272,
+          "busy": false,
+          "reply": "",
+          "accept": true,
+          "selected": false,
+          "addressed": false
+        }
+      ]
+    },
+    {
+      "name": "a probe is answered by whoever matches the prefix",
+      "uid": [
+        "0x11111111",
+        "0x22222222",
+        "0x33333333"
+      ],
+      "serial": "0xCCCCCCCC",
+      "steps": [
+        {
+          "kind": "cmd",
+          "t": 10,
+          "data": "010000000000",
+          "busy": false,
+          "reply": "01A5",
+          "accept": null,
+          "selected": false,
+          "addressed": true
+        },
+        {
+          "kind": "cmd",
+          "t": 20,
+          "data": "0120CCCCCCCC",
+          "busy": false,
+          "reply": "01A5",
+          "accept": null,
+          "selected": false,
+          "addressed": true
+        },
+        {
+          "kind": "cmd",
+          "t": 30,
+          "data": "0110CCCC0000",
+          "busy": false,
+          "reply": "01A5",
+          "accept": null,
+          "selected": false,
+          "addressed": true
+        },
+        {
+          "kind": "cmd",
+          "t": 40,
+          "data": "01014CCCCCCC",
+          "busy": false,
+          "reply": "",
+          "accept": null,
+          "selected": false,
+          "addressed": true
+        },
+        {
+          "kind": "cmd",
+          "t": 50,
+          "data": "0120CCCDCCCC",
+          "busy": false,
+          "reply": "",
+          "accept": null,
+          "selected": false,
+          "addressed": true
+        }
+      ]
+    },
+    {
+      "name": "a probe with more than 32 bits, or the wrong length, is ignored and addresses nobody",
+      "uid": [
+        "0x11111111",
+        "0x22222222",
+        "0x33333333"
+      ],
+      "serial": "0xCCCCCCCC",
+      "steps": [
+        {
+          "kind": "cmd",
+          "t": 10,
+          "data": "012100000000",
+          "busy": false,
+          "reply": "",
+          "accept": null,
+          "selected": false,
+          "addressed": false
+        },
+        {
+          "kind": "cmd",
+          "t": 20,
+          "data": "0100000000",
+          "busy": false,
+          "reply": "",
+          "accept": null,
+          "selected": false,
+          "addressed": false
+        },
+        {
+          "kind": "cmd",
+          "t": 30,
+          "data": "090000000000",
+          "busy": false,
+          "reply": "",
+          "accept": null,
+          "selected": false,
+          "addressed": false
+        },
+        {
+          "kind": "cmd",
+          "t": 40,
+          "data": "",
+          "busy": false,
+          "reply": "",
+          "accept": null,
+          "selected": false,
+          "addressed": false
+        },
+        {
+          "kind": "gate",
+          "t": 50,
+          "id": 2040,
+          "busy": false,
+          "reply": "",
+          "accept": true,
+          "selected": false,
+          "addressed": false
+        }
+      ]
+    },
+    {
+      "name": "selecting by serial opens the single-head frames, selecting another closes them",
+      "uid": [
+        "0x11111111",
+        "0x22222222",
+        "0x33333333"
+      ],
+      "serial": "0xCCCCCCCC",
+      "steps": [
+        {
+          "kind": "cmd",
+          "t": 10,
+          "data": "010000000000",
+          "busy": false,
+          "reply": "01A5",
+          "accept": null,
+          "selected": false,
+          "addressed": true
+        },
+        {
+          "kind": "gate",
+          "t": 20,
+          "id": 2040,
+          "busy": false,
+          "reply": "",
+          "accept": false,
+          "selected": false,
+          "addressed": true
+        },
+        {
+          "kind": "cmd",
+          "t": 30,
+          "data": "02CCCCCCCC07",
+          "busy": false,
+          "reply": "02CCCCCCCC07",
+          "accept": null,
+          "selected": true,
+          "addressed": true
+        },
+        {
+          "kind": "gate",
+          "t": 40,
+          "id": 2040,
+          "busy": false,
+          "reply": "",
+          "accept": true,
+          "selected": true,
+          "addressed": true
+        },
+        {
+          "kind": "gate",
+          "t": 50,
+          "id": 2033,
+          "busy": false,
+          "reply": "",
+          "accept": true,
+          "selected": true,
+          "addressed": true
+        },
+        {
+          "kind": "gate",
+          "t": 60,
+          "id": 272,
+          "busy": false,
+          "reply": "",
+          "accept": true,
+          "selected": true,
+          "addressed": true
+        },
+        {
+          "kind": "cmd",
+          "t": 70,
+          "data": "02CCCDCCCC08",
+          "busy": false,
+          "reply": "",
+          "accept": null,
+          "selected": false,
+          "addressed": true
+        },
+        {
+          "kind": "gate",
+          "t": 80,
+          "id": 2040,
+          "busy": false,
+          "reply": "",
+          "accept": false,
+          "selected": false,
+          "addressed": true
+        },
+        {
+          "kind": "gate",
+          "t": 90,
+          "id": 2025,
+          "busy": false,
+          "reply": "",
+          "accept": true,
+          "selected": false,
+          "addressed": true
+        },
+        {
+          "kind": "gate",
+          "t": 100,
+          "id": 2047,
+          "busy": false,
+          "reply": "",
+          "accept": false,
+          "selected": false,
+          "addressed": true
+        }
+      ]
+    },
+    {
+      "name": "a selection lapses unless it is repeated",
+      "uid": [
+        "0x11111111",
+        "0x22222222",
+        "0x33333333"
+      ],
+      "serial": "0xCCCCCCCC",
+      "steps": [
+        {
+          "kind": "cmd",
+          "t": 1000,
+          "data": "02CCCCCCCC01",
+          "busy": false,
+          "reply": "02CCCCCCCC01",
+          "accept": null,
+          "selected": true,
+          "addressed": true
+        },
+        {
+          "kind": "gate",
+          "t": 2999,
+          "id": 2040,
+          "busy": false,
+          "reply": "",
+          "accept": true,
+          "selected": true,
+          "addressed": true
+        },
+        {
+          "kind": "gate",
+          "t": 3001,
+          "id": 2040,
+          "busy": false,
+          "reply": "",
+          "accept": false,
+          "selected": false,
+          "addressed": true
+        },
+        {
+          "kind": "gate",
+          "t": 3002,
+          "id": 2040,
+          "busy": false,
+          "reply": "",
+          "accept": false,
+          "selected": false,
+          "addressed": true
+        },
+        {
+          "kind": "cmd",
+          "t": 4000,
+          "data": "02CCCCCCCC02",
+          "busy": false,
+          "reply": "02CCCCCCCC02",
+          "accept": null,
+          "selected": true,
+          "addressed": true
+        },
+        {
+          "kind": "cmd",
+          "t": 5000,
+          "data": "02CCCCCCCC03",
+          "busy": false,
+          "reply": "02CCCCCCCC03",
+          "accept": null,
+          "selected": true,
+          "addressed": true
+        },
+        {
+          "kind": "gate",
+          "t": 6999,
+          "id": 2040,
+          "busy": false,
+          "reply": "",
+          "accept": true,
+          "selected": true,
+          "addressed": true
+        },
+        {
+          "kind": "gate",
+          "t": 7001,
+          "id": 2040,
+          "busy": false,
+          "reply": "",
+          "accept": false,
+          "selected": false,
+          "addressed": true
+        }
+      ]
+    },
+    {
+      "name": "a selection holds while an update runs",
+      "uid": [
+        "0x11111111",
+        "0x22222222",
+        "0x33333333"
+      ],
+      "serial": "0xCCCCCCCC",
+      "steps": [
+        {
+          "kind": "cmd",
+          "t": 0,
+          "data": "02CCCCCCCC01",
+          "busy": false,
+          "reply": "02CCCCCCCC01",
+          "accept": null,
+          "selected": true,
+          "addressed": true
+        },
+        {
+          "kind": "gate",
+          "t": 1500,
+          "id": 2034,
+          "busy": true,
+          "reply": "",
+          "accept": true,
+          "selected": true,
+          "addressed": true
+        },
+        {
+          "kind": "gate",
+          "t": 5000,
+          "id": 2034,
+          "busy": true,
+          "reply": "",
+          "accept": true,
+          "selected": true,
+          "addressed": true
+        },
+        {
+          "kind": "gate",
+          "t": 9000,
+          "id": 2036,
+          "busy": true,
+          "reply": "",
+          "accept": true,
+          "selected": true,
+          "addressed": true
+        },
+        {
+          "kind": "gate",
+          "t": 9001,
+          "id": 2036,
+          "busy": false,
+          "reply": "",
+          "accept": false,
+          "selected": false,
+          "addressed": true
+        }
+      ]
+    },
+    {
+      "name": "addressed mode lapses and gives the single-head behaviour back",
+      "uid": [
+        "0x11111111",
+        "0x22222222",
+        "0x33333333"
+      ],
+      "serial": "0xCCCCCCCC",
+      "steps": [
+        {
+          "kind": "cmd",
+          "t": 0,
+          "data": "010000000000",
+          "busy": false,
+          "reply": "01A5",
+          "accept": null,
+          "selected": false,
+          "addressed": true
+        },
+        {
+          "kind": "gate",
+          "t": 5000,
+          "id": 2040,
+          "busy": false,
+          "reply": "",
+          "accept": false,
+          "selected": false,
+          "addressed": true
+        },
+        {
+          "kind": "gate",
+          "t": 10000,
+          "id": 2040,
+          "busy": false,
+          "reply": "",
+          "accept": false,
+          "selected": false,
+          "addressed": true
+        },
+        {
+          "kind": "gate",
+          "t": 10001,
+          "id": 2040,
+          "busy": false,
+          "reply": "",
+          "accept": true,
+          "selected": false,
+          "addressed": false
+        }
+      ]
+    },
+    {
+      "name": "the 96-bit unique ID is read only from the selected bootloader",
+      "uid": [
+        "0x11111111",
+        "0x22222222",
+        "0x33333333"
+      ],
+      "serial": "0xCCCCCCCC",
+      "steps": [
+        {
+          "kind": "cmd",
+          "t": 0,
+          "data": "0400",
+          "busy": false,
+          "reply": "",
+          "accept": null,
+          "selected": false,
+          "addressed": true
+        },
+        {
+          "kind": "cmd",
+          "t": 10,
+          "data": "02CCCCCCCC01",
+          "busy": false,
+          "reply": "02CCCCCCCC01",
+          "accept": null,
+          "selected": true,
+          "addressed": true
+        },
+        {
+          "kind": "cmd",
+          "t": 20,
+          "data": "0400",
+          "busy": false,
+          "reply": "040011111111",
+          "accept": null,
+          "selected": true,
+          "addressed": true
+        },
+        {
+          "kind": "cmd",
+          "t": 30,
+          "data": "0401",
+          "busy": false,
+          "reply": "040122222222",
+          "accept": null,
+          "selected": true,
+          "addressed": true
+        },
+        {
+          "kind": "cmd",
+          "t": 40,
+          "data": "0402",
+          "busy": false,
+          "reply": "040233333333",
+          "accept": null,
+          "selected": true,
+          "addressed": true
+        },
+        {
+          "kind": "cmd",
+          "t": 50,
+          "data": "0403",
+          "busy": false,
+          "reply": "",
+          "accept": null,
+          "selected": true,
+          "addressed": true
+        },
+        {
+          "kind": "cmd",
+          "t": 60,
+          "data": "04",
+          "busy": false,
+          "reply": "",
+          "accept": null,
+          "selected": true,
+          "addressed": true
+        }
+      ]
+    },
+    {
+      "name": "a release leaves nobody selected",
+      "uid": [
+        "0x11111111",
+        "0x22222222",
+        "0x33333333"
+      ],
+      "serial": "0xCCCCCCCC",
+      "steps": [
+        {
+          "kind": "cmd",
+          "t": 0,
+          "data": "02CCCCCCCC01",
+          "busy": false,
+          "reply": "02CCCCCCCC01",
+          "accept": null,
+          "selected": true,
+          "addressed": true
+        },
+        {
+          "kind": "gate",
+          "t": 10,
+          "id": 2040,
+          "busy": false,
+          "reply": "",
+          "accept": true,
+          "selected": true,
+          "addressed": true
+        },
+        {
+          "kind": "cmd",
+          "t": 20,
+          "data": "03",
+          "busy": false,
+          "reply": "",
+          "accept": null,
+          "selected": false,
+          "addressed": true
+        },
+        {
+          "kind": "gate",
+          "t": 30,
+          "id": 2040,
+          "busy": false,
+          "reply": "",
+          "accept": false,
+          "selected": false,
+          "addressed": true
+        },
+        {
+          "kind": "gate",
+          "t": 40,
+          "id": 272,
+          "busy": false,
+          "reply": "",
+          "accept": true,
+          "selected": false,
+          "addressed": true
+        }
+      ]
+    },
+    {
+      "name": "a bootloader whose unique ID folds to zero takes no part",
+      "uid": [
+        "0x00000000",
+        "0x00000000",
+        "0x00000000"
+      ],
+      "serial": "0x00000000",
+      "steps": [
+        {
+          "kind": "cmd",
+          "t": 10,
+          "data": "010000000000",
+          "busy": false,
+          "reply": "",
+          "accept": null,
+          "selected": false,
+          "addressed": false
+        },
+        {
+          "kind": "cmd",
+          "t": 20,
+          "data": "020000000001",
+          "busy": false,
+          "reply": "",
+          "accept": null,
+          "selected": false,
+          "addressed": false
+        },
+        {
+          "kind": "gate",
+          "t": 30,
+          "id": 2040,
+          "busy": false,
+          "reply": "",
+          "accept": true,
+          "selected": false,
+          "addressed": false
+        }
+      ]
+    },
+    {
+      "name": "a bootloader whose unique ID folds to all ones takes no part",
+      "uid": [
+        "0xFFFFFFFF",
+        "0x00000000",
+        "0x00000000"
+      ],
+      "serial": "0xFFFFFFFF",
+      "steps": [
+        {
+          "kind": "cmd",
+          "t": 10,
+          "data": "010000000000",
+          "busy": false,
+          "reply": "",
+          "accept": null,
+          "selected": false,
+          "addressed": false
+        },
+        {
+          "kind": "cmd",
+          "t": 20,
+          "data": "02FFFFFFFF01",
+          "busy": false,
+          "reply": "",
+          "accept": null,
+          "selected": false,
+          "addressed": false
+        },
+        {
+          "kind": "gate",
+          "t": 30,
+          "id": 2040,
+          "busy": false,
+          "reply": "",
+          "accept": true,
+          "selected": false,
+          "addressed": false
+        }
+      ]
+    },
+    {
+      "name": "the millisecond counter wraps",
+      "uid": [
+        "0x11111111",
+        "0x22222222",
+        "0x33333333"
+      ],
+      "serial": "0xCCCCCCCC",
+      "steps": [
+        {
+          "kind": "cmd",
+          "t": 4294967040,
+          "data": "02CCCCCCCC01",
+          "busy": false,
+          "reply": "02CCCCCCCC01",
+          "accept": null,
+          "selected": true,
+          "addressed": true
+        },
+        {
+          "kind": "gate",
+          "t": 256,
+          "id": 2040,
+          "busy": false,
+          "reply": "",
+          "accept": true,
+          "selected": true,
+          "addressed": true
+        },
+        {
+          "kind": "gate",
+          "t": 2304,
+          "id": 2040,
+          "busy": false,
+          "reply": "",
+          "accept": false,
+          "selected": false,
+          "addressed": true
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,625 @@
+{
+  "format": 1,
+  "about": "The decision to install an image: the signed record, the policy, the rollback rules. Throwaway test keys derived from labels: they sign only these vectors and are no secret.",
+  "key_labels": [
+    "current",
+    "next",
+    "stranger"
+  ],
+  "public_keys": [
+    "BD1217CE7BF590A13B6299306C84EF9E3F7437BDA0AB9021892E41306810B587",
+    "4C6BDEDB31FB2EFE00D5A6E275F2E636C6BDDEEA3BB221380C5BB7862EEC078F",
+    "C6D52D811BB5DD290D40F792FCACF0050D88E6A05E50FF8F1F7111FE00AA3EB9"
+  ],
+  "policies": [
+    "ed25519_only",
+    "either",
+    "hmac_only"
+  ],
+  "statuses": [
+    "ok",
+    "bad_args",
+    "not_signed",
+    "unknown_key",
+    "bad_signature",
+    "bad_hmac",
+    "hardware_mismatch",
+    "rollback_counter",
+    "rollback_version"
+  ],
+  "cases": [
+    {
+      "name": "a good image signed by the trusted key",
+      "policy": 0,
+      "trusted": [
+        0
+      ],
+      "hardware_id": 50580481,
+      "installed_counter": 5,
+      "installed_version": [
+        0,
+        8,
+        1,
+        2
+      ],
+      "downgrade_authorized": false,
+      "header": "55524948012000000303CC010000080100030000000000646B247069",
+      "payload_sha256": "09EB2CB24C0F8B02130009DD4E51CA64ED1261D45B0290A07D0C8EBD32934E1C",
+      "record": "BAA9131D425F02D000000005F56640A465113C17AD93101E356FAEB488B1AC493944012ADD50602504391CB2633D2F39F5431FDC3722A4D765AEE3029BC0813514A58D52BF507E342173A804",
+      "hmac_ok": false,
+      "status": "ok",
+      "status_code": 0,
+      "new_counter": 5
+    },
+    {
+      "name": "a good image with a higher counter raises the floor",
+      "policy": 0,
+      "trusted": [
+        0
+      ],
+      "hardware_id": 50580481,
+      "installed_counter": 5,
+      "installed_version": [
+        0,
+        8,
+        1,
+        2
+      ],
+      "downgrade_authorized": false,
+      "header": "55524948012000000303CC010000080100030000000000646B247069",
+      "payload_sha256": "09EB2CB24C0F8B02130009DD4E51CA64ED1261D45B0290A07D0C8EBD32934E1C",
+      "record": "BAA9131D425F02D000000007CF33EFDB4E6DB0B9847C2EC80284ACF560A3B639F35A20001C8A188162AC17AE4DBA10648E47CE8CA0E08FB9F8DAB93373CD5C00DF6A29396E474649C40EA308",
+      "hmac_ok": false,
+      "status": "ok",
+      "status_code": 0,
+      "new_counter": 7
+    },
+    {
+      "name": "rotation: signed by the next key when both are trusted",
+      "policy": 0,
+      "trusted": [
+        0,
+        1
+      ],
+      "hardware_id": 50580481,
+      "installed_counter": 5,
+      "installed_version": [
+        0,
+        8,
+        1,
+        2
+      ],
+      "downgrade_authorized": false,
+      "header": "55524948012000000303CC010000080100030000000000646B247069",
+      "payload_sha256": "09EB2CB24C0F8B02130009DD4E51CA64ED1261D45B0290A07D0C8EBD32934E1C",
+      "record": "0ACBA7952977B003000000058AD3EA992A6F0E23588AB1B107661EB0F1581C9C13E7679E3B9655AE6E8175B3F7171E90E37FA6FA6B44FEAD7BDE1393642FA27F94A665D506FB104C9E6BBB08",
+      "hmac_ok": false,
+      "status": "ok",
+      "status_code": 0,
+      "new_counter": 5
+    },
+    {
+      "name": "rotation: signed by the next key when only the current one is trusted",
+      "policy": 0,
+      "trusted": [
+        0
+      ],
+      "hardware_id": 50580481,
+      "installed_counter": 5,
+      "installed_version": [
+        0,
+        8,
+        1,
+        2
+      ],
+      "downgrade_authorized": false,
+      "header": "55524948012000000303CC010000080100030000000000646B247069",
+      "payload_sha256": "09EB2CB24C0F8B02130009DD4E51CA64ED1261D45B0290A07D0C8EBD32934E1C",
+      "record": "0ACBA7952977B003000000058AD3EA992A6F0E23588AB1B107661EB0F1581C9C13E7679E3B9655AE6E8175B3F7171E90E37FA6FA6B44FEAD7BDE1393642FA27F94A665D506FB104C9E6BBB08",
+      "hmac_ok": false,
+      "status": "unknown_key",
+      "status_code": 3,
+      "new_counter": 5
+    },
+    {
+      "name": "signed by a key nobody trusts",
+      "policy": 0,
+      "trusted": [
+        0
+      ],
+      "hardware_id": 50580481,
+      "installed_counter": 5,
+      "installed_version": [
+        0,
+        8,
+        1,
+        2
+      ],
+      "downgrade_authorized": false,
+      "header": "55524948012000000303CC010000080100030000000000646B247069",
+      "payload_sha256": "09EB2CB24C0F8B02130009DD4E51CA64ED1261D45B0290A07D0C8EBD32934E1C",
+      "record": "A558EC704D8E05E5000000054B1289CB9185048EB6C4EAFDFF93E9691EFF45AFCE706A9BACD64249F6A0F77D4529D47F3D621FC6D5E841A7FD7AE1E1CD6F66847138150511EA4FCA7919AF0D",
+      "hmac_ok": false,
+      "status": "unknown_key",
+      "status_code": 3,
+      "new_counter": 5
+    },
+    {
+      "name": "no trusted key at all",
+      "policy": 0,
+      "trusted": [],
+      "hardware_id": 50580481,
+      "installed_counter": 5,
+      "installed_version": [
+        0,
+        8,
+        1,
+        2
+      ],
+      "downgrade_authorized": false,
+      "header": "55524948012000000303CC010000080100030000000000646B247069",
+      "payload_sha256": "09EB2CB24C0F8B02130009DD4E51CA64ED1261D45B0290A07D0C8EBD32934E1C",
+      "record": "BAA9131D425F02D000000005F56640A465113C17AD93101E356FAEB488B1AC493944012ADD50602504391CB2633D2F39F5431FDC3722A4D765AEE3029BC0813514A58D52BF507E342173A804",
+      "hmac_ok": false,
+      "status": "unknown_key",
+      "status_code": 3,
+      "new_counter": 5
+    },
+    {
+      "name": "a flipped bit in the signature",
+      "policy": 0,
+      "trusted": [
+        0
+      ],
+      "hardware_id": 50580481,
+      "installed_counter": 5,
+      "installed_version": [
+        0,
+        8,
+        1,
+        2
+      ],
+      "downgrade_authorized": false,
+      "header": "55524948012000000303CC010000080100030000000000646B247069",
+      "payload_sha256": "09EB2CB24C0F8B02130009DD4E51CA64ED1261D45B0290A07D0C8EBD32934E1C",
+      "record": "BAA9131D425F02D000000005F56640A465113C17AD93111E356FAEB488B1AC493944012ADD50602504391CB2633D2F39F5431FDC3722A4D765AEE3029BC0813514A58D52BF507E342173A804",
+      "hmac_ok": false,
+      "status": "bad_signature",
+      "status_code": 4,
+      "new_counter": 5
+    },
+    {
+      "name": "a payload that is not the one signed",
+      "policy": 0,
+      "trusted": [
+        0
+      ],
+      "hardware_id": 50580481,
+      "installed_counter": 5,
+      "installed_version": [
+        0,
+        8,
+        1,
+        2
+      ],
+      "downgrade_authorized": false,
+      "header": "55524948012000000303CC010000080100030000000000646B247069",
+      "payload_sha256": "33EFB3CAB47F69EF091685F6D8DD938430D683B4366661849499DDF5F65E73D6",
+      "record": "BAA9131D425F02D000000005F56640A465113C17AD93101E356FAEB488B1AC493944012ADD50602504391CB2633D2F39F5431FDC3722A4D765AEE3029BC0813514A58D52BF507E342173A804",
+      "hmac_ok": false,
+      "status": "bad_signature",
+      "status_code": 4,
+      "new_counter": 5
+    },
+    {
+      "name": "a version that is not the one signed",
+      "policy": 0,
+      "trusted": [
+        0
+      ],
+      "hardware_id": 50580481,
+      "installed_counter": 5,
+      "installed_version": [
+        0,
+        8,
+        1,
+        2
+      ],
+      "downgrade_authorized": false,
+      "header": "55524948012000000303CC010000080000030000000000646B247069",
+      "payload_sha256": "09EB2CB24C0F8B02130009DD4E51CA64ED1261D45B0290A07D0C8EBD32934E1C",
+      "record": "BAA9131D425F02D000000005F56640A465113C17AD93101E356FAEB488B1AC493944012ADD50602504391CB2633D2F39F5431FDC3722A4D765AEE3029BC0813514A58D52BF507E342173A804",
+      "hmac_ok": false,
+      "status": "bad_signature",
+      "status_code": 4,
+      "new_counter": 5
+    },
+    {
+      "name": "a counter raised without signing again",
+      "policy": 0,
+      "trusted": [
+        0
+      ],
+      "hardware_id": 50580481,
+      "installed_counter": 5,
+      "installed_version": [
+        0,
+        8,
+        1,
+        2
+      ],
+      "downgrade_authorized": false,
+      "header": "55524948012000000303CC010000080100030000000000646B247069",
+      "payload_sha256": "09EB2CB24C0F8B02130009DD4E51CA64ED1261D45B0290A07D0C8EBD32934E1C",
+      "record": "BAA9131D425F02D000000006F56640A465113C17AD93101E356FAEB488B1AC493944012ADD50602504391CB2633D2F39F5431FDC3722A4D765AEE3029BC0813514A58D52BF507E342173A804",
+      "hmac_ok": false,
+      "status": "bad_signature",
+      "status_code": 4,
+      "new_counter": 5
+    },
+    {
+      "name": "the key id of another trusted key on a signature of the first",
+      "policy": 0,
+      "trusted": [
+        0,
+        1
+      ],
+      "hardware_id": 50580481,
+      "installed_counter": 5,
+      "installed_version": [
+        0,
+        8,
+        1,
+        2
+      ],
+      "downgrade_authorized": false,
+      "header": "55524948012000000303CC010000080100030000000000646B247069",
+      "payload_sha256": "09EB2CB24C0F8B02130009DD4E51CA64ED1261D45B0290A07D0C8EBD32934E1C",
+      "record": "0ACBA7952977B00300000005F56640A465113C17AD93101E356FAEB488B1AC493944012ADD50602504391CB2633D2F39F5431FDC3722A4D765AEE3029BC0813514A58D52BF507E342173A804",
+      "hmac_ok": false,
+      "status": "bad_signature",
+      "status_code": 4,
+      "new_counter": 5
+    },
+    {
+      "name": "an image built for other hardware",
+      "policy": 0,
+      "trusted": [
+        0
+      ],
+      "hardware_id": 50580225,
+      "installed_counter": 5,
+      "installed_version": [
+        0,
+        8,
+        1,
+        2
+      ],
+      "downgrade_authorized": false,
+      "header": "55524948012000000303CC010000080100030000000000646B247069",
+      "payload_sha256": "09EB2CB24C0F8B02130009DD4E51CA64ED1261D45B0290A07D0C8EBD32934E1C",
+      "record": "BAA9131D425F02D000000005F56640A465113C17AD93101E356FAEB488B1AC493944012ADD50602504391CB2633D2F39F5431FDC3722A4D765AEE3029BC0813514A58D52BF507E342173A804",
+      "hmac_ok": false,
+      "status": "hardware_mismatch",
+      "status_code": 6,
+      "new_counter": 5
+    },
+    {
+      "name": "a counter below the floor",
+      "policy": 0,
+      "trusted": [
+        0
+      ],
+      "hardware_id": 50580481,
+      "installed_counter": 5,
+      "installed_version": [
+        0,
+        8,
+        1,
+        2
+      ],
+      "downgrade_authorized": false,
+      "header": "55524948012000000303CC010000080100030000000000646B247069",
+      "payload_sha256": "09EB2CB24C0F8B02130009DD4E51CA64ED1261D45B0290A07D0C8EBD32934E1C",
+      "record": "BAA9131D425F02D000000003AB80C08D513FB04E0B9B01C544561D73FBF9615A6DBE3F9C41279D57FCE3270C75CBD71F0C082B393F3386FC727912411A6E64BFCCD4311A74BF6364187E010C",
+      "hmac_ok": false,
+      "status": "rollback_counter",
+      "status_code": 7,
+      "new_counter": 5
+    },
+    {
+      "name": "an older version without authorisation",
+      "policy": 0,
+      "trusted": [
+        0
+      ],
+      "hardware_id": 50580481,
+      "installed_counter": 5,
+      "installed_version": [
+        0,
+        8,
+        1,
+        2
+      ],
+      "downgrade_authorized": false,
+      "header": "55524948012000000303CC010000080000090000000000646B247069",
+      "payload_sha256": "09EB2CB24C0F8B02130009DD4E51CA64ED1261D45B0290A07D0C8EBD32934E1C",
+      "record": "BAA9131D425F02D000000005D8656A9275368FDB16C09747F2FCF2301A4731E51D5FCE818EC5DBD85C272F1226DB3003CEB271AEE14EBDB64E30A7D9BCC84AFF0DEC4866B0144B467339E00B",
+      "hmac_ok": false,
+      "status": "rollback_version",
+      "status_code": 8,
+      "new_counter": 5
+    },
+    {
+      "name": "an older version the owner authorised",
+      "policy": 0,
+      "trusted": [
+        0
+      ],
+      "hardware_id": 50580481,
+      "installed_counter": 5,
+      "installed_version": [
+        0,
+        8,
+        1,
+        2
+      ],
+      "downgrade_authorized": true,
+      "header": "55524948012000000303CC010000080000090000000000646B247069",
+      "payload_sha256": "09EB2CB24C0F8B02130009DD4E51CA64ED1261D45B0290A07D0C8EBD32934E1C",
+      "record": "BAA9131D425F02D000000005D8656A9275368FDB16C09747F2FCF2301A4731E51D5FCE818EC5DBD85C272F1226DB3003CEB271AEE14EBDB64E30A7D9BCC84AFF0DEC4866B0144B467339E00B",
+      "hmac_ok": false,
+      "status": "ok",
+      "status_code": 0,
+      "new_counter": 5
+    },
+    {
+      "name": "an older version and a counter below the floor, authorised: the counter still refuses",
+      "policy": 0,
+      "trusted": [
+        0
+      ],
+      "hardware_id": 50580481,
+      "installed_counter": 5,
+      "installed_version": [
+        0,
+        8,
+        1,
+        2
+      ],
+      "downgrade_authorized": true,
+      "header": "55524948012000000303CC010000080000090000000000646B247069",
+      "payload_sha256": "09EB2CB24C0F8B02130009DD4E51CA64ED1261D45B0290A07D0C8EBD32934E1C",
+      "record": "BAA9131D425F02D00000000401416AF3A53F3C0775F390023AF8688C2854946BC25526555B6CAB1232A9349EECFCF6063C6B610F452694223082CD9DF55677671DCC0596C22881B65C90B008",
+      "hmac_ok": false,
+      "status": "rollback_counter",
+      "status_code": 7,
+      "new_counter": 5
+    },
+    {
+      "name": "no signature when only Ed25519 is accepted, even with a good HMAC",
+      "policy": 0,
+      "trusted": [
+        0
+      ],
+      "hardware_id": 50580481,
+      "installed_counter": 5,
+      "installed_version": [
+        0,
+        8,
+        1,
+        2
+      ],
+      "downgrade_authorized": false,
+      "header": "55524948012000000303CC010000080100030000000000646B247069",
+      "payload_sha256": "09EB2CB24C0F8B02130009DD4E51CA64ED1261D45B0290A07D0C8EBD32934E1C",
+      "record": null,
+      "hmac_ok": true,
+      "status": "not_signed",
+      "status_code": 2,
+      "new_counter": 5
+    },
+    {
+      "name": "transition: no signature and a good HMAC",
+      "policy": 1,
+      "trusted": [
+        0
+      ],
+      "hardware_id": 50580481,
+      "installed_counter": 5,
+      "installed_version": [
+        0,
+        8,
+        1,
+        2
+      ],
+      "downgrade_authorized": false,
+      "header": "55524948012000000303CC010000080100030000000000646B247069",
+      "payload_sha256": "09EB2CB24C0F8B02130009DD4E51CA64ED1261D45B0290A07D0C8EBD32934E1C",
+      "record": null,
+      "hmac_ok": true,
+      "status": "ok",
+      "status_code": 0,
+      "new_counter": 5
+    },
+    {
+      "name": "transition: no signature and no HMAC",
+      "policy": 1,
+      "trusted": [
+        0
+      ],
+      "hardware_id": 50580481,
+      "installed_counter": 5,
+      "installed_version": [
+        0,
+        8,
+        1,
+        2
+      ],
+      "downgrade_authorized": false,
+      "header": "55524948012000000303CC010000080100030000000000646B247069",
+      "payload_sha256": "09EB2CB24C0F8B02130009DD4E51CA64ED1261D45B0290A07D0C8EBD32934E1C",
+      "record": null,
+      "hmac_ok": false,
+      "status": "not_signed",
+      "status_code": 2,
+      "new_counter": 5
+    },
+    {
+      "name": "transition: a signature that fails and a good HMAC",
+      "policy": 1,
+      "trusted": [
+        0
+      ],
+      "hardware_id": 50580481,
+      "installed_counter": 5,
+      "installed_version": [
+        0,
+        8,
+        1,
+        2
+      ],
+      "downgrade_authorized": false,
+      "header": "55524948012000000303CC010000080100030000000000646B247069",
+      "payload_sha256": "09EB2CB24C0F8B02130009DD4E51CA64ED1261D45B0290A07D0C8EBD32934E1C",
+      "record": "BAA9131D425F02D000000005F56640A465113C17AD93111E356FAEB488B1AC493944012ADD50602504391CB2633D2F39F5431FDC3722A4D765AEE3029BC0813514A58D52BF507E342173A804",
+      "hmac_ok": true,
+      "status": "ok",
+      "status_code": 0,
+      "new_counter": 5
+    },
+    {
+      "name": "transition: a signature that fails and no HMAC",
+      "policy": 1,
+      "trusted": [
+        0
+      ],
+      "hardware_id": 50580481,
+      "installed_counter": 5,
+      "installed_version": [
+        0,
+        8,
+        1,
+        2
+      ],
+      "downgrade_authorized": false,
+      "header": "55524948012000000303CC010000080100030000000000646B247069",
+      "payload_sha256": "09EB2CB24C0F8B02130009DD4E51CA64ED1261D45B0290A07D0C8EBD32934E1C",
+      "record": "BAA9131D425F02D000000005F56640A465113C17AD93111E356FAEB488B1AC493944012ADD50602504391CB2633D2F39F5431FDC3722A4D765AEE3029BC0813514A58D52BF507E342173A804",
+      "hmac_ok": false,
+      "status": "bad_signature",
+      "status_code": 4,
+      "new_counter": 5
+    },
+    {
+      "name": "transition: a good signature and no HMAC",
+      "policy": 1,
+      "trusted": [
+        0
+      ],
+      "hardware_id": 50580481,
+      "installed_counter": 5,
+      "installed_version": [
+        0,
+        8,
+        1,
+        2
+      ],
+      "downgrade_authorized": false,
+      "header": "55524948012000000303CC010000080100030000000000646B247069",
+      "payload_sha256": "09EB2CB24C0F8B02130009DD4E51CA64ED1261D45B0290A07D0C8EBD32934E1C",
+      "record": "BAA9131D425F02D00000000859F7C0C609353777F8B1AB6DC25A08B6DD626DA1500BCB05FFC283BB83AD812DD31B6F67CC83740D392ED186AE2DF60C16B8D7C8A0E6722D0A6835711335CC06",
+      "hmac_ok": false,
+      "status": "ok",
+      "status_code": 0,
+      "new_counter": 8
+    },
+    {
+      "name": "legacy: a good HMAC",
+      "policy": 2,
+      "trusted": [
+        0
+      ],
+      "hardware_id": 50580481,
+      "installed_counter": 5,
+      "installed_version": [
+        0,
+        8,
+        1,
+        2
+      ],
+      "downgrade_authorized": false,
+      "header": "55524948012000000303CC010000080100030000000000646B247069",
+      "payload_sha256": "09EB2CB24C0F8B02130009DD4E51CA64ED1261D45B0290A07D0C8EBD32934E1C",
+      "record": null,
+      "hmac_ok": true,
+      "status": "ok",
+      "status_code": 0,
+      "new_counter": 5
+    },
+    {
+      "name": "legacy: a bad HMAC",
+      "policy": 2,
+      "trusted": [
+        0
+      ],
+      "hardware_id": 50580481,
+      "installed_counter": 5,
+      "installed_version": [
+        0,
+        8,
+        1,
+        2
+      ],
+      "downgrade_authorized": false,
+      "header": "55524948012000000303CC010000080100030000000000646B247069",
+      "payload_sha256": "09EB2CB24C0F8B02130009DD4E51CA64ED1261D45B0290A07D0C8EBD32934E1C",
+      "record": null,
+      "hmac_ok": false,
+      "status": "bad_hmac",
+      "status_code": 5,
+      "new_counter": 5
+    },
+    {
+      "name": "legacy: a bad HMAC is not rescued by a good signature",
+      "policy": 2,
+      "trusted": [
+        0
+      ],
+      "hardware_id": 50580481,
+      "installed_counter": 5,
+      "installed_version": [
+        0,
+        8,
+        1,
+        2
+      ],
+      "downgrade_authorized": false,
+      "header": "55524948012000000303CC010000080100030000000000646B247069",
+      "payload_sha256": "09EB2CB24C0F8B02130009DD4E51CA64ED1261D45B0290A07D0C8EBD32934E1C",
+      "record": "BAA9131D425F02D000000005F56640A465113C17AD93101E356FAEB488B1AC493944012ADD50602504391CB2633D2F39F5431FDC3722A4D765AEE3029BC0813514A58D52BF507E342173A804",
+      "hmac_ok": false,
+      "status": "bad_hmac",
+      "status_code": 5,
+      "new_counter": 5
+    },
+    {
+      "name": "the installed version is not known",
+      "policy": 0,
+      "trusted": [
+        0
+      ],
+      "hardware_id": 50580481,
+      "installed_counter": 5,
+      "installed_version": null,
+      "downgrade_authorized": false,
+      "header": "55524948012000000303CC010000080000090000000000646B247069",
+      "payload_sha256": "09EB2CB24C0F8B02130009DD4E51CA64ED1261D45B0290A07D0C8EBD32934E1C",
+      "record": "BAA9131D425F02D000000005D8656A9275368FDB16C09747F2FCF2301A4731E51D5FCE818EC5DBD85C272F1226DB3003CEB271AEE14EBDB64E30A7D9BCC84AFF0DEC4866B0144B467339E00B",
+      "hmac_ok": false,
+      "status": "ok",
+      "status_code": 0,
+      "new_counter": 5
+    }
+  ]
+}
