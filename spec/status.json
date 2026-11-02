@@ -75,7 +75,7 @@
     {
       "repo": "URTC-DOCS",
       "title": "Documentation generator",
-      "maturity": "scaffolding",
+      "maturity": "functional",
       "evidence": "host-test",
       "pending": [
         "Scaffolding on purpose: the nightly comparison of all the repositories has not yet been exercised over time"
@@ -84,8 +84,8 @@
     {
       "repo": "URTC-COMMON",
       "title": "Shared protocol and code",
-      "maturity": "scaffolding",
-      "evidence": "host-test",
+      "maturity": "functional",
+      "evidence": "simulator",
       "pending": []
     }
   ]
