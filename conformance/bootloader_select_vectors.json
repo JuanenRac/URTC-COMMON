@@ -1,6 +1,14 @@
 {
-  "format": 1,
-  "about": "One bootloader answering the frames of 0x7EA and gating the single-head frames, step by step. Proposed identifiers 0x7EA to 0x7ED.",
+  "format": 2,
+  "about": "One bootloader answering the frames of 0x7EA and gating the single-head frames, step by step, with or without a programmable serial in the metadata; and whole buses where the host enumerates the serials and decides whether two heads share one.",
+  "serial_record": {
+    "magic": "0x55525331",
+    "words": [
+      "magic",
+      "serial",
+      "complement of the serial"
+    ]
+  },
   "scenarios": [
     {
       "name": "a bootloader nobody addresses behaves as it always did",
@@ -9,7 +17,9 @@
         "0x22222222",
         "0x33333333"
       ],
+      "record": null,
       "serial": "0xCCCCCCCC",
+      "serial_source": "uid",
       "steps": [
         {
           "kind": "gate",
@@ -60,7 +70,9 @@
         "0x22222222",
         "0x33333333"
       ],
+      "record": null,
       "serial": "0xCCCCCCCC",
+      "serial_source": "uid",
       "steps": [
         {
           "kind": "cmd",
@@ -121,7 +133,9 @@
         "0x22222222",
         "0x33333333"
       ],
+      "record": null,
       "serial": "0xCCCCCCCC",
+      "serial_source": "uid",
       "steps": [
         {
           "kind": "cmd",
@@ -182,7 +196,9 @@
         "0x22222222",
         "0x33333333"
       ],
+      "record": null,
       "serial": "0xCCCCCCCC",
+      "serial_source": "uid",
       "steps": [
         {
           "kind": "cmd",
@@ -293,7 +309,9 @@
         "0x22222222",
         "0x33333333"
       ],
+      "record": null,
       "serial": "0xCCCCCCCC",
+      "serial_source": "uid",
       "steps": [
         {
           "kind": "cmd",
@@ -384,7 +402,9 @@
         "0x22222222",
         "0x33333333"
       ],
+      "record": null,
       "serial": "0xCCCCCCCC",
+      "serial_source": "uid",
       "steps": [
         {
           "kind": "cmd",
@@ -445,7 +465,9 @@
         "0x22222222",
         "0x33333333"
       ],
+      "record": null,
       "serial": "0xCCCCCCCC",
+      "serial_source": "uid",
       "steps": [
         {
           "kind": "cmd",
@@ -496,7 +518,9 @@
         "0x22222222",
         "0x33333333"
       ],
+      "record": null,
       "serial": "0xCCCCCCCC",
+      "serial_source": "uid",
       "steps": [
         {
           "kind": "cmd",
@@ -577,7 +601,9 @@
         "0x22222222",
         "0x33333333"
       ],
+      "record": null,
       "serial": "0xCCCCCCCC",
+      "serial_source": "uid",
       "steps": [
         {
           "kind": "cmd",
@@ -638,7 +664,9 @@
         "0x00000000",
         "0x00000000"
       ],
+      "record": null,
       "serial": "0x00000000",
+      "serial_source": "uid",
       "steps": [
         {
           "kind": "cmd",
@@ -679,7 +707,9 @@
         "0x00000000",
         "0x00000000"
       ],
+      "record": null,
       "serial": "0xFFFFFFFF",
+      "serial_source": "uid",
       "steps": [
         {
           "kind": "cmd",
@@ -714,13 +744,387 @@
       ]
     },
     {
+      "name": "a programmed serial takes priority over the fold of the unique ID",
+      "uid": [
+        "0x11111111",
+        "0x22222222",
+        "0x33333333"
+      ],
+      "record": [
+        "0x55525331",
+        "0x00C0FFEE",
+        "0xFF3F0011"
+      ],
+      "serial": "0x00C0FFEE",
+      "serial_source": "programmed",
+      "steps": [
+        {
+          "kind": "cmd",
+          "t": 10,
+          "data": "012000C0FFEE",
+          "busy": false,
+          "reply": "01A5",
+          "accept": null,
+          "selected": false,
+          "addressed": true
+        },
+        {
+          "kind": "cmd",
+          "t": 20,
+          "data": "0120CCCCCCCC",
+          "busy": false,
+          "reply": "",
+          "accept": null,
+          "selected": false,
+          "addressed": true
+        },
+        {
+          "kind": "cmd",
+          "t": 30,
+          "data": "010800C0FFEE",
+          "busy": false,
+          "reply": "01A5",
+          "accept": null,
+          "selected": false,
+          "addressed": true
+        },
+        {
+          "kind": "cmd",
+          "t": 40,
+          "data": "02CCCCCCCC01",
+          "busy": false,
+          "reply": "",
+          "accept": null,
+          "selected": false,
+          "addressed": true
+        },
+        {
+          "kind": "gate",
+          "t": 50,
+          "id": 2040,
+          "busy": false,
+          "reply": "",
+          "accept": false,
+          "selected": false,
+          "addressed": true
+        },
+        {
+          "kind": "cmd",
+          "t": 60,
+          "data": "0200C0FFEE02",
+          "busy": false,
+          "reply": "0200C0FFEE02",
+          "accept": null,
+          "selected": true,
+          "addressed": true
+        },
+        {
+          "kind": "gate",
+          "t": 70,
+          "id": 2040,
+          "busy": false,
+          "reply": "",
+          "accept": true,
+          "selected": true,
+          "addressed": true
+        },
+        {
+          "kind": "cmd",
+          "t": 80,
+          "data": "0400",
+          "busy": false,
+          "reply": "040011111111",
+          "accept": null,
+          "selected": true,
+          "addressed": true
+        },
+        {
+          "kind": "cmd",
+          "t": 90,
+          "data": "0402",
+          "busy": false,
+          "reply": "040233333333",
+          "accept": null,
+          "selected": true,
+          "addressed": true
+        }
+      ]
+    },
+    {
+      "name": "a record with a wrong check leaves the fold of the unique ID in charge",
+      "uid": [
+        "0x11111111",
+        "0x22222222",
+        "0x33333333"
+      ],
+      "record": [
+        "0x55525331",
+        "0x00C0FFEE",
+        "0x12345678"
+      ],
+      "serial": "0xCCCCCCCC",
+      "serial_source": "uid",
+      "steps": [
+        {
+          "kind": "cmd",
+          "t": 10,
+          "data": "0120CCCCCCCC",
+          "busy": false,
+          "reply": "01A5",
+          "accept": null,
+          "selected": false,
+          "addressed": true
+        },
+        {
+          "kind": "cmd",
+          "t": 20,
+          "data": "012000C0FFEE",
+          "busy": false,
+          "reply": "",
+          "accept": null,
+          "selected": false,
+          "addressed": true
+        },
+        {
+          "kind": "cmd",
+          "t": 30,
+          "data": "02CCCCCCCC01",
+          "busy": false,
+          "reply": "02CCCCCCCC01",
+          "accept": null,
+          "selected": true,
+          "addressed": true
+        },
+        {
+          "kind": "gate",
+          "t": 40,
+          "id": 2040,
+          "busy": false,
+          "reply": "",
+          "accept": true,
+          "selected": true,
+          "addressed": true
+        }
+      ]
+    },
+    {
+      "name": "a record with a wrong magic leaves the fold of the unique ID in charge",
+      "uid": [
+        "0x11111111",
+        "0x22222222",
+        "0x33333333"
+      ],
+      "record": [
+        "0x55525332",
+        "0x00C0FFEE",
+        "0xFF3F0011"
+      ],
+      "serial": "0xCCCCCCCC",
+      "serial_source": "uid",
+      "steps": [
+        {
+          "kind": "cmd",
+          "t": 10,
+          "data": "0120CCCCCCCC",
+          "busy": false,
+          "reply": "01A5",
+          "accept": null,
+          "selected": false,
+          "addressed": true
+        },
+        {
+          "kind": "cmd",
+          "t": 20,
+          "data": "0200C0FFEE01",
+          "busy": false,
+          "reply": "",
+          "accept": null,
+          "selected": false,
+          "addressed": true
+        },
+        {
+          "kind": "gate",
+          "t": 30,
+          "id": 2040,
+          "busy": false,
+          "reply": "",
+          "accept": false,
+          "selected": false,
+          "addressed": true
+        },
+        {
+          "kind": "cmd",
+          "t": 40,
+          "data": "02CCCCCCCC02",
+          "busy": false,
+          "reply": "02CCCCCCCC02",
+          "accept": null,
+          "selected": true,
+          "addressed": true
+        },
+        {
+          "kind": "gate",
+          "t": 50,
+          "id": 2040,
+          "busy": false,
+          "reply": "",
+          "accept": true,
+          "selected": true,
+          "addressed": true
+        }
+      ]
+    },
+    {
+      "name": "blank metadata flash leaves the fold of the unique ID in charge",
+      "uid": [
+        "0x11111111",
+        "0x22222222",
+        "0x33333333"
+      ],
+      "record": [
+        "0xFFFFFFFF",
+        "0xFFFFFFFF",
+        "0xFFFFFFFF"
+      ],
+      "serial": "0xCCCCCCCC",
+      "serial_source": "uid",
+      "steps": [
+        {
+          "kind": "cmd",
+          "t": 10,
+          "data": "0120CCCCCCCC",
+          "busy": false,
+          "reply": "01A5",
+          "accept": null,
+          "selected": false,
+          "addressed": true
+        },
+        {
+          "kind": "cmd",
+          "t": 20,
+          "data": "02CCCCCCCC01",
+          "busy": false,
+          "reply": "02CCCCCCCC01",
+          "accept": null,
+          "selected": true,
+          "addressed": true
+        },
+        {
+          "kind": "gate",
+          "t": 30,
+          "id": 2040,
+          "busy": false,
+          "reply": "",
+          "accept": true,
+          "selected": true,
+          "addressed": true
+        }
+      ]
+    },
+    {
+      "name": "a programmed serial of zero is not a serial: the fold is used",
+      "uid": [
+        "0x11111111",
+        "0x22222222",
+        "0x33333333"
+      ],
+      "record": [
+        "0x55525331",
+        "0x00000000",
+        "0xFFFFFFFF"
+      ],
+      "serial": "0xCCCCCCCC",
+      "serial_source": "uid",
+      "steps": [
+        {
+          "kind": "cmd",
+          "t": 10,
+          "data": "0120CCCCCCCC",
+          "busy": false,
+          "reply": "01A5",
+          "accept": null,
+          "selected": false,
+          "addressed": true
+        },
+        {
+          "kind": "cmd",
+          "t": 20,
+          "data": "02CCCCCCCC01",
+          "busy": false,
+          "reply": "02CCCCCCCC01",
+          "accept": null,
+          "selected": true,
+          "addressed": true
+        },
+        {
+          "kind": "gate",
+          "t": 30,
+          "id": 2040,
+          "busy": false,
+          "reply": "",
+          "accept": true,
+          "selected": true,
+          "addressed": true
+        }
+      ]
+    },
+    {
+      "name": "a programmed serial of all ones is not a serial: the fold is used",
+      "uid": [
+        "0x11111111",
+        "0x22222222",
+        "0x33333333"
+      ],
+      "record": [
+        "0x55525331",
+        "0xFFFFFFFF",
+        "0x00000000"
+      ],
+      "serial": "0xCCCCCCCC",
+      "serial_source": "uid",
+      "steps": [
+        {
+          "kind": "cmd",
+          "t": 10,
+          "data": "0120CCCCCCCC",
+          "busy": false,
+          "reply": "01A5",
+          "accept": null,
+          "selected": false,
+          "addressed": true
+        },
+        {
+          "kind": "cmd",
+          "t": 20,
+          "data": "02CCCCCCCC01",
+          "busy": false,
+          "reply": "02CCCCCCCC01",
+          "accept": null,
+          "selected": true,
+          "addressed": true
+        },
+        {
+          "kind": "gate",
+          "t": 30,
+          "id": 2040,
+          "busy": false,
+          "reply": "",
+          "accept": true,
+          "selected": true,
+          "addressed": true
+        }
+      ]
+    },
+    {
       "name": "the millisecond counter wraps",
       "uid": [
         "0x11111111",
         "0x22222222",
         "0x33333333"
       ],
+      "record": null,
       "serial": "0xCCCCCCCC",
+      "serial_source": "uid",
       "steps": [
         {
           "kind": "cmd",
@@ -753,6 +1157,233 @@
           "addressed": true
         }
       ]
+    }
+  ],
+  "bus_scenarios": [
+    {
+      "name": "one head: nothing to confuse",
+      "nodes": [
+        {
+          "uid": [
+            "0x00000001",
+            "0x00000002",
+            "0x00000003"
+          ],
+          "record": null
+        }
+      ],
+      "select": "0x00C01001",
+      "enumerated": [
+        "0x00C01001"
+      ],
+      "duplicate": false
+    },
+    {
+      "name": "two heads with different serials",
+      "nodes": [
+        {
+          "uid": [
+            "0x00000001",
+            "0x00000002",
+            "0x00000003"
+          ],
+          "record": null
+        },
+        {
+          "uid": [
+            "0x00000004",
+            "0x00000005",
+            "0x00000006"
+          ],
+          "record": null
+        }
+      ],
+      "select": "0x00C01001",
+      "enumerated": [
+        "0x00C01001",
+        "0x01802804"
+      ],
+      "duplicate": false
+    },
+    {
+      "name": "two heads whose unique IDs fold to one serial",
+      "nodes": [
+        {
+          "uid": [
+            "0x00000010",
+            "0x00000020",
+            "0x00000030"
+          ],
+          "record": null
+        },
+        {
+          "uid": [
+            "0x00000810",
+            "0x00000021",
+            "0x00000030"
+          ],
+          "record": null
+        }
+      ],
+      "select": "0x0C010010",
+      "enumerated": [
+        "0x0C010010"
+      ],
+      "duplicate": true
+    },
+    {
+      "name": "a programmed serial removes the clash of two folded serials",
+      "nodes": [
+        {
+          "uid": [
+            "0x00000010",
+            "0x00000020",
+            "0x00000030"
+          ],
+          "record": [
+            "0x55525331",
+            "0x00A00001",
+            "0xFF5FFFFE"
+          ]
+        },
+        {
+          "uid": [
+            "0x00000810",
+            "0x00000021",
+            "0x00000030"
+          ],
+          "record": [
+            "0x55525331",
+            "0x00A00002",
+            "0xFF5FFFFD"
+          ]
+        }
+      ],
+      "select": "0x00A00001",
+      "enumerated": [
+        "0x00A00001",
+        "0x00A00002"
+      ],
+      "duplicate": false
+    },
+    {
+      "name": "two heads programmed with one serial",
+      "nodes": [
+        {
+          "uid": [
+            "0x00000001",
+            "0x00000002",
+            "0x00000003"
+          ],
+          "record": [
+            "0x55525331",
+            "0x00C0FFEE",
+            "0xFF3F0011"
+          ]
+        },
+        {
+          "uid": [
+            "0x00000004",
+            "0x00000005",
+            "0x00000006"
+          ],
+          "record": [
+            "0x55525331",
+            "0x00C0FFEE",
+            "0xFF3F0011"
+          ]
+        }
+      ],
+      "select": "0x00C0FFEE",
+      "enumerated": [
+        "0x00C0FFEE"
+      ],
+      "duplicate": true
+    },
+    {
+      "name": "a programmed serial equal to the fold of another head",
+      "nodes": [
+        {
+          "uid": [
+            "0x00000001",
+            "0x00000002",
+            "0x00000003"
+          ],
+          "record": null
+        },
+        {
+          "uid": [
+            "0x00000007",
+            "0x00000008",
+            "0x00000009"
+          ],
+          "record": [
+            "0x55525331",
+            "0x00C01001",
+            "0xFF3FEFFE"
+          ]
+        }
+      ],
+      "select": "0x00C01001",
+      "enumerated": [
+        "0x00C01001"
+      ],
+      "duplicate": true
+    },
+    {
+      "name": "a programmed head and a folded head with different serials",
+      "nodes": [
+        {
+          "uid": [
+            "0x00000001",
+            "0x00000002",
+            "0x00000003"
+          ],
+          "record": [
+            "0x55525331",
+            "0x00C0FFEE",
+            "0xFF3F0011"
+          ]
+        },
+        {
+          "uid": [
+            "0x00000004",
+            "0x00000005",
+            "0x00000006"
+          ],
+          "record": null
+        }
+      ],
+      "select": "0x00C0FFEE",
+      "enumerated": [
+        "0x00C0FFEE",
+        "0x01802804"
+      ],
+      "duplicate": false
+    },
+    {
+      "name": "heads that announce no serial: the host keeps the single-head behaviour",
+      "nodes": [
+        {
+          "uid": [
+            "0x00000000",
+            "0x00000000",
+            "0x00000000"
+          ],
+          "record": null
+        },
+        {
+          "uid": [
+            "0xFFFFFFFF",
+            "0x00000000",
+            "0x00000000"
+          ],
+          "record": null
+        }
+      ],
+      "select": null,
+      "enumerated": [],
+      "duplicate": false
     }
   ]
 }

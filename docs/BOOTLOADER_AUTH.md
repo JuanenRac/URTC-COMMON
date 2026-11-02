@@ -1,6 +1,6 @@
 # Bootloader identity and image authentication
 
-**Status: designed, with portable C and a Python reference tested on the host. Nothing is built for a board and nothing is flashed.** No bootloader calls this code yet; the identifiers it proposes are not in `spec/can_protocol.json`. Where a statement says what a bootloader does, it describes what the code in `firmware_base/` does on the host.
+**Status: designed, with portable C and a Python reference tested on the host. Nothing is built for a board and nothing is flashed.** No bootloader calls this code yet. The identifiers `0x7EA` to `0x7ED` are confirmed and written in `spec/can_protocol.json` with the formats below. Where a statement says what a bootloader does, it describes what the code in `firmware_base/` does on the host.
 
 Two things are missing from the bootloaders today, and they are designed together because both change what happens between the host and a board during an update:
 
@@ -29,11 +29,31 @@ The STM32F303 has a 96-bit unique ID. The serial is 32 bits folded from it with 
 serial = w0 ^ rotl(w1, 11) ^ rotl(w2, 22)
 ```
 
-so a head reports one number in the bootloader and in the application. `0` and `0xFFFFFFFF` (a blank or erased ID) are not serials: a bootloader whose ID folds to one of them takes no part in anything below and behaves exactly as today. A programmable serial (a value in the metadata page that overrides the fold) is the way out of a duplicate; it is an open point (section 4).
+so a head reports one number in the bootloader and in the application. `0` and `0xFFFFFFFF` (a blank or erased ID) are not serials: a bootloader whose ID folds to one of them takes no part in anything below and behaves exactly as today.
+
+### The programmable serial
+
+A head can be given a serial of its own, which is the way out of a duplicate. It is an optional record of **three 32-bit words** in the bootloader's metadata flash (words as the Cortex-M stores them, little-endian in memory; the values below are the numbers):
+
+| Word | Meaning |
+|---|---|
+| 0 | magic `0x55525331` (the ASCII `URS1`) |
+| 1 | the serial |
+| 2 | the bitwise complement of word 1 |
+
+Rules:
+
+* **Priority.** When the record is valid it **replaces** the fold of the unique ID: the head probes, selects and answers with the programmed serial, and the application is expected to report the same one. When there is no valid record the fold is used, exactly as before.
+* **Valid** means the magic is right, the third word is the complement of the second, and the serial is neither `0` nor `0xFFFFFFFF`. A blank page (`0xFFFFFFFF` everywhere), a wrong magic or check, or an unusable serial all give the fold back; nothing is ever refused because of a damaged record.
+* **The unique ID does not change.** `UID` always answers the real 96-bit ID, so a programmed serial hides nothing from the duplicate check.
+* **Duplicates.** The host enumerates the serials, selects one and reads the three UID words. Two heads that share the selected serial answer one identifier with different words (the host sees two different payloads, or nothing at all because the bus destroyed the clashing frames after the selection was answered): `duplicate_suspected` in `bl_select.py` says so, and the host refuses to update and asks the user to disconnect one head. This covers two programmed heads with one serial, a programmed serial equal to the fold of another head, and a folded clash that nobody has remedied.
+* **Writing it** is a step of Studio (a setting of the head), not of the bootloader's update frames, and is not part of this design yet: only the reading side and the vectors exist.
+
+Vectors: the scenarios of `conformance/bootloader_select_vectors.json` cover a programmed serial (it wins over the fold; the fold's serial no longer selects), a record with a wrong check or magic, blank metadata, a serial of zero or all ones, and whole buses (`bus_scenarios`: serial present, absent, duplicated, fold against programmed).
 
 ### Frames
 
-The block `0x7EA` to `0x7ED` is free in the specification and is **proposed**. Every existing identifier (`0x110`, `0x111`, `0x7E9`, `0x7F0` to `0x7FF`) keeps its meaning and its bytes. All multi-byte fields are big-endian.
+The block `0x7EA` to `0x7ED` is confirmed and written in `spec/can_protocol.json`. Every existing identifier (`0x110`, `0x111`, `0x7E9`, `0x7F0` to `0x7FF`) keeps its meaning and its bytes. All multi-byte fields are big-endian.
 
 | Identifier | Direction | Payload |
 |---|---|---|
@@ -43,7 +63,7 @@ The block `0x7EA` to `0x7ED` is free in the specification and is **proposed**. E
 | `0x7EA` UID | host to the selected | `04`, `part` (0 to 2) |
 | `0x7EB` answer | bootloader to host | PROBE: `01 A5`; SELECT: `02 serial seq`; UID: `04 part word(4)` |
 | `0x7EC` | host to the selected | one chunk of the signature record (section 2) |
-| `0x7ED` | selected to host | the 8-byte identifier of a trusted key |
+| `0x7ED` | selected to host | the 8-byte identifier of a trusted key, sent right after the answer to `0x7F8` |
 
 A frame with an unknown operation or the wrong length is ignored and changes nothing.
 
@@ -73,7 +93,7 @@ SELECT carries the serial; the head that has it becomes *selected* and answers, 
 | new | new, several heads | the host selects one; the others stay silent to the single-head frames |
 | new | new and old on one bus | the old head answers everything; after the probe, an answer to `0x7F8` with nobody selected can only come from an old head, and the host refuses to update and asks for one head at a time |
 
-**A note on the key fingerprint.** The precheck of the flashing tools reads a `0x7FA` frame of eleven bytes (version plus eight bytes of fingerprint). A classic CAN frame carries at most eight data bytes, so such a frame cannot exist on this bus; `0x7FA` stays at three bytes. The identifier of a trusted key is answered on `0x7ED` instead (eight bytes), and the tools' precheck needs to read that frame. Until a bootloader sends it, "no fingerprint" must keep meaning "not a mismatch", as the tools already treat it.
+**The key fingerprint.** The first precheck of the flashing tools read a `0x7FA` frame of eleven bytes (version plus eight bytes of fingerprint). A classic CAN frame carries at most eight data bytes, so such a frame cannot exist on this bus and that precheck could never work. `0x7FA` is exactly three bytes (major, minor, patch) and a frame of any other length is not a bootloader version. The identifier of a trusted key travels on `0x7ED` (eight bytes), sent by a bootloader that holds a trusted Ed25519 key right after its answers to `0x7F8`; the precheck of the tools reads that frame. A bootloader that does not send it (an old one, or one without a key) gives "no data": never a difference and never an error. With several heads only the selected one answers `0x7F8`, so only its fingerprint arrives.
 
 ## 2. Ed25519 image authentication
 
@@ -127,7 +147,7 @@ A key that must stop being trusted at once is retired the same way and the count
 1. A bootloader with policy `either` and the Ed25519 key installs both kinds of image; releases carry both the HMAC and the Ed25519 record.
 2. When the fleet has it, the policy goes to `ed25519_only` and the HMAC key leaves the build.
 
-Which policy the first transitional bootloader ships with is an open point (section 4). The code's own default is the strict one.
+The first bootloader of the transition ships with `ed25519_only` from the start (value `0`, fails closed): a head that has not received the first Ed25519 release is updated through the existing path of its current bootloader, and `either` and `hmac_only` remain available as explicit choices, never as the default. In the code this is `URTC_AUTH_DEFAULT_POLICY` and `image_auth.POLICY_DEFAULT`.
 
 ### Size, time and the implementation
 
@@ -143,15 +163,13 @@ Estimates, **not measured on a board** (nothing is built for one):
 
 * Ed25519: RFC 8032 cases, messages across the SHA-512 padding boundaries, and each way a signature can be wrong (a flipped bit in `R`, in `S`, in the message, another key, `S + L`, all ones, all zeros, a `y` that is not reduced, a point not on the curve). The Python tests also make a random throwaway key per run and break its signature in several places.
 * Installation: a good image, a higher counter, rotation with both keys, rotation with only the old key, a stranger's key, no keys, a flipped bit in the signature, another payload, another version, a raised counter, a swapped key id, other hardware, a counter below the floor, an older version with and without authorisation, no signature under each policy, the HMAC under each policy.
-* Serial: a head nobody addresses, probes by prefix, malformed frames, selection and deselection, lapse of selection and of addressed mode, a transfer that keeps its selection, the unique ID, a release, serials that cannot be used, and the wrap of the millisecond counter. A model of several heads checks that enumeration finds every one within the bound and that a duplicate serial shows in the unique ID.
+* Serial: the programmable serial (present, absent, damaged, blank, unusable, equal to another head's fold, shared by two heads), the detection of a duplicate on whole buses, a head nobody addresses, probes by prefix, malformed frames, selection and deselection, lapse of selection and of addressed mode, a transfer that keeps its selection, the unique ID, a release, serials that cannot be used, and the wrap of the millisecond counter. A model of several heads checks that enumeration finds every one within the bound and that a duplicate serial shows in the unique ID.
 
 The C code is compiled with `-Wall -Wextra -Wconversion -Werror` and, where the compiler has them, the address and undefined-behaviour sanitizers.
 
 ## 4. Open points
 
-* **The identifiers `0x7EA` to `0x7ED`.** They are proposed; the block must be confirmed before it is written into `spec/can_protocol.json` and the generated constants.
-* **The policy the first transitional bootloader ships with** (`either` so that the first Ed25519 release can still be installed by a bootloader that has not seen one, or `ed25519_only` from the start).
-* **A programmable serial** that overrides the fold, as the remedy for a duplicate.
-* **The fingerprint frame in the flashing tools.** Reading `0x7ED` is a change of the flasher and the web studio, retrocompatible (no frame means no check), left for when a bootloader sends it.
+* **Writing the programmable serial** into the metadata (a Studio setting, with its own confirmation) and how the application learns it: the record and its reading are specified here; the writing is not.
+* **Which key a bootloader reports on `0x7ED` when it trusts two** (rotation): the design sends the first, current one; the tools compare the fingerprint of the image's key with it.
 * **Everything that needs a board:** the real flash and stack figures, the verification time, a streaming `sha256_flash_region` next to the existing HMAC code, the metadata fields for the policy and the floor, and the integration into the update state machine. None of it is started: the bootloaders are not touched.
 * **Signing a release** with an Ed25519 key is a step of the release machine (`firmware_signing.py` produces the HMAC today); the key is created by the owner and kept outside the repositories.

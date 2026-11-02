@@ -87,10 +87,13 @@ def generate(spec: dict, seed: int = 1, random_count: int = 400) -> list[FuzzFra
             continue
         can_id = int(m["id"], 16)
         sent_ids.append(can_id)
+        # an identifier can carry several request layouts of different lengths (the operations of 0x7EA): a length is wrong only when none of them allows it
+        allowed_by_any = {n for lay in m["layouts"] if lay["role"] != "response" for n in _lengths(lay["dlc"])[0]}
         for layout in m["layouts"]:
             if layout["role"] == "response":
                 continue
             ok_lengths, bad_lengths = _lengths(layout["dlc"])
+            bad_lengths = [n for n in bad_lengths if n not in allowed_by_any]
             for ex in layout.get("examples", []):
                 out.append(FuzzFrame(can_id, bytes.fromhex(ex["data"]), VALID, "example"))
             numeric = [f for f in layout["fields"] if f["type"] != "bytes" and f.get("offset") is not None and _width(f)]

@@ -34,6 +34,7 @@ KEY_ID_SIZE = 8
 
 POLICY_ED25519_ONLY, POLICY_EITHER, POLICY_HMAC_ONLY = 0, 1, 2
 POLICY_NAMES = ("ed25519_only", "either", "hmac_only")
+POLICY_DEFAULT = POLICY_ED25519_ONLY   # what a bootloader ships with, the first one of the transition included, and what a zeroed setting means
 (OK, BAD_ARGS, NOT_SIGNED, UNKNOWN_KEY, BAD_SIGNATURE, BAD_HMAC, HARDWARE_MISMATCH, ROLLBACK_COUNTER, ROLLBACK_VERSION) = range(9)
 STATUS_NAMES = ("ok", "bad_args", "not_signed", "unknown_key", "bad_signature", "bad_hmac", "hardware_mismatch", "rollback_counter", "rollback_version")
 

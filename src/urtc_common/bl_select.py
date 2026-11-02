@@ -13,7 +13,11 @@ from then on it obeys the single-head bootloader frames (``0x7F0`` to ``0x7FF``)
 unless it is repeated, except while an update runs; addressed mode lapses after ``ADDRESSED_LAPSE_MS`` without a command, which gives the single-head behaviour
 back to a host that went away.
 
-The identifiers ``0x7EA`` to ``0x7ED`` are PROPOSED: they are free in ``spec/can_protocol.json`` but are not written into it until the owner confirms the block.
+The identifiers ``0x7EA`` to ``0x7ED`` are the confirmed block written in ``spec/can_protocol.json``.
+
+The serial can be PROGRAMMED: a record of three 32-bit words in the metadata flash (``URS1``, the serial, the complement of the serial). When it is valid it takes priority over the
+fold of the unique ID; a blank, damaged or unusable record leaves the fold in charge. The unique ID answered to ``UID`` is always the real one, so two heads that share a programmed
+serial are told apart by it and the host refuses to update (``duplicate_suspected``).
 """
 from __future__ import annotations
 
@@ -24,7 +28,7 @@ ID_CMD = 0x7EA          # host to bootloaders
 ID_RESP = 0x7EB         # bootloader to host
 ID_SIG_CHUNK = 0x7EC    # host to the selected bootloader: one chunk of the signature record
 ID_KEY_ID = 0x7ED       # selected bootloader to host: the identifier of a trusted key
-PROPOSED_IDS = (ID_CMD, ID_RESP, ID_SIG_CHUNK, ID_KEY_ID)
+BLOCK_IDS = (ID_CMD, ID_RESP, ID_SIG_CHUNK, ID_KEY_ID)
 LEGACY_FIRST, LEGACY_LAST = 0x7F0, 0x7FF   # the single-head bootloader commands
 
 OP_PROBE, OP_SELECT, OP_RELEASE, OP_UID = 1, 2, 3, 4
@@ -32,6 +36,8 @@ PRESENT_MARK = 0xA5
 SELECT_LAPSE_MS = 2000
 ADDRESSED_LAPSE_MS = 10000
 SERIAL_BLANK = (0x00000000, 0xFFFFFFFF)
+SERIAL_RECORD_MAGIC = 0x55525331   # "URS1": the programmable serial record in the metadata flash
+SERIAL_FROM_UID, SERIAL_PROGRAMMED = "uid", "programmed"
 _MASK = 0xFFFFFFFF
 
 
@@ -46,6 +52,32 @@ def serial_from_uid(w0: int, w1: int, w2: int) -> int:
 
 def serial_is_valid(serial: int) -> bool:
     return serial not in SERIAL_BLANK
+
+
+def serial_record(serial: int) -> tuple[int, int, int]:
+    """The three words the metadata holds for a programmable serial: magic, serial, complement of the serial."""
+    return SERIAL_RECORD_MAGIC, serial & _MASK, ~serial & _MASK
+
+
+def serial_from_record(record: tuple[int, int, int] | None) -> int | None:
+    """The programmed serial, or None when there is no usable record (blank flash, a wrong magic or check, or a value that is not a serial)."""
+    if record is None:
+        return None
+    magic, serial, check = (w & _MASK for w in record)
+    if magic != SERIAL_RECORD_MAGIC or check != (~serial & _MASK) or not serial_is_valid(serial):
+        return None
+    return serial
+
+
+def duplicate_suspected(select_answered: bool, uid_answers: list[list[bytes]]) -> bool:
+    """Do two heads share the selected serial? ``uid_answers[part]`` lists the distinct payloads seen on ``0x7EB`` for UID part 0..2.
+
+    Two selected heads answer one identifier with different words: the host sees two different payloads, or (the bus having destroyed the frame) none at all after the
+    selection itself was answered. Either way the host must refuse to update and tell the user to disconnect one head.
+    """
+    if any(len(set(answers)) > 1 for answers in uid_answers):
+        return True
+    return select_answered and any(len(answers) == 0 for answers in uid_answers)
 
 
 def probe_frame(nbits: int, prefix: int) -> bytes:
@@ -77,14 +109,18 @@ class BootloaderNode:
     """The model of one bootloader (and the behaviour ``urtc_bl_select.h`` implements)."""
 
     uid: tuple[int, int, int]
+    record: tuple[int, int, int] | None = None
     addressed: bool = False
     selected: bool = False
     last_cmd_ms: int = 0
     select_ms: int = 0
     serial: int = field(init=False)
+    serial_source: str = field(init=False)
 
     def __post_init__(self) -> None:
-        self.serial = serial_from_uid(*self.uid)
+        programmed = serial_from_record(self.record)
+        self.serial_source = SERIAL_FROM_UID if programmed is None else SERIAL_PROGRAMMED
+        self.serial = serial_from_uid(*self.uid) if programmed is None else programmed
 
     def _lapse(self, now_ms: int, busy: bool) -> None:
         if busy:

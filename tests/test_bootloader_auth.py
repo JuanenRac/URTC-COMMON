@@ -111,10 +111,12 @@ def test_the_record_layout_and_the_key_id():
 # --- addressing by serial ---------------------------------------------------------------------------------------------------------------------
 def test_every_shared_scenario_replays_on_the_reference():
     scenarios = load("bootloader_select_vectors.json")["scenarios"]
-    assert len(scenarios) >= 10
+    assert len(scenarios) >= 17
+    assert {sc["serial_source"] for sc in scenarios} == {"uid", "programmed"}
     for sc in scenarios:
-        node = bs.BootloaderNode(tuple(int(w, 16) for w in sc["uid"]))
-        assert node.serial == int(sc["serial"], 16)
+        record = tuple(int(w, 16) for w in sc["record"]) if sc["record"] else None
+        node = bs.BootloaderNode(tuple(int(w, 16) for w in sc["uid"]), record)
+        assert node.serial == int(sc["serial"], 16) and node.serial_source == sc["serial_source"]
         for step in sc["steps"]:
             if step["kind"] == "cmd":
                 reply = node.on_cmd(step["t"], bytes.fromhex(step["data"]), step["busy"])
@@ -171,11 +173,67 @@ def test_an_old_bus_answers_nothing_and_a_duplicate_serial_shows_in_the_unique_i
     assert any(a != b for a, b in (pair for pair in words if len(pair) == 2)), "the host sees two different unique IDs and refuses"
 
 
-def test_the_proposed_identifiers_are_free_in_the_specification():
+def test_the_block_is_written_in_the_specification_with_the_formats_of_the_design():
+    spec = json.loads((ROOT / "spec" / "can_protocol.json").read_text(encoding="utf-8"))
+    messages = {m["id"]: m for m in spec["messages"]}
+    assert [f"0x{i:03X}" for i in bs.BLOCK_IDS] == ["0x7EA", "0x7EB", "0x7EC", "0x7ED"] and all(f"0x{i:03X}" in messages for i in bs.BLOCK_IDS)
+    assert [lay["variant"] for lay in messages["0x7EA"]["layouts"]] == ["probe", "select", "release", "uid"]
+    assert [lay["dlc"] for lay in messages["0x7EA"]["layouts"]] == [{"exact": 6}, {"exact": 6}, {"exact": 1}, {"exact": 2}]
+    assert messages["0x7EC"]["layouts"][0]["dlc"] == {"exact": 8} and messages["0x7ED"]["layouts"][0]["dlc"] == {"exact": 8}
+    # the classic CAN frame carries at most 8 data bytes: nothing of the block, and not 0x7FA, may be longer, and 0x7FA is exactly the three bytes of the version
+    for message in messages.values():
+        for layout in message["layouts"]:
+            assert layout["dlc"].get("exact", layout["dlc"].get("max", 0)) <= 8
+    assert messages["0x7FA"]["layouts"][0]["dlc"] == {"exact": 3}
+    assert [f["name"] for f in messages["0x7FA"]["layouts"][0]["fields"]] == ["major", "minor", "patch"]
+    assert "0x7ED" in [a["id"] for a in spec["procedures"]["version_query"]["answers"]]
     header = (ROOT / "generated" / "urtc_can_ids.h").read_text(encoding="utf-8")
     used = {int(m, 16) for m in re.findall(r"#define URTC_CAN_ID_\w+ 0x([0-9A-Fa-f]+)u", header)}
-    assert not used & set(bs.PROPOSED_IDS)
-    assert max(used) == 0x7FF and all(0x7E9 < i < 0x7F0 for i in bs.PROPOSED_IDS)
+    assert set(bs.BLOCK_IDS) <= used and max(used) == 0x7FF
+
+
+def test_the_policy_by_default_is_the_strict_one():
+    assert ia.POLICY_DEFAULT == ia.POLICY_ED25519_ONLY == 0 and ia.POLICY_NAMES[ia.POLICY_DEFAULT] == "ed25519_only"
+    text = (ROOT / "firmware_base" / "urtc_auth.h").read_text(encoding="utf-8")
+    assert "#define URTC_AUTH_DEFAULT_POLICY URTC_AUTH_ED25519_ONLY" in text
+    assert "ed25519_only" in (ROOT / "docs" / "BOOTLOADER_AUTH.md").read_text(encoding="utf-8")
+
+
+def test_the_programmable_serial_has_priority_and_an_unusable_record_gives_the_fold_back():
+    uid = (0x11111111, 0x22222222, 0x33333333)
+    fold = bs.serial_from_uid(*uid)
+    assert bs.serial_record(0x00C0FFEE) == (bs.SERIAL_RECORD_MAGIC, 0x00C0FFEE, 0xFF3F0011) and bs.SERIAL_RECORD_MAGIC == int.from_bytes(b"URS1", "big")
+    node = bs.BootloaderNode(uid, bs.serial_record(0x00C0FFEE))
+    assert (node.serial, node.serial_source) == (0x00C0FFEE, "programmed") and node.uid == uid   # the unique ID is still the real one
+    for record in (None, (0xFFFFFFFF,) * 3, (0, 0, 0), (bs.SERIAL_RECORD_MAGIC, 7, 7), (1, 7, ~7 & 0xFFFFFFFF), bs.serial_record(0), bs.serial_record(0xFFFFFFFF)):
+        assert bs.serial_from_record(record) is None
+        plain = bs.BootloaderNode(uid, record)
+        assert (plain.serial, plain.serial_source) == (fold, "uid")
+    assert bs.serial_from_record(bs.serial_record(1)) == 1
+
+
+def test_every_shared_bus_scenario_replays_on_the_reference():
+    buses = load("bootloader_select_vectors.json")["bus_scenarios"]
+    assert len(buses) >= 8 and {b["duplicate"] for b in buses} == {False, True}
+    for b in buses:
+        nodes = [bs.BootloaderNode(tuple(int(w, 16) for w in n["uid"]), tuple(int(w, 16) for w in n["record"]) if n["record"] else None) for n in b["nodes"]]
+        probe, _ = probe_bus(nodes)
+        assert bs.enumerate_serials(probe) == [int(x, 16) for x in b["enumerated"]], b["name"]
+        if b["select"] is None:
+            assert not b["duplicate"]
+            continue
+        serial = int(b["select"], 16)
+        answered = bool([r for n in nodes if (r := n.on_cmd(1, bs.select_frame(serial, 1)))])
+        words = [sorted({r[1] for n in nodes if (r := n.on_cmd(2, bs.uid_frame(part)))}) for part in range(3)]
+        assert bs.duplicate_suspected(answered, words) == b["duplicate"], b["name"]
+
+
+def test_the_host_detects_a_duplicate_from_different_words_or_from_silence():
+    same = [[b"\x00\x00"], [b"\x01\x00"], [b"\x02\x00"]]
+    assert not bs.duplicate_suspected(True, same)
+    assert bs.duplicate_suspected(True, [[b"a", b"b"], [b"c"], [b"d"]])          # two different words under one identifier
+    assert bs.duplicate_suspected(True, [[b"a"], [], [b"d"]])                    # the bus destroyed the clashing frames
+    assert not bs.duplicate_suspected(False, [[], [], []])                       # nothing was selected: no head announces a serial
 
 
 # --- the files --------------------------------------------------------------------------------------------------------------------------------

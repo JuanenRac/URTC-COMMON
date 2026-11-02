@@ -10,7 +10,8 @@
 
 * ``conformance/ed25519_vectors.json``         Ed25519 signatures: RFC 8032 cases, padding-boundary lengths and each way a signature can be wrong
 * ``conformance/signed_image_vectors.json``    the decision to install an image: signed, altered, other key, rollback, no serial of the hardware...
-* ``conformance/bootloader_select_vectors.json``  scenarios of one bootloader answering the frames of ``0x7EA`` and gating the single-head frames
+* ``conformance/bootloader_select_vectors.json``  scenarios of one bootloader answering the frames of ``0x7EA`` and gating the single-head frames (with or without a
+  programmable serial), and scenarios of a whole bus: enumeration and the detection of a duplicate serial
 * ``generated/ed25519_vectors.h``, ``generated/signed_image_vectors.h``, ``generated/bootloader_select_vectors.h``   the same as C tables
 
 Every key here is a throwaway TEST key derived from a label: it signs nothing but these vectors and is no secret. A release key is never in this repository.
@@ -154,6 +155,18 @@ def signed_image_cases() -> list[dict]:
 
 # ---------------------------------------------------------------------------------------------------------------------------------------------------------
 NODE_UIDS = {"a": (0x11111111, 0x22222222, 0x33333333), "no_serial_zero": (0, 0, 0), "no_serial_ones": (0xFFFFFFFF, 0, 0)}
+PROGRAMMED = 0x00C0FFEE
+BLANK_RECORD = (0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF)
+# the metadata record of the programmable serial that goes with each node: None when the head has none
+NODE_RECORDS: dict[str, tuple[int, int, int] | None] = {
+    "prog": bs.serial_record(PROGRAMMED),
+    "prog_bad_check": (bs.SERIAL_RECORD_MAGIC, PROGRAMMED, 0x12345678),
+    "prog_bad_magic": (0x55525332, PROGRAMMED, ~PROGRAMMED & 0xFFFFFFFF),
+    "prog_blank": BLANK_RECORD,
+    "prog_zero": bs.serial_record(0),
+    "prog_ones": bs.serial_record(0xFFFFFFFF),
+}
+NODE_UIDS.update({k: NODE_UIDS["a"] for k in NODE_RECORDS})
 
 
 def select_scenarios() -> list[dict]:
@@ -192,11 +205,22 @@ def select_scenarios() -> list[dict]:
         ("a release leaves nobody selected", "a", [cmd(0, bs.select_frame(serial_a, 1)), gate(10, 0x7F8), cmd(20, bs.release_frame()), gate(30, 0x7F8), gate(40, 0x110)]),
         ("a bootloader whose unique ID folds to zero takes no part", "no_serial_zero", [cmd(10, bs.probe_frame(0, 0)), cmd(20, bs.select_frame(0, 1)), gate(30, 0x7F8)]),
         ("a bootloader whose unique ID folds to all ones takes no part", "no_serial_ones", [cmd(10, bs.probe_frame(0, 0)), cmd(20, bs.select_frame(0xFFFFFFFF, 1)), gate(30, 0x7F8)]),
+        ("a programmed serial takes priority over the fold of the unique ID", "prog", [
+            cmd(10, bs.probe_frame(32, PROGRAMMED)), cmd(20, bs.probe_frame(32, serial_a)), cmd(30, bs.probe_frame(8, PROGRAMMED)), cmd(40, bs.select_frame(serial_a, 1)),
+            gate(50, 0x7F8), cmd(60, bs.select_frame(PROGRAMMED, 2)), gate(70, 0x7F8), cmd(80, bs.uid_frame(0)), cmd(90, bs.uid_frame(2))]),
+        ("a record with a wrong check leaves the fold of the unique ID in charge", "prog_bad_check", [
+            cmd(10, bs.probe_frame(32, serial_a)), cmd(20, bs.probe_frame(32, PROGRAMMED)), cmd(30, bs.select_frame(serial_a, 1)), gate(40, 0x7F8)]),
+        ("a record with a wrong magic leaves the fold of the unique ID in charge", "prog_bad_magic", [
+            cmd(10, bs.probe_frame(32, serial_a)), cmd(20, bs.select_frame(PROGRAMMED, 1)), gate(30, 0x7F8), cmd(40, bs.select_frame(serial_a, 2)), gate(50, 0x7F8)]),
+        ("blank metadata flash leaves the fold of the unique ID in charge", "prog_blank", [
+            cmd(10, bs.probe_frame(32, serial_a)), cmd(20, bs.select_frame(serial_a, 1)), gate(30, 0x7F8)]),
+        ("a programmed serial of zero is not a serial: the fold is used", "prog_zero", [cmd(10, bs.probe_frame(32, serial_a)), cmd(20, bs.select_frame(serial_a, 1)), gate(30, 0x7F8)]),
+        ("a programmed serial of all ones is not a serial: the fold is used", "prog_ones", [cmd(10, bs.probe_frame(32, serial_a)), cmd(20, bs.select_frame(serial_a, 1)), gate(30, 0x7F8)]),
         ("the millisecond counter wraps", "a", [cmd(0xFFFFFF00, bs.select_frame(serial_a, 1)), gate(0x00000100, 0x7F8), gate(0x00000900, 0x7F8)]),
     ]
     out = []
     for name, node_key, steps in raw:
-        node = bs.BootloaderNode(NODE_UIDS[node_key])
+        node = bs.BootloaderNode(NODE_UIDS[node_key], NODE_RECORDS.get(node_key))
         recorded = []
         for step in steps:
             entry = dict(step)
@@ -212,7 +236,45 @@ def select_scenarios() -> list[dict]:
             entry["selected"] = node.selected
             entry["addressed"] = node.addressed
             recorded.append(entry)
-        out.append({"name": name, "uid": [f"0x{w:08X}" for w in NODE_UIDS[node_key]], "serial": f"0x{node.serial:08X}", "steps": recorded})
+        record = NODE_RECORDS.get(node_key)
+        out.append({"name": name, "uid": [f"0x{w:08X}" for w in NODE_UIDS[node_key]], "record": [f"0x{w:08X}" for w in record] if record else None,
+                    "serial": f"0x{node.serial:08X}", "serial_source": node.serial_source, "steps": recorded})
+    return out
+
+
+# ---------------------------------------------------------------------------------------------------------------------------------------------------------
+def bus_scenarios() -> list[dict]:
+    """A whole bus: the host enumerates the serials, selects one, reads the three words of the unique ID and decides whether two heads share the serial."""
+    fold_a = bs.serial_from_uid(1, 2, 3)
+    clash_a, clash_b = (0x10, 0x20, 0x30), (0x10 ^ 0x800, 0x20 ^ 1, 0x30)   # one fold, two unique IDs
+    assert bs.serial_from_uid(*clash_a) == bs.serial_from_uid(*clash_b)
+    raw: list[tuple[str, list[tuple[tuple[int, int, int], tuple[int, int, int] | None]], int | None]] = [
+        ("one head: nothing to confuse", [((1, 2, 3), None)], fold_a),
+        ("two heads with different serials", [((1, 2, 3), None), ((4, 5, 6), None)], fold_a),
+        ("two heads whose unique IDs fold to one serial", [(clash_a, None), (clash_b, None)], bs.serial_from_uid(*clash_a)),
+        ("a programmed serial removes the clash of two folded serials", [(clash_a, bs.serial_record(0x00A00001)), (clash_b, bs.serial_record(0x00A00002))], 0x00A00001),
+        ("two heads programmed with one serial", [((1, 2, 3), bs.serial_record(PROGRAMMED)), ((4, 5, 6), bs.serial_record(PROGRAMMED))], PROGRAMMED),
+        ("a programmed serial equal to the fold of another head", [((1, 2, 3), None), ((7, 8, 9), bs.serial_record(fold_a))], fold_a),
+        ("a programmed head and a folded head with different serials", [((1, 2, 3), bs.serial_record(PROGRAMMED)), ((4, 5, 6), None)], PROGRAMMED),
+        ("heads that announce no serial: the host keeps the single-head behaviour", [((0, 0, 0), None), ((0xFFFFFFFF, 0, 0), None)], None),
+    ]
+    out = []
+    for name, nodes_spec, select_serial in raw:
+        nodes = [bs.BootloaderNode(uid, rec) for uid, rec in nodes_spec]
+
+        def probe(nbits: int, prefix: int, nodes: list[bs.BootloaderNode] = nodes) -> bool:
+            replies = {r[1] for n in nodes if (r := n.on_cmd(0, bs.probe_frame(nbits, prefix)))}
+            assert len(replies) <= 1
+            return bool(replies)
+
+        enumerated = bs.enumerate_serials(probe)
+        duplicate = False
+        if select_serial is not None:
+            answered = bool({r[1] for n in nodes if (r := n.on_cmd(1, bs.select_frame(select_serial, 1)))})
+            words = [sorted({r[1] for n in nodes if (r := n.on_cmd(2, bs.uid_frame(part)))}) for part in range(3)]
+            duplicate = bs.duplicate_suspected(answered, words)
+        out.append({"name": name, "nodes": [{"uid": [f"0x{w:08X}" for w in uid], "record": [f"0x{w:08X}" for w in rec] if rec else None} for uid, rec in nodes_spec],
+                    "select": f"0x{select_serial:08X}" if select_serial is not None else None, "enumerated": [f"0x{x:08X}" for x in enumerated], "duplicate": duplicate})
     return out
 
 
@@ -266,13 +328,14 @@ def c_signed_image(cases: list[dict]) -> str:
     return "\n".join(lines)
 
 
-def c_select(scenarios: list[dict]) -> str:
+def c_select(scenarios: list[dict], buses: list[dict]) -> str:
     lines = ["// GENERATED by tools/make_bootloader_auth_vectors.py - do not edit by hand.", "// Copyright (C) 2026 JuanenRac (Electro Hobby 3D) <electrohobby3d@gmail.com>",
              "// GPL-3.0-or-later - see LICENSE", "#ifndef BOOTLOADER_SELECT_VECTORS_H", "#define BOOTLOADER_SELECT_VECTORS_H", "", "#include <stddef.h>", "#include <stdint.h>", "",
              "typedef struct {", "    int is_gate;                 // 0: a frame on 0x7EA, 1: a single-head frame to be gated", "    uint32_t t;", "    uint16_t id;                 // gate only",
              "    uint8_t dlc;", "    uint8_t data[8];", "    int busy;", "    uint8_t reply_dlc;           // 0: no answer", "    uint8_t reply[8];", "    int accept;                  // gate only",
              "    int selected, addressed;     // after the step", "} select_step_t;", "",
-             "typedef struct {", "    const char *name;", "    uint32_t uid[3];", "    uint32_t serial;", "    const select_step_t *steps;", "    size_t step_count;", "} select_scenario_t;", ""]
+             "typedef struct {", "    const char *name;", "    uint32_t uid[3];", "    int has_record;              // a programmable-serial record is present in the metadata",
+             "    uint32_t record[3];          // magic, serial, check", "    uint32_t serial;", "    const select_step_t *steps;", "    size_t step_count;", "} select_scenario_t;", ""]
     for i, s in enumerate(scenarios):
         lines.append(f"static const select_step_t select_steps_{i}[] = {{")
         for st in s["steps"]:
@@ -286,8 +349,21 @@ def c_select(scenarios: list[dict]) -> str:
     lines += ["", "static const select_scenario_t SELECT_SCENARIOS[] = {"]
     for i, s in enumerate(scenarios):
         uid = ", ".join(s["uid"])
-        lines.append(f"    {{\"{s['name']}\", {{{uid}}}, {s['serial']}u, select_steps_{i}, {len(s['steps'])}u}},")
-    lines += ["};", "", f"#define SELECT_SCENARIO_COUNT {len(scenarios)}u", "", "#endif // BOOTLOADER_SELECT_VECTORS_H", ""]
+        rec = ", ".join(s["record"] if s["record"] else ["0", "0", "0"])
+        lines.append(f"    {{\"{s['name']}\", {{{uid}}}, {1 if s['record'] else 0}, {{{rec}}}, {s['serial']}u, select_steps_{i}, {len(s['steps'])}u}},")
+    lines += ["};", "", f"#define SELECT_SCENARIO_COUNT {len(scenarios)}u", ""]
+    lines += ["typedef struct {", "    uint32_t uid[3];", "    int has_record;", "    uint32_t record[3];", "} bus_node_t;", "",
+              "typedef struct {", "    const char *name;", "    size_t node_count;", "    bus_node_t nodes[3];", "    int has_select;", "    uint32_t select_serial;",
+              "    size_t enumerated_count;", "    uint32_t enumerated[3];   // ascending", "    int duplicate;", "} bus_scenario_t;", "", "static const bus_scenario_t BUS_SCENARIOS[] = {"]
+    for b in buses:
+        nodes = []
+        for n in b["nodes"]:
+            rec = ", ".join(n["record"] if n["record"] else ["0", "0", "0"])
+            nodes.append(f"{{{{{', '.join(n['uid'])}}}, {1 if n['record'] else 0}, {{{rec}}}}}")
+        enum = ", ".join(f"{x}u" for x in b["enumerated"]) or "0"
+        lines.append(f"    {{\"{b['name']}\", {len(b['nodes'])}u, {{{', '.join(nodes)}}}, {1 if b['select'] else 0}, {(b['select'] or '0')}u, {len(b['enumerated'])}u, "
+                     f"{{{enum}}}, {1 if b['duplicate'] else 0}}},")
+    lines += ["};", "", f"#define BUS_SCENARIO_COUNT {len(buses)}u", "", "#endif // BOOTLOADER_SELECT_VECTORS_H", ""]
     return "\n".join(lines)
 
 
@@ -296,6 +372,7 @@ def outputs() -> dict[Path, str]:
     ed = ed25519_cases()
     si = signed_image_cases()
     sel = select_scenarios()
+    bus = bus_scenarios()
     about_keys = "Throwaway test keys derived from labels: they sign only these vectors and are no secret."
     return {
         ROOT / "conformance" / "ed25519_vectors.json": json.dumps({"format": 1, "about": "Ed25519 (RFC 8032) signatures: what a verifier must accept and what it must refuse. " + about_keys, "cases": ed}, indent=2) + "\n",
@@ -303,11 +380,12 @@ def outputs() -> dict[Path, str]:
             "format": 1, "about": "The decision to install an image: the signed record, the policy, the rollback rules. " + about_keys, "key_labels": list(KEY_LABELS),
             "public_keys": [k.hex().upper() for k in signed_image_keys()], "policies": list(ia.POLICY_NAMES), "statuses": list(ia.STATUS_NAMES), "cases": si}, indent=2) + "\n",
         ROOT / "conformance" / "bootloader_select_vectors.json": json.dumps({
-            "format": 1, "about": "One bootloader answering the frames of 0x7EA and gating the single-head frames, step by step. Proposed identifiers 0x7EA to 0x7ED.",
-            "scenarios": sel}, indent=2) + "\n",
+            "format": 2, "about": "One bootloader answering the frames of 0x7EA and gating the single-head frames, step by step, with or without a programmable serial in "
+            "the metadata; and whole buses where the host enumerates the serials and decides whether two heads share one.",
+            "serial_record": {"magic": f"0x{bs.SERIAL_RECORD_MAGIC:08X}", "words": ["magic", "serial", "complement of the serial"]}, "scenarios": sel, "bus_scenarios": bus}, indent=2) + "\n",
         ROOT / "generated" / "ed25519_vectors.h": c_ed25519(ed),
         ROOT / "generated" / "signed_image_vectors.h": c_signed_image(si),
-        ROOT / "generated" / "bootloader_select_vectors.h": c_select(sel),
+        ROOT / "generated" / "bootloader_select_vectors.h": c_select(sel, bus),
     }
 
 

@@ -1396,6 +1396,13 @@
             "bootloader"
           ],
           "grace_ms": 300
+        },
+        {
+          "id": "0x7ED",
+          "required": false,
+          "from": [
+            "bootloader"
+          ]
         }
       ],
       "rule": "Application major.minor.patch is (0x7F9 major, 0x7F9 minor, 0x7E9 patch). Without 0x7E9 within the grace window the patch is unknown and the legacy two-component form is used."
@@ -6822,6 +6829,432 @@
       }
     },
     {
+      "id": "0x7EA",
+      "name": "BOOTLOADER_SELECT",
+      "group": "bootloader",
+      "title": "Address one bootloader by its serial number",
+      "direction": "host_to_board",
+      "handled_by": "bootloader",
+      "tools": "any",
+      "layouts": [
+        {
+          "role": "request",
+          "variant": "probe",
+          "dlc": {
+            "exact": 6
+          },
+          "fields": [
+            {
+              "name": "operation",
+              "type": "bytes",
+              "length": 1,
+              "fixed": "01",
+              "offset": 0,
+              "width": 1
+            },
+            {
+              "name": "nbits",
+              "type": "u8",
+              "range": [
+                0,
+                32
+              ],
+              "note": "How many of the most significant bits of the prefix are compared.",
+              "offset": 1,
+              "width": 1
+            },
+            {
+              "name": "prefix",
+              "type": "u32",
+              "offset": 2,
+              "width": 4
+            }
+          ],
+          "note": "Every bootloader whose serial starts with those bits answers 0x7EB with the same two bytes.",
+          "examples": [
+            {
+              "name": "ask whether anyone is there",
+              "fields": {
+                "operation": "01",
+                "nbits": 0,
+                "prefix": 0
+              },
+              "data": "010000000000"
+            }
+          ]
+        },
+        {
+          "role": "request",
+          "variant": "select",
+          "dlc": {
+            "exact": 6
+          },
+          "fields": [
+            {
+              "name": "operation",
+              "type": "bytes",
+              "length": 1,
+              "fixed": "02",
+              "offset": 0,
+              "width": 1
+            },
+            {
+              "name": "serial",
+              "type": "u32",
+              "offset": 1,
+              "width": 4
+            },
+            {
+              "name": "seq",
+              "type": "u8",
+              "offset": 5,
+              "width": 1
+            }
+          ],
+          "note": "The bootloader with that serial becomes the selected one and answers; the others are deselected.",
+          "examples": [
+            {
+              "name": "select serial 0x01020304",
+              "fields": {
+                "operation": "02",
+                "serial": 16909060,
+                "seq": 7
+              },
+              "data": "020102030407"
+            }
+          ]
+        },
+        {
+          "role": "request",
+          "variant": "release",
+          "dlc": {
+            "exact": 1
+          },
+          "fields": [
+            {
+              "name": "operation",
+              "type": "bytes",
+              "length": 1,
+              "fixed": "03",
+              "offset": 0,
+              "width": 1
+            }
+          ],
+          "note": "Nobody stays selected.",
+          "examples": [
+            {
+              "name": "release",
+              "fields": {
+                "operation": "03"
+              },
+              "data": "03"
+            }
+          ]
+        },
+        {
+          "role": "request",
+          "variant": "uid",
+          "dlc": {
+            "exact": 2
+          },
+          "fields": [
+            {
+              "name": "operation",
+              "type": "bytes",
+              "length": 1,
+              "fixed": "04",
+              "offset": 0,
+              "width": 1
+            },
+            {
+              "name": "part",
+              "type": "u8",
+              "range": [
+                0,
+                2
+              ],
+              "offset": 1,
+              "width": 1
+            }
+          ],
+          "note": "The selected bootloader answers with one word of its 96-bit unique ID; two heads with one serial give different words.",
+          "examples": [
+            {
+              "name": "word 1 of the unique ID",
+              "fields": {
+                "operation": "04",
+                "part": 1
+              },
+              "data": "0401"
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "Part of the design of the bootloader identity and image authentication. A frame with an unknown operation or the wrong length is ignored.",
+        "A bootloader that hears any valid frame here is in addressed mode and obeys 0x7F0 to 0x7FF only while it is selected; with nobody addressing it, it behaves as before.",
+        "The serial is the 32-bit fold of the 96-bit unique ID, or the programmable serial of the metadata when there is one (it takes priority). 0 and 0xFFFFFFFF are not serials."
+      ],
+      "implemented_by": {
+        "firmware": false,
+        "flasher": false,
+        "tester": false,
+        "web_studio": false
+      },
+      "client_names": {}
+    },
+    {
+      "id": "0x7EB",
+      "name": "BOOTLOADER_SELECT_RESPONSE",
+      "group": "bootloader",
+      "title": "Answer to the addressing of a bootloader",
+      "direction": "board_to_host",
+      "handled_by": "bootloader",
+      "tools": "any",
+      "layouts": [
+        {
+          "role": "response",
+          "variant": "probe",
+          "dlc": {
+            "exact": 2
+          },
+          "fields": [
+            {
+              "name": "operation",
+              "type": "bytes",
+              "length": 1,
+              "fixed": "01",
+              "offset": 0,
+              "width": 1
+            },
+            {
+              "name": "mark",
+              "type": "bytes",
+              "length": 1,
+              "fixed": "A5",
+              "offset": 1,
+              "width": 1
+            }
+          ],
+          "note": "Identical for every matching bootloader, so simultaneous answers merge on the bus.",
+          "examples": [
+            {
+              "name": "someone matches",
+              "fields": {
+                "operation": "01",
+                "mark": "A5"
+              },
+              "data": "01A5"
+            }
+          ]
+        },
+        {
+          "role": "response",
+          "variant": "select",
+          "dlc": {
+            "exact": 6
+          },
+          "fields": [
+            {
+              "name": "operation",
+              "type": "bytes",
+              "length": 1,
+              "fixed": "02",
+              "offset": 0,
+              "width": 1
+            },
+            {
+              "name": "serial",
+              "type": "u32",
+              "offset": 1,
+              "width": 4
+            },
+            {
+              "name": "seq",
+              "type": "u8",
+              "offset": 5,
+              "width": 1
+            }
+          ],
+          "note": "Echo of the selection.",
+          "examples": [
+            {
+              "name": "selected",
+              "fields": {
+                "operation": "02",
+                "serial": 16909060,
+                "seq": 7
+              },
+              "data": "020102030407"
+            }
+          ]
+        },
+        {
+          "role": "response",
+          "variant": "uid",
+          "dlc": {
+            "exact": 6
+          },
+          "fields": [
+            {
+              "name": "operation",
+              "type": "bytes",
+              "length": 1,
+              "fixed": "04",
+              "offset": 0,
+              "width": 1
+            },
+            {
+              "name": "part",
+              "type": "u8",
+              "range": [
+                0,
+                2
+              ],
+              "offset": 1,
+              "width": 1
+            },
+            {
+              "name": "word",
+              "type": "u32",
+              "offset": 2,
+              "width": 4
+            }
+          ],
+          "note": "One word of the unique ID, big-endian.",
+          "examples": [
+            {
+              "name": "word 0",
+              "fields": {
+                "operation": "04",
+                "part": 0,
+                "word": 286331153
+              },
+              "data": "040011111111"
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "Answers only what 0x7EA asked; never sent unasked."
+      ],
+      "implemented_by": {
+        "firmware": false,
+        "flasher": false,
+        "tester": false,
+        "web_studio": false
+      },
+      "client_names": {}
+    },
+    {
+      "id": "0x7EC",
+      "name": "BOOTLOADER_SIGNATURE_CHUNK",
+      "group": "bootloader",
+      "title": "One chunk of the Ed25519 signature record",
+      "direction": "host_to_board",
+      "handled_by": "bootloader",
+      "tools": "any",
+      "layouts": [
+        {
+          "role": "request",
+          "dlc": {
+            "exact": 8
+          },
+          "fields": [
+            {
+              "name": "index",
+              "type": "u8",
+              "range": [
+                0,
+                10
+              ],
+              "offset": 0,
+              "width": 1
+            },
+            {
+              "name": "data",
+              "type": "bytes",
+              "length": 7,
+              "offset": 1,
+              "width": 7
+            }
+          ],
+          "note": "The record is key id (8) + counter (4) + signature (64) = 76 bytes in 11 frames; the last one is padded with zeros.",
+          "examples": [
+            {
+              "name": "first chunk",
+              "fields": {
+                "index": 0,
+                "data": "00000000000000"
+              },
+              "data": "0000000000000000"
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "Sent to the selected (or only) bootloader after START_UPDATE, next to the HMAC chunks. The record is described in the design of the bootloader authentication."
+      ],
+      "implemented_by": {
+        "firmware": false,
+        "flasher": false,
+        "tester": false,
+        "web_studio": false
+      },
+      "client_names": {}
+    },
+    {
+      "id": "0x7ED",
+      "name": "BOOTLOADER_KEY_ID",
+      "group": "bootloader",
+      "title": "Identifier of the signing key a bootloader trusts",
+      "direction": "board_to_host",
+      "handled_by": "bootloader",
+      "tools": "any",
+      "layouts": [
+        {
+          "role": "response",
+          "dlc": {
+            "exact": 8
+          },
+          "fields": [
+            {
+              "name": "key_id",
+              "type": "bytes",
+              "length": 8,
+              "note": "The first 8 bytes of the SHA-512 of the trusted public key.",
+              "offset": 0,
+              "width": 8
+            }
+          ],
+          "note": "Eight bytes: a classic CAN frame carries no more, which is why this is not part of 0x7FA.",
+          "examples": [
+            {
+              "name": "a key identifier",
+              "fields": {
+                "key_id": "0102030405060708"
+              },
+              "data": "0102030405060708"
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "Sent by a bootloader that holds a trusted Ed25519 key, right after its answer to 0x7F8. A bootloader without the frame (older, or without a key) sends nothing: tools read that as 'no data', never as a difference.",
+        "With several heads, only the selected one answers 0x7F8 and therefore only its key identifier arrives."
+      ],
+      "implemented_by": {
+        "firmware": false,
+        "flasher": true,
+        "tester": false,
+        "web_studio": true
+      },
+      "client_names": {
+        "flasher": "CAN_ID_BOOTLOADER_KEY_ID",
+        "web_studio": "CAN_ID_BOOTLOADER_KEY_ID"
+      }
+    },
+    {
       "id": "0x7F0",
       "name": "ENTER_BOOTLOADER",
       "group": "bootloader",
@@ -7302,7 +7735,7 @@
         }
       ],
       "notes": [
-        "Answered by whichever side is running: 0x7F9, then 0x7FA (bootloader only), then 0x7E9 (boards that know their patch)."
+        "Answered by whichever side is running: 0x7F9, then 0x7FA (bootloader only), then 0x7E9 (boards that know their patch), then 0x7ED (a bootloader with a trusted signing key)."
       ],
       "implemented_by": {
         "firmware": true,
@@ -7438,7 +7871,7 @@
         }
       ],
       "notes": [
-        "Sent only by the bootloader, alongside 0x7F9. Released flashers read it only at exactly DLC 3."
+        "Sent only by the bootloader, alongside 0x7F9, always at exactly 3 bytes (major, minor, patch). The fingerprint of the trusted signing key does not travel here: eleven bytes cannot exist on a classic CAN frame (8 data bytes at most); it is 0x7ED. Released flashers read this frame only at exactly DLC 3."
       ],
       "implemented_by": {
         "firmware": true,

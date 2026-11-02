@@ -63,7 +63,7 @@ def test_names_are_unique(spec):
 
 
 def test_statistics_the_documents_quote(spec):
-    assert len(spec["messages"]) == 96
+    assert len(spec["messages"]) == 100
     assert len(spec["tools"]) == 26 and [t["id"] for t in spec["tools"]] == list(range(26))
     assert sum(len(b["entries"]) for b in spec["registers"].values()) == 23
     assert len(spec["magic_payloads"]) == 4
@@ -214,8 +214,14 @@ def test_known_gaps_are_recorded_not_papered_over(spec):
     assert not by_id["0x1AA"]["implemented_by"]["web_studio"] and by_id["0x1AA"]["implemented_by"]["tester"]
 
 
-def test_every_identifier_is_in_the_firmware(spec):
-    assert all(m["implemented_by"]["firmware"] for m in spec["messages"])
+# The block of the addressing of a bootloader, the signature chunks and the key identifier is designed and tested on the host (portable C in firmware_base/):
+# no bootloader sends or obeys it yet, and the specification does not say it does.
+DESIGNED_FOR_THE_BOOTLOADER = {"0x7EA", "0x7EB", "0x7EC", "0x7ED"}
+
+
+def test_every_identifier_is_in_the_firmware_except_the_block_designed_for_the_bootloader(spec):
+    assert all(m["implemented_by"]["firmware"] for m in spec["messages"] if m["id"] not in DESIGNED_FOR_THE_BOOTLOADER)
+    assert {m["id"] for m in spec["messages"] if not m["implemented_by"]["firmware"]} == DESIGNED_FOR_THE_BOOTLOADER
 
 
 def test_critical_error_gates_follow_the_dispatcher(spec):

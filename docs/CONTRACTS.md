@@ -16,7 +16,7 @@ The CAN bus of the tool head is the one contract that crosses the firmware, two 
 
 | Part | Where | What it fixes |
 |---|---|---|
-| Frame table | `messages` | 96 identifiers: name, direction, who handles it, the tools it is valid for, the length rule of every layout, every field (offset, type, range, enumeration), the gates (critical error, boot sequence, magic payload), the timing (telemetry period, watchdog), and which implementations define it |
+| Frame table | `messages` | 100 identifiers: name, direction, who handles it, the tools it is valid for, the length rule of every layout, every field (offset, type, range, enumeration), the gates (critical error, boot sequence, magic payload), the timing (telemetry period, watchdog), and which implementations define it |
 | Magic payloads | `magic_payloads` | The four 4-byte values that make a destructive or one-shot command obeyed: enter the bootloader, authorise one downgrade, erase the saved state, reset the solder feeder position |
 | Enumerations | `enums` | Tool profiles (25 plus the invalid marker), bootloader status, verify-fail reason, thermal fault, reset-cause flags, expansion board type, sensor variant and the small value sets of the commands |
 | Constants | `constants` | The bitrate, the HardwareIDs, the flash page, the patch encoding, the timing every host must respect (watchdogs, grace window, acknowledgement timeout) and the limits the hosts offer |
@@ -56,12 +56,12 @@ The vectors are computed with a small packer of their own, written apart from th
 
 `implemented_by` in the specification records, for every identifier, whether the firmware, URTC-FLASHER, URTC-TESTER and URTC-WEB-STUDIO define it. The counts below are read from the specification, and `tests/test_siblings.py` compares them with the text of the other repositories whenever those are checked out next to this one.
 
-| Implementation | Identifiers defined | Of 96 |
+| Implementation | Identifiers defined | Of 100 |
 |---|---|---|
-| Firmware | 96 | all |
-| URTC-WEB-STUDIO | 86 | not 0x1AA, 0x1AB, 0x1AC, 0x1AD, 0x1B8 to 0x1BA, 0x220 to 0x222 |
-| URTC-TESTER | 60 | no bootloader or slave bridge frames; only the version patch frame (0x7E9) of the bootloader group; no 0x1A0, 0x1A2, 0x1A4, 0x1A6, 0x1AC, 0x1AD, 0x1B8 to 0x1BA |
-| URTC-FLASHER | 38 | the bootloader, the slave bridge and the configuration registers only |
+| Firmware | 96 | all but 0x7EA to 0x7ED, the addressing of a bootloader by serial number, the signature chunks and the key identifier: designed and tested on the host, no bootloader sends or obeys them yet |
+| URTC-WEB-STUDIO | 89 | not 0x1AA, 0x1AB, 0x1AC, 0x1AD, 0x1B8, 0x220 to 0x222, 0x7EA to 0x7EC (it reads 0x7ED, the key identifier) |
+| URTC-TESTER | 62 | no bootloader or slave bridge frames (nor 0x7EA to 0x7ED); only the version patch frame (0x7E9) of the bootloader group; no 0x1A0, 0x1A2, 0x1A4, 0x1A6, 0x1AC, 0x1AD, 0x1B8 to 0x1BA |
+| URTC-FLASHER | 39 | the bootloader (0x7ED, the key identifier, among them), the slave bridge and the configuration registers only |
 
 Ten identifiers are defined by all three host tools. The table of every identifier is [`PROTOCOL_TABLE.md`](PROTOCOL_TABLE.md).
 

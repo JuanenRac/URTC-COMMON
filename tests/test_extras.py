@@ -249,10 +249,12 @@ def test_valid_fuzz_frames_decode_with_the_generated_protocol_and_invalid_ones_d
         if f.kind == fuzz.RANDOM:
             continue
         m = by_id[f.can_id]
-        request = next(lay for lay in m["layouts"] if lay["role"] != "response")
-        dlc = request["dlc"]
-        ok_len = dlc.get("any") or ("exact" in dlc and len(f.data) == dlc["exact"]) or ("min" in dlc and dlc["min"] <= len(f.data) <= dlc["max"]) \
-            or ("one_of" in dlc and len(f.data) in dlc["one_of"])
+        requests = [lay for lay in m["layouts"] if lay["role"] != "response"]   # an identifier may have several (the operations of 0x7EA): any of them allows the length
+
+        def allows(dlc):
+            return dlc.get("any") or ("exact" in dlc and len(f.data) == dlc["exact"]) or ("min" in dlc and dlc["min"] <= len(f.data) <= dlc["max"]) \
+                or ("one_of" in dlc and len(f.data) in dlc["one_of"])
+        ok_len = any(allows(lay["dlc"]) for lay in requests)
         if f.kind == fuzz.VALID:
             assert ok_len, f.line()
         elif f.note.startswith("length "):
