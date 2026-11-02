@@ -1,0 +1,221 @@
+{
+  "format": 1,
+  "about": "Rotation of the signing key: the fingerprints announced on 0x7ED (the current one first, the previous one only inside the window) and the status on 0x7EB (05, count, flags, seconds left, 0xFFFFFFFF without a window). Times are monotonic seconds. Fingerprints are throwaway labels. 'refused' lists fingerprints that must never be accepted in that case.",
+  "frame_ids": {
+    "announce": "0x7ED",
+    "status": "0x7EB"
+  },
+  "status_op": 5,
+  "max_announced": 2,
+  "cases": [
+    {
+      "name": "both valid inside the window",
+      "current": "e4d6decc3d5ca29f",
+      "previous": "4469725338b290ad",
+      "window_s": 3600,
+      "started_at": 1000,
+      "now": 1500,
+      "revoked": [],
+      "accepted": [
+        "e4d6decc3d5ca29f",
+        "4469725338b290ad"
+      ],
+      "refused": [
+        "1301a075421472bc"
+      ],
+      "flags": 1,
+      "seconds_left": 3100
+    },
+    {
+      "name": "both valid on the first second",
+      "current": "e4d6decc3d5ca29f",
+      "previous": "4469725338b290ad",
+      "window_s": 3600,
+      "started_at": 1000,
+      "now": 1000,
+      "revoked": [],
+      "accepted": [
+        "e4d6decc3d5ca29f",
+        "4469725338b290ad"
+      ],
+      "refused": [
+        "1301a075421472bc"
+      ],
+      "flags": 1,
+      "seconds_left": 3600
+    },
+    {
+      "name": "both valid on the last second",
+      "current": "e4d6decc3d5ca29f",
+      "previous": "4469725338b290ad",
+      "window_s": 3600,
+      "started_at": 1000,
+      "now": 4599,
+      "revoked": [],
+      "accepted": [
+        "e4d6decc3d5ca29f",
+        "4469725338b290ad"
+      ],
+      "refused": [
+        "1301a075421472bc"
+      ],
+      "flags": 1,
+      "seconds_left": 1
+    },
+    {
+      "name": "the old key expires when the window ends",
+      "current": "e4d6decc3d5ca29f",
+      "previous": "4469725338b290ad",
+      "window_s": 3600,
+      "started_at": 1000,
+      "now": 4600,
+      "revoked": [],
+      "accepted": [
+        "e4d6decc3d5ca29f"
+      ],
+      "refused": [
+        "1301a075421472bc"
+      ],
+      "flags": 0,
+      "seconds_left": 4294967295
+    },
+    {
+      "name": "the old key stays expired long after",
+      "current": "e4d6decc3d5ca29f",
+      "previous": "4469725338b290ad",
+      "window_s": 3600,
+      "started_at": 1000,
+      "now": 1000000000,
+      "revoked": [],
+      "accepted": [
+        "e4d6decc3d5ca29f"
+      ],
+      "refused": [
+        "1301a075421472bc"
+      ],
+      "flags": 0,
+      "seconds_left": 4294967295
+    },
+    {
+      "name": "window of zero: only the current key",
+      "current": "e4d6decc3d5ca29f",
+      "previous": "4469725338b290ad",
+      "window_s": 0,
+      "started_at": 1000,
+      "now": 1000,
+      "revoked": [],
+      "accepted": [
+        "e4d6decc3d5ca29f"
+      ],
+      "refused": [
+        "1301a075421472bc"
+      ],
+      "flags": 0,
+      "seconds_left": 4294967295
+    },
+    {
+      "name": "clock before the start fails closed",
+      "current": "e4d6decc3d5ca29f",
+      "previous": "4469725338b290ad",
+      "window_s": 3600,
+      "started_at": 1000,
+      "now": 999,
+      "revoked": [],
+      "accepted": [
+        "e4d6decc3d5ca29f"
+      ],
+      "refused": [
+        "1301a075421472bc"
+      ],
+      "flags": 0,
+      "seconds_left": 4294967295
+    },
+    {
+      "name": "no previous key",
+      "current": "e4d6decc3d5ca29f",
+      "previous": null,
+      "window_s": 3600,
+      "started_at": 1000,
+      "now": 1500,
+      "revoked": [],
+      "accepted": [
+        "e4d6decc3d5ca29f"
+      ],
+      "refused": [
+        "1301a075421472bc"
+      ],
+      "flags": 0,
+      "seconds_left": 4294967295
+    },
+    {
+      "name": "the same fingerprint twice counts once",
+      "current": "e4d6decc3d5ca29f",
+      "previous": "e4d6decc3d5ca29f",
+      "window_s": 3600,
+      "started_at": 1000,
+      "now": 1500,
+      "revoked": [],
+      "accepted": [
+        "e4d6decc3d5ca29f"
+      ],
+      "refused": [
+        "1301a075421472bc"
+      ],
+      "flags": 0,
+      "seconds_left": 4294967295
+    },
+    {
+      "name": "a revoked previous key is refused inside the window",
+      "current": "e4d6decc3d5ca29f",
+      "previous": "4469725338b290ad",
+      "window_s": 3600,
+      "started_at": 1000,
+      "now": 1500,
+      "revoked": [
+        "4469725338b290ad"
+      ],
+      "accepted": [
+        "e4d6decc3d5ca29f"
+      ],
+      "refused": [
+        "1301a075421472bc"
+      ],
+      "flags": 0,
+      "seconds_left": 4294967295
+    },
+    {
+      "name": "a revoked current key leaves nothing trusted",
+      "current": "e4d6decc3d5ca29f",
+      "previous": "4469725338b290ad",
+      "window_s": 3600,
+      "started_at": 1000,
+      "now": 1500,
+      "revoked": [
+        "e4d6decc3d5ca29f"
+      ],
+      "accepted": [],
+      "refused": [
+        "1301a075421472bc"
+      ],
+      "flags": 2,
+      "seconds_left": 4294967295
+    },
+    {
+      "name": "a revoked current key outside the window leaves nothing",
+      "current": "e4d6decc3d5ca29f",
+      "previous": null,
+      "window_s": 0,
+      "started_at": 0,
+      "now": 5,
+      "revoked": [
+        "e4d6decc3d5ca29f"
+      ],
+      "accepted": [],
+      "refused": [
+        "1301a075421472bc"
+      ],
+      "flags": 2,
+      "seconds_left": 4294967295
+    }
+  ]
+}

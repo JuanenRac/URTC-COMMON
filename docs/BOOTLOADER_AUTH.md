@@ -14,6 +14,7 @@ Two things are missing from the bootloaders today, and they are designed togethe
 | Addressing by serial number (C) | `firmware_base/urtc_bl_select.h` |
 | Python references | `src/urtc_common/ed25519.py`, `image_auth.py`, `bl_select.py` |
 | Shared vectors | `conformance/ed25519_vectors.json`, `signed_image_vectors.json`, `bootloader_select_vectors.json` and the C tables in `generated/` |
+| Key rotation (two fingerprints in a window) | `src/urtc_common/key_rotation.py`, `conformance/key_rotation_vectors.json`, `tests/test_key_rotation.py` |
 | Tests | `tests/test_bootloader_auth.py`, `tests/c/test_bootloader_auth.c` |
 | Texts in eight languages | `spec/i18n/catalog/bootloader-auth.json` |
 
@@ -47,7 +48,7 @@ Rules:
 * **Valid** means the magic is right, the third word is the complement of the second, and the serial is neither `0` nor `0xFFFFFFFF`. A blank page (`0xFFFFFFFF` everywhere), a wrong magic or check, or an unusable serial all give the fold back; nothing is ever refused because of a damaged record.
 * **The unique ID does not change.** `UID` always answers the real 96-bit ID, so a programmed serial hides nothing from the duplicate check.
 * **Duplicates.** The host enumerates the serials, selects one and reads the three UID words. Two heads that share the selected serial answer one identifier with different words (the host sees two different payloads, or nothing at all because the bus destroyed the clashing frames after the selection was answered): `duplicate_suspected` in `bl_select.py` says so, and the host refuses to update and asks the user to disconnect one head. This covers two programmed heads with one serial, a programmed serial equal to the fold of another head, and a folded clash that nobody has remedied.
-* **Writing it** is a step of Studio (a setting of the head), not of the bootloader's update frames, and is not part of this design yet: only the reading side and the vectors exist.
+* **Writing it** is done ONLY by a separate production tool, by hand and with a confirmation. Studio, the flasher and the updater never write the serial and the bootloader's update frames cannot. That tool is not part of this design yet: only the reading side and the vectors exist.
 
 Vectors: the scenarios of `conformance/bootloader_select_vectors.json` cover a programmed serial (it wins over the fold; the fold's serial no longer selects), a record with a wrong check or magic, blank metadata, a serial of zero or all ones, and whole buses (`bus_scenarios`: serial present, absent, duplicated, fold against programmed).
 
@@ -142,6 +143,24 @@ The bootloader embeds one or two **public** keys: the current one and, ahead of 
 
 A key that must stop being trusted at once is retired the same way and the counter is raised in the same release so that images it signed cannot come back. The private key stays with whoever builds the release, never in a repository or in a tool shipped to users. The key identifier is what the tools already compare as the "signing key" fingerprint.
 
+### Rotation window: two fingerprints at once
+
+While a rotation is in progress a bootloader trusts the current key and the previous one, and says so. The window is a **configuration parameter** (`rotation_window_s`, in seconds, kept with the start of the rotation in the metadata); it is not a constant of the code and `0` means no overlap. Reference: `src/urtc_common/key_rotation.py`, vectors `conformance/key_rotation_vectors.json` (`python tools/make_key_rotation_vectors.py --check`).
+
+Announcement:
+
+* `0x7ED`: after the answer to `0x7F8`, one frame of 8 bytes for the current key and, only inside the window, a second one for the previous key. The current key always comes first, so a host that reads only the first frame sees what it sees today. Never more than two frames.
+* `0x7EB` status (answer to operation `05` of `0x7EA`, 7 bytes): `05`, number of announced keys (0 to 2), flags (`01` a previous key is still valid, `02` the current key is revoked), seconds left in the window (big-endian, `FFFFFFFF` when there is no window).
+
+Rules of acceptance:
+
+1. Inside `[started_at, started_at + window)` both fingerprints verify; the previous one stops verifying the second the window ends, and nothing renews it.
+2. Outside the window, with a window of zero, or when the clock reads earlier than the start (it fails closed), only the current fingerprint is valid.
+3. A fingerprint that is not announced is unknown and is refused (`unknown_key`). A fingerprint listed twice counts once.
+4. A revoked key is refused at once, window or not. If the current key is revoked nothing is trusted and no `0x7ED` frame is sent (a host reads "no data").
+5. The policy is untouched: `ed25519_only` stays `ed25519_only`, and a rotation never grants the HMAC path or any other fallback.
+6. A flashing tool compares the fingerprint of the image's key with every announced one: any match is a match; no frame is "no data", never a difference.
+
 ### Transition from the HMAC
 
 1. A bootloader with policy `either` and the Ed25519 key installs both kinds of image; releases carry both the HMAC and the Ed25519 record.
@@ -170,6 +189,6 @@ The C code is compiled with `-Wall -Wextra -Wconversion -Werror` and, where the 
 ## 4. Open points
 
 * **Writing the programmable serial** into the metadata (a Studio setting, with its own confirmation) and how the application learns it: the record and its reading are specified here; the writing is not.
-* **Which key a bootloader reports on `0x7ED` when it trusts two** (rotation): the design sends the first, current one; the tools compare the fingerprint of the image's key with it.
+* **[FIRMWARE] Rotation window in the bootloader (pending, needs a board):** the two `0x7ED` frames, the `0x7EB` status, the metadata fields (`rotation_window_s`, start) and the choice of the monotonic clock that measures the window (a bootloader has no real-time clock: accumulated powered time, or a time given by the host with the rotation command) are designed and held by the vectors, not built. The two new frame forms are not yet in `spec/can_protocol.json` (adding them regenerates the tables of every repository). The flasher, the web studio and the updater will show both fingerprints and the window when a bootloader sends them.
 * **Everything that needs a board:** the real flash and stack figures, the verification time, a streaming `sha256_flash_region` next to the existing HMAC code, the metadata fields for the policy and the floor, and the integration into the update state machine. None of it is started: the bootloaders are not touched.
 * **Signing a release** with an Ed25519 key is a step of the release machine (`firmware_signing.py` produces the HMAC today); the key is created by the owner and kept outside the repositories.
