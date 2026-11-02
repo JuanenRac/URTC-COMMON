@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The texts of the signing-key check:** the catalog carries, in the eight languages, the messages the flasher and the web studio show when the key a bootloader accepts differs from the key of the image.
+
 ## [0.1.7] - The header in front of a firmware image with four version components, a bus monitor that follows the nodes of a bus with several tool heads and a virtual board that can bridge to the twin of the bootloader
 
 - **A bus monitor can follow the nodes of a bus with several tool heads:** `urtc_common.node_monitor` says whose a frame is (the node is in the identifier of every frame of the extension, `0x420 + node` and the other ranges; a single-head frame belongs to the node whose status says it is selected, else to nobody), parses the node filters (`n3`, `N07`) and keeps frames per second and share of the bus for each node over a sliding window (`NodeBusStats`), with a text summary that has no word of a language. It sends nothing. The set `node_monitor` of `vendor_copy.py` carries it; the tester uses it.
