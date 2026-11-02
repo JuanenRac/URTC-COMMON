@@ -4,6 +4,7 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The README generator writes a Screenshots section:** a repository that lists its pictures in `docs/screenshots.json` (a short name and a caption in the eight languages for each one, at most eight pictures of 400 KB) gets the section right after Architecture in its eight README files, and `tools/screenshots_check.py` checks the manifest, the files, their weight, the file tree and the README (the CI of those repositories runs it).
 - **The texts of the signing-key check:** the catalog carries, in the eight languages, the messages the flasher and the web studio show when the key a bootloader accepts differs from the key of the image.
 
 ## [0.1.7] - The header in front of a firmware image with four version components, a bus monitor that follows the nodes of a bus with several tool heads and a virtual board that can bridge to the twin of the bootloader

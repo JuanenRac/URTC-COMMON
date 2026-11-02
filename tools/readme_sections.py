@@ -10,6 +10,9 @@
     python tools/readme_sections.py check [--base FOLDER]          # every listed repository next to this one: the sections are there and equal
     python tools/readme_sections.py apply URTC-FLASHER [--base FOLDER]   # write them in the eight README files of one repository
 
+A repository that has ``docs/screenshots.json`` also gets its Screenshots section (a picture and its caption in the eight languages, right after Architecture),
+written by ``tools/screenshots_check.py`` from that file; see there for the format.
+
 Each section sits between two marker comments, ``<!-- urtc-section:ID -->`` and ``<!-- /urtc-section:ID -->``, in its place in the universal layout of the
 README: Project status right after At a glance, and the parts that belong to Architecture, Features or Quick start at the end of that section, as a level-three
 heading. A README that does not have that section yet gets the block immediately before the heading of the license (the first ``## 📜``), as before. The
@@ -24,6 +27,9 @@ import json
 import re
 import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import screenshots_check  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 SPEC = ROOT / "spec" / "readme" / "sections.json"
@@ -155,24 +161,29 @@ def render(text: str, sections: list[dict], language: str, anchors: set[str] | N
     return cleaned
 
 
-def sections_of(spec: dict, repo: str) -> list[dict]:
-    return [section for section in spec["sections"] if repo in section["repos"]]
+def sections_of(spec: dict, repo: str, base: Path | None = None) -> list[dict]:
+    """The shared sections of a repository, and (written from its docs/screenshots.json, after Architecture) its Screenshots section when it has pictures."""
+    wanted = [section for section in spec["sections"] if repo in section["repos"]]
+    shots = screenshots_check.section("english", (base or ROOT.parent) / repo)
+    return wanted + [shots] if shots else wanted
 
 
-def repos_of(spec: dict) -> list[str]:
-    return sorted({repo for section in spec["sections"] for repo in section["repos"]})
+def repos_of(spec: dict, base: Path | None = None) -> list[str]:
+    found = {repo for section in spec["sections"] for repo in section["repos"]}
+    found.update(path.name for path in (base or ROOT.parent).glob("URTC-*") if screenshots_check.has(path))
+    return sorted(found)
 
 
 def differences(spec: dict, base: Path) -> tuple[list[str], list[str]]:
     """(files whose sections are missing or differ, repositories not found next to this one)."""
     found: list[str] = []
     missing: list[str] = []
-    for repo in repos_of(spec):
+    for repo in repos_of(spec, base):
         folder = base / repo
         if not folder.is_dir():
             missing.append(repo)
             continue
-        wanted = sections_of(spec, repo)
+        wanted = sections_of(spec, repo, base)
         english = folder / FILES["english"]
         anchors = anchors_of(english.read_bytes().decode("utf-8")) if english.is_file() else set()
         for language, name in FILES.items():
@@ -193,7 +204,7 @@ def differences(spec: dict, base: Path) -> tuple[list[str], list[str]]:
 
 def apply(spec: dict, repo: str, base: Path) -> int:
     folder = base / repo
-    wanted = sections_of(spec, repo)
+    wanted = sections_of(spec, repo, base)
     if not wanted:
         raise SystemExit(f"{repo} carries no shared section")
     changed = 0
