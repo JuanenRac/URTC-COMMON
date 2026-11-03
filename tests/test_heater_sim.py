@@ -100,3 +100,36 @@ def test_board_with_a_system_error_does_not_heat():
     board = VirtualBoard(tool_id=protocol.TOOL_SOLDERING_IRON, system_error=True)
     board.handle(*protocol.encode_solder_setpoint(280))
     assert board.advance(1.0) == []
+
+
+def test_server_sends_the_telemetry_in_real_time():
+    from test_virtual_board import SERIAL_MODULE   # the same TCP serial stand-in the other server tests use
+    from urtc_common import transports
+    from urtc_common.virtual_board import VirtualBoardServer
+    import time
+
+    fast = {"heat_capacity_j_per_k": 0.05, "telemetry_period_ms": 60}   # a tiny iron so a fraction of a second is enough
+    board = VirtualBoard(tool_id=protocol.TOOL_SOLDERING_IRON, heater_config=fast)
+    with VirtualBoardServer(board=board) as server:
+        port = transports.SLCAN(server.url, serial_module=SERIAL_MODULE, settle_seconds=0)
+        try:
+            port.open_channel()
+            seen = []
+            deadline = time.monotonic() + 5.0
+            while time.monotonic() < deadline and len(seen) < 3:
+                port.send_frame(*protocol.encode_solder_setpoint(150))
+                frame = port.read_frame(0.05)
+                if frame is not None and frame[0] == protocol.CAN_ID_SOLDER_TELEMETRY:
+                    seen.append(int.from_bytes(frame[1], "big"))
+        finally:
+            port.close()
+    assert len(seen) >= 3
+    assert seen[-1] >= seen[0]
+
+
+def test_a_board_in_its_bootloader_does_not_heat():
+    board = VirtualBoard(tool_id=protocol.TOOL_SOLDERING_IRON)
+    board.handle(*protocol.encode_solder_setpoint(250))
+    board.enter_bootloader()
+    assert board.heater is None
+    assert board.advance(1.0) == []
