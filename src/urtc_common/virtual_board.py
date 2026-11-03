@@ -53,6 +53,7 @@ from typing import Any, Callable, Iterable
 
 from . import protocol
 from .framing import FrameError
+from .heater_sim import SolderingIronModel
 from .slcan import decode_line, encode_line
 from .transports import MockCAN
 
@@ -81,7 +82,7 @@ class VirtualBoard:
     def __init__(self, hardware_id: int = protocol.HARDWARE_ID_MAIN, version: tuple[int, int] = (0, 4), patch: int | None = 0,
                  accepts_patch: bool = False, tool_id: int = 0, system_error: bool = False, can_error: bool = False,
                  booting: bool = False, thermal_fault: int | None = 0, reset_cause: int | None = 0,
-                 bootloader: bool = False, **bootloader_options) -> None:
+                 bootloader: bool = False, heater_config: dict | None = None, **bootloader_options) -> None:
         self.hardware_id = hardware_id
         self.version = version
         self.patch = patch
@@ -100,6 +101,13 @@ class VirtualBoard:
         self.bootloader_options.setdefault("accepts_patch", accepts_patch)
         self._bootloader = MockCAN(**self.bootloader_options)
         self.received: list[Frame] = []
+        # The soldering iron loop is built on the first setpoint: a board that never gets one carries no model.
+        self.heater: SolderingIronModel | None = None
+        self.heater_config = heater_config
+
+    def advance(self, seconds: float) -> list[Frame]:
+        """Let simulated time pass: the telemetry the heater loop sends meanwhile (none when it never got a setpoint)."""
+        return self.heater.advance(seconds) if self.heater is not None else []
 
     # ---- the application -------------------------------------------------------------------------
     def _version_answer(self) -> list[Frame]:
@@ -118,6 +126,13 @@ class VirtualBoard:
             return self._version_answer()
         if can_id == protocol.CAN_ID_QUERY_ACTIVE_TOOL:
             return [self._quick_state()]
+        if can_id == protocol.CAN_ID_SOLDER_SETPOINT and self.tool_id == protocol.TOOL_SOLDERING_IRON and not self.system_error:
+            fields = protocol.decode_solder_setpoint(data)
+            if fields is not None:
+                if self.heater is None:
+                    self.heater = SolderingIronModel(self.heater_config)
+                self.heater.set_target(fields["setpoint_c"])
+            return []
         if can_id == protocol.CAN_ID_ENTER_BOOTLOADER and data == _magic("enter_bootloader"):
             self.enter_bootloader()
             # The bootloader opens its listening window with its first heartbeat: status "listening", progress not applicable.
