@@ -32,6 +32,10 @@ The signature of a release (HMAC-SHA256) covers bytes 0 to 27 of the header foll
 * `src/urtc_common/image_header.py`: the Python reference (pack, parse, verify, sign), set `image_header`.
 * `conformance/image_header_vectors.json` and `generated/image_header_vectors.h`: the shared vectors, written by `python tools/make_image_header_vectors.py` (`--check` fails when they are out of date); the C header and the reference are both held to them in `tests/`.
 
+## Stamping a release image
+
+`python tools/stamp_image.py stamp FILE.bin --hardware main|slave|NUMBER [--version MAJOR.MINOR.PATCH[.BUILD]]` writes `FILE.urimg`: the header followed by the unchanged binary, the same bytes every time, with the version read from the `_vX.Y.Z` part of the file name when `--version` is not given. `python tools/stamp_image.py check FILE.urimg` verifies a stamped image and says why it fails. This is a step after the build and needs no change to the linker script; the flashed layout is untouched.
+
 ## What is not done yet
 
-Nothing puts the header in an image. That is a change to the linker script and the post-build step of each firmware and to the bootloaders that would read it, followed by a build and a flash on the bench. The version frame on the bus (`0x7F9`) still carries three components; a frame with the fourth is a change of the specification and of the bootloaders.
+The flashed image itself does not carry the header: that is a change to the linker script of each firmware and to the bootloaders that would read it, followed by a build and a flash on the bench. The version frame on the bus (`0x7F9`) still carries three components; a frame with the fourth is a change of the specification and of the bootloaders.
