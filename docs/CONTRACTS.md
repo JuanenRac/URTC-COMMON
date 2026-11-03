@@ -20,7 +20,7 @@ The CAN bus of the tool head is the one contract that crosses the firmware, two 
 | Magic payloads | `magic_payloads` | The four 4-byte values that make a destructive or one-shot command obeyed: enter the bootloader, authorise one downgrade, erase the saved state, reset the solder feeder position |
 | Enumerations | `enums` | Tool profiles (25 plus the invalid marker), bootloader status, verify-fail reason, thermal fault, reset-cause flags, expansion board type, sensor variant and the small value sets of the commands |
 | Constants | `constants` | The bitrate, the HardwareIDs, the flash page, the patch encoding, the timing every host must respect (watchdogs, grace window, acknowledgement timeout) and the limits the hosts offer |
-| Registers | `registers` | The 25 registers of the expansion slave over its I2C link bus (bootloader and application), each tied to the CAN identifier that relays it |
+| Registers | `registers` | The 27 registers of the expansion slave over its I2C link bus (bootloader and application), each tied to the CAN identifier that relays it |
 | Procedures | `procedures` | The version query with its grace window, the minor field of the end-of-update frame, the order of versions |
 | SLCAN | `slcan` | The subset of SLCAN that is relied on, and the bitrate codes |
 

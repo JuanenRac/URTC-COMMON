@@ -425,10 +425,8 @@ def test_main_refuses_the_bootloader_twin_without_a_checkout(capsys):
 
 def test_the_real_bootloader_takes_a_signed_update_through_the_bridge(sibling):
     """Needs the URTC repository next to this one and a host C compiler (WSL on Windows): builds tests/virtual_bootloader.c and flashes through it over TCP."""
-    import hashlib
-    import hmac
-    import re
     import zlib
+    from urtc_common import image_header as ih, image_sig as sg
     from urtc_common.virtual_board import FirmwareBoardError, firmware_board_command
 
     repo = sibling("URTC/tools/fuzz_virtual_board.py").parents[1]
@@ -436,18 +434,18 @@ def test_the_real_bootloader_takes_a_signed_update_through_the_bridge(sibling):
         command = firmware_board_command(repo, bootloader=True)
     except FirmwareBoardError as exc:
         pytest.skip(str(exc))
-    source = (repo / "src" / "F303-master" / "boot" / "bootloader_crypto.c").read_text(encoding="utf-8")
-    block = re.search(r"#else.*?const uint8_t HMAC_KEY\[32\] = \{(.*?)\};", source, re.S)
-    key = bytes(int(x, 16) for x in re.findall(r"0x([0-9A-Fa-f]{2})", block.group(1)))
+    # The bootloader of the main board holds no key: it verifies an Ed25519 record against its trust table (the bench build trusts the public development seed).
     image = bytes((i * 13 + 5) & 0xFF for i in range(2100))
-    signature = hmac.new(key, image, hashlib.sha256).digest()
+    header28 = ih.make_header(image, 0x0303CC01, (0, 3, 0, 0), signed=False)[:28]
+    record = sg.decode_imgsig(sg.sign_image(sg.DEV_SEED, header28, image, 1))
+    padded = record + bytes(11 * 7 - len(record))
     with VirtualBoardServer(command=command) as server:
         port = transports.SLCAN(server.url, serial_module=SERIAL_MODULE, settle_seconds=0)
         try:
             port.open_channel()
             port.send_frame(0x7F1, len(image).to_bytes(4, "big") + (0x0303CC01).to_bytes(4, "big"))
-            for i in range(4):
-                port.send_frame(0x7F7, signature[i * 8:(i + 1) * 8])
+            for i in range(11):
+                port.send_frame(0x7EC, bytes([i]) + padded[i * 7:(i + 1) * 7])
             for offset in range(0, len(image), 8):
                 port.send_frame(0x7F2, image[offset:offset + 8])
             port.send_frame(0x7F4, (zlib.crc32(image) & 0xFFFFFFFF).to_bytes(4, "big") + (0).to_bytes(2, "big") + (3).to_bytes(2, "big"))
@@ -460,5 +458,5 @@ def test_the_real_bootloader_takes_a_signed_update_through_the_bridge(sibling):
         finally:
             port.close()
     statuses = [f[1][0] for f in seen if f[0] == 0x7F5 and f[1]]
-    assert statuses[-1] == 4, statuses   # VERIFY_OK: the real bootloader checked the CRC and the signature and copied the image
+    assert statuses[-1] == 4, statuses   # VERIFY_OK: the real bootloader checked the CRC and the Ed25519 record and copied the image
     assert [f for f in seen if f[0] == 0x7F3]

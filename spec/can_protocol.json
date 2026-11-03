@@ -1286,7 +1286,21 @@
           "name": "CONFIRM",
           "access": "write",
           "length": 32,
-          "title": "The master's confirmation: SHA-256 of the 76-byte message of urtc_slave_confirm.h; accepted only in AWAIT_CONFIRM"
+          "title": "The master's confirmation: SHA-256 of the 80-byte message of urtc_slave_confirm.h (it includes the rollback counter of the record); accepted only in AWAIT_CONFIRM"
+        },
+        {
+          "id": 11,
+          "name": "COUNTER_FLOOR",
+          "access": "read",
+          "length": 4,
+          "title": "The rollback floor the slave keeps (big-endian): an image whose signed counter is below it is refused. The master reads it before it verifies"
+        },
+        {
+          "id": 12,
+          "name": "RECORD_COUNTER",
+          "access": "write",
+          "length": 4,
+          "title": "The signed counter of the record the master verified for this session (big-endian), sent before the END frame; without it the slave never accepts the confirmation"
         }
       ]
     },
@@ -5934,11 +5948,14 @@
       ],
       "implemented_by": {
         "firmware": true,
-        "flasher": false,
+        "flasher": true,
         "tester": false,
-        "web_studio": false
+        "web_studio": true
       },
-      "client_names": {}
+      "client_names": {
+        "flasher": "CAN_ID_SLAVE_RECORD_CHUNK",
+        "web_studio": "CAN_ID_SLAVE_RECORD_CHUNK"
+      }
     },
     {
       "id": "0x220",
@@ -7299,12 +7316,15 @@
         "Sent to the selected (or only) bootloader after START_UPDATE, next to the HMAC chunks. The record is described in the design of the bootloader authentication."
       ],
       "implemented_by": {
-        "firmware": false,
-        "flasher": false,
+        "firmware": true,
+        "flasher": true,
         "tester": false,
-        "web_studio": false
+        "web_studio": true
       },
-      "client_names": {}
+      "client_names": {
+        "flasher": "CAN_ID_BOOTLOADER_SIGNATURE_CHUNK",
+        "web_studio": "CAN_ID_BOOTLOADER_SIGNATURE_CHUNK"
+      }
     },
     {
       "id": "0x7ED",
@@ -7347,7 +7367,7 @@
         "With several heads, only the selected one answers 0x7F8 and therefore only its key identifier arrives."
       ],
       "implemented_by": {
-        "firmware": false,
+        "firmware": true,
         "flasher": true,
         "tester": false,
         "web_studio": true

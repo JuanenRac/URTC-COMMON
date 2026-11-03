@@ -141,3 +141,29 @@ def verify_image(imgsig_text: str, table: list[tuple[bytes, int]], hardware_id: 
 
 def public_of(seed: bytes) -> bytes:
     return ed25519.public_key(seed)
+
+
+# ---- the confirmation of the master to the expansion slave bootloader (URTC firmware: src/common/urtc_slave_confirm.h) ------------------------------
+SLAVE_CONFIRM_DOMAIN = b"URTC-SLV-CONF-V2"
+SLAVE_CONFIRM_MESSAGE_SIZE = 80
+
+
+def slave_confirm_message(nonce: bytes, image_sha256: bytes, hardware_id: int, version_major: int, version_minor_field: int, size: int, counter: int) -> bytes:
+    """The 80-byte message both sides build: domain (16) | nonce (16) | image SHA-256 (32) | hardware id (4) | major (2) | minor field (2) | size (4) | counter (4).
+
+    The slave bootloader holds no key, so the confirmation is the plain SHA-256 of this message (``slave_confirm_tag``): it binds the master's check to ONE update
+    session (the nonce the slave published), ONE image and the signed rollback counter of its record. All integers are big-endian.
+    """
+    if len(nonce) != 16 or len(image_sha256) != 32:
+        raise TrustError("the nonce is 16 bytes and the image digest 32")
+    for value, bits in ((hardware_id, 32), (version_major, 16), (version_minor_field, 16), (size, 32), (counter, 32)):
+        if not 0 <= value < 1 << bits:
+            raise TrustError("a field of the confirmation is out of range")
+    message = (SLAVE_CONFIRM_DOMAIN + nonce + image_sha256 + struct.pack(">IHHII", hardware_id, version_major, version_minor_field, size, counter))
+    assert len(message) == SLAVE_CONFIRM_MESSAGE_SIZE
+    return message
+
+
+def slave_confirm_tag(*args: int | bytes) -> bytes:
+    """The 32-byte confirmation written to ``REG_CONFIRM``: SHA-256 of ``slave_confirm_message(*args)``."""
+    return hashlib.sha256(slave_confirm_message(*args)).digest()  # type: ignore[arg-type]

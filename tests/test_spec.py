@@ -65,7 +65,7 @@ def test_names_are_unique(spec):
 def test_statistics_the_documents_quote(spec):
     assert len(spec["messages"]) == 101
     assert len(spec["tools"]) == 26 and [t["id"] for t in spec["tools"]] == list(range(26))
-    assert sum(len(b["entries"]) for b in spec["registers"].values()) == 25
+    assert sum(len(b["entries"]) for b in spec["registers"].values()) == 27
     assert len(spec["magic_payloads"]) == 4
 
 
@@ -216,7 +216,7 @@ def test_known_gaps_are_recorded_not_papered_over(spec):
 
 # The block of the addressing of a bootloader, the signature chunks and the key identifier is designed and tested on the host (portable C in firmware_base/):
 # no bootloader sends or obeys it yet, and the specification does not say it does.
-DESIGNED_FOR_THE_BOOTLOADER = {"0x7EA", "0x7EB", "0x7EC", "0x7ED"}
+DESIGNED_FOR_THE_BOOTLOADER = {"0x7EA", "0x7EB"}   # 0x7EC and 0x7ED are defined by the main bootloader since it verifies Ed25519 records
 
 
 def test_every_identifier_is_in_the_firmware_except_the_block_designed_for_the_bootloader(spec):

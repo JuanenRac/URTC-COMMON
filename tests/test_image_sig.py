@@ -91,3 +91,21 @@ def test_an_ephemeral_key_signs_and_only_its_own_table_verifies():
 
 def test_the_development_seed_is_public_and_distinct_from_the_test_labels():
     assert len(sg.DEV_SEED) == 32 and sg.DEV_SEED != maker.seed("current")
+
+
+def test_the_confirmation_of_the_slave_bootloader_matches_the_vector_the_firmware_holds():
+    """The same inputs and the same expected tag are written in the firmware repository's host test (tests/test_slaveboot_update.c)."""
+    nonce = bytes(range(16))
+    digest = __import__("hashlib").sha256(b"abc").digest()
+    message = sg.slave_confirm_message(nonce, digest, 0x0303CB01, 0, 0x8105, 1500, 7)
+    assert len(message) == sg.SLAVE_CONFIRM_MESSAGE_SIZE == 80
+    assert message.startswith(b"URTC-SLV-CONF-V2") and message[-4:] == bytes([0, 0, 0, 7])
+    assert sg.slave_confirm_tag(nonce, digest, 0x0303CB01, 0, 0x8105, 1500, 7).hex() == "a637032764ca876c2bba6ca32e53ec8dab464342a9be65d52482a40d821f957f"
+    # every field changes the tag, the counter included
+    base = sg.slave_confirm_tag(nonce, digest, 0x0303CB01, 0, 0x8105, 1500, 7)
+    assert sg.slave_confirm_tag(nonce, digest, 0x0303CB01, 0, 0x8105, 1500, 8) != base
+    assert sg.slave_confirm_tag(nonce[::-1], digest, 0x0303CB01, 0, 0x8105, 1500, 7) != base
+    with pytest.raises(sg.TrustError):
+        sg.slave_confirm_message(nonce, digest, 0x0303CB01, 0, 0x8105, 1500, 1 << 32)
+    with pytest.raises(sg.TrustError):
+        sg.slave_confirm_message(nonce[:15], digest, 0x0303CB01, 0, 0x8105, 1500, 7)
