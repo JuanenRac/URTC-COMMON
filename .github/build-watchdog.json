@@ -1,0 +1,4 @@
+{
+  "workflow": "release-files-build.yml",
+  "max_minutes": 120
+}
