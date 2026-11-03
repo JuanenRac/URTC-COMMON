@@ -43,12 +43,16 @@ def test_validation_reports_a_missing_language_a_repeated_identifier_and_a_refer
     assert any("emoji" in p for p in rs.validate({"sections": [{**base, "emoji": ""}]}))
 
 
+# The shared sections of the specification alone: a folder with no repository in it, so the screenshots of a sibling never enter these tests.
+ALONE = Path(__file__).parent / "_no_siblings_here"
+
+
 README = "# Title\n\nText.\n\n## 🔗 Related\n\nLinks.\n\n## 📜 LICENSE\n\nGPL.\n"
 
 
 def test_the_sections_go_before_the_license_heading_once_and_nothing_else_changes():
     spec = rs.load()
-    wanted = [s for s in rs.sections_of(spec, "URTC-FLASHER") if not s["id"].startswith("status_")]
+    wanted = [s for s in rs.sections_of(spec, "URTC-FLASHER", ALONE) if not s["id"].startswith("status_")]
     once = rs.render(README, wanted, "english")
     assert once.startswith("# Title\n\nText.\n\n## 🔗 Related\n\nLinks.\n\n<!-- urtc-section:updates -->\n## 🔄 How it updates")
     assert once.endswith("<!-- /urtc-section:compatibility -->\n\n## 📜 LICENSE\n\nGPL.\n")
@@ -57,7 +61,7 @@ def test_the_sections_go_before_the_license_heading_once_and_nothing_else_change
 
 
 def test_an_edited_or_moved_section_is_put_back_and_the_line_endings_of_the_file_are_kept():
-    wanted = rs.sections_of(rs.load(), "URTC-TESTER")
+    wanted = rs.sections_of(rs.load(), "URTC-TESTER", ALONE)
     once = rs.render(README, wanted, "spanish")
     edited = once.replace("Cómo se actualiza", "Otra cosa")
     assert rs.render(edited, wanted, "spanish") == once
@@ -76,8 +80,8 @@ UNIVERSAL = ("# Title\n\n## 📋 At a glance\n\n| | |\n|---|---|\n\n## 🎯 Over
 
 
 def test_in_a_readme_with_the_universal_sections_the_blocks_go_to_their_place():
-    wanted = rs.sections_of(rs.load(), "URTC-FLASHER")
-    status = rs.sections_of(rs.load(), "URTC-FLASHER")[-1]
+    wanted = rs.sections_of(rs.load(), "URTC-FLASHER", ALONE)
+    status = rs.sections_of(rs.load(), "URTC-FLASHER", ALONE)[-1]
     assert status["id"] == "status_flasher"
     text = rs.render(UNIVERSAL, wanted, "english")
     order, fence = [], False
@@ -99,7 +103,7 @@ def test_in_a_readme_with_the_universal_sections_the_blocks_go_to_their_place():
 
 def test_a_roadmap_that_uses_the_same_icon_is_not_taken_for_quick_start():
     old = "# T\n\n## 📋 At a glance\n\nx\n\n## 🚀 ROADMAP\n\nlater\n\n## 📜 LICENSE\n\nGPL.\n"
-    text = rs.render(old, rs.sections_of(rs.load(), "URTC-UPDATER"), "english")
+    text = rs.render(old, rs.sections_of(rs.load(), "URTC-UPDATER", ALONE), "english")
     assert "### Requirements & compatibility" not in text and "## 🧩 Compatibility" in text   # kept where it was, before the license
     assert text.index("## 🚦 Project status") < text.index("## 🚀 ROADMAP")                       # but the status is the second section
 
