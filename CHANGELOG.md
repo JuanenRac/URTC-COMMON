@@ -6,15 +6,12 @@ All notable changes to this project are documented here.
 
 - **Property-based tests of the security validators:** `tests/test_property_validators.py` (22 tests, seeded generated cases, no new dependency) checks the rotation of the signing key (an unknown fingerprint is never accepted, the previous key expires exactly when the window ends, a window of zero or a clock before the start accept only the current key, a revoked key is never accepted), the image authentication (under `ed25519_only` nothing but a valid signature of a trusted key installs, whatever the HMAC says and whatever the record holds; a signature does not move to another image, counter or hardware; the rollback rules hold for any floor), and the limits of the header and frame parsers. A local mutation run killed 165 of 188 mutants of `key_rotation.py` and `image_auth.py` the first time and 183 after the tests it pointed to were added; the method and the figures are in `docs/TESTING_STRATEGY.md`. The mutation run is not part of the CI.
 - **The test count in the "At a glance" table of the README is the real one:** the number was counted by collecting the tests of the suite and written into the eight READMEs.
+
 ## [0.1.9] - The signing key can be announced as two fingerprints at once during a rotation window that is a parameter, with a reference rule, shared conformance vectors and a design that leaves the programmable serial to a separate production tool
 
 - **Rotation of the signing key with two fingerprints at once:** `src/urtc_common/key_rotation.py` defines what a bootloader announces and accepts while a key is being replaced: the current fingerprint and, only inside a window, the previous one (two `0x7ED` frames, the current one first, and a status on `0x7EB` with the count, the flags and the seconds left). The window is a configuration parameter (`rotation_window_s`), not a constant; a window of zero, an expired window, a clock before the start, a revoked key and an unknown fingerprint are all refused, a repeated fingerprint counts once, and the policy `ed25519_only` is never relaxed.
 - **Vectors and tests for the rotation window:** `conformance/key_rotation_vectors.json` (written by `tools/make_key_rotation_vectors.py`, `--check` fails when it is out of date) and `tests/test_key_rotation.py` hold the reference to hand-written expectations, including the limit cases, and check that an image signed by an expired key does not install under any policy.
 - **The design says who writes the programmable serial:** `docs/BOOTLOADER_AUTH.md` states that the serial is written only by a separate production tool, by hand and with a confirmation, never by the studio, the flasher or the updater, and lists the bootloader side of the rotation window as pending until a board is available.
-
-## [0.1.9]
-
-- Build version synchronized with `urtc.project.json` and the repository-native version source.
 
 ## [0.1.8] - The identifiers 0x7EA to 0x7ED for the selection of a tool head by serial number, the signed record and the fingerprint of the key, an Ed25519 verifier for the bootloader with shared vectors and a programmable serial that takes the place of the folded chip identifier
 
@@ -34,10 +31,6 @@ All notable changes to this project are documented here.
 - **The strict policy is the default of the first bootloader of the transition:** `ed25519_only` (value `0`, fails closed) is what `URTC_AUTH_DEFAULT_POLICY` and `image_auth.POLICY_DEFAULT` name, and the design and the tests say so; `either` and `hmac_only` remain explicit choices.
 - **Texts for the programmable serial and for a bootloader that publishes no key:** the catalogs gain, in the eight languages, "serial number (programmed)", "serial number (from the unique ID of the chip)" and the log line of the flasher and the web studio that says the key is not compared when the bootloader does not publish it.
 
-## [0.1.8]
-
-- Build version synchronized with `urtc.project.json` and the repository-native version source.
-
 ## [0.1.7] - The header in front of a firmware image with four version components, a bus monitor that follows the nodes of a bus with several tool heads and a virtual board that can bridge to the twin of the bootloader
 
 - **A bus monitor can follow the nodes of a bus with several tool heads:** `urtc_common.node_monitor` says whose a frame is (the node is in the identifier of every frame of the extension, `0x420 + node` and the other ranges; a single-head frame belongs to the node whose status says it is selected, else to nobody), parses the node filters (`n3`, `N07`) and keeps frames per second and share of the bus for each node over a sliding window (`NodeBusStats`), with a text summary that has no word of a language. It sends nothing. The set `node_monitor` of `vendor_copy.py` carries it; the tester uses it.
@@ -47,27 +40,15 @@ All notable changes to this project are documented here.
 - **The virtual board can also bridge to the twin of the bootloader:** `urtc-virtual-board --firmware-repo DIR --firmware-bootloader` builds `tests/virtual_bootloader.c` of the URTC repository through its `tools/bootloader_twin.py` (inside WSL on Windows) and bridges to it, so the flasher, the tester and the gateway can talk to the real C of the master's bootloader: its listening window, signature and CRC checks, flash and reset. `firmware_board_command(..., bootloader=True)` returns the command; a test flashes a signed image through it over TCP and sees the bootloader accept it.
 - **The virtual board can run the firmware's own receive path without any manual build:** `urtc-virtual-board --firmware-repo DIR` (`DIR` is a checkout of the URTC repository) asks the builder of that repository to compile `tests/virtual_board.c` (inside WSL on Windows, where its fake flash needs a 64-bit Linux), starts it with the tool profile of `--tool` and the optional features of `--features`, and bridges the SLCAN port to it exactly as `--exec` does. The tests cover the command it builds and every way the build can fail, and one test runs the real firmware board over TCP when the URTC repository and a host C compiler are there.
 
-## [0.1.7]
-
-- Build version synchronized with `urtc.project.json` and the repository-native version source.
-
 ## [0.1.6] - A test result can be unknown, in the evidence record, the history and the report of the eight languages
 
 - **A result can be "unknown":** the evidence record gains the outcome `unknown` (the evidence cannot say, for instance a frame that arrived but cannot be read or a tool that has nothing to measure), next to `pass`, `fail`, `error` and `skipped`; the schema, the document of the format, the filter and the counts of the history and the report know it, and its word is in the eight languages (Portuguese of Portugal).
-
-## [0.1.6]
-
-- Build version synchronized with `urtc.project.json` and the repository-native version source.
 
 ## [0.1.5] - One evidence file can be checked on its own, two hostile inputs no longer end in an exception and the parsers have deterministic property tests
 
 - **One evidence file can be checked on its own:** `evidence_history.load_file(path)` reads the records of one `.json` or `.jsonl` file and checks them as a folder is checked (the programs use it for `--verify FILE`).
 - **Two hostile inputs no longer end in an exception:** an evidence file and a bus scenario nested thousands of levels deep are refused with their own message (the depth the interpreter allows differs between versions and platforms).
 - **Deterministic property tests of the parsers:** seeded noise and mutated valid inputs hold that the evidence checker, the signature check, the trust store, the bus scenario and the adapter line reader never raise, never accept what they should refuse, and that what they accept round-trips.
-
-## [0.1.5]
-
-- Build version synchronized with `urtc.project.json` and the repository-native version source.
 
 ## [0.1.4] - The PDF report prints the common Chinese and Japanese characters of both levels, the evidence signature can be read against a store of trusted public keys, the history shows who signed and the Qt files of the shared windows type-check
 
@@ -77,19 +58,11 @@ All notable changes to this project are documented here.
 - **A trust store of public keys for evidence signatures:** `record_signing.trust_store_from_config` reads `trusted_keys` (alias to public key in hexadecimal, public keys only; an entry that is not one is left out and named without its value), and `evidence_state` gains two states for a good signature: `trusted` (the key is in the store, the alias says whose) and `unknown_key` (it is not); a public key given explicitly still wins over the store, a signature that fails is `invalid` whatever the store says, and an empty store is no store. The history and the report say "Signed by <alias>" or "Valid signature, unknown key" in the eight languages (Portuguese of Portugal), the summary counts the new states, and the History window gains a Signature column (the Qt object takes the store and an explicit key). `record_signing.signing_settings` reads the `sign_evidence` switch the programs share (on only when exactly `true`). The slow check of a signature is made once per record.
 - **The texts of the tester** gain the label of the switch that signs its evidence in the Qt interface, in the eight languages.
 
-## [0.1.4]
-
-- Build version synchronized with `urtc.project.json` and the repository-native version source.
-
 ## [0.1.3] - Evidence records can carry an Ed25519 signature that the history and the report show, the font subsets of the PDF report cover the new texts and the trace viewer of the web studio has its texts in the eight languages
 
 - **Evidence records can carry an Ed25519 signature:** `urtc-evidence/1` has an optional `signature` block (algorithm, key id, public key and signature) made over `evidence_sha256`, outside the digest, so a signed record keeps the digest it had and an unsigned one is still valid. `record_signing.sign_evidence` signs only a record that is valid, `verify_evidence` and `evidence_state` answer `unsigned`, `valid`, `other_key` (a good signature, but not by the public key the reader trusts) or `invalid`, and a malformed block makes the record not valid. The history lists the state of each signature and its JSON carries it; the HTML, text and PDF report show it for every record (a summary line, a column, a field, and a banner for a signature that does not match), in the eight languages (Portuguese of Portugal), and say what a signature proves and what it does not. A copy of the program that has no signing module says "not checked", never "valid". The seed of the key is never printed.
 - **The font subsets of the PDF report were regenerated** from the pinned Noto Sans CJK sources so that the new Chinese and Japanese texts are inside them.
 - **The texts of the web studio for the CAN trace viewer** gain the keys of the virtual table (keyboard help, row announcement, sort buttons), the new formats (candump, JSON lines) and the reasons a line is refused, and the signature states of the evidence list, in the eight languages.
-
-## [0.1.3]
-
-- Build version synchronized with `urtc.project.json` and the repository-native version source.
 
 ## [0.1.2] - The reply of the tool rack gets its own CAN identifier, the evidence report prints Chinese and Japanese, the history tells the files that are not evidence from the evidence and the simulated bus runs scenarios
 
@@ -100,10 +73,6 @@ All notable changes to this project are documented here.
 - **A report of the evidence of a folder, in HTML and PDF:** `evidence_report.py` (texts in `evidence_report_strings.py`, eight languages, Portuguese of Portugal) writes the `urtc-evidence/1` records of a folder as one self-contained HTML page or a PDF it builds itself: a summary, a row and a section per record, the result of checking each one, and a clear SIMULATED, REPLAY OF A TRACE, REAL ADAPTER or NOT STATED mark. A record that fails its check is shown as NOT VALID with the reason, never left out; every text of a record is escaped; the same records give the same bytes (no clock is read). The History window has a Report button that writes both files in the folder. `docs/EVIDENCE.md` describes it, and `tools/vendor_copy.py` has the set `report` (and `history_qt` includes it).
 - **Scenarios for the simulated bus (`urtc-scenario/1`):** `bus_scenario.py` describes the faults of a CAN bus in a JSON file and applies them to any simulated transport (`FaultyBus`): frames lost, repeated, reordered, delayed, lost in bursts or cut to a minimum length; a node that does not answer; a node that refuses a command with the reason codes of the rack; and a head in free configuration (jumpers `0x1F`) that answers `0x1A3` and `0x1A2` with a valid tool, no selection, another jumper reading, a selection out of range, a one-byte frame or nothing. The file is checked strictly (an unknown field, a value out of range, a wrong type, a repeated key or `NaN` refuse it as a whole), every choice comes from one seeded generator so the same scenario and seed give the same frames in the same order, and `VirtualTime` lets a program run on a clock of its own with no real waiting. `generate` and `generate_suite` make test scenarios that combine the faults from a seed (a generated scenario cannot make a node say that something worked), and `python -m urtc_common.bus_scenario validate|generate` checks and writes them. Nothing changes unless a scenario is asked for. `docs/BUS_SCENARIOS.md` has the format and the rules; `tools/vendor_copy.py` has the set `bus_scenario`; the quick guides of the flasher and the tester, in the eight languages, and the README sources say how to use it; the characterization tests fix what the rack model and the in-memory bootloader did before.
 
-## [0.1.2]
-
-- Build version synchronized with `urtc.project.json` and the repository-native version source.
-
 ## [0.1.1] - A window with the history of the evidence shared by every program, a History step in the quick guide, the steps of a test plan in the eight languages and release notes that carry the compatibility table
 
 - **The quick guide has a History step, and the updater's a Firmware step:** the guides of the flasher, the tester and the updater in the eight languages (portuguese of Portugal) say what the History button shows (the evidence records, newest first, each one checked, filtered by result and text, read only), and the guide of the updater says what the Firmware button does (checks the release signature of an image and opens the Flasher with it selected, writing nothing to a board). `docs/EVIDENCE.md` describes the listing of a folder, the History window and its command line forms, and the Compatibility section of the READMEs says how the notes of a release carry the compatibility table.
@@ -112,10 +81,6 @@ All notable changes to this project are documented here.
 - **The steps of a test plan are worded in the eight languages:** the catalog of the tester has the texts of every message a plan step gives (answers missing, wrong tool, old firmware, value out of range, operator confirmation and the rest), with the portuguese of Portugal.
 - **The notes of a release of a program can carry the compatibility table:** `tools/changelog_section.py` (the section of the CHANGELOG of one version, and with `--compat` the generated table of `docs/COMPATIBILITY.md` after it) is now here too, in the set `release_notes` of `tools/vendor_copy.py`, so the flasher, the tester and the updater can print the body of their release the way the firmware repository does; it stops with a message when the version has no section or the table is missing.
 
-## [0.1.1]
-
-- Build version synchronized with `urtc.project.json` and the repository-native version source.
-
 ## [0.1.0] - Free configuration of a head as a contract, the history of the evidence, the rack reasons in eight languages, a rack simulator that answers like the rack and the lights of Project status following the manifest
 
 - **Free configuration of a head (jumpers `0x1F`) is a contract:** a rack no longer takes that reading for "no tool": it asks the head with `0x1A3`, accepts only an answer that names a tool (`0x1F` and a selection of 1 to 25) and keeps the head in the safe state, with no target and no pre-heat order, until then. `docs/FREE_TOOL.md` fixes the rules (the query, which answers are valid, timeout, attempts, back-off and refresh, and what a change of tool or a lost answer does); `rack_sim` has `classify_jumper`, `parse_free_tool_reply`, `FreeToolConfig`, `FreeToolResolver` and the slot calls `set_slot_jumpers`, `free_tool_step` and `slot_identity`; `conformance/rack_vectors.json` and `generated/rack_vectors.h` carry the jumper readings, the answers and fourteen query scenarios (also across the wrap of the clock) that the rack firmware replays.
@@ -123,10 +88,6 @@ All notable changes to this project are documented here.
 - **A history of the evidence of every program:** `evidence_history` reads a folder of `urtc-evidence/1` records (`.json` and `.jsonl`), checks each one, and lists them newest first with filters (kind, outcome, tool, time, text), a summary and a text, CSV or JSON output; a record edited after it was written, a file that is not JSON or a record of another format is listed as not valid with what is wrong, never skipped. It reads only, and it is part of the `evidence` set that the programs copy. The flasher, the tester and the updater each have a command for it.
 - **The rack reasons are worded in the eight languages for the tester and the web studio:** the catalogs of the two programs have the nine reasons of a reply (applied, repeat, wrong length, tool absent, temperature out of range, tool invalid, not heatable, held for coming too soon, unknown command), and the simulator takes the minimum interval between commands as a setting (`min_interval_ms`, 0 = no limit).
 - **The rack simulator answers like the rack:** `rack_sim` now writes and reads the reply frame of the rack (an acknowledgement `0x81` for an applied command or a repeat, a refusal `0x82` with the reason: wrong length, tool absent, temperature out of range, tool invalid, not heatable, held for coming too soon, unknown command), holds a second command for one tool that comes within 20 ms of the previous one as the firmware does, and every step of the shared link scenarios in `conformance/rack_vectors.json` carries the reply frame that the rack firmware reproduces byte for byte (two scenarios were added: every refusal with its reason, and a command that comes too soon). `encode_reply` and `parse_reply` are what the programs use to read the answer.
-
-## [0.1.0]
-
-- Build version synchronized with `urtc.project.json` and the repository-native version source.
 
 ## [0.0.9] - A common evidence format, the compatibility matrix, the firmware file names and the tool identifiers from the spec
 
@@ -142,10 +103,6 @@ All notable changes to this project are documented here.
 - **The shared README sections go where the universal layout wants them:** Project status right after At a glance with the traffic-light icon, and How it updates, Several tool heads on one bus, First run without hardware and Requirements & compatibility as parts of Architecture, Features and Quick start once a README has those sections (before that they stay where they were); the eight languages of a repository always agree on the place.
 - **Downloads are hardened further:** a redirect is followed only to another allowed https host (never to plain http or to a host outside the list), the bytes really written while extracting a package count towards the size limit (not only the size the archive announces), and the folder of a newly created record-signing key is private to the person. Negative tests cover each rule.
 - **A shared byte ring for the firmware:** `firmware_base/urtc_ring.h` is the single-producer / single-consumer ring that a receive interrupt fills and the main loop empties (release/acquire indices, power-of-two size, a count of dropped bytes), with its rules tested one by one and, on a POSIX host, by a real producer thread against a real consumer thread. A firmware repository copies it with `vendor_copy.py sync TARGET --set firmware_ring`.
-
-## [0.0.9]
-
-- Build version synchronized with `urtc.project.json` and the repository-native version source.
 
 ## [0.0.8] - The serial line of the rack in the model and in the vectors and the table of what has run and what is pending is generat
 

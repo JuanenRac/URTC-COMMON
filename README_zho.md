@@ -72,6 +72,7 @@
 * 固件主机测试的断言：`firmware_base/urtc_test.h` 包含 `TEST_ASSERT`，即工具架、视觉工具和工具头固件原先各自定义了三次的宏；各仓库用 `vendor_copy.py --set firmware_test` 复制它，并保留各自声明测试套件的 `test_runner.h`。
 * 镜像头：`firmware_base/urtc_image_header.h`（位于固件镜像之前的 32 字节头，包含目标硬件、由四个部分组成的版本、长度和 CRC-32，并可检查整个镜像）、其参考实现 `src/urtc_common/image_header.py` 以及共享向量（`conformance/image_header_vectors.json`、`generated/image_header_vectors.h`）；发布的签名覆盖该头，目前还没有任何东西把该头放进镜像（`docs/IMAGE_HEADER.md`）。
 * 引导程序标识与镜像认证：`firmware_base/urtc_ed25519.h`、`urtc_auth.h` 和 `urtc_bl_select.h`（Ed25519 验证器、带回滚计数器的已签名镜像安装判定，以及在多工具头总线上按序列号寻址单个引导程序），及其 Python 参考实现和共用向量；参见 [docs/BOOTLOADER_AUTH.md](docs/BOOTLOADER_AUTH.md)。仅在主机上设计和测试：尚无电路板运行它。
+* 签名密钥轮换与测试策略：`src/urtc_common/key_rotation.py` 是在轮换窗口（该窗口是一个参数）内同时公布两个密钥指纹（帧 `0x7ED`，状态在 `0x7EB`）的参考规则，并与 `conformance/key_rotation_vectors.json` 保持一致；验证器的基于属性的测试以及本地变异测试的方法见 [docs/TESTING_STRATEGY.md](docs/TESTING_STRATEGY.md)。该窗口的引导程序部分在有电路板之前保持待定。
 * [一致性向量](conformance/can_vectors.json): 每个实现都必须重现的字节：每种布局、被拒绝的输入和 SLCAN 数据流。
 * [工具配置](spec/tools.json)：25 个工具配置（限值、看门狗、引脚、扩展板）以数据形式保存；`generate_tools.py` 生成 TypeScript 和 Python 表格以及[工具表](docs/TOOLS_TABLE.md)。此外还有：支持导出 CSV 和 JSON 的黑匣子读取器（`blackbox.py`）、机架模拟器（`rack_sim.py`）、根据规范生成的用于板卡模糊测试的帧（`fuzz.py`），以及由 `spec/versions.json` 生成的发布[兼容性表](docs/COMPATIBILITY.md)，以及由各仓库清单生成的、说明已运行内容与尚未完成内容的[状态表](docs/STATUS.md)（`status_table.py`）。
 * [刀头的自由配置](docs/FREE_TOOL.md)：机架如何处理 ID 跳线读数为 `0x1F` 的刀头：先发出查询（`0x1A3`），校验应答，再像通过跳线读取的刀头一样使用该身份；在此之前刀头保持安全状态。已在 `rack_sim.py` 中建模，并有机架固件回放的共享向量（`conformance/rack_vectors.json`）。
