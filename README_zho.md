@@ -13,7 +13,7 @@
   <img src="https://img.shields.io/badge/Format-JSON%20%2B%20Python-083fa1.svg" alt="Format">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
   <img src="https://img.shields.io/badge/Version-0.0.8-0f6cbd.svg" alt="Version">
-  <img src="https://img.shields.io/badge/Tests-2066-2ea44f.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Tests-2124-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
 
@@ -31,7 +31,7 @@
 |---|---|
 | 版本 | `0.1.9` |
 | 成熟度 | 可用 |
-| 测试 | 2066 |
+| 测试 | 2124 |
 | 技术栈 | JSON / Python |
 | 真实硬件 | 仅模拟：使用模拟器、替身或仿真测试；此版本没有在真实硬件上运行的记录 |
 
@@ -74,7 +74,7 @@
 * 引导程序标识与镜像认证：`firmware_base/urtc_ed25519.h`、`urtc_auth.h` 和 `urtc_bl_select.h`（Ed25519 验证器、带回滚计数器的已签名镜像安装判定，以及在多工具头总线上按序列号寻址单个引导程序），及其 Python 参考实现和共用向量；参见 [docs/BOOTLOADER_AUTH.md](docs/BOOTLOADER_AUTH.md)。仅在主机上设计和测试：尚无电路板运行它。
 * 签名密钥轮换与测试策略：`src/urtc_common/key_rotation.py` 是在轮换窗口（该窗口是一个参数）内同时公布两个密钥指纹（帧 `0x7ED`，状态在 `0x7EB`）的参考规则，并与 `conformance/key_rotation_vectors.json` 保持一致；验证器的基于属性的测试以及本地变异测试的方法见 [docs/TESTING_STRATEGY.md](docs/TESTING_STRATEGY.md)。该窗口的引导程序部分在有电路板之前保持待定。
 * [一致性向量](conformance/can_vectors.json): 每个实现都必须重现的字节：每种布局、被拒绝的输入和 SLCAN 数据流。
-* [工具配置](spec/tools.json)：25 个工具配置（限值、看门狗、引脚、扩展板）以数据形式保存；`generate_tools.py` 生成 TypeScript 和 Python 表格以及[工具表](docs/TOOLS_TABLE.md)。此外还有：支持导出 CSV 和 JSON 的黑匣子读取器（`blackbox.py`）、机架模拟器（`rack_sim.py`）、根据规范生成的用于板卡模糊测试的帧（`fuzz.py`），以及由 `spec/versions.json` 生成的发布[兼容性表](docs/COMPATIBILITY.md)，以及由各仓库清单生成的、说明已运行内容与尚未完成内容的[状态表](docs/STATUS.md)（`status_table.py`）。
+* [工具配置](spec/tools.json)：25 个工具配置（限值、看门狗、引脚、扩展板）以及每个工具面板的控件、读数和命令以数据形式保存；`generate_tools.py` 生成 TypeScript 和 Python 表格以及[工具表](docs/TOOLS_TABLE.md)。此外还有：支持导出 CSV 和 JSON 的黑匣子读取器（`blackbox.py`）、机架模拟器（`rack_sim.py`）、根据规范生成的用于板卡模糊测试的帧（`fuzz.py`），以及由 `spec/versions.json` 生成的发布[兼容性表](docs/COMPATIBILITY.md)，以及由各仓库清单生成的、说明已运行内容与尚未完成内容的[状态表](docs/STATUS.md)（`status_table.py`）。
 * [刀头的自由配置](docs/FREE_TOOL.md)：机架如何处理 ID 跳线读数为 `0x1F` 的刀头：先发出查询（`0x1A3`），校验应答，再像通过跳线读取的刀头一样使用该身份；在此之前刀头保持安全状态。已在 `rack_sim.py` 中建模，并有机架固件回放的共享向量（`conformance/rack_vectors.json`）。
 * [模拟总线场景](docs/BUS_SCENARIOS.md)：用 JSON 文件（`urtc-scenario/1`）描述 CAN 总线的故障：帧丢失、重复、乱序、延迟、成串丢失或被截短，节点保持沉默或拒绝命令并说明原因，以及处于自由配置、以不同方式回应 `0x1A3` 和 `0x1A2` 的刀头。`bus_scenario.py` 严格检查文件，将其应用于任何模拟传输，并根据种子生成测试场景；相同种子给出相同的帧。除非要求，否则不启用；烧录器和测试器用 `--scenario` 针对它运行各自的计划，并留下注明这是模拟的证据记录。
 * **虚拟板与辅助链路：** `virtual_board.py` 在 TCP 端口上提供一块位于 SLCAN 适配器之后的板子（`python -m urtc_common.virtual_board`）；在工具要求串口的地方输入 `socket://127.0.0.1:7777`，刷写器、测试器和网关即可在没有硬件的情况下端到端运行。使用 `--firmware-repo DIR`（URTC 仓库的检出副本）时，它会构建固件自身的虚拟板并桥接到它（在 Windows 上于 WSL 内运行），这样各个程序就可以针对固件真实的接收路径进行试验。指定 `--firmware-bootloader` 时，它会改为桥接到引导加载程序的孪生体（主板引导加载程序在主机上运行的真实 C 代码），这样就可以通过接受或拒绝更新的那段代码来刷写更新。`sensor_frame.py` 是视觉头传感器帧的参考实现；它和机架串口帧都是版本 2，与总线一样采用大端序，并附有各自的向量（`conformance/sensor_vectors.json`、`generated/sensor_vectors.h`）。
@@ -114,7 +114,7 @@ python -m mypy                                       # urtc_common 和 urtc_ui �
 
 ## 🧪 测试
 
-测试套件共有 2066 个测试（`python -m pytest tests -q`）。它们检查：规范是否符合其模式；生成的 C、TypeScript 和 Python 文件是否与生成器写出的一致；用 Python、用 Node 运行的 TypeScript 和用主机编译器编译的 C 来核对一致性向量；SLCAN 编解码器和使用模拟对象的传输层；虚拟板；经过签名的自更新流程；以及与放在本仓库旁边的各仓库的比较。缺少可选工具（Node、C 编译器、PySide6）或相邻仓库时，部分测试会被跳过。`python -m mypy` 检查软件包的类型。
+测试套件共有 2124 个测试（`python -m pytest tests -q`）。它们检查：规范是否符合其模式；生成的 C、TypeScript 和 Python 文件是否与生成器写出的一致；用 Python、用 Node 运行的 TypeScript 和用主机编译器编译的 C 来核对一致性向量；SLCAN 编解码器和使用模拟对象的传输层；虚拟板；经过签名的自更新流程；以及与放在本仓库旁边的各仓库的比较。缺少可选工具（Node、C 编译器、PySide6）或相邻仓库时，部分测试会被跳过。`python -m mypy` 检查软件包的类型。
 
 ## 🏗️ 构建与发布
 

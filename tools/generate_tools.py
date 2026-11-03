@@ -9,7 +9,8 @@
 The tool profiles (identifier, limits, watchdog, pins, features, expansion board needed) are written down once, in
 ``spec/tools.json``. This tool turns them into:
 
-* ``generated/urtcTools.ts``           TypeScript: the profiles the web studio lists in its tool catalog and the head picker
+* ``generated/urtcTools.ts``           TypeScript: the profiles the web studio lists in its tool catalog and the head picker, with
+                                       the ``panel`` of each tool (its controls, readings and commands) that the studio draws
 * ``src/urtc_common/tools_catalog.py`` Python: the same for the tester (names, kinds, limits), standard library only
 * ``docs/TOOLS_TABLE.md``              the table the READMEs and the documents quote
 
@@ -35,6 +36,15 @@ IMAGES = ROOT / "spec" / "firmware_images.json"
 IMAGES_BANNER = "GENERATED from spec/firmware_images.json by tools/generate_tools.py - do not edit by hand."
 KINDS = ("motion", "telemetry", "external", "actuator")
 EXPANSION = ("none", "recommended", "required")
+# The frame encoders a panel may name (lib/toolFrames.ts of the web studio) and how many controls each one takes.
+ENCODERS = {
+    "drillCommand": 2, "drillStop": 0, "aoiRingCommand": 2, "laserCommand": 2, "laserOff": 0, "powerByte": 1, "powerOff": 0,
+    "electromagnetCommand": 0, "hotAirCommand": 2, "hotAirOff": 0, "motionMove": 2, "motionStop": 1, "weldFire": 1,
+    "pasteJettingConfig": 2, "pasteJettingPulse": 3,
+}
+CONTROL_TYPES = ("range", "number", "select", "checkbox")
+ACTION_TYPES = ("keepalive", "send", "stop", "latched")
+CONFIRM_KINDS = ("drill", "laser", "uv", "weld", "heater", "motion", "paste")
 
 
 def load() -> dict:
@@ -63,7 +73,151 @@ def validate(doc: dict, protocol: dict) -> list[str]:
     return problems
 
 
-def _ts(doc: dict) -> str:
+def _text_ok(text: object, what: str, problems: list[str]) -> None:
+    """A label is either ``{"key", "default"}`` (an existing translated text) or ``{"text"}`` (one that is not translated)."""
+    if not isinstance(text, dict) or not (("key" in text and "default" in text) or "text" in text):
+        problems.append(f"{what}: a text needs key and default, or text")
+
+
+def resolve_panel(tools: list[dict], tool: dict) -> dict | None:
+    """The panel of a tool; ``same_as`` borrows the panel of another tool."""
+    panel = tool.get("panel")
+    if panel and "same_as" in panel:
+        other = next((t for t in tools if t["id"] == panel["same_as"]), None)
+        return other.get("panel") if other and "same_as" not in other.get("panel", {}) else None
+    return panel
+
+
+def validate_panels(doc: dict, protocol: dict) -> list[str]:
+    """Problems found in the ``panel`` of the tools (the controls, the readings and the commands of each tool panel)."""
+    problems: list[str] = []
+    messages = {m["name"] for m in protocol["messages"]}
+    for tool in doc["tools"]:
+        if "panel" not in tool:
+            continue
+        where = f"tool {tool['id']} panel"
+        panel = resolve_panel(doc["tools"], tool)
+        if panel is None:
+            problems.append(f"{where}: same_as does not name a tool with a panel of its own")
+            continue
+        if "same_as" in tool["panel"] and set(tool["panel"]) != {"same_as"}:
+            problems.append(f"{where}: same_as stands alone")
+        controls: dict[str, dict] = {}  # the controls are shared by the sections of a panel: a pulse uses the channel set above it
+        for index, section in enumerate(panel.get("sections", [])):
+            at = f"{where} section {index}"
+            _text_ok(section.get("title"), f"{at} title", problems)
+            for optional in ("subtitle", "notice"):
+                if optional in section:
+                    _text_ok(section[optional], f"{at} {optional}", problems)
+            for control in section.get("controls", []):
+                cid = control.get("id")
+                if not cid or cid in controls:
+                    problems.append(f"{at}: control without a unique id ({cid!r})")
+                    continue
+                controls[cid] = control
+                if control.get("type") not in CONTROL_TYPES:
+                    problems.append(f"{at}: control {cid} has an unknown type {control.get('type')!r}")
+                _text_ok(control.get("label"), f"{at} control {cid} label", problems)
+                if control.get("type") in ("range", "number"):
+                    low, high, default = control.get("min"), control.get("max"), control.get("default")
+                    if not all(isinstance(v, (int, float)) for v in (low, high, default)) or not low <= default <= high:
+                        problems.append(f"{at}: control {cid} needs min <= default <= max")
+                if control.get("type") == "select":
+                    values = [o.get("value") for o in control.get("options", [])]
+                    if not values or control.get("default") not in values or len(set(values)) != len(values):
+                        problems.append(f"{at}: control {cid} needs options and a default among them")
+                    for option in control.get("options", []):
+                        _text_ok(option.get("label"), f"{at} control {cid} option", problems)
+                if control.get("type") == "checkbox" and not isinstance(control.get("default"), bool):
+                    problems.append(f"{at}: control {cid} needs a true or false default")
+            for reading in section.get("telemetry", []):
+                if reading.get("message") not in messages:
+                    problems.append(f"{at}: telemetry {reading.get('id')} names a message that is not in the protocol")
+                if reading.get("width") not in (1, 2) or not isinstance(reading.get("offset"), int) or reading["offset"] < 0:
+                    problems.append(f"{at}: telemetry {reading.get('id')} needs an offset and a width of 1 or 2")
+                _text_ok(reading.get("label"), f"{at} telemetry label", problems)
+            actions = section.get("actions", [])
+            if not controls and not section.get("telemetry") and not actions:
+                problems.append(f"{at}: nothing to show")
+            for action in actions:
+                kind = action.get("type")
+                if kind not in ACTION_TYPES:
+                    problems.append(f"{at}: unknown action type {kind!r}")
+                    continue
+                if action.get("message") not in messages:
+                    problems.append(f"{at}: an action names a message that is not in the protocol ({action.get('message')!r})")
+                names = [action.get("encoder")] + ([action["off_encoder"]] if "off_encoder" in action else [])
+                for name in names:
+                    if name not in ENCODERS:
+                        problems.append(f"{at}: unknown encoder {name!r}")
+                if action.get("encoder") in ENCODERS and len(action.get("args", [])) != ENCODERS[action["encoder"]]:
+                    problems.append(f"{at}: encoder {action['encoder']} takes {ENCODERS[action['encoder']]} arguments")
+                for arg in action.get("args", []) + action.get("reset", []):
+                    if arg not in controls:
+                        problems.append(f"{at}: an action uses control {arg!r}, which this panel does not have")
+                if "confirm" in action and action["confirm"] not in CONFIRM_KINDS:
+                    problems.append(f"{at}: unknown confirmation kind {action['confirm']!r}")
+                if "confirm_value" in action and action["confirm_value"] not in controls:
+                    problems.append(f"{at}: confirm_value is not a control of the panel")
+                if kind == "keepalive" and ("off_encoder" not in action or not isinstance(action.get("watchdog_ms"), int)):
+                    problems.append(f"{at}: a keepalive needs off_encoder and watchdog_ms")
+                if kind in ("send", "stop", "latched"):
+                    _text_ok(action.get("label"), f"{at} action label", problems)
+    return problems
+
+
+def _panels(doc: dict, protocol: dict) -> dict[int, dict]:
+    """The panels with the identifier of each message beside its name, as the web studio receives them."""
+    ids = {m["name"]: int(m["id"], 16) for m in protocol["messages"]}
+
+    def walk(node):
+        if isinstance(node, dict):
+            out = {}
+            for key, value in node.items():
+                out[key] = walk(value)
+                if key == "message":
+                    out["canId"] = ids[value]
+            return out
+        if isinstance(node, list):
+            return [walk(v) for v in node]
+        return node
+
+    return {t["id"]: walk(resolve_panel(doc["tools"], t)) for t in doc["tools"] if "panel" in t}
+
+
+_PANEL_TYPES = """/** A text of a panel: an existing translated text (key and its English default), or a plain one that is not translated. */
+export type UrtcPanelText = { key: string; default: string; param?: string } | { text: string };
+
+export type UrtcPanelControl =
+  | { id: string; type: 'range' | 'number'; label: UrtcPanelText; min: number; max: number; default: number }
+  | { id: string; type: 'select'; label: UrtcPanelText; default: string | number; options: { value: string | number; label: UrtcPanelText }[] }
+  | { id: string; type: 'checkbox'; label: UrtcPanelText; default: boolean };
+
+export interface UrtcPanelReading {
+  id: string; label: UrtcPanelText; message: string; canId: number; offset: number; width: 1 | 2;
+  format?: 'yes_no'; unit?: string; graph_max?: number;
+}
+
+export interface UrtcPanelAction {
+  type: 'keepalive' | 'send' | 'stop' | 'latched';
+  message: string; canId: number; encoder: string; args?: string[]; description?: string;
+  label?: UrtcPanelText; confirm?: string; confirm_value?: string;
+  off_encoder?: string; off_description?: string; watchdog_ms?: number; reset?: string[];
+  description_on?: string; description_off?: string;
+}
+
+export interface UrtcPanelSection {
+  title: UrtcPanelText; subtitle?: UrtcPanelText; notice?: UrtcPanelText;
+  controls?: UrtcPanelControl[]; telemetry?: UrtcPanelReading[]; actions?: UrtcPanelAction[];
+}
+
+export interface UrtcToolPanel { sections: UrtcPanelSection[] }
+
+"""
+
+
+def _ts(doc: dict, protocol: dict) -> str:
+    panels = _panels(doc, protocol)
     profiles = []
     for t in doc["tools"]:
         p = {
@@ -75,6 +229,8 @@ def _ts(doc: dict) -> str:
             p["watchdogMs"] = t["watchdog_ms"]
         p.update({"pinsUsed": t["pins_used"], "features": t["features"], "iconFrames": t["icon_frames"],
                   "kind": t["kind"], "shortName": t["short_name"], "expansionBoard": t["expansion_board"]})
+        if t["id"] in panels:
+            p["panel"] = panels[t["id"]]
         profiles.append(p)
     body = json.dumps(profiles, indent=2, ensure_ascii=False)
     return (
@@ -83,11 +239,12 @@ def _ts(doc: dict) -> str:
         "// GPL-3.0-or-later - see LICENSE\n\n"
         "export type UrtcToolKind = 'motion' | 'telemetry' | 'external' | 'actuator';\n"
         "export type UrtcExpansionNeed = 'none' | 'recommended' | 'required';\n\n"
+        + _PANEL_TYPES +
         "export interface UrtcToolProfile {\n"
         "  id: number;\n  name: string;\n  category: 'Shipped (v0.0)' | 'Expansion (v0.1)';\n  description: string;\n"
         "  heroMetricLabel: string;\n  heroMetricUnit: string;\n  defaultSetpoint: number;\n  minVal: number;\n  maxVal: number;\n"
         "  watchdogMs?: number;\n  pinsUsed: string[];\n  features: string[];\n  iconFrames: string[];\n"
-        "  kind: UrtcToolKind;\n  shortName: string;\n  expansionBoard: UrtcExpansionNeed;\n}\n\n"
+        "  kind: UrtcToolKind;\n  shortName: string;\n  expansionBoard: UrtcExpansionNeed;\n  panel?: UrtcToolPanel;\n}\n\n"
         f"export const URTC_TOOL_PROFILES: UrtcToolProfile[] = {body};\n"
     )
 
@@ -229,7 +386,7 @@ def _images_ts(doc: dict) -> str:
 
 def outputs(doc: dict) -> dict[Path, str]:
     return {
-        ROOT / "generated" / "urtcTools.ts": _ts(doc),
+        ROOT / "generated" / "urtcTools.ts": _ts(doc, json.loads(PROTOCOL.read_text(encoding="utf-8"))),
         ROOT / "src" / "urtc_common" / "tools_catalog.py": _py(doc),
         ROOT / "docs" / "TOOLS_TABLE.md": _md(doc),
         ROOT / "generated" / "urtc_tool_ids.h": _c_ids(doc, json.loads(PROTOCOL.read_text(encoding="utf-8"))),
@@ -243,7 +400,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--check", action="store_true", help="write nothing; fail when a generated file is out of date")
     args = parser.parse_args(argv)
     doc = load()
-    problems = validate(doc, json.loads(PROTOCOL.read_text(encoding="utf-8"))) + validate_images(load_images())
+    protocol = json.loads(PROTOCOL.read_text(encoding="utf-8"))
+    problems = validate(doc, protocol) + validate_panels(doc, protocol) + validate_images(load_images())
     if problems:
         print("TOOLS=FAIL " + "; ".join(problems), file=sys.stderr)
         return 1

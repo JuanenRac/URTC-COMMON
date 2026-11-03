@@ -13,7 +13,7 @@
   <img src="https://img.shields.io/badge/Format-JSON%20%2B%20Python-083fa1.svg" alt="Format">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
   <img src="https://img.shields.io/badge/Version-0.0.8-0f6cbd.svg" alt="Version">
-  <img src="https://img.shields.io/badge/Tests-2066-2ea44f.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Tests-2124-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
 
@@ -31,7 +31,7 @@
 |---|---|
 | Version | `0.1.9` |
 | Maturity | Functional |
-| Tests | 2066 |
+| Tests | 2124 |
 | Stack | JSON / Python |
 | On real hardware | Simulated only: tested against emulators, fakes or simulators; no run on real hardware is recorded for this version |
 
@@ -74,7 +74,7 @@ The CAN protocol of the tool head, written once as data, and everything that fol
 * Bootloader identity and image authentication: `firmware_base/urtc_ed25519.h`, `urtc_auth.h` and `urtc_bl_select.h` (an Ed25519 verifier, the decision to install a signed image with a rollback counter, and addressing one bootloader by its serial number on a bus with several heads), their Python references and shared vectors; see [docs/BOOTLOADER_AUTH.md](docs/BOOTLOADER_AUTH.md). Designed and tested on the host only: no board runs it.
 * Rotation of the signing key and testing strategy: `src/urtc_common/key_rotation.py` is the reference rule for announcing two key fingerprints at once (frames `0x7ED`, status on `0x7EB`) inside a rotation window that is a parameter, held to `conformance/key_rotation_vectors.json`; the property-based tests of the validators and the method of the local mutation run are described in [docs/TESTING_STRATEGY.md](docs/TESTING_STRATEGY.md). The bootloader side of the window is pending until a board is available.
 * [Conformance vectors](conformance/can_vectors.json): the bytes every implementation must reproduce: every layout, the refusals and the SLCAN streams.
-* [Tool profiles](spec/tools.json): the 25 tool profiles (limits, watchdog, pins, expansion board) as data; `generate_tools.py` writes the TypeScript and Python tables and [the tool table](docs/TOOLS_TABLE.md). Also here: the fault recorder reader with CSV and JSON export (`blackbox.py`), the rack simulator (`rack_sim.py`), frames for fuzzing a board made from the specification (`fuzz.py`) and the [compatibility table](docs/COMPATIBILITY.md) of a release, made from `spec/versions.json`; and the [status table](docs/STATUS.md) of what has run and what is still pending, made from the manifests of the repositories (`status_table.py`).
+* [Tool profiles](spec/tools.json): the 25 tool profiles (limits, watchdog, pins, expansion board) and the controls, readings and commands of each tool panel as data; `generate_tools.py` writes the TypeScript and Python tables and [the tool table](docs/TOOLS_TABLE.md). Also here: the fault recorder reader with CSV and JSON export (`blackbox.py`), the rack simulator (`rack_sim.py`), frames for fuzzing a board made from the specification (`fuzz.py`) and the [compatibility table](docs/COMPATIBILITY.md) of a release, made from `spec/versions.json`; and the [status table](docs/STATUS.md) of what has run and what is still pending, made from the manifests of the repositories (`status_table.py`).
 * [Free configuration of a head](docs/FREE_TOOL.md): what a rack does with a head whose ID jumpers read `0x1F`: it asks (`0x1A3`), checks the answer and uses the identity like one read from jumpers; until then the head stays in the safe state. Modelled in `rack_sim.py`, with shared vectors (`conformance/rack_vectors.json`) that the rack firmware replays.
 * [Scenarios for the simulated bus](docs/BUS_SCENARIOS.md): the faults of a CAN bus in a JSON file (`urtc-scenario/1`): frames lost, repeated, reordered, delayed, lost in bursts or cut short, a node that stays silent or refuses a command with its reason, and a head in free configuration that answers `0x1A3` and `0x1A2` in different ways. `bus_scenario.py` checks the file strictly, applies it to any simulated transport and generates test scenarios from a seed; the same seed gives the same frames. Off unless asked for; the flasher and the tester run their plans against it with `--scenario` and leave an evidence record that says it was a simulation.
 * **Virtual board and companion links:** `virtual_board.py` serves a board behind an SLCAN adapter on a TCP port (`python -m urtc_common.virtual_board`); type `socket://127.0.0.1:7777` where a tool asks for a serial port and the flasher, the tester and the gateway run end to end with no hardware. With `--firmware-repo DIR` (a checkout of the URTC repository) it builds the firmware's own virtual board and bridges to it, inside WSL on Windows, so the programs can be tried against the real receive path of the firmware. With `--firmware-bootloader` it bridges to the twin of the bootloader (the real C of the master's bootloader on the host) instead, so an update can be flashed through the code that accepts or refuses it. `sensor_frame.py` is the reference of the vision sensor frame; it and the rack serial frame are version 2, big-endian like the bus, with their vectors (`conformance/sensor_vectors.json`, `generated/sensor_vectors.h`).
@@ -114,7 +114,7 @@ python -m mypy                                       # the type check of urtc_co
 
 ## 🧪 Testing
 
-The suite has 2066 tests (`python -m pytest tests -q`). They check the specification against its schema, the generated C, TypeScript and Python files against what the generators write, the conformance vectors in Python, in TypeScript with Node and in C with a host compiler, the SLCAN codec and the transports with fakes, the virtual board, the signed self-update flow, and the comparison with the repositories checked out next to this one. A few tests skip where an optional tool (Node, a C compiler, PySide6) or a neighbouring repository is missing. `python -m mypy` type-checks the package.
+The suite has 2124 tests (`python -m pytest tests -q`). They check the specification against its schema, the generated C, TypeScript and Python files against what the generators write, the conformance vectors in Python, in TypeScript with Node and in C with a host compiler, the SLCAN codec and the transports with fakes, the virtual board, the signed self-update flow, and the comparison with the repositories checked out next to this one. A few tests skip where an optional tool (Node, a C compiler, PySide6) or a neighbouring repository is missing. `python -m mypy` type-checks the package.
 
 ## 🏗️ Build & Release
 

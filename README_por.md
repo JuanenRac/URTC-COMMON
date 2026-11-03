@@ -13,7 +13,7 @@
   <img src="https://img.shields.io/badge/Format-JSON%20%2B%20Python-083fa1.svg" alt="Format">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
   <img src="https://img.shields.io/badge/Version-0.0.8-0f6cbd.svg" alt="Version">
-  <img src="https://img.shields.io/badge/Tests-2066-2ea44f.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Tests-2124-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
 
@@ -31,7 +31,7 @@
 |---|---|
 | Versão | `0.1.9` |
 | Maturidade | Funcional |
-| Testes | 2066 |
+| Testes | 2124 |
 | Tecnologia | JSON / Python |
 | Em hardware real | Só simulado: testado com emuladores, dublês de teste ou simuladores; não há registo de execução em hardware real para esta versão |
 
@@ -74,7 +74,7 @@ O protocolo CAN da cabeça de ferramenta, escrito uma só vez como dados, e tudo
 * Identidade do bootloader e autenticação de imagens: `firmware_base/urtc_ed25519.h`, `urtc_auth.h` e `urtc_bl_select.h` (um verificador Ed25519, a decisão de instalar uma imagem assinada com contador anti-retrocesso e o endereçamento de um bootloader pelo número de série num barramento com várias cabeças), as suas referências em Python e os vetores partilhados; veja [docs/BOOTLOADER_AUTH.md](docs/BOOTLOADER_AUTH.md). Concebido e testado apenas no anfitrião: nenhuma placa o executa.
 * Rotação da chave de assinatura e estratégia de testes: `src/urtc_common/key_rotation.py` é a regra de referência para anunciar duas impressões digitais de chave em simultâneo (tramas `0x7ED`, estado em `0x7EB`) dentro de uma janela de rotação que é um parâmetro, ajustada a `conformance/key_rotation_vectors.json`; os testes de propriedades dos validadores e o método da execução local de mutação estão descritos em [docs/TESTING_STRATEGY.md](docs/TESTING_STRATEGY.md). O lado do bootloader da janela fica pendente até haver uma placa.
 * [Vetores de conformidade](conformance/can_vectors.json): os bytes que toda a implementação deve reproduzir: cada estrutura, as recusas e os fluxos SLCAN.
-* [Perfis de ferramenta](spec/tools.json): os 25 perfis de ferramenta (limites, watchdog, pinos, placa de expansão) como dados; o `generate_tools.py` escreve as tabelas de TypeScript e Python e [a tabela de ferramentas](docs/TOOLS_TABLE.md). Também aqui: o leitor da caixa negra com exportação para CSV e JSON (`blackbox.py`), o simulador do rack (`rack_sim.py`), tramas para testar uma placa com fuzzing, criadas a partir da especificação (`fuzz.py`) e a [tabela de compatibilidade](docs/COMPATIBILITY.md) de uma versão, criada a partir de `spec/versions.json`; e a [tabela de estado](docs/STATUS.md) do que já correu e do que ainda falta, criada a partir dos manifestos dos repositórios (`status_table.py`).
+* [Perfis de ferramenta](spec/tools.json): os 25 perfis de ferramenta (limites, watchdog, pinos, placa de expansão) e os controlos, as leituras e os comandos do painel de cada ferramenta como dados; o `generate_tools.py` escreve as tabelas de TypeScript e Python e [a tabela de ferramentas](docs/TOOLS_TABLE.md). Também aqui: o leitor da caixa negra com exportação para CSV e JSON (`blackbox.py`), o simulador do rack (`rack_sim.py`), tramas para testar uma placa com fuzzing, criadas a partir da especificação (`fuzz.py`) e a [tabela de compatibilidade](docs/COMPATIBILITY.md) de uma versão, criada a partir de `spec/versions.json`; e a [tabela de estado](docs/STATUS.md) do que já correu e do que ainda falta, criada a partir dos manifestos dos repositórios (`status_table.py`).
 * [Configuração livre de uma cabeça](docs/FREE_TOOL.md): o que um rack faz com uma cabeça cujos jumpers de ID leem `0x1F`: pergunta (`0x1A3`), verifica a resposta e usa a identidade como a de uma cabeça lida por jumpers; até lá a cabeça fica no estado seguro. Modelado em `rack_sim.py`, com vetores partilhados (`conformance/rack_vectors.json`) que o firmware do rack reproduz.
 * [Cenários do barramento simulado](docs/BUS_SCENARIOS.md): as falhas de um barramento CAN num ficheiro JSON (`urtc-scenario/1`): tramas perdidas, repetidas, reordenadas, atrasadas, perdidas em rajadas ou cortadas, um nó que se cala ou recusa uma ordem com o seu motivo, e uma cabeça em configuração livre que responde a `0x1A3` e `0x1A2` de maneiras diferentes. O `bus_scenario.py` verifica o ficheiro com rigor, aplica-o a qualquer transporte simulado e gera cenários de teste a partir de uma semente; a mesma semente dá as mesmas tramas. Desligado salvo se for pedido; o flasher e o tester executam os seus planos contra ele com `--scenario` e deixam um registo de evidência que diz que foi uma simulação.
 * **Placa virtual e ligações complementares:** `virtual_board.py` serve uma placa atrás de um adaptador SLCAN numa porta TCP (`python -m urtc_common.virtual_board`); escreva `socket://127.0.0.1:7777` onde uma ferramenta pede uma porta série e o programador, o testador e a gateway funcionam de ponta a ponta sem hardware. Com `--firmware-repo DIR` (uma cópia do repositório URTC) compila a placa virtual do próprio firmware e liga-se a ela, dentro do WSL no Windows, de modo que os programas podem ser experimentados contra o verdadeiro caminho de receção do firmware. Com `--firmware-bootloader` liga-se em vez disso ao gémeo do bootloader (o verdadeiro C do bootloader da placa principal no anfitrião), de modo que uma atualização pode ser gravada através do código que a aceita ou recusa. `sensor_frame.py` é a referência da trama do sensor da cabeça de visão; ela e a trama série do rack são a versão 2, big-endian como o barramento, com os seus vetores (`conformance/sensor_vectors.json`, `generated/sensor_vectors.h`).
@@ -114,7 +114,7 @@ python -m mypy                                       # a verificação de tipos 
 
 ## 🧪 Testes
 
-O conjunto tem 2066 testes (`python -m pytest tests -q`). Verificam a especificação contra o seu esquema, os ficheiros C, TypeScript e Python gerados contra o que os geradores escrevem, os vetores de conformidade em Python, em TypeScript com Node e em C com um compilador do computador, o codec SLCAN e os transportes com simulações, a placa virtual, o fluxo de autoatualização assinada e a comparação com os repositórios obtidos ao lado deste. Alguns testes são ignorados quando falta uma ferramenta opcional (Node, um compilador de C, PySide6) ou um repositório vizinho. `python -m mypy` verifica os tipos do pacote.
+O conjunto tem 2124 testes (`python -m pytest tests -q`). Verificam a especificação contra o seu esquema, os ficheiros C, TypeScript e Python gerados contra o que os geradores escrevem, os vetores de conformidade em Python, em TypeScript com Node e em C com um compilador do computador, o codec SLCAN e os transportes com simulações, a placa virtual, o fluxo de autoatualização assinada e a comparação com os repositórios obtidos ao lado deste. Alguns testes são ignorados quando falta uma ferramenta opcional (Node, um compilador de C, PySide6) ou um repositório vizinho. `python -m mypy` verifica os tipos do pacote.
 
 ## 🏗️ Compilação e publicação
 

@@ -13,7 +13,7 @@
   <img src="https://img.shields.io/badge/Format-JSON%20%2B%20Python-083fa1.svg" alt="Format">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
   <img src="https://img.shields.io/badge/Version-0.0.8-0f6cbd.svg" alt="Version">
-  <img src="https://img.shields.io/badge/Tests-2066-2ea44f.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Tests-2124-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
 
@@ -31,7 +31,7 @@
 |---|---|
 | バージョン | `0.1.9` |
 | 成熟度 | 機能する |
-| テスト | 2066 |
+| テスト | 2124 |
 | 技術 | JSON / Python |
 | 実機での確認 | シミュレーションのみ：エミュレーター、模擬部品、シミュレーターで試験済み。このバージョンについて実機での動作記録はありません |
 
@@ -74,7 +74,7 @@
 * ブートローダーの識別とイメージ認証: `firmware_base/urtc_ed25519.h`、`urtc_auth.h`、`urtc_bl_select.h`（Ed25519 検証器、ロールバックカウンター付き署名イメージのインストール判定、複数ヘッドのバス上でシリアル番号により 1 つのブートローダーを指定する仕組み）、その Python リファレンスと共有ベクトル。[docs/BOOTLOADER_AUTH.md](docs/BOOTLOADER_AUTH.md) を参照。ホスト上でのみ設計・テストされており、実機のボードでは動作していません。
 * 署名鍵のローテーションとテスト戦略: `src/urtc_common/key_rotation.py` は、パラメーターであるローテーション期間内に 2 つの鍵フィンガープリントを同時に通知する（フレーム `0x7ED`、状態は `0x7EB`）ための基準ルールで、`conformance/key_rotation_vectors.json` に適合させています。検証器のプロパティベーステストとローカルで行うミューテーション実行の方法は [docs/TESTING_STRATEGY.md](docs/TESTING_STRATEGY.md) にあります。この期間のブートローダー側は、ボードが用意できるまで保留です。
 * [適合ベクトル](conformance/can_vectors.json): すべての実装が再現しなければならないバイト列：各レイアウト、拒否される入力、SLCAN ストリーム。
-* [ツールプロファイル](spec/tools.json)：25 種類のツールプロファイル（上限・下限、ウォッチドッグ、ピン、拡張ボード）をデータとして保持します。`generate_tools.py` が TypeScript と Python の表および[ツール一覧表](docs/TOOLS_TABLE.md)を生成します。ほかに、CSV と JSON に書き出せるブラックボックスの読み取り機能（`blackbox.py`）、ラックのシミュレーター（`rack_sim.py`）、仕様から作るボードのファジング用フレーム（`fuzz.py`）、`spec/versions.json` から作るリリースの[互換性表](docs/COMPATIBILITY.md)と、各リポジトリのマニフェストから作る、実行済みの内容と未了の内容の[状態表](docs/STATUS.md)（`status_table.py`）があります。
+* [ツールプロファイル](spec/tools.json)：25 種類のツールプロファイル（上限・下限、ウォッチドッグ、ピン、拡張ボード）と、各ツールのパネルの操作部・読み値・コマンドをデータとして保持します。`generate_tools.py` が TypeScript と Python の表および[ツール一覧表](docs/TOOLS_TABLE.md)を生成します。ほかに、CSV と JSON に書き出せるブラックボックスの読み取り機能（`blackbox.py`）、ラックのシミュレーター（`rack_sim.py`）、仕様から作るボードのファジング用フレーム（`fuzz.py`）、`spec/versions.json` から作るリリースの[互換性表](docs/COMPATIBILITY.md)と、各リポジトリのマニフェストから作る、実行済みの内容と未了の内容の[状態表](docs/STATUS.md)（`status_table.py`）があります。
 * [ヘッドのフリー構成](docs/FREE_TOOL.md): IDジャンパが `0x1F` を示すヘッドをラックがどう扱うか。ラックは問い合わせ(`0x1A3`)、応答を検証し、ジャンパで読み取ったヘッドと同じように識別情報を使います。それまでヘッドは安全状態のままです。`rack_sim.py` でモデル化し、ラックのファームウェアが再生する共有ベクタ(`conformance/rack_vectors.json`)を備えます。
 * [シミュレートされたバスのシナリオ](docs/BUS_SCENARIOS.md)：CAN バスの障害を JSON ファイル（`urtc-scenario/1`）で記述します。フレームの欠落・重複・順序入れ替え・遅延・バースト欠落・短縮、無応答のノードや理由付きでコマンドを拒否するノード、`0x1A3` と `0x1A2` にさまざまな形で応答する自由構成のヘッドを扱えます。`bus_scenario.py` はファイルを厳密に検査し、任意のシミュレート転送に適用し、シードからテスト用シナリオを生成します。同じシードなら同じフレームになります。求めない限り無効で、フラッシャーとテスターは `--scenario` でプランを実行し、シミュレーションだったことを記したエビデンス記録を残します。
 * **仮想ボードと補助リンク:** `virtual_board.py` は SLCAN アダプターの背後にあるボードを TCP ポートで提供します (`python -m urtc_common.virtual_board`)。ツールがシリアルポートを尋ねる場所に `socket://127.0.0.1:7777` を入力すると、フラッシャー、テスター、ゲートウェイがハードウェアなしで最初から最後まで動きます。`--firmware-repo DIR`（URTC リポジトリのチェックアウト）を指定すると、ファームウェア自身の仮想ボードをビルドしてそこへ接続します（Windows では WSL 内）。これにより、各プログラムをファームウェアの実際の受信経路に対して試せます。`--firmware-bootloader` を指定すると、代わりにブートローダーのツイン（ホスト上で動くメインボードのブートローダーの実際の C コード）に接続するので、更新を受け入れるか拒否する実際のコードを通してフラッシュできます。`sensor_frame.py` はビジョンヘッドのセンサーフレームのリファレンスで、これとラックのシリアルフレームはバス同様にビッグエンディアンのバージョン 2 で、ベクトル (`conformance/sensor_vectors.json`、`generated/sensor_vectors.h`) があります。
@@ -114,7 +114,7 @@ python -m mypy                                       # urtc_common と urtc_ui �
 
 ## 🧪 テスト
 
-テストスイートは 2066 件です（`python -m pytest tests -q`）。仕様とそのスキーマ、生成された C・TypeScript・Python ファイルとジェネレーターの出力、Python・Node 上の TypeScript・ホストコンパイラ上の C での適合ベクトル、SLCAN コーデックと模擬を使ったトランスポート、仮想ボード、署名付き自己更新の流れ、そしてこのリポジトリの隣にチェックアウトされたリポジトリとの比較を検査します。任意のツール（Node、C コンパイラ、PySide6）や隣のリポジトリがない場合、一部のテストはスキップされます。`python -m mypy` がパッケージの型を検査します。
+テストスイートは 2124 件です（`python -m pytest tests -q`）。仕様とそのスキーマ、生成された C・TypeScript・Python ファイルとジェネレーターの出力、Python・Node 上の TypeScript・ホストコンパイラ上の C での適合ベクトル、SLCAN コーデックと模擬を使ったトランスポート、仮想ボード、署名付き自己更新の流れ、そしてこのリポジトリの隣にチェックアウトされたリポジトリとの比較を検査します。任意のツール（Node、C コンパイラ、PySide6）や隣のリポジトリがない場合、一部のテストはスキップされます。`python -m mypy` がパッケージの型を検査します。
 
 ## 🏗️ ビルドとリリース
 
