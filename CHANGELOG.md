@@ -4,6 +4,7 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **Property-based tests of the security validators:** `tests/test_property_validators.py` (22 tests, seeded generated cases, no new dependency) checks the rotation of the signing key (an unknown fingerprint is never accepted, the previous key expires exactly when the window ends, a window of zero or a clock before the start accept only the current key, a revoked key is never accepted), the image authentication (under `ed25519_only` nothing but a valid signature of a trusted key installs, whatever the HMAC says and whatever the record holds; a signature does not move to another image, counter or hardware; the rollback rules hold for any floor), and the limits of the header and frame parsers. A local mutation run killed 165 of 188 mutants of `key_rotation.py` and `image_auth.py` the first time and 183 after the tests it pointed to were added; the method and the figures are in `docs/TESTING_STRATEGY.md`. The mutation run is not part of the CI.
 - **The test count in the "At a glance" table of the README is the real one:** the number was counted by collecting the tests of the suite and written into the eight READMEs.
 ## [0.1.9] - The signing key can be announced as two fingerprints at once during a rotation window that is a parameter, with a reference rule, shared conformance vectors and a design that leaves the programmable serial to a separate production tool
 
