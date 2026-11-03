@@ -465,6 +465,32 @@
       ]
     },
     {
+      "name": "slave_bootloader_status",
+      "title": "Status values only the expansion slave bootloader reports (the others are bootloader_status)",
+      "prefix": "SLAVE_STATUS_",
+      "kind": "value",
+      "values": [
+        {
+          "value": 8,
+          "name": "AWAIT_CONFIRM",
+          "title": "Image verified by the slave; waiting ten seconds for the master's confirmation"
+        }
+      ]
+    },
+    {
+      "name": "slave_verify_fail_reason",
+      "title": "Verify-fail reasons only the expansion slave bootloader reports (the others are verify_fail_reason)",
+      "prefix": "SLAVE_VERIFY_FAIL_REASON_",
+      "kind": "value",
+      "values": [
+        {
+          "value": 6,
+          "name": "NOT_CONFIRMED",
+          "title": "The master did not confirm the image in time, or its confirmation does not match this session and image"
+        }
+      ]
+    },
+    {
       "name": "responder",
       "title": "Answering side",
       "prefix": "RESPONDER_",
@@ -1197,7 +1223,7 @@
           "name": "HMAC_EXPECTED",
           "access": "write",
           "length": 32,
-          "title": "Expected HMAC-SHA256 of the image",
+          "title": "Expected SHA-256 (no key) of the image; the name is historic",
           "can": "0x212"
         },
         {
@@ -1247,6 +1273,20 @@
           "length": 4,
           "title": "Marker 0xE1, application patch, bootloader minor, bootloader patch",
           "can": "0x218"
+        },
+        {
+          "id": 9,
+          "name": "CHALLENGE",
+          "access": "read",
+          "length": 16,
+          "title": "Nonce of the update session in progress (zeros when none); the master reads it and binds its confirmation to it"
+        },
+        {
+          "id": 10,
+          "name": "CONFIRM",
+          "access": "write",
+          "length": 32,
+          "title": "The master's confirmation: SHA-256 of the 76-byte message of urtc_slave_confirm.h; accepted only in AWAIT_CONFIRM"
         }
       ]
     },
@@ -5290,7 +5330,7 @@
       "id": "0x212",
       "name": "SLAVE_HMAC_CHUNK",
       "group": "slave_bridge",
-      "title": "Slave HMAC-SHA256 signature chunk",
+      "title": "Slave image digest chunk (SHA-256; the name is historic)",
       "direction": "host_to_board",
       "handled_by": "application",
       "tools": "any",
@@ -5313,7 +5353,7 @@
             }
           ],
           "frames": 4,
-          "note": "Four sequential frames, bytes 0-7, 8-15, 16-23 and 24-31 of the signature, right after 0x211 and before the first 0x213.",
+          "note": "Four sequential frames, bytes 0-7, 8-15, 16-23 and 24-31 of the SHA-256 (no key) of the slave image, right after 0x211 and before the first 0x213. The slave compares it with the hash of what it received; WHO vouched for the image is decided by the master from the record of 0x21A.",
           "examples": [
             {
               "name": "first of four",
@@ -5836,6 +5876,69 @@
         "flasher": "CAN_ID_SLAVE_VERIFY_FAIL_REASON",
         "web_studio": "CAN_ID_SLAVE_VERIFY_FAIL_REASON"
       }
+    },
+    {
+      "id": "0x21A",
+      "name": "SLAVE_RECORD_CHUNK",
+      "group": "slave_bridge",
+      "title": "One chunk of the Ed25519 signature record of the slave image",
+      "direction": "host_to_board",
+      "handled_by": "application",
+      "tools": "any",
+      "gates": {
+        "blocked_by_critical_error": true
+      },
+      "layouts": [
+        {
+          "role": "request",
+          "dlc": {
+            "exact": 8
+          },
+          "fields": [
+            {
+              "name": "index",
+              "type": "u8",
+              "range": [
+                0,
+                10
+              ],
+              "offset": 0,
+              "width": 1
+            },
+            {
+              "name": "data",
+              "type": "bytes",
+              "length": 7,
+              "offset": 1,
+              "width": 7
+            }
+          ],
+          "note": "The record is key id (8) + counter (4) + signature (64) = 76 bytes in 11 frames; the last one is padded with zeros. Sent after 0x211 and before 0x214, next to the digest chunks of 0x212. The master keeps it, checks it when 0x214 arrives and only then tells the slave bootloader to install the image.",
+          "examples": [
+            {
+              "name": "first chunk",
+              "fields": {
+                "index": 0,
+                "data": "00000000000000"
+              },
+              "data": "0000000000000000"
+            }
+          ]
+        }
+      ],
+      "firmware_accepts_dlc": {
+        "exact": 8
+      },
+      "notes": [
+        "Without a record that verifies under a key of the trust table of the master's bootloader the slave is never told to install: it waits ten seconds and fails closed (0x215 reports VERIFY_FAIL, 0x219 reports NOT_CONFIRMED). The slave bootloader cannot hold the verifier, so it trusts the master through the bus (docs/SLAVE_BOOT_CONFIRMATION.md)."
+      ],
+      "implemented_by": {
+        "firmware": true,
+        "flasher": false,
+        "tester": false,
+        "web_studio": false
+      },
+      "client_names": {}
     },
     {
       "id": "0x220",

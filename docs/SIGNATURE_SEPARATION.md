@@ -72,6 +72,13 @@ With one key the table is 56 bytes and with two it is 100. A reader refuses: a w
 * The metadata is an **append-only log with a generation number**: each record has magic, schema, type, length, generation, payload (policy, floor, rotation start and window, the installed image's header, digest and record, copy state) and a CRC-32, padded to the programming unit of the chip. The valid record with the highest generation wins; a record cut short by a power failure fails its CRC and the previous one stays. The page is erased only when full. Where a second erase unit is free, the state alternates between two units instead.
 * This is a staged slot with an atomic commit, **not** an executable A/B: the application is linked for one address. A third slot for a known-good image does not fit in the flash; a known-good image and signed deltas live on the host side, and the board always receives a complete image with its record.
 
+### 3.7 The expansion slave: the master verifies, the slave confirms
+
+The measured slave bootloader (13676 of 18432 bytes) cannot hold the verifier, which needs about 7 KB more. The application of the slave is **not** moved: every tool that knows its start address keeps working. Instead:
+
+* The **master** verifies the same 76-byte record for the slave image, under the keys of the trust table of **its own** bootloader (read from flash at the fixed offset), over the header of the slave image (the slave's hardware id inside) and the SHA-256 of the bytes it relays. The record travels on `0x21A` `SLAVE_RECORD_CHUNK`: eleven frames of an index and seven bytes, as `0x7EC` does for the main board.
+* The **slave** checks size, hardware id, CRC-32, the SHA-256 of what it received against the digest it was sent (the `0x212` frames now carry a SHA-256, not an HMAC), and the version rule. It then waits in status `0x08` (AWAIT_CONFIRM) for `REG_CONFIRM` (`0x0A`): 32 bytes, the SHA-256 of a 76-byte message (`"URTC-SLV-CONF-V1"`, the 16-byte nonce the slave published in `REG_CHALLENGE` `0x09`, the image SHA-256, hardware id, version major, version minor field, size). It rebuilds the message from its own values, reads its backup slot again and compares. No confirmation in ten seconds, a wrong tag or an altered image: status VERIFY_FAIL with reason `0x06` NOT_CONFIRMED (or `0x03` when the digest no longer matches), main slot untouched. It fails closed.
+* **Honest limits.** The tag is a hash, not a MAC: there is no secret to share and none is put back in the image. The slave trusts the master through the link bus, so a device on that bus can compute the tag. The nonce is a freshness value (the chip has no random source), not a secret. The slave keeps no rollback counter; it applies its version rule only. The check at boot is a keyless SHA-256. The details and the host tests are in the firmware repository (`docs/SLAVE_BOOT_CONFIRMATION.md`).
 ### 3.6 What replaces the boot-time HMAC
 
 Once the signature is verified at install time, the check at every boot only has to catch corruption of the flash: a SHA-256 of the installed application stored in the metadata, with no key. Protecting the boot pages against being rewritten through the debug port is a chip setting (read and write protection) that has to be reviewed on a board.
@@ -81,7 +88,7 @@ Once the signature is verified at install time, the check at every boot only has
 Nothing here has been measured on a board or built for one, so there are no new figures.
 
 * **Known from files already in the repository:** the main bootloader image is 18132 bytes in a 30 KB region; the slave bootloader is 13100 bytes in an 18 KB region. Those are the sizes of the published binaries, which may predate the sources.
-* **Not known:** the size of the verifier, its stack and its time. `BOOTLOADER_AUTH.md` estimates 5 to 8 KB; `FIRMWARE_SIGNING.TXT` estimates 10 to 16 KB. Both are unmeasured and they disagree. The slave bootloader might not hold the verifier; if it does not, its application would move to a higher start address (layout, linker script and every tool that knows the address change), or the slave would stop verifying the signature itself.
+* **Not known:** the size of the verifier, its stack and its time. `BOOTLOADER_AUTH.md` estimates 5 to 8 KB; `FIRMWARE_SIGNING.TXT` estimates 10 to 16 KB. Both are unmeasured and they disagree. The slave bootloader does not hold the verifier (measured: 13676 of 18432 bytes, about 7 KB short): the master verifies for it and the slave confirms (section 3.7); its application stays where it is.
 * **Library:** the verifier is written for this repository (GPL-3.0-or-later) on the compact TweetNaCl design (public domain): the smallest and slowest option. Monocypher (BSD-2-Clause or CC0) and ed25519-donna (public domain or MIT) are larger and faster and are compatible with the licence. The decision is taken after measuring.
 * **How to measure without compiling on a workstation:** a read-only job of the build service compiles the verifier alone for Cortex-M4 (`-Os`, `-ffunction-sections`, `-fstack-usage`) and prints `arm-none-eabi-size -A` and the stack file; links each bootloader with and without the table and verifier and prints the headroom against the region of the linker script (failing under a configured threshold); and may give an order of magnitude of the time with an emulator's instruction counter. The reliable time is the cycle counter on a board.
 
@@ -115,7 +122,7 @@ If one board has to accept both kinds, the policy `either` needs the HMAC key; t
 
 ## 8. Open points
 
-These are not decided and nothing here depends on them: the route of the slave bootloader if the verifier does not fit; whether the metadata page alternates two erase units or keeps one append-only log in the units that exist; where the known-good image of the host lives and how a delta is signed; and how a key is revoked beyond the three tools of section 3.4. The library stays the compact TweetNaCl design until the size report says otherwise. The policy of the first official bootloader is `ed25519_only`, so the HMAC key slot of section 7 is not needed for a board that has never run the old scheme.
+These are not decided and nothing here depends on them: a rollback counter on the slave, and how the confirmation could be authenticated without a shared secret; whether the metadata page alternates two erase units or keeps one append-only log in the units that exist; where the known-good image of the host lives and how a delta is signed; and how a key is revoked beyond the three tools of section 3.4. The library stays the compact TweetNaCl design until the size report says otherwise. The policy of the first official bootloader is `ed25519_only`, so the HMAC key slot of section 7 is not needed for a board that has never run the old scheme.
 
 ## 9. Plan
 
@@ -124,7 +131,7 @@ These are not decided and nothing here depends on them: the route of the slave b
 3. The metadata log in portable C with a power-cut test over every write.
 4. The bootloader twin with Ed25519, the table, the floor and the policy.
 5. The key slot, the signed retirement command and the sunset counter.
-6. The slave bootloader: measure, then decide between moving its application and another route.
+6. The slave bootloader: measured; the master verifies and the slave confirms (section 3.7).
 7. The release tools: signing the image record, the pin of the table, the manifest fields, the verification of the set.
 8. The flasher, the updater and the web studio: verify, transport and show the fingerprints, in eight languages.
 9. The build-service changes: accept the release table, report sizes and headroom.
