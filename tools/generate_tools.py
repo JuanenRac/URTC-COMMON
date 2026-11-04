@@ -341,6 +341,20 @@ def _py(doc: dict) -> str:
     )
 
 
+def _panels_py(doc: dict, protocol: dict) -> str:
+    """The panels of the tools as Python data, the same ones the web studio receives (identifiers of the messages included)."""
+    body = json.dumps({str(k): v for k, v in _panels(doc, protocol).items()}, indent=1, ensure_ascii=False)
+    body = body.replace(": null", ": None").replace(": true", ": True").replace(": false", ": False")
+    return (
+        '"""' + BANNER + "\n\nThe panels of the tool profiles (controls, readings, commands) as data (standard library only).\n"
+        "Copyright (C) 2026 JuanenRac (Electro Hobby 3D) <electrohobby3d@gmail.com>\n"
+        'GPL-3.0-or-later - see LICENSE\n"""\n'
+        "from __future__ import annotations\n\n"
+        f"_BY_NAME: dict[str, dict] = {body}\n\n"
+        "PANELS: dict[int, dict] = {int(key): value for key, value in _BY_NAME.items()}\n"
+    )
+
+
 def _md(doc: dict) -> str:
     lines = [
         f"<!-- {BANNER} -->", "",
@@ -450,6 +464,7 @@ def outputs(doc: dict) -> dict[Path, str]:
     return {
         ROOT / "generated" / "urtcTools.ts": _ts(doc, json.loads(PROTOCOL.read_text(encoding="utf-8"))),
         ROOT / "src" / "urtc_common" / "tools_catalog.py": _py(doc),
+        ROOT / "src" / "urtc_common" / "tool_panels.py": _panels_py(doc, json.loads(PROTOCOL.read_text(encoding="utf-8"))),
         ROOT / "docs" / "TOOLS_TABLE.md": _md(doc),
         ROOT / "generated" / "urtc_tool_ids.h": _c_ids(doc, json.loads(PROTOCOL.read_text(encoding="utf-8"))),
         ROOT / "src" / "urtc_common" / "firmware_names.py": _images_py(load_images()),
