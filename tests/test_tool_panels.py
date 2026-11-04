@@ -76,3 +76,62 @@ def test_the_generated_typescript_is_current():
     out = gen.outputs(doc)
     path = gen.ROOT / "generated" / "urtcTools.ts"
     assert path.read_bytes().decode("utf-8") == out[path]
+
+
+def test_every_tool_with_a_screen_of_its_own_now_has_a_panel():
+    doc, protocol = spec()
+    with_panel = {t["id"] for t in doc["tools"] if "panel" in t}
+    assert {0, 10, 11, 17, 22} <= with_panel
+    assert gen.validate_panels(doc, protocol) == []
+
+
+def test_the_generated_panels_carry_the_answer_of_a_query_and_of_an_image():
+    doc, protocol = spec()
+    panels = gen._panels(doc, protocol)
+    query = next(a for a in panels[0]["sections"][1]["actions"] if a["type"] == "query")
+    assert query["canId"] == 0x132 and "respCanId" not in query and query["result"]["width"] == 4
+    image = next(a for a in panels[22]["sections"][0]["actions"] if a["type"] == "image")
+    assert (image["canId"], image["respCanId"]) == (0x254, 0x255)
+
+
+def test_a_query_or_an_image_that_is_incomplete_is_refused():
+    doc, protocol = spec()
+    bad = copy.deepcopy(doc)
+    tools = {t["id"]: t for t in bad["tools"]}
+    query = next(a for a in tools[17]["panel"]["sections"][1]["actions"] if a["type"] == "query")
+    query["result"]["width"] = 3
+    del query["timeout_ms"]
+    query["response"] = "NOT_A_MESSAGE"
+    image = next(a for a in tools[22]["panel"]["sections"][0]["actions"] if a["type"] == "image")
+    image["columns"] = 31
+    del image["error"]
+    problems = "\n".join(gen.validate_panels(bad, protocol))
+    assert "width of 1, 2 or 4" in problems
+    assert "needs a timeout_ms" in problems
+    assert "answer names a message that is not in the protocol" in problems
+    assert "do not fill whole rows" in problems
+    assert "image error" in problems
+
+
+def test_a_hex_control_a_gate_an_interval_and_a_reading_format_are_checked():
+    doc, protocol = spec()
+    bad = copy.deepcopy(doc)
+    tools = {t["id"]: t for t in bad["tools"]}
+    tools[17]["panel"]["sections"][1]["controls"][0]["default"] = "xyz"
+    tools[10]["panel"]["sections"][2]["actions"][0]["interval_ms"] = 100
+    tools[10]["panel"]["sections"][1]["actions"][0]["gate_first"] = True
+    tools[11]["panel"]["sections"][0]["telemetry"][0]["format"] = "average"
+    problems = "\n".join(gen.validate_panels(bad, protocol))
+    assert "four hexadecimal digits" in problems
+    assert "interval_ms belongs to a keepalive" in problems
+    assert "gate_first belongs to a send" in problems
+    assert "unknown format 'average'" in problems
+
+
+def test_a_number_in_the_arguments_stands_for_itself_and_the_repeat_interval_matches_the_web_studio():
+    doc, protocol = spec()
+    nozzle = next(t for t in doc["tools"] if t["id"] == 10)["panel"]["sections"][0]["actions"][0]
+    assert nozzle["args"] == ["temp", "dir", 0]
+    assert len(nozzle["args"]) == gen.ENCODERS[nozzle["encoder"]]
+    fan = next(t for t in doc["tools"] if t["id"] == 10)["panel"]["sections"][1]["actions"][0]
+    assert fan["interval_ms"] == 400

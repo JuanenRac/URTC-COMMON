@@ -25,6 +25,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -41,10 +42,12 @@ ENCODERS = {
     "drillCommand": 2, "drillStop": 0, "aoiRingCommand": 2, "laserCommand": 2, "laserOff": 0, "powerByte": 1, "powerOff": 0,
     "electromagnetCommand": 0, "hotAirCommand": 2, "hotAirOff": 0, "motionMove": 2, "motionStop": 1, "weldFire": 1,
     "pasteJettingConfig": 2, "pasteJettingPulse": 3,
+    "emptyFrame": 0, "adsConfig": 1, "feederReset": 0, "solderSetpoint": 1, "solderOff": 0, "thermalMotion": 3, "thermalMotionOff": 0,
 }
-CONTROL_TYPES = ("range", "number", "select", "checkbox")
-ACTION_TYPES = ("keepalive", "send", "stop", "latched")
-CONFIRM_KINDS = ("drill", "laser", "uv", "weld", "heater", "motion", "paste")
+CONTROL_TYPES = ("range", "number", "select", "checkbox", "hex")
+ACTION_TYPES = ("keepalive", "send", "stop", "latched", "query", "image")
+READING_FORMATS = ("yes_no", "count", "last_seen")
+CONFIRM_KINDS = ("drill", "laser", "uv", "weld", "heater", "motion", "paste", "feeder_reset")
 
 
 def load() -> dict:
@@ -86,6 +89,36 @@ def resolve_panel(tools: list[dict], tool: dict) -> dict | None:
         other = next((t for t in tools if t["id"] == panel["same_as"]), None)
         return other.get("panel") if other and "same_as" not in other.get("panel", {}) else None
     return panel
+
+
+def _validate_request(action: dict, at: str, kind: str, messages: set[str]) -> list[str]:
+    """Problems of a ``query`` (ask the board for one value and show it) or an ``image`` (ask for a picture in chunks of frames)."""
+    problems: list[str] = []
+    if action.get("response", action.get("message")) not in messages:
+        problems.append(f"{at}: the answer names a message that is not in the protocol ({action.get('response')!r})")
+    if not isinstance(action.get("timeout_ms"), int) or action["timeout_ms"] <= 0:
+        problems.append(f"{at}: {kind} needs a timeout_ms")
+    _text_ok(action.get("label"), f"{at} {kind} label", problems)
+    if kind == "query":
+        result = action.get("result", {})
+        if result.get("width") not in (1, 2, 4) or not isinstance(result.get("offset"), int) or result["offset"] < 0:
+            problems.append(f"{at}: a query result needs an offset and a width of 1, 2 or 4")
+        if "label" in result:
+            _text_ok(result["label"], f"{at} result label", problems)
+        for state in result.get("states", []):
+            if not isinstance(state.get("value"), int):
+                problems.append(f"{at}: a state of a result is a number")
+            _text_ok(state.get("label"), f"{at} state", problems)
+    else:
+        for field in ("chunks", "frames_per_chunk", "columns", "scale", "max_value"):
+            if not isinstance(action.get(field), int) or action[field] <= 0:
+                problems.append(f"{at}: an image needs {field}")
+        if action.get("columns") and action.get("chunks") and action.get("frames_per_chunk"):
+            if (action["chunks"] * action["frames_per_chunk"] * 8 // 2) % action["columns"]:
+                problems.append(f"{at}: the pixels of an image do not fill whole rows")
+        for field in ("progress", "error"):
+            _text_ok(action.get(field), f"{at} image {field}", problems)
+    return problems
 
 
 def validate_panels(doc: dict, protocol: dict) -> list[str]:
@@ -130,12 +163,18 @@ def validate_panels(doc: dict, protocol: dict) -> list[str]:
                         _text_ok(option.get("label"), f"{at} control {cid} option", problems)
                 if control.get("type") == "checkbox" and not isinstance(control.get("default"), bool):
                     problems.append(f"{at}: control {cid} needs a true or false default")
+                if control.get("type") == "hex" and not re.fullmatch(r"[0-9A-Fa-f]{4}", str(control.get("default"))):
+                    problems.append(f"{at}: control {cid} needs a default of four hexadecimal digits")
             for reading in section.get("telemetry", []):
                 if reading.get("message") not in messages:
                     problems.append(f"{at}: telemetry {reading.get('id')} names a message that is not in the protocol")
                 if reading.get("width") not in (1, 2) or not isinstance(reading.get("offset"), int) or reading["offset"] < 0:
                     problems.append(f"{at}: telemetry {reading.get('id')} needs an offset and a width of 1 or 2")
                 _text_ok(reading.get("label"), f"{at} telemetry label", problems)
+                if "format" in reading and reading["format"] not in READING_FORMATS:
+                    problems.append(f"{at}: telemetry {reading.get('id')} has an unknown format {reading['format']!r}")
+                if "match" in reading and not isinstance(reading["match"], int):
+                    problems.append(f"{at}: telemetry {reading.get('id')} match is a number")
             actions = section.get("actions", [])
             if not controls and not section.get("telemetry") and not actions:
                 problems.append(f"{at}: nothing to show")
@@ -146,6 +185,9 @@ def validate_panels(doc: dict, protocol: dict) -> list[str]:
                     continue
                 if action.get("message") not in messages:
                     problems.append(f"{at}: an action names a message that is not in the protocol ({action.get('message')!r})")
+                if kind in ("query", "image"):
+                    problems.extend(_validate_request(action, at, kind, messages))
+                    continue
                 names = [action.get("encoder")] + ([action["off_encoder"]] if "off_encoder" in action else [])
                 for name in names:
                     if name not in ENCODERS:
@@ -153,6 +195,8 @@ def validate_panels(doc: dict, protocol: dict) -> list[str]:
                 if action.get("encoder") in ENCODERS and len(action.get("args", [])) != ENCODERS[action["encoder"]]:
                     problems.append(f"{at}: encoder {action['encoder']} takes {ENCODERS[action['encoder']]} arguments")
                 for arg in action.get("args", []) + action.get("reset", []):
+                    if isinstance(arg, int) and not isinstance(arg, bool):
+                        continue  # a number stands for itself (a step count that is always zero in a repeated command)
                     if arg not in controls:
                         problems.append(f"{at}: an action uses control {arg!r}, which this panel does not have")
                 if "confirm" in action and action["confirm"] not in CONFIRM_KINDS:
@@ -161,6 +205,10 @@ def validate_panels(doc: dict, protocol: dict) -> list[str]:
                     problems.append(f"{at}: confirm_value is not a control of the panel")
                 if kind == "keepalive" and ("off_encoder" not in action or not isinstance(action.get("watchdog_ms"), int)):
                     problems.append(f"{at}: a keepalive needs off_encoder and watchdog_ms")
+                if "interval_ms" in action and (kind != "keepalive" or not isinstance(action["interval_ms"], int) or action["interval_ms"] <= 0):
+                    problems.append(f"{at}: interval_ms belongs to a keepalive and is a positive number")
+                if action.get("gate_first") and (kind != "send" or not action.get("args")):
+                    problems.append(f"{at}: gate_first belongs to a send with arguments")
                 if kind in ("send", "stop", "latched"):
                     _text_ok(action.get("label"), f"{at} action label", problems)
     return problems
@@ -177,6 +225,8 @@ def _panels(doc: dict, protocol: dict) -> dict[int, dict]:
                 out[key] = walk(value)
                 if key == "message":
                     out["canId"] = ids[value]
+                if key == "response":
+                    out["respCanId"] = ids[value]
             return out
         if isinstance(node, list):
             return [walk(v) for v in node]
@@ -191,19 +241,31 @@ export type UrtcPanelText = { key: string; default: string; param?: string } | {
 export type UrtcPanelControl =
   | { id: string; type: 'range' | 'number'; label: UrtcPanelText; min: number; max: number; default: number }
   | { id: string; type: 'select'; label: UrtcPanelText; default: string | number; options: { value: string | number; label: UrtcPanelText }[] }
-  | { id: string; type: 'checkbox'; label: UrtcPanelText; default: boolean };
+  | { id: string; type: 'checkbox'; label: UrtcPanelText; default: boolean }
+  | { id: string; type: 'hex'; label: UrtcPanelText; default: string };
 
 export interface UrtcPanelReading {
   id: string; label: UrtcPanelText; message: string; canId: number; offset: number; width: 1 | 2;
-  format?: 'yes_no'; unit?: string; graph_max?: number;
+  format?: 'yes_no' | 'count' | 'last_seen'; match?: number; unit?: string; graph_max?: number;
+}
+
+/** What a query shows: the number at `offset` (big-endian, `width` bytes), or the text of the state it stands for. */
+export interface UrtcPanelResult {
+  label?: UrtcPanelText; offset: number; width: 1 | 2 | 4; signed?: boolean; states?: { value: number; label: UrtcPanelText }[];
 }
 
 export interface UrtcPanelAction {
-  type: 'keepalive' | 'send' | 'stop' | 'latched';
-  message: string; canId: number; encoder: string; args?: string[]; description?: string;
+  type: 'keepalive' | 'send' | 'stop' | 'latched' | 'query' | 'image';
+  message: string; canId: number; encoder?: string; args?: (string | number)[]; description?: string;
   label?: UrtcPanelText; confirm?: string; confirm_value?: string;
   off_encoder?: string; off_description?: string; watchdog_ms?: number; reset?: string[];
   description_on?: string; description_off?: string;
+  /** keepalive: the pause between two repeats when it is not the usual one; send: the first argument goes as 0 unless the repeated command of the section is on. */
+  interval_ms?: number; gate_first?: boolean;
+  /** query and image: the message that answers (the one asked when absent), how long to wait, a query shows `result` and `auto` asks when the adapter connects. */
+  response?: string; respCanId?: number; timeout_ms?: number; result?: UrtcPanelResult; auto?: boolean;
+  /** image: `chunks` requests of `frames_per_chunk` frames, signed 16-bit pixels divided by `scale`, `columns` per row, colour scale from 0 to `max_value`. */
+  chunks?: number; frames_per_chunk?: number; columns?: number; scale?: number; max_value?: number; progress?: UrtcPanelText; error?: UrtcPanelText;
 }
 
 export interface UrtcPanelSection {
