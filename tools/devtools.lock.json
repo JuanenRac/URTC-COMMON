@@ -1,9 +1,9 @@
 {
   "schema": 1,
   "source": "URTC-DEVTOOLS",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "files": {
-    ".github/actions/urtc-baseline/action.yml": "383ed320fbbeb45cd645c99d5410ac922ed44cc525b112ce3e31bde2c8387f34",
+    ".github/actions/urtc-baseline/action.yml": "d153d866bd20b253cbccd8526026170c9a54c7d65acd77c0ad517b990986a05b",
     ".github/workflows/dashboard-dispatch.yml": "d0fcb644615c52528d9f4fb3f62752541be91e7b2ccee03c4e8bbadc8b8fd8bf",
     "bump_manifest_version.py": "fbd3433f100e701457c2053495e2ba86771f9cb25f8d396eba2d173ef5462bda",
     "test.bat": "124b88726e0df4128d178238ba33701fe90b85e3b6f542713318dbbded24031e",
@@ -12,6 +12,7 @@
     "tools/_readme_parity.py": "612b6bedc3515b98b97e40ceb2cd436c9de4d28276727df5cee22cbe00e85501",
     "tools/_readme_svg.py": "7bb8388deb11c15dfbc202c8da1b808540853ec2c263260795d3cb2664d6f94d",
     "tools/_tracked_names.py": "96e61441c4f91125d4e8809be3a4f183c397f15a04c87bc354762f85c12ee63a",
+    "tools/build_test.py": "6a9ff58f880e711d3850f1696f1c99f552f9c4dc9a120a444f23a3578a9e970b",
     "tools/make_architecture.py": "9df7d6c00af0f1178c44eae8e849c31218bae196984ec718a7fdc63daa2e2fa9",
     "tools/make_structure.py": "27615e9b6374cbb6cc21b52d52bad4e9db1c9307319a8910b4b75c4ecb9fe5c8",
     "tools/pretty_run.py": "1698bfec531568afaf5319f0a220e9bf7c0087f39cbf5e6e88e7035bfc1327c5",
