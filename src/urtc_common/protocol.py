@@ -102,6 +102,7 @@ CAN_ID_ELECTROMAGNET_CMD = 0x1B0  # Electromagnet coil
 CAN_ID_HEALTH_PROFILE = 0x1B8  # Periodic health frame of the board (only while the health feature runs)
 CAN_ID_PID_CONFIG = 0x1B9  # Gains of the heater PID and start of its relay autotune
 CAN_ID_PID_STATE_RESP = 0x1BA  # The heater PID: gains in force, state and output
+CAN_ID_HEALTH_INFO = 0x1BB  # Identity and life of the board: protocol byte, last reset cause, firmware version and uptime (sent with the health frame)
 CAN_ID_SPOT_WELD_CMD = 0x1C0  # Spot welder timed pulse
 CAN_ID_UV_CURING_CMD = 0x1D0  # UV curing LED duty
 CAN_ID_HOTAIR_CMD = 0x1E0  # Hot-air nozzle setpoint and blower duty
@@ -557,6 +558,7 @@ MESSAGES = {
     440: {'name': 'HEALTH_PROFILE', 'group': 'diagnostics', 'direction': 'board_to_host', 'handled_by': 'application', 'tools': None, 'gates': {'blocked_by_critical_error': False}, 'timing': {'period_ms': 1000}},
     441: {'name': 'PID_CONFIG', 'group': 'configuration', 'direction': 'host_to_board', 'handled_by': 'application', 'tools': None, 'gates': {'blocked_by_critical_error': True}},
     442: {'name': 'PID_STATE_RESP', 'group': 'configuration', 'direction': 'both', 'handled_by': 'application', 'tools': None, 'gates': {'blocked_by_critical_error': True}},
+    443: {'name': 'HEALTH_INFO', 'group': 'diagnostics', 'direction': 'board_to_host', 'handled_by': 'application', 'tools': None, 'gates': {'blocked_by_critical_error': False}, 'timing': {'period_ms': 10000}},
     448: {'name': 'SPOT_WELD_CMD', 'group': 'welding', 'direction': 'host_to_board', 'handled_by': 'application', 'tools': [14], 'gates': {'blocked_by_critical_error': True, 'blocked_during_boot_sequence': True}},
     464: {'name': 'UV_CURING_CMD', 'group': 'uv', 'direction': 'host_to_board', 'handled_by': 'application', 'tools': [18], 'gates': {'blocked_by_critical_error': True, 'blocked_during_boot_sequence': True}, 'timing': {'watchdog_ms': 250}},
     480: {'name': 'HOTAIR_CMD', 'group': 'hotair', 'direction': 'host_to_board', 'handled_by': 'application', 'tools': [19], 'gates': {'blocked_by_critical_error': True, 'blocked_during_boot_sequence': True}, 'timing': {'watchdog_ms': 250}},
@@ -670,6 +672,7 @@ LAYOUTS = {
     'pid_config': {'id': 441, 'role': 'request', 'dlc': {'exact': 7}, 'fields': [{'name': 'kp_x100', 'type': 'u16', 'offset': 0, 'width': 2}, {'name': 'ki_x100', 'type': 'u16', 'offset': 2, 'width': 2}, {'name': 'kd_x100', 'type': 'u16', 'offset': 4, 'width': 2}, {'name': 'action', 'type': 'u8', 'offset': 6, 'width': 1, 'allowed': [0, 1, 2, 3]}]},
     'pid_state_resp_request': {'id': 442, 'role': 'request', 'dlc': {'any': True}, 'fields': []},
     'pid_state_resp_response': {'id': 442, 'role': 'response', 'dlc': {'exact': 8}, 'fields': [{'name': 'kp_x100', 'type': 'u16', 'offset': 0, 'width': 2}, {'name': 'ki_x100', 'type': 'u16', 'offset': 2, 'width': 2}, {'name': 'kd_x100', 'type': 'u16', 'offset': 4, 'width': 2}, {'name': 'state', 'type': 'u8', 'offset': 6, 'width': 1}, {'name': 'duty_percent', 'type': 'u8', 'offset': 7, 'width': 1, 'range': [0, 100]}]},
+    'health_info': {'id': 443, 'role': 'response', 'dlc': {'exact': 8}, 'fields': [{'name': 'protocol_version', 'type': 'u8', 'offset': 0, 'width': 1}, {'name': 'reset_cause', 'type': 'u8', 'offset': 1, 'width': 1}, {'name': 'fw_minor', 'type': 'u8', 'offset': 2, 'width': 1}, {'name': 'fw_patch', 'type': 'u8', 'offset': 3, 'width': 1}, {'name': 'fw_build', 'type': 'u8', 'offset': 4, 'width': 1}, {'name': 'uptime_s', 'type': 'u24', 'offset': 5, 'width': 3}]},
     'spot_weld_cmd': {'id': 448, 'role': 'request', 'dlc': {'exact': 3}, 'fields': [{'name': 'fire', 'type': 'u8', 'offset': 0, 'width': 1, 'range': [1, 1]}, {'name': 'duration_ms', 'type': 'u16', 'offset': 1, 'width': 2, 'range': [1, 2000]}]},
     'uv_curing_cmd': {'id': 464, 'role': 'request', 'dlc': {'exact': 1}, 'fields': [{'name': 'duty', 'type': 'u8', 'offset': 0, 'width': 1}]},
     'hotair_cmd': {'id': 480, 'role': 'request', 'dlc': {'exact': 3}, 'fields': [{'name': 'setpoint_c', 'type': 'u16', 'offset': 0, 'width': 2, 'range': [0, 445]}, {'name': 'blower_duty', 'type': 'u8', 'offset': 2, 'width': 1}]},
@@ -1508,6 +1511,16 @@ def encode_pid_state_resp_response(kp_x100: int, ki_x100: int, kd_x100: int, sta
 def decode_pid_state_resp_response(data: bytes, strict: bool = False) -> dict | None:
     """Fields of 0x1BA (response), or None when the payload is too short."""
     return decode("pid_state_resp_response", data, strict)
+
+
+def encode_health_info(protocol_version: int, reset_cause: int, fw_minor: int, fw_patch: int, fw_build: int, uptime_s: int) -> tuple[int, bytes]:
+    """Identity and life of the board: protocol byte, last reset cause, firmware version and uptime (sent with the health frame) (0x1BB, response)."""
+    return encode("health_info", protocol_version=protocol_version, reset_cause=reset_cause, fw_minor=fw_minor, fw_patch=fw_patch, fw_build=fw_build, uptime_s=uptime_s)
+
+
+def decode_health_info(data: bytes, strict: bool = False) -> dict | None:
+    """Fields of 0x1BB (response), or None when the payload is too short."""
+    return decode("health_info", data, strict)
 
 
 def encode_spot_weld_cmd(fire: int, duration_ms: int) -> tuple[int, bytes]:

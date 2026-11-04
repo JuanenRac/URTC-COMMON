@@ -326,7 +326,12 @@ def test_slcan_bitrate_codes_equal_the_specification(spec, sibling):
 
 
 def test_slave_registers_equal_the_specification(spec, sibling):
+    generated = c_defines(sibling("URTC/src/common/urtc_can_ids.h"), "URTC_")
+    boot_text = text(sibling("URTC/src/F303-slave/boot/slaveboot_common.h"))
     boot = {n: v for n, v in c_defines(sibling("URTC/src/F303-slave/boot/slaveboot_common.h"), "REG_").items()}
+    # the bootloader takes its register numbers from the generated header: resolve each name it defines through it
+    for name, target in re.findall(r"^#define\s+(REG_[A-Z0-9_]+)\s+(URTC_[A-Z0-9_]+)", boot_text, re.M):
+        boot[name] = generated[target]
     app = {n: v for n, v in c_defines(sibling("URTC/src/F303-slave/slave_common.h"), "REG_").items()}
     spec_boot = {f"REG_{e['name']}": e["id"] for e in spec["registers"]["slave_bootloader"]["entries"]}
     spec_app = {f"REG_{e['name']}": e["id"] for e in spec["registers"]["slave_application"]["entries"]}
@@ -352,7 +357,7 @@ def test_the_prose_and_the_specification_list_the_same_identifiers(spec, sibling
     assert not_in_prose == {v for v, m in table.items() if m.get("documented_in_prose") is False} == set()
     # an identifier that appears only in the summary and the section intro is the one a scan of the headers would miss
     assert summary - headers == {0x243}
-    assert len(headers - RACK_RESERVED) == 100
+    assert len(headers - RACK_RESERVED) == 101
 
 
 def test_exact_lengths_in_the_prose_are_the_lengths_of_the_specification(spec, sibling):

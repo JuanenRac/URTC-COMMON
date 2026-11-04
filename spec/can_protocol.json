@@ -4885,6 +4885,97 @@
       }
     },
     {
+      "id": "0x1BB",
+      "name": "HEALTH_INFO",
+      "group": "diagnostics",
+      "title": "Identity and life of the board: protocol byte, last reset cause, firmware version and uptime (sent with the health frame)",
+      "direction": "board_to_host",
+      "handled_by": "application",
+      "tools": "any",
+      "gates": {
+        "blocked_by_critical_error": false
+      },
+      "timing": {
+        "period_ms": 10000
+      },
+      "layouts": [
+        {
+          "role": "response",
+          "dlc": {
+            "exact": 8
+          },
+          "fields": [
+            {
+              "name": "protocol_version",
+              "type": "u8",
+              "note": "Version of this protocol that the firmware speaks (protocol_version of the specification). A host compares it with its own window of compatible versions.",
+              "offset": 0,
+              "width": 1
+            },
+            {
+              "name": "reset_cause",
+              "type": "u8",
+              "note": "Why the chip last reset, bit field: 1 independent watchdog, 2 window watchdog, 4 software, 8 power-on or brown-out, 16 reset pin, 32 low power, 64 option-byte load. The same value as byte 5 of the 0x111 answer.",
+              "offset": 1,
+              "width": 1
+            },
+            {
+              "name": "fw_minor",
+              "type": "u8",
+              "note": "Second component of the firmware version.",
+              "offset": 2,
+              "width": 1
+            },
+            {
+              "name": "fw_patch",
+              "type": "u8",
+              "note": "Third component of the firmware version.",
+              "offset": 3,
+              "width": 1
+            },
+            {
+              "name": "fw_build",
+              "type": "u8",
+              "note": "Fourth component of the firmware version (0 while the version has three).",
+              "offset": 4,
+              "width": 1
+            },
+            {
+              "name": "uptime_s",
+              "type": "u24",
+              "unit": "s",
+              "note": "Seconds since power-up or the last reset, from the 32-bit millisecond tick of the firmware, so it restarts from 0 after about 49 days.",
+              "offset": 5,
+              "width": 3
+            }
+          ],
+          "examples": [
+            {
+              "name": "board running 0.4.4 for one hour after a power-on",
+              "fields": {
+                "protocol_version": 1,
+                "reset_cause": 8,
+                "fw_minor": 4,
+                "fw_patch": 4,
+                "fw_build": 0,
+                "uptime_s": 3600
+              },
+              "data": "0108040400000E10"
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "Sent every ten seconds, right after a health frame, by a board whose health feature runs. It adds what the one-second health frame has no room for."
+      ],
+      "implemented_by": {
+        "firmware": true,
+        "flasher": false,
+        "tester": false,
+        "web_studio": false
+      }
+    },
+    {
       "id": "0x1C0",
       "name": "SPOT_WELD_CMD",
       "group": "welding",
