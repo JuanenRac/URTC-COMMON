@@ -59,7 +59,7 @@
       "maturity": "functional",
       "evidence": "host-test",
       "pending": [
-        "Real CAN/F-RAM/GPIO I/O to drive tool tracking and pre-heating needs a real PCB, which does not exist yet"
+        "Real CAN/F-RAM/GPIO I/O needs a real PCB, which does not exist yet"
       ]
     },
     {

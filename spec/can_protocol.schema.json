@@ -139,6 +139,27 @@
       }
     },
     "messages": {"type": "array", "minItems": 1, "items": {"$ref": "#/definitions/message"}},
+    "legacy_aliases": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["note", "entries"],
+      "properties": {
+        "note": {"type": "string", "minLength": 1},
+        "entries": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["old", "new", "in"],
+            "properties": {
+              "old": {"type": "string", "pattern": "^[A-Z][A-Z0-9_]*$"},
+              "new": {"type": "string", "pattern": "^[A-Z][A-Z0-9_]*$"},
+              "in": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"enum": ["c", "py", "ts"]}}
+            }
+          }
+        }
+      }
+    },
     "rack": {
       "type": "object",
       "additionalProperties": false,

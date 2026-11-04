@@ -64,7 +64,7 @@ Every identifier of `spec/can_protocol.json`, one row each. **Dir**: H>B host to
 | `0x200` | ULTRASONIC_WELD_CMD | H>B | 3 | 24 | `F . T W` |  |
 | `0x210` | SLAVE_ENTER_BOOTLOADER | H>B | 4 | any | `F L . W` | magic enter_bootloader |
 | `0x211` | SLAVE_START_UPDATE | H>B | 8 | any | `F L . W` |  |
-| `0x212` | SLAVE_HMAC_CHUNK | H>B | 8 | any | `F L . W` |  |
+| `0x212` | SLAVE_DIGEST_CHUNK | H>B | 8 | any | `F L . W` |  |
 | `0x213` | SLAVE_DATA | H>B | 1-8 | any | `F L . W` |  |
 | `0x214` | SLAVE_END_UPDATE | H>B | 8 | any | `F L . W` |  |
 | `0x215` | SLAVE_STATUS | both | any / 1 | any | `F L . W` |  |

@@ -39,6 +39,11 @@ HEADER_LICENSE = (
 )
 
 
+def legacy_aliases(spec: dict, language: str) -> list[tuple[str, str]]:
+    """The (old, new) names that stay as aliases in the output of one language, from ``legacy_aliases`` of the specification."""
+    return [(item["old"], item["new"]) for item in spec.get("legacy_aliases", {}).get("entries", []) if language in item["in"]]
+
+
 def load_spec() -> dict:
     return json.loads(SPEC.read_text(encoding="utf-8"))
 
@@ -546,6 +551,12 @@ def render_python(spec: dict) -> str:
         for entry in block["entries"]:
             add(f"{prefixes[key]}{entry['name']} = 0x{entry['id']:02X}")
     add("")
+    aliases = legacy_aliases(spec, "py")
+    if aliases:
+        add("# --- old names kept as aliases of the renamed ones (see legacy_aliases of the specification) ---")
+        for old, new in aliases:
+            add(f"{old} = {new}")
+        add("")
     add("# --- SLCAN ---")
     add("SLCAN_BITRATES = " + pyrepr([tuple(item) for item in spec["slcan"]["bitrate_codes"]]))
     add(f'SLCAN_BITRATE_DEFAULT_CODE = "{spec["slcan"]["bitrate_default_code"]}"')
@@ -940,6 +951,12 @@ def render_typescript(spec: dict) -> str:
         for entry in block["entries"]:
             add(f"export const {prefixes[key]}{entry['name']} = 0x{entry['id']:02X};")
     add("")
+    aliases = legacy_aliases(spec, "ts")
+    if aliases:
+        add("// --- old names kept as aliases of the renamed ones (see legacy_aliases of the specification) ---")
+        for old, new in aliases:
+            add(f"export const {old} = {new};")
+        add("")
     add("// --- SLCAN ---")
     add("export const SLCAN_BITRATES: [string, string][] = " + jsrepr(spec["slcan"]["bitrate_codes"]) + ";")
     add(f"export const SLCAN_BITRATE_DEFAULT_CODE = '{spec['slcan']['bitrate_default_code']}';")
@@ -1046,6 +1063,12 @@ def render_c(spec: dict) -> str:
         for entry in block["entries"]:
             add(f"#define {prefixes[key]}{entry['name']} 0x{entry['id']:02X}u")
     add("")
+    aliases = legacy_aliases(spec, "c")
+    if aliases:
+        add("/* --- old names kept as aliases of the renamed ones (see legacy_aliases of the specification) --- */")
+        for old, new in aliases:
+            add(f"#define URTC_{old} URTC_{new}")
+        add("")
     rack = spec.get("rack")
     if rack:
         add("/* --- " + rack["title"] + ": see docs/PROTOCOL_TABLE.md --- */")

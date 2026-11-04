@@ -10,7 +10,7 @@
 | Tester (`URTC-TESTER`) | functional | Run against a simulated or fake board | exercised only against fake transports and never against a real board |
 | Web studio (`URTC-WEB-STUDIO`) | functional | Run against a simulated or fake board | A run on a real board<br>the Web Serial path has never been run against a USB-CAN adapter |
 | Updater (`URTC-UPDATER`) | established | Unit tests and scenarios on a PC | A run on a real board |
-| Smart rack (`URTC-SMART-RACK`) | functional | Unit tests and scenarios on a PC | A run on a real board<br>Real CAN/F-RAM/GPIO I/O to drive tool tracking and pre-heating needs a real PCB, which does not exist yet |
+| Smart rack (`URTC-SMART-RACK`) | functional | Unit tests and scenarios on a PC | A run on a real board<br>Real CAN/F-RAM/GPIO I/O needs a real PCB, which does not exist yet |
 | Vision tool (`URTC-VISION-TOOL`) | functional | Unit tests and scenarios on a PC | A run on a real board<br>host-tested on a PC only and never run on a board or with a real sensor<br>real dual-modal capture and per-pixel calibration still need a real PCB and real cameras |
 | Documentation generator (`URTC-DOCS`) | functional | Unit tests and scenarios on a PC | A run on a real board<br>Scaffolding on purpose: the nightly comparison of all the repositories has not yet been exercised over time |
 | Shared protocol and code (`URTC-COMMON`) | functional | Run against a simulated or fake board | A run on a real board |
