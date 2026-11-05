@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The full build check compiles only on CI or when allowed:** `tools/build_test.py` prints `BUILD_TEST=SKIPPED` (exit status 2) for the stacks that compile unless it runs on a CI runner or `ALLOW_LOCAL_BUILD=1` says so; the light check is not locked.
+
 - **Nothing compiles on the machine of the developer by accident:** a build that needs a C compiler, WSL, Cargo, Gradle or an npm build runs only on a CI runner (`CI` or `GITHUB_ACTIONS` set) or when `ALLOW_LOCAL_BUILD=1` says so. The check is `local_build.py` (standard library only, part of the shared set), used by `firmware_board_command` of the virtual board, which now refuses with a message that says so; the tests that build the firmware's own board or the twin of the bootloader are skipped on a plain PC, never reported as passed, and keep running on CI. Tests cover a CI runner, `ALLOW_LOCAL_BUILD` and a plain environment.
 
 - **The "At a glance" section of the eight READMEs follows the data of the documentation hub** (the number of tests).
