@@ -274,8 +274,10 @@ def test_the_copy_sets_exist():
     import vendor_copy
 
     assert vendor_copy.SETS["firmware_bootloader_auth"] == ["firmware_base/urtc_ed25519.h", "firmware_base/urtc_ed25519.c", "firmware_base/urtc_auth.h",
-                                                            "firmware_base/urtc_bl_select.h"]
-    assert vendor_copy.SETS["bootloader_auth_c"] == ["generated/ed25519_vectors.h", "generated/signed_image_vectors.h", "generated/bootloader_select_vectors.h"]
+                                                            "firmware_base/urtc_bl_select.h", "firmware_base/urtc_bl_serial.h"]
+    assert vendor_copy.SETS["bootloader_auth_c"] == ["generated/ed25519_vectors.h", "generated/signed_image_vectors.h", "generated/bootloader_select_vectors.h",
+                                                         "generated/bl_serial_vectors.h"]
     assert vendor_copy.SETS["bootloader_auth_test"] == ["tests/c/test_bootloader_auth.c"]
     assert vendor_copy.SETS["bootloader_auth"] == ["src/urtc_common/ed25519.py", "src/urtc_common/image_auth.py", "src/urtc_common/bl_select.py",
-                                                   "conformance/ed25519_vectors.json", "conformance/signed_image_vectors.json", "conformance/bootloader_select_vectors.json"]
+                                                   "src/urtc_common/bl_serial.py", "conformance/ed25519_vectors.json", "conformance/signed_image_vectors.json",
+                                                   "conformance/bootloader_select_vectors.json", "conformance/bl_serial_vectors.json"]

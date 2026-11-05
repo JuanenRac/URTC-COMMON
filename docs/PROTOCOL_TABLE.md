@@ -94,6 +94,8 @@ Every identifier of `spec/can_protocol.json`, one row each. **Dir**: H>B host to
 | `0x7EB` | BOOTLOADER_SELECT_RESPONSE | B>H | 2 6 6 | any | `. . . .` | no host implements it |
 | `0x7EC` | BOOTLOADER_SIGNATURE_CHUNK | H>B | 8 | any | `F L . W` |  |
 | `0x7ED` | BOOTLOADER_KEY_ID | B>H | 8 | any | `F L . W` |  |
+| `0x7EE` | BOOTLOADER_SERIAL_CHUNK | H>B | 8 | any | `F . . .` | no host implements it |
+| `0x7EF` | BOOTLOADER_SERIAL_RESULT | B>H | 5 | any | `F . . .` | no host implements it |
 | `0x7F0` | ENTER_BOOTLOADER | H>B | 4 | any | `F L . W` | magic enter_bootloader |
 | `0x7F1` | START_UPDATE | H>B | 8 | any | `F L . W` |  |
 | `0x7F2` | DATA | H>B | 1-8 | any | `F L . W` |  |
@@ -111,7 +113,7 @@ Every identifier of `spec/can_protocol.json`, one row each. **Dir**: H>B host to
 | `0x7FE` | READBACK | both | any / 4 (size) / 1-8 (data) | any | `F L . W` |  |
 | `0x7FF` | READBACK_PAGE_ACK | H>B | 4 | any | `F L . W` |  |
 
-102 identifiers, 26 tool values, 27 slave registers, 4 magic payloads.
+104 identifiers, 26 tool values, 27 slave registers, 4 magic payloads.
 
 ## Tool rack
 
