@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [0.2.0] - The full build check compiles only on CI or when allowed: tools/buildtest.py prints BUILDTEST=SKIPPED (exit status 2) for the stacks that compile unless it runs on a CI runner or ALLOWLOCALBUILD=1 says so; the light check is... (and 19 more changes)
+
 - **The full build check compiles only on CI or when allowed:** `tools/build_test.py` prints `BUILD_TEST=SKIPPED` (exit status 2) for the stacks that compile unless it runs on a CI runner or `ALLOW_LOCAL_BUILD=1` says so; the light check is not locked.
 
 - **Nothing compiles on the machine of the developer by accident:** a build that needs a C compiler, WSL, Cargo, Gradle or an npm build runs only on a CI runner (`CI` or `GITHUB_ACTIONS` set) or when `ALLOW_LOCAL_BUILD=1` says so. The check is `local_build.py` (standard library only, part of the shared set), used by `firmware_board_command` of the virtual board, which now refuses with a message that says so; the tests that build the firmware's own board or the twin of the bootloader are skipped on a plain PC, never reported as passed, and keep running on CI. Tests cover a CI runner, `ALLOW_LOCAL_BUILD` and a plain environment.
@@ -26,6 +28,10 @@ All notable changes to this project are documented here.
 - **The signature of an image as a record apart from the build, with a reference and vectors:** `src/urtc_common/image_sig.py` fixes the exact bytes of the `.imgsig` file (the 76-byte record as 152 hexadecimal digits on one line) and of the trust table a bootloader holds (`TKEY`, one or two public keys with current, next and revoked states, a CRC-32, 56 or 100 bytes) and decides, with the rules of the bootloader policy, whether an image installs. `conformance/image_sig_vectors.json` (written by `tools/make_image_sig_vectors.py`, `--check` in the tests) holds table cases, file cases and verification cases, including a revoked key, a counter below the floor and every flipped bit; all keys are throwaway test keys. `docs/SIGNATURE_SEPARATION.md` gains the exact formats, the fixed offset of the table, the specification of the read-only size report of the build service and the open points.
 - **Property-based tests of the security validators:** `tests/test_property_validators.py` (22 tests, seeded generated cases, no new dependency) checks the rotation of the signing key (an unknown fingerprint is never accepted, the previous key expires exactly when the window ends, a window of zero or a clock before the start accept only the current key, a revoked key is never accepted), the image authentication (under `ed25519_only` nothing but a valid signature of a trusted key installs, whatever the HMAC says and whatever the record holds; a signature does not move to another image, counter or hardware; the rollback rules hold for any floor), and the limits of the header and frame parsers. A local mutation run killed 165 of 188 mutants of `key_rotation.py` and `image_auth.py` the first time and 183 after the tests it pointed to were added; the method and the figures are in `docs/TESTING_STRATEGY.md`. The mutation run is not part of the CI.
 - **The test count in the "At a glance" table of the README is the real one:** the number was counted by collecting the tests of the suite and written into the eight READMEs.
+
+## [0.2.0]
+
+- Build version synchronized with `urtc.project.json` and the repository-native version source.
 
 ## [0.1.9] - The signing key can be announced as two fingerprints at once during a rotation window that is a parameter, with a reference rule, shared conformance vectors and a design that leaves the programmable serial to a separate production tool
 
