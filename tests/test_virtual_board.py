@@ -341,6 +341,18 @@ def test_the_command_line_subcommand_reports_a_bad_option(capsys):
 # =============================================================================
 # the firmware's own virtual board, built from a checkout of the URTC repository (--firmware-repo)
 # =============================================================================
+@pytest.fixture
+def allow_build(monkeypatch):
+    """The stand-in builders are Python scripts that compile nothing, so the lock on local builds is lifted for them."""
+    monkeypatch.setenv("ALLOW_LOCAL_BUILD", "1")
+
+
+@pytest.fixture
+def no_ci(monkeypatch):
+    for name in ("CI", "GITHUB_ACTIONS", "ALLOW_LOCAL_BUILD"):
+        monkeypatch.delenv(name, raising=False)
+
+
 def _stand_in_builder(tmp_path, body: str):
     """A folder that looks like a URTC checkout: its tools/fuzz_virtual_board.py is the stand-in the body writes."""
     script = tmp_path / "tools" / "fuzz_virtual_board.py"
@@ -349,14 +361,14 @@ def _stand_in_builder(tmp_path, body: str):
     return tmp_path
 
 
-def test_the_command_of_the_firmware_board_is_what_the_builder_prints_plus_the_tool_and_features(tmp_path):
+def test_the_command_of_the_firmware_board_is_what_the_builder_prints_plus_the_tool_and_features(tmp_path, allow_build):
     from urtc_common.virtual_board import firmware_board_command
 
     repo = _stand_in_builder(tmp_path, "print('noise')\nprint('VIRTUAL_BOARD_COMMAND=[\"wsl\", \"--\", \"./board\"]')\n")
     assert firmware_board_command(repo, tool=5, features=0x0F, build_dir=tmp_path / "out") == ["wsl", "--", "./board", "5", "15"]
 
 
-def test_the_firmware_board_says_why_it_cannot_be_built(tmp_path):
+def test_the_firmware_board_says_why_it_cannot_be_built(tmp_path, allow_build):
     from urtc_common.virtual_board import FirmwareBoardError, firmware_board_command
 
     with pytest.raises(FirmwareBoardError, match="not found"):
@@ -401,7 +413,7 @@ def test_the_real_firmware_receive_path_answers_through_the_bridge(sibling):
 # =============================================================================
 # the twin of the bootloader (--firmware-bootloader): the real C of the master's bootloader behind the same bridge
 # =============================================================================
-def test_the_command_of_the_bootloader_twin_has_no_tool_or_features(tmp_path):
+def test_the_command_of_the_bootloader_twin_has_no_tool_or_features(tmp_path, allow_build):
     from urtc_common.virtual_board import firmware_board_command
 
     script = tmp_path / "tools" / "bootloader_twin.py"
@@ -410,7 +422,32 @@ def test_the_command_of_the_bootloader_twin_has_no_tool_or_features(tmp_path):
     assert firmware_board_command(tmp_path, build_dir=tmp_path / "out", bootloader=True) == ["wsl", "--", "./twin"]
 
 
-def test_the_bootloader_twin_needs_its_own_builder(tmp_path):
+def test_a_build_on_this_pc_is_refused_unless_ci_or_allowed(tmp_path, no_ci, monkeypatch):
+    from urtc_common.virtual_board import FirmwareBoardError, firmware_board_command
+
+    repo = _stand_in_builder(tmp_path, "print('VIRTUAL_BOARD_COMMAND=[\"x\"]')\n")
+    with pytest.raises(FirmwareBoardError, match="ALLOW_LOCAL_BUILD=1"):
+        firmware_board_command(repo, build_dir=tmp_path / "o0")
+    monkeypatch.setenv("CI", "true")                       # a CI runner builds
+    assert firmware_board_command(repo, build_dir=tmp_path / "o1") == ["x", "0", "0"]
+    monkeypatch.delenv("CI")
+    monkeypatch.setenv("GITHUB_ACTIONS", "true")
+    assert firmware_board_command(repo, build_dir=tmp_path / "o2") == ["x", "0", "0"]
+    monkeypatch.delenv("GITHUB_ACTIONS")
+    monkeypatch.setenv("ALLOW_LOCAL_BUILD", "1")           # the owner said so
+    assert firmware_board_command(repo, build_dir=tmp_path / "o3") == ["x", "0", "0"]
+
+
+def test_the_lock_helper_reads_the_environment():
+    from urtc_common.local_build import LOCK_MESSAGE, local_build_allowed, local_build_refusal
+
+    assert not local_build_allowed({})
+    assert not local_build_allowed({"CI": "", "ALLOW_LOCAL_BUILD": "0", "GITHUB_ACTIONS": "false"})
+    assert local_build_allowed({"CI": "true"}) and local_build_allowed({"GITHUB_ACTIONS": "true"}) and local_build_allowed({"ALLOW_LOCAL_BUILD": "1"})
+    assert local_build_refusal({}) == LOCK_MESSAGE and local_build_refusal({"CI": "1"}) is None
+
+
+def test_the_bootloader_twin_needs_its_own_builder(tmp_path, allow_build):
     from urtc_common.virtual_board import FirmwareBoardError, firmware_board_command
 
     repo = _stand_in_builder(tmp_path, "print('VIRTUAL_BOARD_COMMAND=[\"x\"]')\n")   # a checkout with only the board of the application

@@ -29,3 +29,7 @@ mutmut results
 | `image_auth.py` | 100 | 95 (95 %) | 98 (98 %) | 2, none relevant |
 
 The tests added after the first run check the fields of the status frame one flag at a time, the clamp of the seconds left, the defaults and immutability of a `Rotation`, the behaviour of `hmac_only` with a stale record, the reinstall of the same version and the error texts. The mutants that remain are equivalent changes (a `<=` for a `<` on a window of zero gives the same answer, a slice that ends past the end of the payload, the starting value of a variable that every branch overwrites) or a change to a type annotation, which nothing at run time reads.
+
+## Builds on this PC
+
+A test or a tool that needs a C compiler, WSL, Cargo, Gradle or an npm build asks `urtc_common.local_build` first. It may build on a CI runner (`CI` or `GITHUB_ACTIONS` set) or when the developer sets `ALLOW_LOCAL_BUILD=1`; anywhere else it reports that the build was skipped (never that it passed) and says how to allow it. The file is one text for the family: `tools/vendor_copy.py sync TARGET --set local_build` copies it and `check` keeps the copies honest.

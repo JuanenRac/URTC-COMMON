@@ -32,7 +32,7 @@ GPL-3.0-or-later - see LICENSE
 
 ## The rack section
 
-`rack` holds what the tool rack (URTC-SMART-RACK) puts on the bus. It is not part of `messages` because the tool head does not answer these identifiers and the counts the other documents quote (102 identifiers) are those of the head.
+`rack` holds what the tool rack (URTC-SMART-RACK) puts on the bus. It is not part of `messages` because the tool head does not answer these identifiers and the counts the other documents quote (104 identifiers) are those of the head.
 
 | Key | Meaning |
 |---|---|

@@ -1,0 +1,424 @@
+{
+  "about": "Throwaway test keys only. The command is 84 bytes: target, key id, serial, counter, signature.",
+  "public_keys": [
+    "81F29BE04DFA58F37458E6182A027D83F12330265D61BD6BFCEDB2BA8833B80C",
+    "608309803B131A29050B9B1CD69421F0A9B89F065F4971DD253F5DC00F13B830"
+  ],
+  "statuses": [
+    "ok",
+    "bad_signature",
+    "unknown_key",
+    "replay",
+    "bad_serial",
+    "flash_failed",
+    "disabled",
+    "busy",
+    "not_for_me"
+  ],
+  "commands": [
+    {
+      "name": "a valid command",
+      "uid": [
+        "12345678",
+        "9ABCDEF0",
+        "0F1E2D3C"
+      ],
+      "current_serial": "BBC01526",
+      "trusted": [
+        0
+      ],
+      "stored_counter": 4,
+      "enabled": true,
+      "busy": false,
+      "command": "BBC01526FE58BB1362DF0EA600C0FFEE000000053BE39B7AE365824C50F0A7F2A23E19DF03E166A6D0275AC5967326B34A84609F66F15148A0B4F7F4839544ACABB1F7DD84F26910359920AF0B415CA6759F230E",
+      "status": 0,
+      "status_name": "ok",
+      "serial": "00C0FFEE",
+      "counter": 5
+    },
+    {
+      "name": "a valid command for the first write (nothing stored)",
+      "uid": [
+        "12345678",
+        "9ABCDEF0",
+        "0F1E2D3C"
+      ],
+      "current_serial": "BBC01526",
+      "trusted": [
+        0
+      ],
+      "stored_counter": 0,
+      "enabled": true,
+      "busy": false,
+      "command": "BBC01526FE58BB1362DF0EA600C0FFEE0000000162BA95422B6FEC5D51728E78928300883E6FB1CB071376C9681D5C04B3B7CD0EEA18B233408CDFD39FBA36AE033F27CCFE162E2393BBF7C412FB3B9FF6C8320C",
+      "status": 0,
+      "status_name": "ok",
+      "serial": "00C0FFEE",
+      "counter": 1
+    },
+    {
+      "name": "a replay: the counter equals the stored one",
+      "uid": [
+        "12345678",
+        "9ABCDEF0",
+        "0F1E2D3C"
+      ],
+      "current_serial": "BBC01526",
+      "trusted": [
+        0
+      ],
+      "stored_counter": 5,
+      "enabled": true,
+      "busy": false,
+      "command": "BBC01526FE58BB1362DF0EA600C0FFEE000000053BE39B7AE365824C50F0A7F2A23E19DF03E166A6D0275AC5967326B34A84609F66F15148A0B4F7F4839544ACABB1F7DD84F26910359920AF0B415CA6759F230E",
+      "status": 3,
+      "status_name": "replay",
+      "serial": "00000000",
+      "counter": 0
+    },
+    {
+      "name": "a replay: the counter is below the stored one",
+      "uid": [
+        "12345678",
+        "9ABCDEF0",
+        "0F1E2D3C"
+      ],
+      "current_serial": "BBC01526",
+      "trusted": [
+        0
+      ],
+      "stored_counter": 9,
+      "enabled": true,
+      "busy": false,
+      "command": "BBC01526FE58BB1362DF0EA600C0FFEE000000053BE39B7AE365824C50F0A7F2A23E19DF03E166A6D0275AC5967326B34A84609F66F15148A0B4F7F4839544ACABB1F7DD84F26910359920AF0B415CA6759F230E",
+      "status": 3,
+      "status_name": "replay",
+      "serial": "00000000",
+      "counter": 0
+    },
+    {
+      "name": "a command made for another head fails",
+      "uid": [
+        "12345678",
+        "9ABCDEF0",
+        "0F1E2D3C"
+      ],
+      "current_serial": "BBC01526",
+      "trusted": [
+        0
+      ],
+      "stored_counter": 4,
+      "enabled": true,
+      "busy": false,
+      "command": "BBC01526FE58BB1362DF0EA600C0FFEE00000005D6EEE86D78AEE06E335A82BE6A7FFF070DD3FCBE2B14D2DC4C3D8402468151290E1EF070CA957253F8C191A58E966F896FB1DA31C950144C876DBD47F3F5BC03",
+      "status": 1,
+      "status_name": "bad_signature",
+      "serial": "00000000",
+      "counter": 0
+    },
+    {
+      "name": "the same command on another head is not for it",
+      "uid": [
+        "12345678",
+        "9ABCDEF0",
+        "0F1E2D3D"
+      ],
+      "current_serial": "BB801526",
+      "trusted": [
+        0
+      ],
+      "stored_counter": 4,
+      "enabled": true,
+      "busy": false,
+      "command": "BBC01526FE58BB1362DF0EA600C0FFEE000000053BE39B7AE365824C50F0A7F2A23E19DF03E166A6D0275AC5967326B34A84609F66F15148A0B4F7F4839544ACABB1F7DD84F26910359920AF0B415CA6759F230E",
+      "status": 8,
+      "status_name": "not_for_me",
+      "serial": "00000000",
+      "counter": 0
+    },
+    {
+      "name": "signed by a key the bootloader does not trust",
+      "uid": [
+        "12345678",
+        "9ABCDEF0",
+        "0F1E2D3C"
+      ],
+      "current_serial": "BBC01526",
+      "trusted": [
+        0
+      ],
+      "stored_counter": 4,
+      "enabled": true,
+      "busy": false,
+      "command": "BBC01526AEDFE258EE73C5AE00C0FFEE000000053422E16B7404D517B15C93D1170F63D0BD0638823BB5F8E1E15CFF9F197CBE1C6E33DF2A8FBA36B93A2CB646441E11AF4BE5AB34652D4CB94F196EEDB9DBD90E",
+      "status": 2,
+      "status_name": "unknown_key",
+      "serial": "00000000",
+      "counter": 0
+    },
+    {
+      "name": "signed by the second trusted key",
+      "uid": [
+        "12345678",
+        "9ABCDEF0",
+        "0F1E2D3C"
+      ],
+      "current_serial": "BBC01526",
+      "trusted": [
+        0,
+        1
+      ],
+      "stored_counter": 4,
+      "enabled": true,
+      "busy": false,
+      "command": "BBC01526AEDFE258EE73C5AE00C0FFEE000000053422E16B7404D517B15C93D1170F63D0BD0638823BB5F8E1E15CFF9F197CBE1C6E33DF2A8FBA36B93A2CB646441E11AF4BE5AB34652D4CB94F196EEDB9DBD90E",
+      "status": 0,
+      "status_name": "ok",
+      "serial": "00C0FFEE",
+      "counter": 5
+    },
+    {
+      "name": "a serial changed after signing",
+      "uid": [
+        "12345678",
+        "9ABCDEF0",
+        "0F1E2D3C"
+      ],
+      "current_serial": "BBC01526",
+      "trusted": [
+        0
+      ],
+      "stored_counter": 4,
+      "enabled": true,
+      "busy": false,
+      "command": "BBC01526FE58BB1362DF0EA600C0FFEF000000053BE39B7AE365824C50F0A7F2A23E19DF03E166A6D0275AC5967326B34A84609F66F15148A0B4F7F4839544ACABB1F7DD84F26910359920AF0B415CA6759F230E",
+      "status": 1,
+      "status_name": "bad_signature",
+      "serial": "00000000",
+      "counter": 0
+    },
+    {
+      "name": "a counter changed after signing",
+      "uid": [
+        "12345678",
+        "9ABCDEF0",
+        "0F1E2D3C"
+      ],
+      "current_serial": "BBC01526",
+      "trusted": [
+        0
+      ],
+      "stored_counter": 4,
+      "enabled": true,
+      "busy": false,
+      "command": "BBC01526FE58BB1362DF0EA600C0FFEE000000043BE39B7AE365824C50F0A7F2A23E19DF03E166A6D0275AC5967326B34A84609F66F15148A0B4F7F4839544ACABB1F7DD84F26910359920AF0B415CA6759F230E",
+      "status": 1,
+      "status_name": "bad_signature",
+      "serial": "00000000",
+      "counter": 0
+    },
+    {
+      "name": "a signature with a bit changed",
+      "uid": [
+        "12345678",
+        "9ABCDEF0",
+        "0F1E2D3C"
+      ],
+      "current_serial": "BBC01526",
+      "trusted": [
+        0
+      ],
+      "stored_counter": 4,
+      "enabled": true,
+      "busy": false,
+      "command": "BBC01526FE58BB1362DF0EA600C0FFEE000000053BE39B7AE365824C50F0A7F2A23E19DF03E166A6D1275AC5967326B34A84609F66F15148A0B4F7F4839544ACABB1F7DD84F26910359920AF0B415CA6759F230E",
+      "status": 1,
+      "status_name": "bad_signature",
+      "serial": "00000000",
+      "counter": 0
+    },
+    {
+      "name": "a key id with a bit changed",
+      "uid": [
+        "12345678",
+        "9ABCDEF0",
+        "0F1E2D3C"
+      ],
+      "current_serial": "BBC01526",
+      "trusted": [
+        0
+      ],
+      "stored_counter": 4,
+      "enabled": true,
+      "busy": false,
+      "command": "BBC01526FE59BB1362DF0EA600C0FFEE000000053BE39B7AE365824C50F0A7F2A23E19DF03E166A6D0275AC5967326B34A84609F66F15148A0B4F7F4839544ACABB1F7DD84F26910359920AF0B415CA6759F230E",
+      "status": 2,
+      "status_name": "unknown_key",
+      "serial": "00000000",
+      "counter": 0
+    },
+    {
+      "name": "the serial 0 is refused",
+      "uid": [
+        "12345678",
+        "9ABCDEF0",
+        "0F1E2D3C"
+      ],
+      "current_serial": "BBC01526",
+      "trusted": [
+        0
+      ],
+      "stored_counter": 4,
+      "enabled": true,
+      "busy": false,
+      "command": "BBC01526FE58BB1362DF0EA60000000000000005F982D296FB10E7FD689C30FD8165E695D5D5C9F4517A50766CF192152C5DCE3528AF02F1503454920FFA3D2A78CF5E6DF35CD40C69FC77423E8FEB87476F8101",
+      "status": 4,
+      "status_name": "bad_serial",
+      "serial": "00000000",
+      "counter": 0
+    },
+    {
+      "name": "the serial 0xFFFFFFFF is refused",
+      "uid": [
+        "12345678",
+        "9ABCDEF0",
+        "0F1E2D3C"
+      ],
+      "current_serial": "BBC01526",
+      "trusted": [
+        0
+      ],
+      "stored_counter": 4,
+      "enabled": true,
+      "busy": false,
+      "command": "BBC01526FE58BB1362DF0EA6FFFFFFFF0000000551F263A908B72F5FD01CF6BCBBF9CFA4D1537A71C6CD84852C6A96793C9CEA831D5E554051D4C7BAB1E3DC81E53B386B6703AE7A56520CB99C54C3CB59FC7B06",
+      "status": 4,
+      "status_name": "bad_serial",
+      "serial": "00000000",
+      "counter": 0
+    },
+    {
+      "name": "a bootloader built without the programmable serial",
+      "uid": [
+        "12345678",
+        "9ABCDEF0",
+        "0F1E2D3C"
+      ],
+      "current_serial": "BBC01526",
+      "trusted": [
+        0
+      ],
+      "stored_counter": 4,
+      "enabled": false,
+      "busy": false,
+      "command": "BBC01526FE58BB1362DF0EA600C0FFEE000000053BE39B7AE365824C50F0A7F2A23E19DF03E166A6D0275AC5967326B34A84609F66F15148A0B4F7F4839544ACABB1F7DD84F26910359920AF0B415CA6759F230E",
+      "status": 6,
+      "status_name": "disabled",
+      "serial": "00000000",
+      "counter": 0
+    },
+    {
+      "name": "an update is in progress",
+      "uid": [
+        "12345678",
+        "9ABCDEF0",
+        "0F1E2D3C"
+      ],
+      "current_serial": "BBC01526",
+      "trusted": [
+        0
+      ],
+      "stored_counter": 4,
+      "enabled": true,
+      "busy": true,
+      "command": "BBC01526FE58BB1362DF0EA600C0FFEE000000053BE39B7AE365824C50F0A7F2A23E19DF03E166A6D0275AC5967326B34A84609F66F15148A0B4F7F4839544ACABB1F7DD84F26910359920AF0B415CA6759F230E",
+      "status": 7,
+      "status_name": "busy",
+      "serial": "00000000",
+      "counter": 0
+    },
+    {
+      "name": "a bootloader that trusts nobody",
+      "uid": [
+        "12345678",
+        "9ABCDEF0",
+        "0F1E2D3C"
+      ],
+      "current_serial": "BBC01526",
+      "trusted": [],
+      "stored_counter": 4,
+      "enabled": true,
+      "busy": false,
+      "command": "BBC01526FE58BB1362DF0EA600C0FFEE000000053BE39B7AE365824C50F0A7F2A23E19DF03E166A6D0275AC5967326B34A84609F66F15148A0B4F7F4839544ACABB1F7DD84F26910359920AF0B415CA6759F230E",
+      "status": 2,
+      "status_name": "unknown_key",
+      "serial": "00000000",
+      "counter": 0
+    }
+  ],
+  "slots": [
+    {
+      "name": "both blank",
+      "slot_a": "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF",
+      "slot_b": "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF",
+      "serial": null,
+      "counter": null
+    },
+    {
+      "name": "only the first",
+      "slot_a": "315352550A0A0A0AF5F5F5F503000000",
+      "slot_b": "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF",
+      "serial": "0A0A0A0A",
+      "counter": 3
+    },
+    {
+      "name": "only the second",
+      "slot_a": "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF",
+      "slot_b": "315352550B0B0B0BF4F4F4F407000000",
+      "serial": "0B0B0B0B",
+      "counter": 7
+    },
+    {
+      "name": "the second is newer",
+      "slot_a": "315352550A0A0A0AF5F5F5F503000000",
+      "slot_b": "315352550B0B0B0BF4F4F4F407000000",
+      "serial": "0B0B0B0B",
+      "counter": 7
+    },
+    {
+      "name": "the first is newer",
+      "slot_a": "315352550B0B0B0BF4F4F4F407000000",
+      "slot_b": "315352550A0A0A0AF5F5F5F503000000",
+      "serial": "0B0B0B0B",
+      "counter": 7
+    },
+    {
+      "name": "equal counters: the first",
+      "slot_a": "3153525501010101FEFEFEFE04000000",
+      "slot_b": "3153525502020202FDFDFDFD04000000",
+      "serial": "01010101",
+      "counter": 4
+    },
+    {
+      "name": "a record without a magic",
+      "slot_a": "FFFFFFFF0D0D0D0DF2F2F2F20B000000",
+      "slot_b": "315352550A0A0A0AF5F5F5F503000000",
+      "serial": "0A0A0A0A",
+      "counter": 3
+    },
+    {
+      "name": "a record with a wrong complement",
+      "slot_a": "315352550E0E0E0E000000000D000000",
+      "slot_b": "315352550A0A0A0AF5F5F5F503000000",
+      "serial": "0A0A0A0A",
+      "counter": 3
+    },
+    {
+      "name": "the serial 0 is no record",
+      "slot_a": "3153525500000000FFFFFFFF0F000000",
+      "slot_b": "315352550B0B0B0BF4F4F4F407000000",
+      "serial": "0B0B0B0B",
+      "counter": 7
+    }
+  ]
+}

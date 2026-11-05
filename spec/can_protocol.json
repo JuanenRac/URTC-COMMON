@@ -7469,6 +7469,117 @@
       }
     },
     {
+      "id": "0x7EE",
+      "name": "BOOTLOADER_SERIAL_CHUNK",
+      "group": "bootloader",
+      "title": "One chunk of the signed command that programs the serial number",
+      "direction": "host_to_board",
+      "handled_by": "bootloader",
+      "tools": "any",
+      "layouts": [
+        {
+          "role": "request",
+          "dlc": {
+            "exact": 8
+          },
+          "fields": [
+            {
+              "name": "index",
+              "type": "u8",
+              "range": [
+                0,
+                11
+              ],
+              "offset": 0,
+              "width": 1
+            },
+            {
+              "name": "data",
+              "type": "bytes",
+              "length": 7,
+              "offset": 1,
+              "width": 7
+            }
+          ],
+          "note": "The command is target serial (4) + key id (8) + new serial (4) + counter (4) + Ed25519 signature (64) = 84 bytes in 12 frames. The signature covers the unique ID of the head, the new serial, the counter and the key id; a head whose serial is not the target stays silent.",
+          "examples": [
+            {
+              "name": "first chunk",
+              "fields": {
+                "index": 0,
+                "data": "00000000000000"
+              },
+              "data": "0000000000000000"
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "Only a bootloader built with the programmable serial (URTC_BL_PROGRAMMABLE_SERIAL) obeys it, and only for a signature of a key of its trust table made for its own unique ID with a counter higher than the stored one. Answered on 0x7EF."
+      ],
+      "firmware_accepts_dlc": {
+        "exact": 8
+      },
+      "implemented_by": {
+        "firmware": true,
+        "flasher": false,
+        "tester": false,
+        "web_studio": false
+      }
+    },
+    {
+      "id": "0x7EF",
+      "name": "BOOTLOADER_SERIAL_RESULT",
+      "group": "bootloader",
+      "title": "Result of the command that programs the serial number",
+      "direction": "board_to_host",
+      "handled_by": "bootloader",
+      "tools": "any",
+      "layouts": [
+        {
+          "role": "response",
+          "dlc": {
+            "exact": 5
+          },
+          "fields": [
+            {
+              "name": "status",
+              "type": "u8",
+              "note": "0 written, 1 bad signature, 2 unknown key, 3 replay, 4 not a usable serial, 5 flash failed, 6 not built with the programmable serial, 7 an update is running.",
+              "offset": 0,
+              "width": 1
+            },
+            {
+              "name": "serial",
+              "type": "u32",
+              "note": "The serial the head answers with now.",
+              "offset": 1,
+              "width": 4
+            }
+          ],
+          "examples": [
+            {
+              "name": "written",
+              "fields": {
+                "status": 0,
+                "serial": 12648430
+              },
+              "data": "0000C0FFEE"
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "Sent once the twelfth chunk arrived, by the head the command was meant for only."
+      ],
+      "implemented_by": {
+        "firmware": true,
+        "flasher": false,
+        "tester": false,
+        "web_studio": false
+      }
+    },
+    {
       "id": "0x7F0",
       "name": "ENTER_BOOTLOADER",
       "group": "bootloader",
