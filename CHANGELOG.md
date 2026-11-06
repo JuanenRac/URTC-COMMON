@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [0.2.3] - The web studio catalog says when the bundled application is not the one of the newest release: flasher.bundledolder and flasher.bundlednewer in spec/i18n/catalog/web-studio.json, in the eight languages, for the notice the... (and 2 more changes)
+
 - **The web studio catalog says when the bundled application is not the one of the newest release:** `flasher.bundled_older` and `flasher.bundled_newer` in `spec/i18n/catalog/web-studio.json`, in the eight languages, for the notice the Flasher page shows next to the list of the GitHub release.
 - **The firmware a program carries can be compared with the newest official release:** `urtc_common.firmware_check` reads the assets of the latest release of the firmware repository (one request, https and the GitHub hosts only, a listing of at most 2 MiB, never a pre-release or a draft), keeps the answer in a cache file for an hour so the anonymous limit of the API is not spent, does not repeat a failed request within a minute, and says for each image of the two boards whether it is up to date, older, newer (a test build), missing or not in the release. It downloads nothing and runs only when it is called. Its texts are in `firmware_check_strings` in the eight languages (the same keys and placeholders in each, held by a test), and `tools/vendor_copy.py` has the set `firmware_check` for the programs that carry a copy. 21 tests.
 - **The log line of the fallback release is gone from the flasher catalog:** `LOG_GITHUB_PINNED_FALLBACK` is removed from `spec/i18n/catalog/flasher.json`, because the flasher reads the official release only.
