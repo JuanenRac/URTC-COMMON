@@ -4,6 +4,9 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The repository check compares the manifest with what can be computed:** `tools/ci_validate.py` now also runs the shared `tools/sync_manifests.py` offline, which compares the shipped version, the newest released heading of this changelog, the presence of tests and the claimed level of evidence with the manifest. It is part of the shared set of tools, so the copy is pinned by the lock.
+
+- **The table of status is refreshed from the manifests of the sibling repositories:** the evidence level of the updater is now shown as simulator.
 - **The flasher catalog has the texts of the firmware comparison button:** `BTN_GITHUB_CHECK_NEWER` and `LBL_FWC_CHECKING` in `spec/i18n/catalog/flasher.json`, in the eight languages.
 
 ## [0.2.3] - The web studio catalog says when the bundled application is not the one of the newest release: flasher.bundledolder and flasher.bundlednewer in spec/i18n/catalog/web-studio.json, in the eight languages, for the notice the... (and 2 more changes)

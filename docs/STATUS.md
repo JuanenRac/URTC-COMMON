@@ -9,7 +9,7 @@
 | Gateway in front of the bus (`URTC-GATEWAY`) | scaffolding | Run against a simulated or fake board | A run on a real board<br>It has never been run with a real bus |
 | Tester (`URTC-TESTER`) | functional | Run against a simulated or fake board | exercised only against fake transports and never against a real board |
 | Web studio (`URTC-WEB-STUDIO`) | functional | Run against a simulated or fake board | A run on a real board<br>the Web Serial path has never been run against a USB-CAN adapter |
-| Updater (`URTC-UPDATER`) | established | Unit tests and scenarios on a PC | A run on a real board |
+| Updater (`URTC-UPDATER`) | established | Run against a simulated or fake board | A run on a real board |
 | Smart rack (`URTC-SMART-RACK`) | functional | Run against a simulated or fake board | A run on a real board<br>It has never been run on a board<br>Real CAN/F-RAM/GPIO I/O needs a real PCB, which does not exist yet |
 | Vision tool (`URTC-VISION-TOOL`) | functional | Run against a simulated or fake board | A run on a real board<br>and has never been run on a board or with a real sensor<br>real dual-modal capture and per-pixel calibration still need a real PCB and real cameras |
 | Documentation generator (`URTC-DOCS`) | functional | Unit tests and scenarios on a PC | A run on a real board<br>Scaffolding on purpose: the nightly comparison of all the repositories has not yet been exercised over time |

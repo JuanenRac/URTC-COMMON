@@ -50,7 +50,7 @@
       "repo": "URTC-UPDATER",
       "title": "Updater",
       "maturity": "established",
-      "evidence": "host-test",
+      "evidence": "simulator",
       "pending": []
     },
     {
