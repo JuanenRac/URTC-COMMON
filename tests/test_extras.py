@@ -371,7 +371,10 @@ def test_the_status_snapshot_the_card_and_the_page_agree_and_escape_everything()
     assert "<script>" not in page and "&lt;script&gt;" in page and "src=" not in page and "http" not in page
     assert json.loads(rack_status.to_json(snap))["slots"][0]["unit"] == "0:7"
     quiet = rack_status.snapshot(rk.SimulatedRack().status())
-    assert rack_status.card(quiet)["state"] == "ok" and quiet["alarms"] == []
+    assert rack_status.card(quiet)["state"] == "ok" and quiet["alarms"] == [] and quiet["read"] is True
+    unread = rack_status.snapshot(None, name="rack-2")
+    assert unread["read"] is False and unread["slot_count"] == 0 and rack_status.card(unread)["state"] == "unknown"
+    assert "not read" in unread["alarms"][0] and "not read" in rack_status.to_html(unread)
 
 
 # ---- shared firmware parts and the vectors the firmware is held to ---------------------------------------------------------

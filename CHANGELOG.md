@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **A rack that was not read says so in the status page:** `rack_status.snapshot(None)` makes a snapshot with `read: false` and the alarm "the rack was not read", its dashboard card has the state `unknown` (not `ok`) and the page says it; nothing is invented for the slots.
+
 - **The tester catalog holds the texts of the tool panels:** the panel texts of the web studio (`testertool.*`) are in `spec/i18n/catalog/tester.json` as `PANEL_*`, in the eight languages, with the four labels of the generic view (active, watch readings, stop watching, show the panel), so the Qt tester draws the same panels with the same words.
 
 ## [0.2.0] - The full build check compiles only on CI or when allowed: tools/buildtest.py prints BUILDTEST=SKIPPED (exit status 2) for the stacks that compile unless it runs on a CI runner or ALLOWLOCALBUILD=1 says so; the light check is... (and 19 more changes)
