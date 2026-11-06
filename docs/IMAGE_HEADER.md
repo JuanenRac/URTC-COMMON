@@ -1,6 +1,6 @@
 # The header in front of a firmware image
 
-A 32-byte header that says what a firmware binary is before anything trusts it: the hardware it is built for, its version as four components (`major.minor.patch.build`), its length and its CRC-32. It is meant for the images of every URTC firmware (the tool head, the expansion slave, the tool rack and the vision head) and for the bootloaders and tools that handle them.
+A 32-byte header that says what a firmware binary is before anything trusts it: the hardware it is built for, its version as four components (`major.minor.patch.build`), its length and its CRC-32. It describes an image to the tools that handle it (the tool head, the expansion slave, the tool rack and the vision head). **It is never part of the flashed image:** the binary that goes into the flash is exactly what the linker produced, with the flash map and the vector table of the unsigned build; the header is rebuilt from the file name and the binary wherever it is needed, and the signature is a separate record (`SIGNATURE_SEPARATION.md`).
 
 All multi-byte fields are big-endian, like the bus.
 
@@ -24,7 +24,7 @@ A reader checks the magic, the header version, the size and the header CRC; for 
 
 ## Signed metadata
 
-The signature of a release (HMAC-SHA256) covers bytes 0 to 27 of the header followed by the payload, and is the trailer of the image. The identity, the length and the CRC that the header states therefore cannot be changed without breaking the signature: a forger who fixes the header CRC still does not have the key. The signature is made by the tooling that builds the release, never by the header code.
+What a release signs is the first 28 bytes of this header (hardware, version, length, CRC-32), the SHA-256 of the payload and a rollback counter, as the Ed25519 record of `SIGNATURE_SEPARATION.md` (`<image>.imgsig`, 76 bytes). The identity, the length and the CRC therefore cannot be changed without breaking the signature. The record is made by the tooling of the release on the maintainer's machine, never by the header code, and it is not appended to the image. The HMAC trailer (flag bit 0) belongs to the bootloaders of the earlier generation and is not produced for a release any more.
 
 ## Where it lives
 
@@ -36,6 +36,6 @@ The signature of a release (HMAC-SHA256) covers bytes 0 to 27 of the header foll
 
 `python tools/stamp_image.py stamp FILE.bin --hardware main|slave|NUMBER [--version MAJOR.MINOR.PATCH[.BUILD]]` writes `FILE.urimg`: the header followed by the unchanged binary, the same bytes every time, with the version read from the `_vX.Y.Z` part of the file name when `--version` is not given. `python tools/stamp_image.py check FILE.urimg` verifies a stamped image and says why it fails. This is a step after the build and needs no change to the linker script; the flashed layout is untouched.
 
-## What is not done yet
+## What is not done, on purpose
 
-The flashed image itself does not carry the header: that is a change to the linker script of each firmware and to the bootloaders that would read it, followed by a build and a flash on the bench. The version frame on the bus (`0x7F9`) still carries three components; a frame with the fourth is a change of the specification and of the bootloaders.
+The flashed image does not carry the header, and this will not change: putting a header in front of the code would move the vector table and change the flash map of every firmware and every bootloader, and could leave a board unable to start. The header and the signature are described to the tools and travel in the frames of the update (`0x7EC` for the tool head, `0x21A` for the expansion slave). `stamp_image.py` writes a `.urimg` file for tools that want the header and the binary in one file; that file is never flashed. The version frame on the bus (`0x7F9`) still carries three components; a frame with the fourth is a change of the specification and of the bootloaders.

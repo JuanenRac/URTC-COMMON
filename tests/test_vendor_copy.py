@@ -172,3 +172,21 @@ def test_refresh_copies_again_what_the_lock_lists_and_only_that(source, tmp_path
     assert sorted(path.name for path in target.iterdir()) == sorted([vendor_copy.LOCK_NAME, "urtc_can_ids.h"])
     assert run("refresh", tmp_path / "nothing", "--source", source) == 1
     assert "no urtc_common.lock.json" in capsys.readouterr().err
+
+
+def test_the_image_record_set_is_a_package_that_verifies_a_record_without_the_rest_of_the_repository(source, tmp_path):
+    """A repository that checks every .imgsig of a release carries only this set: it must import on its own and give the same verdict."""
+    target = tmp_path / "client" / "image_record"
+    assert run("sync", target, "--source", source, "--set", "image_record") == 0
+    assert {p.name for p in target.iterdir()} == {"__init__.py", "ed25519.py", "image_auth.py", "image_header.py", "image_sig.py", vendor_copy.LOCK_NAME}
+    script = (
+        "import sys; sys.path.insert(0, sys.argv[1]);"
+        "from image_record import image_sig as s;"
+        "seed = bytes(range(32)); table = s.parse_table(s.pack_table([(s.public_of(seed), s.FLAG_CURRENT)]));"
+        "hdr = bytes(28); body = b'x' * 40;"
+        "text = s.sign_image(seed, hdr, body, 7);"
+        "print(s.verify_image(text, table, 0, hdr, body), s.verify_image(text, table, 0, hdr, body + b'y'))"
+    )
+    done = subprocess.run([sys.executable, "-I", "-c", script, str(target.parent)], capture_output=True, text=True, check=False)
+    assert done.returncode == 0, done.stderr
+    assert done.stdout.split() == ["ok", "bad_signature"]

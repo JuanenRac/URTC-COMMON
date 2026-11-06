@@ -94,6 +94,8 @@ SETS = {
                         "src/urtc_common/bl_serial.py", "conformance/ed25519_vectors.json", "conformance/signed_image_vectors.json", "conformance/bootloader_select_vectors.json",
                         "conformance/bl_serial_vectors.json"],
     "bl_serial_tool": ["src/urtc_common/ed25519.py", "src/urtc_common/bl_select.py", "src/urtc_common/bl_serial.py"],
+    "image_record": ["src/urtc_common/__init__.py", "src/urtc_common/ed25519.py", "src/urtc_common/image_auth.py", "src/urtc_common/image_header.py",
+                     "src/urtc_common/image_sig.py"],
     "image_header_c": ["generated/image_header_vectors.h"],
     "image_header": ["src/urtc_common/image_header.py", "conformance/image_header_vectors.json"],
     "rate_c": ["generated/rate_vectors.h"],
