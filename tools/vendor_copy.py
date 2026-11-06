@@ -62,6 +62,7 @@ SETS = {
     "bus_scenario": ["src/urtc_common/bus_scenario.py"],
     "update": ["src/urtc_common/self_update.py", "src/urtc_common/update_service.py", "src/urtc_common/update_controller.py", "src/urtc_common/launcher.py"],
     "signing": ["src/urtc_common/record_signing.py"],
+    "firmware_check": ["src/urtc_common/firmware_check.py", "src/urtc_common/firmware_check_strings.py", "src/urtc_common/firmware_names.py"],
     "update_qt": ["src/urtc_common/update_qt.py", "src/urtc_common/update_strings.py"],
     "update_qml": ["qml/UpdateDialog.qml"],
     "package_tool": ["tools/make_update_package.py"],
