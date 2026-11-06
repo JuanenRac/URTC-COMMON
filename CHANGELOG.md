@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The software benches of the family are listed in one place, and the status page follows the manifests:** `docs/TESTING_STRATEGY.md` says, for every repository, which simulator it has, how to start it and what its CI runs (the virtual boards, the twin of the bootloader, the virtual rack, the virtual sensor link, the gateway against the virtual board). The rack model `rack_sim` is now also held to the real rack logic by the bench of `URTC-SMART-RACK`. `spec/status.json` and `docs/STATUS.md` were refreshed: the tool head firmware, the gateway, the smart rack and the vision tool now show `Run against a simulated or fake board`; nothing is marked as run on a board.
+
 ## [0.2.1] - A rack that was not read says so in the status page: rackstatus.snapshot(None) makes a snapshot with read: false and the alarm "the rack was not read", its dashboard card has the state unknown (not ok) and the page says it;... (and 1 more changes)
 
 - **A rack that was not read says so in the status page:** `rack_status.snapshot(None)` makes a snapshot with `read: false` and the alarm "the rack was not read", its dashboard card has the state `unknown` (not `ok`) and the page says it; nothing is invented for the slots.

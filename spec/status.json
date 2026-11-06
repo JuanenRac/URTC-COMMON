@@ -5,9 +5,9 @@
       "repo": "URTC",
       "title": "Tool head firmware",
       "maturity": "functional",
-      "evidence": "host-test",
+      "evidence": "simulator",
       "pending": [
-        "no populated board exists yet, so it has never run on a real board"
+        "no populated board exists yet, so it has never run on a real board; its receive path and the bootloader of the master run on a PC against virtual boards"
       ]
     },
     {
@@ -23,9 +23,9 @@
       "repo": "URTC-GATEWAY",
       "title": "Gateway in front of the bus",
       "maturity": "scaffolding",
-      "evidence": "host-test",
+      "evidence": "simulator",
       "pending": [
-        "Host-tested only: no bus, adapter or board has been used"
+        "It has never been run with a real bus"
       ]
     },
     {
@@ -57,8 +57,9 @@
       "repo": "URTC-SMART-RACK",
       "title": "Smart rack",
       "maturity": "functional",
-      "evidence": "host-test",
+      "evidence": "simulator",
       "pending": [
+        "It has never been run on a board",
         "Real CAN/F-RAM/GPIO I/O needs a real PCB, which does not exist yet"
       ]
     },
@@ -66,9 +67,9 @@
       "repo": "URTC-VISION-TOOL",
       "title": "Vision tool",
       "maturity": "functional",
-      "evidence": "host-test",
+      "evidence": "simulator",
       "pending": [
-        "host-tested on a PC only and never run on a board or with a real sensor",
+        "and has never been run on a board or with a real sensor",
         "real dual-modal capture and per-pixel calibration still need a real PCB and real cameras"
       ]
     },
