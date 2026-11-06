@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The flasher catalog has the texts of the firmware comparison button:** `BTN_GITHUB_CHECK_NEWER` and `LBL_FWC_CHECKING` in `spec/i18n/catalog/flasher.json`, in the eight languages.
+
 ## [0.2.3] - The web studio catalog says when the bundled application is not the one of the newest release: flasher.bundledolder and flasher.bundlednewer in spec/i18n/catalog/web-studio.json, in the eight languages, for the notice the... (and 2 more changes)
 
 - **The web studio catalog says when the bundled application is not the one of the newest release:** `flasher.bundled_older` and `flasher.bundled_newer` in `spec/i18n/catalog/web-studio.json`, in the eight languages, for the notice the Flasher page shows next to the list of the GitHub release.
