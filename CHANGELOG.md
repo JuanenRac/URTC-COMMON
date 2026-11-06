@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [0.2.2] - The image that is flashed has no header, and the documents say so: docs/IMAGEHEADER.md and docs/SIGNATURESEPARATION.md state that the header is a descriptor the tools rebuild, that the signature is the separate <image>.imgsig... (and 2 more changes)
+
 - **The image that is flashed has no header, and the documents say so:** `docs/IMAGE_HEADER.md` and `docs/SIGNATURE_SEPARATION.md` state that the header is a descriptor the tools rebuild, that the signature is the separate `<image>.imgsig` record and that the flash map and the vector table are those of the unsigned build; the old notes about an HMAC trailer and about a header still to be put in the image are gone.
 - **A set to carry the verification of an image record:** `vendor_copy.py --set image_record` copies the Ed25519 reference, the record rules, the header descriptor and the record and trust-table code (standard library only), so a repository can check every `.imgsig` of a release without a key and without a checkout of this one.
 - **The software benches of the family are listed in one place, and the status page follows the manifests:** `docs/TESTING_STRATEGY.md` says, for every repository, which simulator it has, how to start it and what its CI runs (the virtual boards, the twin of the bootloader, the virtual rack, the virtual sensor link, the gateway against the virtual board). The rack model `rack_sim` is now also held to the real rack logic by the bench of `URTC-SMART-RACK`. `spec/status.json` and `docs/STATUS.md` were refreshed: the tool head firmware, the gateway, the smart rack and the vision tool now show `Run against a simulated or fake board`; nothing is marked as run on a board.
