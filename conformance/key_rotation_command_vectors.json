@@ -1,0 +1,677 @@
+{
+  "format": 1,
+  "about": "Signed rotation command (100 bytes: signer, new current, previous, window, host time, counter, signature) and the reason a bootloader gives. Fingerprints are the first 8 bytes of the SHA-512 of a throwaway public key. 'expect' is the state after an accepted command (clock_offset = host time - uptime). 'reason' is one of: ok, disabled, malformed, unknown_signer, signer_not_current, bad_signature, replayed_counter, time_backwards, unknown_new_key, revoked_new_key, bad_previous, window_too_long.",
+  "frame_id": "0x7EC",
+  "chunk_flag": 128,
+  "chunk_count": 15,
+  "record_size": 100,
+  "domain": "555254432d4b45592d524f544154452d563100",
+  "reasons": [
+    "ok",
+    "disabled",
+    "malformed",
+    "unknown_signer",
+    "signer_not_current",
+    "bad_signature",
+    "replayed_counter",
+    "time_backwards",
+    "unknown_new_key",
+    "revoked_new_key",
+    "bad_previous",
+    "window_too_long"
+  ],
+  "cases": [
+    {
+      "name": "accepted: the current key hands over to the next with an hour of overlap",
+      "record": "0e2d80c61f56d103a4d149f2567e42c20e2d80c61f56d10300000e106553f10000000001c1f3d8e232bc38769553f48f96586455090d80376ed9fdd2f597f133943c32076baa9bc9ffdb9da4b3fdc3e99b45cd74d63b5163c7d27ea100aa644f90457f05",
+      "reason": "ok",
+      "current": "0e2d80c61f56d103",
+      "previous": null,
+      "revoked": [],
+      "trust": [
+        {
+          "id": "0e2d80c61f56d103",
+          "public": "168604f9253f0eeb53c0a84f8b43e3f85ea580567d38eb831ce22ceecfd791d3"
+        },
+        {
+          "id": "a4d149f2567e42c2",
+          "public": "c3329a70d89be96bdef81d70b3413acf4cd486fbedf0e75fdeb71dc51d34143e"
+        }
+      ],
+      "allow": true,
+      "last_counter": 0,
+      "last_time": 0,
+      "max_window_s": 604800,
+      "uptime": 500,
+      "expect": {
+        "current": "a4d149f2567e42c2",
+        "previous": "0e2d80c61f56d103",
+        "window_s": 3600,
+        "started_at": 1700000000,
+        "last_counter": 1,
+        "last_time": 1700000000,
+        "clock_offset": 1699999500
+      }
+    },
+    {
+      "name": "accepted: no overlap when the previous key is left out",
+      "record": "0e2d80c61f56d103a4d149f2567e42c2000000000000000000000e106553f100000000019ed751a5662376cf38ffbb1f47c5758b5a7081cdfe64e1bb7271d5a20aaf2da412e130830268a40fc8809a18128911446165482619c0ec52290a93253c25a508",
+      "reason": "ok",
+      "current": "0e2d80c61f56d103",
+      "previous": null,
+      "revoked": [],
+      "trust": [
+        {
+          "id": "0e2d80c61f56d103",
+          "public": "168604f9253f0eeb53c0a84f8b43e3f85ea580567d38eb831ce22ceecfd791d3"
+        },
+        {
+          "id": "a4d149f2567e42c2",
+          "public": "c3329a70d89be96bdef81d70b3413acf4cd486fbedf0e75fdeb71dc51d34143e"
+        }
+      ],
+      "allow": true,
+      "last_counter": 0,
+      "last_time": 0,
+      "max_window_s": 604800,
+      "uptime": 500,
+      "expect": {
+        "current": "a4d149f2567e42c2",
+        "previous": null,
+        "window_s": 0,
+        "started_at": 1700000000,
+        "last_counter": 1,
+        "last_time": 1700000000,
+        "clock_offset": 1699999500
+      }
+    },
+    {
+      "name": "accepted: a window of zero keeps only the new key",
+      "record": "0e2d80c61f56d103a4d149f2567e42c20e2d80c61f56d103000000006553f10000000001390dd32c7909e066243798d014bb796d5ae604606426e3f11a7ff4d4c44213955a3f80a89cc1fade33f0002db7ffa10d61817c7ee8e10040856aa2ae8f41eb09",
+      "reason": "ok",
+      "current": "0e2d80c61f56d103",
+      "previous": null,
+      "revoked": [],
+      "trust": [
+        {
+          "id": "0e2d80c61f56d103",
+          "public": "168604f9253f0eeb53c0a84f8b43e3f85ea580567d38eb831ce22ceecfd791d3"
+        },
+        {
+          "id": "a4d149f2567e42c2",
+          "public": "c3329a70d89be96bdef81d70b3413acf4cd486fbedf0e75fdeb71dc51d34143e"
+        }
+      ],
+      "allow": true,
+      "last_counter": 0,
+      "last_time": 0,
+      "max_window_s": 604800,
+      "uptime": 500,
+      "expect": {
+        "current": "a4d149f2567e42c2",
+        "previous": "0e2d80c61f56d103",
+        "window_s": 0,
+        "started_at": 1700000000,
+        "last_counter": 1,
+        "last_time": 1700000000,
+        "clock_offset": 1699999500
+      }
+    },
+    {
+      "name": "accepted: the highest counter",
+      "record": "0e2d80c61f56d103a4d149f2567e42c20e2d80c61f56d10300000e106553f100ffffffff6eac7698c119f376e46bea614b426c70f08771e0644c51a3dfb1f27bec21e25710d81be13b827d7766fc32eff817189cb237d774c0a7a207531ebd177e93ae0c",
+      "reason": "ok",
+      "current": "0e2d80c61f56d103",
+      "previous": null,
+      "revoked": [],
+      "trust": [
+        {
+          "id": "0e2d80c61f56d103",
+          "public": "168604f9253f0eeb53c0a84f8b43e3f85ea580567d38eb831ce22ceecfd791d3"
+        },
+        {
+          "id": "a4d149f2567e42c2",
+          "public": "c3329a70d89be96bdef81d70b3413acf4cd486fbedf0e75fdeb71dc51d34143e"
+        }
+      ],
+      "allow": true,
+      "last_counter": 0,
+      "last_time": 0,
+      "max_window_s": 604800,
+      "uptime": 500,
+      "expect": {
+        "current": "a4d149f2567e42c2",
+        "previous": "0e2d80c61f56d103",
+        "window_s": 3600,
+        "started_at": 1700000000,
+        "last_counter": 4294967295,
+        "last_time": 1700000000,
+        "clock_offset": 1699999500
+      }
+    },
+    {
+      "name": "accepted: the clock offset follows the uptime",
+      "record": "0e2d80c61f56d103a4d149f2567e42c20e2d80c61f56d10300000e106553f14d00000001aa45b79f28c3676cd46303c2391db29641559454a44e3369e6c9421b728c9df7462d6a89e1ad85eabb5e8afcf9676e9a714581b206daaec2679dc14fe5432308",
+      "reason": "ok",
+      "current": "0e2d80c61f56d103",
+      "previous": null,
+      "revoked": [],
+      "trust": [
+        {
+          "id": "0e2d80c61f56d103",
+          "public": "168604f9253f0eeb53c0a84f8b43e3f85ea580567d38eb831ce22ceecfd791d3"
+        },
+        {
+          "id": "a4d149f2567e42c2",
+          "public": "c3329a70d89be96bdef81d70b3413acf4cd486fbedf0e75fdeb71dc51d34143e"
+        }
+      ],
+      "allow": true,
+      "last_counter": 0,
+      "last_time": 0,
+      "max_window_s": 604800,
+      "uptime": 1234,
+      "expect": {
+        "current": "a4d149f2567e42c2",
+        "previous": "0e2d80c61f56d103",
+        "window_s": 3600,
+        "started_at": 1700000077,
+        "last_counter": 1,
+        "last_time": 1700000077,
+        "clock_offset": 1699998843
+      }
+    },
+    {
+      "name": "refused: the option is off by default",
+      "record": "0e2d80c61f56d103a4d149f2567e42c20e2d80c61f56d10300000e106553f10000000001c1f3d8e232bc38769553f48f96586455090d80376ed9fdd2f597f133943c32076baa9bc9ffdb9da4b3fdc3e99b45cd74d63b5163c7d27ea100aa644f90457f05",
+      "reason": "disabled",
+      "current": "0e2d80c61f56d103",
+      "previous": null,
+      "revoked": [],
+      "trust": [
+        {
+          "id": "0e2d80c61f56d103",
+          "public": "168604f9253f0eeb53c0a84f8b43e3f85ea580567d38eb831ce22ceecfd791d3"
+        },
+        {
+          "id": "a4d149f2567e42c2",
+          "public": "c3329a70d89be96bdef81d70b3413acf4cd486fbedf0e75fdeb71dc51d34143e"
+        }
+      ],
+      "allow": false,
+      "last_counter": 0,
+      "last_time": 0,
+      "max_window_s": 604800,
+      "uptime": 500,
+      "expect": null
+    },
+    {
+      "name": "refused: a record of 99 bytes",
+      "record": "0e2d80c61f56d103a4d149f2567e42c20e2d80c61f56d10300000e106553f10000000001c1f3d8e232bc38769553f48f96586455090d80376ed9fdd2f597f133943c32076baa9bc9ffdb9da4b3fdc3e99b45cd74d63b5163c7d27ea100aa644f90457f",
+      "reason": "malformed",
+      "current": "0e2d80c61f56d103",
+      "previous": null,
+      "revoked": [],
+      "trust": [
+        {
+          "id": "0e2d80c61f56d103",
+          "public": "168604f9253f0eeb53c0a84f8b43e3f85ea580567d38eb831ce22ceecfd791d3"
+        },
+        {
+          "id": "a4d149f2567e42c2",
+          "public": "c3329a70d89be96bdef81d70b3413acf4cd486fbedf0e75fdeb71dc51d34143e"
+        }
+      ],
+      "allow": true,
+      "last_counter": 0,
+      "last_time": 0,
+      "max_window_s": 604800,
+      "uptime": 500,
+      "expect": null
+    },
+    {
+      "name": "refused: a record of 101 bytes",
+      "record": "0e2d80c61f56d103a4d149f2567e42c20e2d80c61f56d10300000e106553f10000000001c1f3d8e232bc38769553f48f96586455090d80376ed9fdd2f597f133943c32076baa9bc9ffdb9da4b3fdc3e99b45cd74d63b5163c7d27ea100aa644f90457f0500",
+      "reason": "malformed",
+      "current": "0e2d80c61f56d103",
+      "previous": null,
+      "revoked": [],
+      "trust": [
+        {
+          "id": "0e2d80c61f56d103",
+          "public": "168604f9253f0eeb53c0a84f8b43e3f85ea580567d38eb831ce22ceecfd791d3"
+        },
+        {
+          "id": "a4d149f2567e42c2",
+          "public": "c3329a70d89be96bdef81d70b3413acf4cd486fbedf0e75fdeb71dc51d34143e"
+        }
+      ],
+      "allow": true,
+      "last_counter": 0,
+      "last_time": 0,
+      "max_window_s": 604800,
+      "uptime": 500,
+      "expect": null
+    },
+    {
+      "name": "refused: a signer that is not in the trust table",
+      "record": "7ffe10871f69a866a4d149f2567e42c20e2d80c61f56d10300000e106553f10000000001c01b6eada5969d87de4e6cb12399ca353ec8053f9302d9ba80e5e5997dd4712fd5467c76a09c3d121d41b2bb0a128c2c13082528e6ade410f3f8403d1ef2840c",
+      "reason": "unknown_signer",
+      "current": "0e2d80c61f56d103",
+      "previous": null,
+      "revoked": [],
+      "trust": [
+        {
+          "id": "0e2d80c61f56d103",
+          "public": "168604f9253f0eeb53c0a84f8b43e3f85ea580567d38eb831ce22ceecfd791d3"
+        },
+        {
+          "id": "a4d149f2567e42c2",
+          "public": "c3329a70d89be96bdef81d70b3413acf4cd486fbedf0e75fdeb71dc51d34143e"
+        }
+      ],
+      "allow": true,
+      "last_counter": 0,
+      "last_time": 0,
+      "max_window_s": 604800,
+      "uptime": 500,
+      "expect": null
+    },
+    {
+      "name": "refused: signed by the previous key during a window",
+      "record": "0e2d80c61f56d1030e2d80c61f56d103000000000000000000000e106553f100000000014ed4838b35e72a80d08df5b9db286e66b8df84a8875c4ac2e9849968a0f50ddf6fccb1c8baa1ac08dbe8207a06ac01ab0171b6d0ac74b679753b8b75de7cc70d",
+      "reason": "signer_not_current",
+      "current": "a4d149f2567e42c2",
+      "previous": "0e2d80c61f56d103",
+      "revoked": [],
+      "trust": [
+        {
+          "id": "0e2d80c61f56d103",
+          "public": "168604f9253f0eeb53c0a84f8b43e3f85ea580567d38eb831ce22ceecfd791d3"
+        },
+        {
+          "id": "a4d149f2567e42c2",
+          "public": "c3329a70d89be96bdef81d70b3413acf4cd486fbedf0e75fdeb71dc51d34143e"
+        }
+      ],
+      "allow": true,
+      "last_counter": 0,
+      "last_time": 0,
+      "max_window_s": 604800,
+      "uptime": 500,
+      "expect": null
+    },
+    {
+      "name": "refused: the current key is revoked",
+      "record": "0e2d80c61f56d103a4d149f2567e42c20e2d80c61f56d10300000e106553f10000000001c1f3d8e232bc38769553f48f96586455090d80376ed9fdd2f597f133943c32076baa9bc9ffdb9da4b3fdc3e99b45cd74d63b5163c7d27ea100aa644f90457f05",
+      "reason": "signer_not_current",
+      "current": "0e2d80c61f56d103",
+      "previous": null,
+      "revoked": [
+        "0e2d80c61f56d103"
+      ],
+      "trust": [
+        {
+          "id": "0e2d80c61f56d103",
+          "public": "168604f9253f0eeb53c0a84f8b43e3f85ea580567d38eb831ce22ceecfd791d3"
+        },
+        {
+          "id": "a4d149f2567e42c2",
+          "public": "c3329a70d89be96bdef81d70b3413acf4cd486fbedf0e75fdeb71dc51d34143e"
+        }
+      ],
+      "allow": true,
+      "last_counter": 0,
+      "last_time": 0,
+      "max_window_s": 604800,
+      "uptime": 500,
+      "expect": null
+    },
+    {
+      "name": "refused: a changed window breaks the signature",
+      "record": "0e2d80c61f56d103a4d149f2567e42c20e2d80c61f56d10300000e116553f10000000001c1f3d8e232bc38769553f48f96586455090d80376ed9fdd2f597f133943c32076baa9bc9ffdb9da4b3fdc3e99b45cd74d63b5163c7d27ea100aa644f90457f05",
+      "reason": "bad_signature",
+      "current": "0e2d80c61f56d103",
+      "previous": null,
+      "revoked": [],
+      "trust": [
+        {
+          "id": "0e2d80c61f56d103",
+          "public": "168604f9253f0eeb53c0a84f8b43e3f85ea580567d38eb831ce22ceecfd791d3"
+        },
+        {
+          "id": "a4d149f2567e42c2",
+          "public": "c3329a70d89be96bdef81d70b3413acf4cd486fbedf0e75fdeb71dc51d34143e"
+        }
+      ],
+      "allow": true,
+      "last_counter": 0,
+      "last_time": 0,
+      "max_window_s": 604800,
+      "uptime": 500,
+      "expect": null
+    },
+    {
+      "name": "refused: a changed host time breaks the signature",
+      "record": "0e2d80c61f56d103a4d149f2567e42c20e2d80c61f56d10300000e106553f10100000001c1f3d8e232bc38769553f48f96586455090d80376ed9fdd2f597f133943c32076baa9bc9ffdb9da4b3fdc3e99b45cd74d63b5163c7d27ea100aa644f90457f05",
+      "reason": "bad_signature",
+      "current": "0e2d80c61f56d103",
+      "previous": null,
+      "revoked": [],
+      "trust": [
+        {
+          "id": "0e2d80c61f56d103",
+          "public": "168604f9253f0eeb53c0a84f8b43e3f85ea580567d38eb831ce22ceecfd791d3"
+        },
+        {
+          "id": "a4d149f2567e42c2",
+          "public": "c3329a70d89be96bdef81d70b3413acf4cd486fbedf0e75fdeb71dc51d34143e"
+        }
+      ],
+      "allow": true,
+      "last_counter": 0,
+      "last_time": 0,
+      "max_window_s": 604800,
+      "uptime": 500,
+      "expect": null
+    },
+    {
+      "name": "refused: a changed signature",
+      "record": "0e2d80c61f56d103a4d149f2567e42c20e2d80c61f56d10300000e106553f10000000001c1f3d8e232bc38769553f48f96586455090d80376ed9fdd2f597f133943c32076baa9bc9ffdb9da4b3fdc3e99b45cd74d63b5163c7d27fa100aa644f90457f05",
+      "reason": "bad_signature",
+      "current": "0e2d80c61f56d103",
+      "previous": null,
+      "revoked": [],
+      "trust": [
+        {
+          "id": "0e2d80c61f56d103",
+          "public": "168604f9253f0eeb53c0a84f8b43e3f85ea580567d38eb831ce22ceecfd791d3"
+        },
+        {
+          "id": "a4d149f2567e42c2",
+          "public": "c3329a70d89be96bdef81d70b3413acf4cd486fbedf0e75fdeb71dc51d34143e"
+        }
+      ],
+      "allow": true,
+      "last_counter": 0,
+      "last_time": 0,
+      "max_window_s": 604800,
+      "uptime": 500,
+      "expect": null
+    },
+    {
+      "name": "refused: a signature made without the domain of rotation",
+      "record": "0e2d80c61f56d103a4d149f2567e42c20e2d80c61f56d10300000e106553f100000000011bcfe8e825ed76247277e6531e4655452bef89be0cb16b5dd80798debaf342dad06c7440e27a7982dbb5a550619a20ab20a0c22e62a1377ca655161a3c74270d",
+      "reason": "bad_signature",
+      "current": "0e2d80c61f56d103",
+      "previous": null,
+      "revoked": [],
+      "trust": [
+        {
+          "id": "0e2d80c61f56d103",
+          "public": "168604f9253f0eeb53c0a84f8b43e3f85ea580567d38eb831ce22ceecfd791d3"
+        },
+        {
+          "id": "a4d149f2567e42c2",
+          "public": "c3329a70d89be96bdef81d70b3413acf4cd486fbedf0e75fdeb71dc51d34143e"
+        }
+      ],
+      "allow": true,
+      "last_counter": 0,
+      "last_time": 0,
+      "max_window_s": 604800,
+      "uptime": 500,
+      "expect": null
+    },
+    {
+      "name": "refused: a replayed counter",
+      "record": "0e2d80c61f56d103a4d149f2567e42c20e2d80c61f56d10300000e106553f10000000001c1f3d8e232bc38769553f48f96586455090d80376ed9fdd2f597f133943c32076baa9bc9ffdb9da4b3fdc3e99b45cd74d63b5163c7d27ea100aa644f90457f05",
+      "reason": "replayed_counter",
+      "current": "0e2d80c61f56d103",
+      "previous": null,
+      "revoked": [],
+      "trust": [
+        {
+          "id": "0e2d80c61f56d103",
+          "public": "168604f9253f0eeb53c0a84f8b43e3f85ea580567d38eb831ce22ceecfd791d3"
+        },
+        {
+          "id": "a4d149f2567e42c2",
+          "public": "c3329a70d89be96bdef81d70b3413acf4cd486fbedf0e75fdeb71dc51d34143e"
+        }
+      ],
+      "allow": true,
+      "last_counter": 1,
+      "last_time": 0,
+      "max_window_s": 604800,
+      "uptime": 500,
+      "expect": null
+    },
+    {
+      "name": "refused: a counter below the last one",
+      "record": "0e2d80c61f56d103a4d149f2567e42c20e2d80c61f56d10300000e106553f10000000001c1f3d8e232bc38769553f48f96586455090d80376ed9fdd2f597f133943c32076baa9bc9ffdb9da4b3fdc3e99b45cd74d63b5163c7d27ea100aa644f90457f05",
+      "reason": "replayed_counter",
+      "current": "0e2d80c61f56d103",
+      "previous": null,
+      "revoked": [],
+      "trust": [
+        {
+          "id": "0e2d80c61f56d103",
+          "public": "168604f9253f0eeb53c0a84f8b43e3f85ea580567d38eb831ce22ceecfd791d3"
+        },
+        {
+          "id": "a4d149f2567e42c2",
+          "public": "c3329a70d89be96bdef81d70b3413acf4cd486fbedf0e75fdeb71dc51d34143e"
+        }
+      ],
+      "allow": true,
+      "last_counter": 9,
+      "last_time": 0,
+      "max_window_s": 604800,
+      "uptime": 500,
+      "expect": null
+    },
+    {
+      "name": "refused: the host time goes back",
+      "record": "0e2d80c61f56d103a4d149f2567e42c20e2d80c61f56d10300000e106553f10000000001c1f3d8e232bc38769553f48f96586455090d80376ed9fdd2f597f133943c32076baa9bc9ffdb9da4b3fdc3e99b45cd74d63b5163c7d27ea100aa644f90457f05",
+      "reason": "time_backwards",
+      "current": "0e2d80c61f56d103",
+      "previous": null,
+      "revoked": [],
+      "trust": [
+        {
+          "id": "0e2d80c61f56d103",
+          "public": "168604f9253f0eeb53c0a84f8b43e3f85ea580567d38eb831ce22ceecfd791d3"
+        },
+        {
+          "id": "a4d149f2567e42c2",
+          "public": "c3329a70d89be96bdef81d70b3413acf4cd486fbedf0e75fdeb71dc51d34143e"
+        }
+      ],
+      "allow": true,
+      "last_counter": 0,
+      "last_time": 1700000001,
+      "max_window_s": 604800,
+      "uptime": 500,
+      "expect": null
+    },
+    {
+      "name": "refused: the host time is zero",
+      "record": "0e2d80c61f56d103a4d149f2567e42c20e2d80c61f56d10300000e100000000000000001611a765eb086841b09198521d4860bdf122c58f5c4f11265fb3c1ee44e48ea7e6af8b75fb194523e61ac1311d19ea555a64eb919f554302e8360cd97fb56100c",
+      "reason": "time_backwards",
+      "current": "0e2d80c61f56d103",
+      "previous": null,
+      "revoked": [],
+      "trust": [
+        {
+          "id": "0e2d80c61f56d103",
+          "public": "168604f9253f0eeb53c0a84f8b43e3f85ea580567d38eb831ce22ceecfd791d3"
+        },
+        {
+          "id": "a4d149f2567e42c2",
+          "public": "c3329a70d89be96bdef81d70b3413acf4cd486fbedf0e75fdeb71dc51d34143e"
+        }
+      ],
+      "allow": true,
+      "last_counter": 0,
+      "last_time": 0,
+      "max_window_s": 604800,
+      "uptime": 500,
+      "expect": null
+    },
+    {
+      "name": "refused: a new key that is not in the table",
+      "record": "0e2d80c61f56d1037ffe10871f69a8660e2d80c61f56d10300000e106553f10000000001250b5560d2cbb3c05488f007c2fc88b7d7249f8dddcc1c2df9b585a2e0b61578c744d2f6da9f18421296924a062c98874c28fb4e6b7d1aed2a287943d277c908",
+      "reason": "unknown_new_key",
+      "current": "0e2d80c61f56d103",
+      "previous": null,
+      "revoked": [],
+      "trust": [
+        {
+          "id": "0e2d80c61f56d103",
+          "public": "168604f9253f0eeb53c0a84f8b43e3f85ea580567d38eb831ce22ceecfd791d3"
+        },
+        {
+          "id": "a4d149f2567e42c2",
+          "public": "c3329a70d89be96bdef81d70b3413acf4cd486fbedf0e75fdeb71dc51d34143e"
+        }
+      ],
+      "allow": true,
+      "last_counter": 0,
+      "last_time": 0,
+      "max_window_s": 604800,
+      "uptime": 500,
+      "expect": null
+    },
+    {
+      "name": "refused: a revoked new key",
+      "record": "0e2d80c61f56d103a4d149f2567e42c20e2d80c61f56d10300000e106553f10000000001c1f3d8e232bc38769553f48f96586455090d80376ed9fdd2f597f133943c32076baa9bc9ffdb9da4b3fdc3e99b45cd74d63b5163c7d27ea100aa644f90457f05",
+      "reason": "revoked_new_key",
+      "current": "0e2d80c61f56d103",
+      "previous": null,
+      "revoked": [
+        "a4d149f2567e42c2"
+      ],
+      "trust": [
+        {
+          "id": "0e2d80c61f56d103",
+          "public": "168604f9253f0eeb53c0a84f8b43e3f85ea580567d38eb831ce22ceecfd791d3"
+        },
+        {
+          "id": "a4d149f2567e42c2",
+          "public": "c3329a70d89be96bdef81d70b3413acf4cd486fbedf0e75fdeb71dc51d34143e"
+        }
+      ],
+      "allow": true,
+      "last_counter": 0,
+      "last_time": 0,
+      "max_window_s": 604800,
+      "uptime": 500,
+      "expect": null
+    },
+    {
+      "name": "refused: the previous key is not the one trusted now",
+      "record": "0e2d80c61f56d103a4d149f2567e42c2a4d149f2567e42c200000e106553f100000000013ef205e8f58589fd5c9aba758c5a4665a5a181564975fa24cf64b3024ae3abde609c9848ed5a1facc67381f06ec6f7c905c1b34600841b5a5d84126005d1e90b",
+      "reason": "bad_previous",
+      "current": "0e2d80c61f56d103",
+      "previous": null,
+      "revoked": [],
+      "trust": [
+        {
+          "id": "0e2d80c61f56d103",
+          "public": "168604f9253f0eeb53c0a84f8b43e3f85ea580567d38eb831ce22ceecfd791d3"
+        },
+        {
+          "id": "a4d149f2567e42c2",
+          "public": "c3329a70d89be96bdef81d70b3413acf4cd486fbedf0e75fdeb71dc51d34143e"
+        }
+      ],
+      "allow": true,
+      "last_counter": 0,
+      "last_time": 0,
+      "max_window_s": 604800,
+      "uptime": 500,
+      "expect": null
+    },
+    {
+      "name": "refused: the new key is also the previous one",
+      "record": "0e2d80c61f56d1030e2d80c61f56d1030e2d80c61f56d10300000e106553f10000000001eec7d7ca64707bb609e8059ac9de7232f0b53694e8ee97d5f89ac88d89102baf8ffe2b0984c677c89549c9a6020c906875a06e1f157be46c74bdad4382eb490b",
+      "reason": "bad_previous",
+      "current": "0e2d80c61f56d103",
+      "previous": null,
+      "revoked": [],
+      "trust": [
+        {
+          "id": "0e2d80c61f56d103",
+          "public": "168604f9253f0eeb53c0a84f8b43e3f85ea580567d38eb831ce22ceecfd791d3"
+        },
+        {
+          "id": "a4d149f2567e42c2",
+          "public": "c3329a70d89be96bdef81d70b3413acf4cd486fbedf0e75fdeb71dc51d34143e"
+        }
+      ],
+      "allow": true,
+      "last_counter": 0,
+      "last_time": 0,
+      "max_window_s": 604800,
+      "uptime": 500,
+      "expect": null
+    },
+    {
+      "name": "refused: a window above the maximum",
+      "record": "0e2d80c61f56d103a4d149f2567e42c20e2d80c61f56d103000151816553f10000000001338bca7a5936b2e431970585dbf6daa5a6274252386b4d327bbe697e58bf25a0aca77291978c116e7afc3c07bd9b4908a72942e01a00d83bc5a41d6ade94d408",
+      "reason": "window_too_long",
+      "current": "0e2d80c61f56d103",
+      "previous": null,
+      "revoked": [],
+      "trust": [
+        {
+          "id": "0e2d80c61f56d103",
+          "public": "168604f9253f0eeb53c0a84f8b43e3f85ea580567d38eb831ce22ceecfd791d3"
+        },
+        {
+          "id": "a4d149f2567e42c2",
+          "public": "c3329a70d89be96bdef81d70b3413acf4cd486fbedf0e75fdeb71dc51d34143e"
+        }
+      ],
+      "allow": true,
+      "last_counter": 0,
+      "last_time": 0,
+      "max_window_s": 86400,
+      "uptime": 500,
+      "expect": null
+    },
+    {
+      "name": "accepted: a window equal to the maximum",
+      "record": "0e2d80c61f56d103a4d149f2567e42c20e2d80c61f56d103000151806553f10000000001093388e26dc267adc820e8e35be8b903353fef27b120d8282240a305dc11cb28991d148bde55687cee7c223301e4d74ca5029b6451d48bfbdfa7a14d47b9840c",
+      "reason": "ok",
+      "current": "0e2d80c61f56d103",
+      "previous": null,
+      "revoked": [],
+      "trust": [
+        {
+          "id": "0e2d80c61f56d103",
+          "public": "168604f9253f0eeb53c0a84f8b43e3f85ea580567d38eb831ce22ceecfd791d3"
+        },
+        {
+          "id": "a4d149f2567e42c2",
+          "public": "c3329a70d89be96bdef81d70b3413acf4cd486fbedf0e75fdeb71dc51d34143e"
+        }
+      ],
+      "allow": true,
+      "last_counter": 0,
+      "last_time": 0,
+      "max_window_s": 86400,
+      "uptime": 500,
+      "expect": {
+        "current": "a4d149f2567e42c2",
+        "previous": "0e2d80c61f56d103",
+        "window_s": 86400,
+        "started_at": 1700000000,
+        "last_counter": 1,
+        "last_time": 1700000000,
+        "clock_offset": 1699999500
+      }
+    }
+  ]
+}

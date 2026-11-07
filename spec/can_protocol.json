@@ -7482,7 +7482,8 @@
         }
       ],
       "notes": [
-        "Sent to the selected (or only) bootloader after START_UPDATE, next to the HMAC chunks. The record is described in the design of the bootloader authentication."
+        "Sent to the selected (or only) bootloader after START_UPDATE, next to the HMAC chunks. The record is described in the design of the bootloader authentication.",
+        "An index from 0x80 to 0x8E is a chunk of a signed rotation command instead of a chunk of an image signature: 100 bytes (signer key id, new current key id, previous key id, window seconds, host time, counter, Ed25519 signature) in 15 frames, seven bytes each after the index, the last one padded with zeros. A bootloader that does not know it ignores it. See docs/BOOTLOADER_AUTH.md."
       ],
       "implemented_by": {
         "firmware": true,
