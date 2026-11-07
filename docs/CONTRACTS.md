@@ -16,7 +16,7 @@ The CAN bus of the tool head is the one contract that crosses the firmware, two 
 
 | Part | Where | What it fixes |
 |---|---|---|
-| Frame table | `messages` | 104 identifiers: name, direction, who handles it, the tools it is valid for, the length rule of every layout, every field (offset, type, range, enumeration), the gates (critical error, boot sequence, magic payload), the timing (telemetry period, watchdog), and which implementations define it |
+| Frame table | `messages` | 106 identifiers: name, direction, who handles it, the tools it is valid for, the length rule of every layout, every field (offset, type, range, enumeration), the gates (critical error, boot sequence, magic payload), the timing (telemetry period, watchdog), and which implementations define it |
 | Magic payloads | `magic_payloads` | The four 4-byte values that make a destructive or one-shot command obeyed: enter the bootloader, authorise one downgrade, erase the saved state, reset the solder feeder position |
 | Enumerations | `enums` | Tool profiles (25 plus the invalid marker), bootloader status, verify-fail reason, thermal fault, reset-cause flags, expansion board type, sensor variant and the small value sets of the commands |
 | Constants | `constants` | The bitrate, the HardwareIDs, the flash page, the patch encoding, the timing every host must respect (watchdogs, grace window, acknowledgement timeout) and the limits the hosts offer |

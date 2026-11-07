@@ -58,6 +58,8 @@ Every identifier of `spec/can_protocol.json`, one row each. **Dir**: H>B host to
 | `0x1B9` | PID_CONFIG | H>B | 7 | any | `F . T W` |  |
 | `0x1BA` | PID_STATE_RESP | both | any / 8 | any | `F . T W` |  |
 | `0x1BB` | HEALTH_INFO | B>H | 8 | any | `F . . .` | no host implements it |
+| `0x1BC` | CRASH_DUMP_QUERY | H>B | 1-8 | any | `F . T .` |  |
+| `0x1BD` | CRASH_DUMP_RESP | B>H | 8 | any | `F . T .` |  |
 | `0x1C0` | SPOT_WELD_CMD | H>B | 3 | 14 | `F . T W` |  |
 | `0x1D0` | UV_CURING_CMD | H>B | 1 | 18 | `F . T W` |  |
 | `0x1E0` | HOTAIR_CMD | H>B | 3 | 19 | `F . T W` |  |
@@ -113,7 +115,7 @@ Every identifier of `spec/can_protocol.json`, one row each. **Dir**: H>B host to
 | `0x7FE` | READBACK | both | any / 4 (size) / 1-8 (data) | any | `F L . W` |  |
 | `0x7FF` | READBACK_PAGE_ACK | H>B | 4 | any | `F L . W` |  |
 
-104 identifiers, 26 tool values, 27 slave registers, 4 magic payloads.
+106 identifiers, 26 tool values, 27 slave registers, 4 magic payloads.
 
 ## Tool rack
 

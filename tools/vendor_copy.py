@@ -53,6 +53,7 @@ SETS = {
     "tools_ts": ["generated/urtcTools.ts"],
     "tool_panels": ["src/urtc_common/tool_panels.py", "src/urtc_common/tool_panel_model.py"],
     "blackbox": ["src/urtc_common/blackbox.py", "conformance/blackbox_vectors.json"],
+    "crash_dump": ["src/urtc_common/crash_dump.py"],
     "rack": ["src/urtc_common/rack_sim.py", "src/urtc_common/rack_status.py", "conformance/rack_vectors.json"],
     "thermal": ["src/urtc_common/thermal_view.py", "conformance/thermal_vectors.json"],
     "rack_c": ["generated/rack_vectors.h"],

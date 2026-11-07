@@ -4976,6 +4976,116 @@
       }
     },
     {
+      "id": "0x1BC",
+      "name": "CRASH_DUMP_QUERY",
+      "group": "diagnostics",
+      "title": "Request the fault capture of the last crash (stacked registers kept across the reset)",
+      "direction": "host_to_board",
+      "handled_by": "application",
+      "tools": "any",
+      "gates": {
+        "blocked_by_critical_error": false
+      },
+      "read_only": true,
+      "layouts": [
+        {
+          "role": "request",
+          "dlc": {
+            "min": 1,
+            "max": 8
+          },
+          "fields": [
+            {
+              "name": "operation",
+              "type": "u8",
+              "range": [
+                0,
+                0
+              ],
+              "note": "0 reads the record. Other values get no answer.",
+              "offset": 0,
+              "width": 1
+            }
+          ],
+          "examples": [
+            {
+              "name": "read the capture",
+              "fields": {
+                "operation": 0
+              },
+              "data": "00"
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "Answered only by a firmware built with the crash capture switched on (URTC_CRASH_DUMP); any other firmware ignores it, as it ignores an identifier it does not know. Answered with six frames of 0x1BD."
+      ],
+      "firmware_accepts_dlc": {
+        "min": 1,
+        "max": 8
+      },
+      "implemented_by": {
+        "firmware": true,
+        "flasher": false,
+        "tester": true,
+        "web_studio": false
+      },
+      "client_names": {
+        "tester": "CAN_ID_CRASH_DUMP_QUERY"
+      }
+    },
+    {
+      "id": "0x1BD",
+      "name": "CRASH_DUMP_RESP",
+      "group": "diagnostics",
+      "title": "The fault capture of the last crash",
+      "direction": "board_to_host",
+      "handled_by": "application",
+      "tools": "any",
+      "answers": "0x1BC",
+      "layouts": [
+        {
+          "role": "response",
+          "dlc": {
+            "exact": 8
+          },
+          "fields": [
+            {
+              "name": "data",
+              "type": "bytes",
+              "length": 8,
+              "offset": 0,
+              "width": 8
+            }
+          ],
+          "frames": 6,
+          "note": "Six consecutive frames of eight bytes, concatenated in order, are the 48-byte record, sent as the firmware keeps it (little-endian words): magic 'CRSH' (4), crash counter since power-up (4), PC, LR, xPSR of the stacked frame (4 each), CFSR, HFSR, MMFAR, BFAR (4 each), stack pointer of the frame (4), reset cause (1, the bit field of 0x1BB), kind (1: 0 no crash, 1 crash with its frame, 2 crash whose stack was not readable), record version (1, value 1), reserved (1, zero), CRC-32 of the first 44 bytes (4).",
+          "examples": [
+            {
+              "name": "one of the six frames",
+              "fields": {
+                "data": "4352534800000000"
+              },
+              "data": "4352534800000000"
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "The record lives in RAM that survives a reset (it is checked by its CRC and cleared at a power-on), so a crash that ended in a watchdog reset can be read after the board is back. The host believes it only when the magic, the version and the CRC agree."
+      ],
+      "implemented_by": {
+        "firmware": true,
+        "flasher": false,
+        "tester": true,
+        "web_studio": false
+      },
+      "client_names": {
+        "tester": "CAN_ID_CRASH_DUMP_RESP"
+      }
+    },
+    {
       "id": "0x1C0",
       "name": "SPOT_WELD_CMD",
       "group": "welding",
