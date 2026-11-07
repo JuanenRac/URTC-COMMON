@@ -177,8 +177,8 @@ def test_the_block_is_written_in_the_specification_with_the_formats_of_the_desig
     spec = json.loads((ROOT / "spec" / "can_protocol.json").read_text(encoding="utf-8"))
     messages = {m["id"]: m for m in spec["messages"]}
     assert [f"0x{i:03X}" for i in bs.BLOCK_IDS] == ["0x7EA", "0x7EB", "0x7EC", "0x7ED"] and all(f"0x{i:03X}" in messages for i in bs.BLOCK_IDS)
-    assert [lay["variant"] for lay in messages["0x7EA"]["layouts"]] == ["probe", "select", "release", "uid"]
-    assert [lay["dlc"] for lay in messages["0x7EA"]["layouts"]] == [{"exact": 6}, {"exact": 6}, {"exact": 1}, {"exact": 2}]
+    assert [lay["variant"] for lay in messages["0x7EA"]["layouts"]] == ["probe", "select", "release", "uid", "rotation_status"]
+    assert [lay["dlc"] for lay in messages["0x7EA"]["layouts"]] == [{"exact": 6}, {"exact": 6}, {"exact": 1}, {"exact": 2}, {"exact": 1}]
     assert messages["0x7EC"]["layouts"][0]["dlc"] == {"exact": 8} and messages["0x7ED"]["layouts"][0]["dlc"] == {"exact": 8}
     # the classic CAN frame carries at most 8 data bytes: nothing of the block, and not 0x7FA, may be longer, and 0x7FA is exactly the three bytes of the version
     for message in messages.values():

@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The status of the rotation of the signing key is in the specification:** `0x7EA` operation `05` (ask, one byte) and its answer on `0x7EB` (seven bytes: `05`, number of valid keys, flags, seconds left of the window) are described in `spec/can_protocol.json`, with the tables, the constants, the conformance vectors and the fuzz corpus regenerated; the notes of `0x7ED` say that a second frame announces the previous key only inside the window. No bootloader sends them yet.
+
 - **The rotation of the signing key has a portable C twin:** `firmware_base/urtc_key_rotation.h` decides which fingerprints are valid (the current one, and the previous one only inside a configurable window), builds the `0x7ED` frames and the `0x7EB` status and reads a status back, held to the same vectors as the Python reference (`generated/key_rotation_vectors.h`, now written by `tools/make_key_rotation_vectors.py`) by `tests/c/test_key_rotation.c`; new copy sets `firmware_key_rotation`, `key_rotation_c` and `key_rotation_test`. Not wired into a bootloader.
 
 - **The repository check compares the manifest with what can be computed:** `tools/ci_validate.py` now also runs the shared `tools/sync_manifests.py` offline, which compares the shipped version, the newest released heading of this changelog, the presence of tests and the claimed level of evidence with the manifest. It is part of the shared set of tools, so the copy is pinned by the lock.

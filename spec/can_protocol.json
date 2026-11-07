@@ -7199,6 +7199,33 @@
               "data": "0401"
             }
           ]
+        },
+        {
+          "role": "request",
+          "variant": "rotation_status",
+          "dlc": {
+            "exact": 1
+          },
+          "fields": [
+            {
+              "name": "operation",
+              "type": "bytes",
+              "length": 1,
+              "fixed": "05",
+              "offset": 0,
+              "width": 1
+            }
+          ],
+          "note": "Asks a bootloader which signing keys it trusts right now and for how long. Only a bootloader that implements the rotation window answers.",
+          "examples": [
+            {
+              "name": "ask for the key status",
+              "fields": {
+                "operation": "05"
+              },
+              "data": "05"
+            }
+          ]
         }
       ],
       "notes": [
@@ -7344,6 +7371,57 @@
               "data": "040011111111"
             }
           ]
+        },
+        {
+          "role": "response",
+          "variant": "rotation_status",
+          "dlc": {
+            "exact": 7
+          },
+          "fields": [
+            {
+              "name": "operation",
+              "type": "bytes",
+              "length": 1,
+              "fixed": "05",
+              "offset": 0,
+              "width": 1
+            },
+            {
+              "name": "key_count",
+              "type": "u8",
+              "offset": 1,
+              "width": 1,
+              "note": "How many fingerprints are valid now (0 to 2); the same number of frames follows on 0x7ED, the current key first."
+            },
+            {
+              "name": "flags",
+              "type": "u8",
+              "offset": 2,
+              "width": 1,
+              "note": "Bit 0: a previous key is still valid (a rotation is in progress). Bit 1: the current key is revoked. Other bits are zero."
+            },
+            {
+              "name": "seconds_left",
+              "type": "u32",
+              "offset": 3,
+              "width": 4,
+              "note": "Seconds until the previous key stops verifying, big-endian; 0xFFFFFFFF when there is no window."
+            }
+          ],
+          "note": "Answer to operation 05 of 0x7EA. The window is a configuration parameter of the bootloader, never a constant of the protocol.",
+          "examples": [
+            {
+              "name": "rotating, one hour left",
+              "fields": {
+                "operation": "05",
+                "key_count": 2,
+                "flags": 1,
+                "seconds_left": 3600
+              },
+              "data": "05020100000E10"
+            }
+          ]
         }
       ],
       "notes": [
@@ -7455,7 +7533,8 @@
       ],
       "notes": [
         "Sent by a bootloader that holds a trusted Ed25519 key, right after its answer to 0x7F8. A bootloader without the frame (older, or without a key) sends nothing: tools read that as 'no data', never as a difference.",
-        "With several heads, only the selected one answers 0x7F8 and therefore only its key identifier arrives."
+        "With several heads, only the selected one answers 0x7F8 and therefore only its key identifier arrives.",
+        "While a key rotation is in progress a bootloader sends a second frame for the previous key, only inside the window and never more than two frames in all; the current key always comes first, so a tool that reads only the first frame sees what it sees today. The status is the answer to operation 05 of 0x7EA on 0x7EB."
       ],
       "implemented_by": {
         "firmware": true,

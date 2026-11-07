@@ -90,8 +90,8 @@ Every identifier of `spec/can_protocol.json`, one row each. **Dir**: H>B host to
 | `0x254` | THERMAL_CAL_CHUNK_REQ | H>B | 1 | 22 | `F . T W` |  |
 | `0x255` | THERMAL_CAL_CHUNK | B>H | 8 | 22 | `F . T W` |  |
 | `0x7E9` | VERSION_PATCH_RESPONSE | B>H | 3-8 | any | `F L T W` |  |
-| `0x7EA` | BOOTLOADER_SELECT | H>B | 6 6 1 2 | any | `. . . .` | no host implements it |
-| `0x7EB` | BOOTLOADER_SELECT_RESPONSE | B>H | 2 6 6 | any | `. . . .` | no host implements it |
+| `0x7EA` | BOOTLOADER_SELECT | H>B | 6 6 1 2 1 | any | `. . . .` | no host implements it |
+| `0x7EB` | BOOTLOADER_SELECT_RESPONSE | B>H | 2 6 6 7 | any | `. . . .` | no host implements it |
 | `0x7EC` | BOOTLOADER_SIGNATURE_CHUNK | H>B | 8 | any | `F L . W` |  |
 | `0x7ED` | BOOTLOADER_KEY_ID | B>H | 8 | any | `F L . W` |  |
 | `0x7EE` | BOOTLOADER_SERIAL_CHUNK | H>B | 8 | any | `F . . .` | no host implements it |
