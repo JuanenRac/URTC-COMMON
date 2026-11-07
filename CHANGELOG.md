@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The Italian help of the main window says "area di lavoro"** (it said "spazio di lavoro"), as the window itself and the README do.
+
 - **The German README calls a frame of the serial protocols a "Frame"** (it said "Rahmen"), as the rest of the German documents do.
 
 - **The registers a HardFault leaves can be asked for over CAN (`0x1BC` / `0x1BD`):** two new identifiers in the specification, `CRASH_DUMP_QUERY` (one byte, operation 0) and `CRASH_DUMP_RESP` (six frames of eight bytes, the 48-byte record: magic, crash counter, PC, LR and xPSR of the stacked frame, CFSR, HFSR, MMFAR, BFAR, the address of the frame, the cause of the reset, a kind, the record version and a CRC-32), read-only and answered only by a firmware built with the crash capture. The generated tables and constants, the vectors and the CAN document follow. `crash_dump.py` builds, checks and describes the record (the causes in words, the fault address from the register the status says is valid, JSON), with tests that flip each of the 384 bits of a record, check the refusals (size, magic, version, checksum, kind) and read the six frames; the bytes of one capture are the same as in the C test of the firmware. New texts of the Tester for the button that reads it, in the eight languages.
