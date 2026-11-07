@@ -6,5 +6,5 @@
   "kinds": ["FIRMWARE", "BOOTLOADER"],
   "version": "\\d+(?:\\.\\d+)+",
   "image_extension": ".bin",
-  "sidecar_suffixes": [".sha256", ".manifest.json", ".sig"]
+  "sidecar_suffixes": [".sha256", ".manifest.json", ".sig", ".imgsig"]
 }

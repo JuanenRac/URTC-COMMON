@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The `.imgsig` record is a sidecar of the image:** `spec/firmware_images.json` lists `.imgsig` next to `.sha256`, `.manifest.json` and `.sig`, so `sidecar_names` and `is_sidecar` (Python) and `FIRMWARE_SIDECAR_SUFFIXES` (TypeScript) know the file that carries the signature record of an image; a test checks the new suffix.
+
 ## [0.2.4] - Faults and cuts in the rack, the heater loop and the thermal vision, on simulated parts: tests for a serial link cut or damaged (every single-bit flip, a lost byte, noise, a half frame), the link lost and the pre-heat limit of... (and 7 more changes)
 
 - **Faults and cuts in the rack, the heater loop and the thermal vision, on simulated parts:** tests for a serial link cut or damaged (every single-bit flip, a lost byte, noise, a half frame), the link lost and the pre-heat limit of the rack, the whole chain rack to heater loop to thermal check with a dead heater, a heater stuck on and a cut of the host, the physics of the simulated iron, the thermal image over a bus that loses, repeats and shortens frames, and the sensor link frames after a cut. The simulated bootloader ignores a start frame cut short instead of failing with an error of its own.

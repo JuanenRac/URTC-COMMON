@@ -54,7 +54,7 @@ def test_building_refuses_parts_that_are_not_listed(args):
 
 def test_the_files_that_travel_with_an_image():
     image = names.image_name("MAIN", "FIRMWARE", "0.4.1")
-    assert names.sidecar_names(image) == (image + ".sha256", image + ".manifest.json", image + ".sig")
+    assert names.sidecar_names(image) == (image + ".sha256", image + ".manifest.json", image + ".sig", image + ".imgsig")
     assert all(names.is_sidecar(item) for item in names.sidecar_names(image))
     assert not names.is_sidecar(image) and names.parse_image_name(names.sidecar_names(image)[0]) is None
 
@@ -77,7 +77,13 @@ def test_the_image_pattern_matches_the_images_of_the_other_programs(sibling):
         if item.suffix == ".bin" or item.name in {".gitkeep", "firmware_manifest.json", "firmware_manifest.json.sig"}:
             continue
         stem = next((image.name for image in images if item.name.startswith(image.name)), None)
-        assert stem is not None and item.name[len(stem):] in {".sha256", ".manifest.json", ".sig", ".sha256.sig", ".manifest.json.sig"}, item.name
+        assert stem is not None and item.name[len(stem):] in {".sha256", ".manifest.json", ".sig", ".imgsig", ".sha256.sig", ".manifest.json.sig"}, item.name
+
+
+def test_the_record_of_the_image_signature_travels_with_the_image():
+    image = names.image_name("MAIN", "FIRMWARE", "0.4.1")
+    assert ".imgsig" in names.SIDECAR_SUFFIXES and image + ".imgsig" in names.sidecar_names(image)
+    assert names.is_sidecar(image + ".imgsig") and names.parse_image_name(image + ".imgsig") is None
 
 
 def test_the_flasher_lists_only_suffixes_the_specification_lists(sibling):
