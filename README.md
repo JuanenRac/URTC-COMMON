@@ -29,7 +29,7 @@
 
 | | |
 |---|---|
-| Version | `0.2.4` |
+| Version | `0.2.5` |
 | Maturity | Functional |
 | Tests | 2693 |
 | Stack | JSON / Python |

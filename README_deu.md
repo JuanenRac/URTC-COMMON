@@ -29,7 +29,7 @@
 
 | | |
 |---|---|
-| Version | `0.2.4` |
+| Version | `0.2.5` |
 | Reifegrad | Funktionsfähig |
 | Tests | 2693 |
 | Technik | JSON / Python |

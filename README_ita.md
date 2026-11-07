@@ -29,7 +29,7 @@
 
 | | |
 |---|---|
-| Versione | `0.2.4` |
+| Versione | `0.2.5` |
 | Maturità | Funzionale |
 | Test | 2693 |
 | Tecnologia | JSON / Python |
