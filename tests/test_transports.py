@@ -670,3 +670,12 @@ def test_a_tool_can_say_the_warnings_in_its_own_language(tmp_path, monkeypatch):
     transports.SocketCAN("can0", log=said.append, socket_module=fake_socket_module(FakeSock()),
                          translate=lambda key, **params: f"[{key}] {params['interface']}")
     assert said == ["[WARN_NO_CARRIER] can0"]
+
+
+def test_mock_ignores_a_start_frame_cut_short_like_the_bootloader_ignores_a_frame_below_its_minimum():
+    board = mock()
+    for cut in (b"", b"\x00", bytes(3)):
+        board.send_frame(protocol.CAN_ID_START_UPDATE, cut)
+    assert drain(board) == []
+    board.send_frame(protocol.CAN_ID_START_UPDATE, struct.pack(">II", 8, protocol.HARDWARE_ID_MAIN))
+    assert drain(board) == [(0x7F5, b"\x02"), (0x7F5, b"\x03")]
