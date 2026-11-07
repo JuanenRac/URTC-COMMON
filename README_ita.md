@@ -31,7 +31,7 @@
 |---|---|
 | Versione | `0.2.4` |
 | Maturità | Funzionale |
-| Test | 2686 |
+| Test | 2693 |
 | Tecnologia | JSON / Python |
 | Su hardware reale | Solo simulato: provato con emulatori, test double o simulatori; per questa versione non risulta alcuna esecuzione su hardware reale |
 

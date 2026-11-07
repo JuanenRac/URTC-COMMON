@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **`min_common` of the manifests is kept true by a tool:** `tools/min_common.py check` compares the `min_common` of every `urtc.project.json` with the oldest copy of URTC-COMMON the repository carries (the lock files), `apply` writes it without touching the rest of the file, and `vendor_copy.py sync` and `refresh` call it, so a re-pin updates the manifest. A repository that carries no copy must not declare the field. Tests for the pin, the edit and the siblings.
+
 - **The updater catalog has the texts of the shared-contracts switch:** the label and the hint of the new switch of the updater's Security window, in the eight languages.
 - **The Italian help of the main window says "area di lavoro"** (it said "spazio di lavoro"), as the window itself and the README do.
 

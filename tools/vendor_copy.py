@@ -227,6 +227,22 @@ def problems(target: Path, source: Path | None) -> list[str]:
     return found
 
 
+def _keep_min_common(code: int, target: Path) -> int:
+    """After a copy was written, bring the ``min_common`` of the manifest of the repository to the oldest copy it carries (tools/min_common.py, when it sits next to this file)."""
+    if code != 0 or not (HERE / "min_common.py").is_file():
+        return code
+    repo = next((folder for folder in [target.resolve(), *target.resolve().parents] if (folder / "urtc.project.json").is_file()), None)
+    if repo is not None:
+        sys.path.insert(0, str(HERE))
+        try:
+            import min_common
+            if min_common.apply(repo):
+                print(f"min_common of {repo.name} updated")
+        finally:
+            sys.path.remove(str(HERE))
+    return code
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = parser.add_subparsers(dest="command", required=True)
@@ -247,12 +263,12 @@ def main(argv: list[str] | None = None) -> int:
         if source is None:
             print("VENDOR=FAIL no checkout of URTC-COMMON found (use --source)", file=sys.stderr)
             return 1
-        return sync(source, target, args.sets, args.only, args.rename)
+        return _keep_min_common(sync(source, target, args.sets, args.only, args.rename), target)
     if args.command == "refresh":
         if source is None:
             print("VENDOR=FAIL no checkout of URTC-COMMON found (use --source)", file=sys.stderr)
             return 1
-        return refresh(source, target)
+        return _keep_min_common(refresh(source, target), target)
     if args.command == "status":
         lock = read_lock(target)
         if lock is None:
