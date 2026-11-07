@@ -4,6 +4,7 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The updater catalog has the texts of the shared-contracts switch:** the label and the hint of the new switch of the updater's Security window, in the eight languages.
 - **The Italian help of the main window says "area di lavoro"** (it said "spazio di lavoro"), as the window itself and the README do.
 
 - **The German README calls a frame of the serial protocols a "Frame"** (it said "Rahmen"), as the rest of the German documents do.
