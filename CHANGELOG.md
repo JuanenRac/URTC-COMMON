@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **More tests for the trust table, the image signature text, the rotation command and the bus-load arithmetic:** every refused table (size, key length, invalid key states, cut at every length, a flipped bit at every byte, repeated or doubled current keys), the strict `.imgsig` text, the limits of the counter, the size checks and chunk layout of the signed rotation command, and the frame size and discovery delay limits; a fixed-seed fuzz of the parsers. The suite has 2250 tests.
+
 - **The `.imgsig` record is a sidecar of the image:** `spec/firmware_images.json` lists `.imgsig` next to `.sha256`, `.manifest.json` and `.sig`, so `sidecar_names` and `is_sidecar` (Python) and `FIRMWARE_SIDECAR_SUFFIXES` (TypeScript) know the file that carries the signature record of an image; a test checks the new suffix.
 
 ## [0.2.4] - Faults and cuts in the rack, the heater loop and the thermal vision, on simulated parts: tests for a serial link cut or damaged (every single-bit flip, a lost byte, noise, a half frame), the link lost and the pre-heat limit of... (and 7 more changes)
