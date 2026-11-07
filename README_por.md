@@ -118,7 +118,7 @@ O conjunto tem 2693 testes (`python -m pytest tests -q`). Verificam a especifica
 
 ## 🏗️ Compilação e publicação
 
-`build.sh` / `build.bat` instalam o pacote e executam os testes; `build-test.sh` / `build-test.bat` verificam sem alterar nenhuma versão; `run.sh` / `run.bat` arrancam a linha de comandos (`conformance`, `describe`, `decode`, `slcan`). Cada release anexa uma roda Python assinada (`urtc-common`, que não está no PyPI), um arquivo de código-fonte assinado e o cabeçalho C gerado assinado, construídos de forma reprodutível por `tools/make_release_artifacts.py` (`build`, `verify`, `reproduce`, `smoke`); veja [o guia do pacote](docs/PACKAGE.md).
+`build.sh` / `build.bat` instalam o pacote e executam os testes; `build-test.sh` / `build-test.bat` verificam sem alterar nenhuma versão; `run.sh` / `run.bat` arrancam a linha de comandos (`conformance`, `describe`, `decode`, `slcan`). Cada release anexa uma roda Python assinada (`urtc-common`, que não está no PyPI), um ficheiro de código-fonte assinado e o cabeçalho C gerado assinado, construídos de forma reprodutível por `tools/make_release_artifacts.py` (`build`, `verify`, `reproduce`, `smoke`); veja [o guia do pacote](docs/PACKAGE.md).
 
 ## 📂 Estrutura do repositório
 
