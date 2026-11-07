@@ -90,3 +90,31 @@ def test_policy_is_not_relaxed_and_expired_key_cannot_install():
     assert installable(100, ia.POLICY_ED25519_ONLY, _signed(seed_new)[2]) == ia.OK
     assert ia.POLICY_DEFAULT == ia.POLICY_ED25519_ONLY     # the rotation does not touch the default policy
     assert installable(100, ia.POLICY_EITHER) == ia.UNKNOWN_KEY   # no HMAC fallback was granted by the rotation
+
+
+def test_the_copy_sets_exist():
+    import vendor_copy
+
+    assert vendor_copy.SETS["firmware_key_rotation"] == ["firmware_base/urtc_key_rotation.h"]
+    assert vendor_copy.SETS["key_rotation_c"] == ["generated/key_rotation_vectors.h"]
+    assert vendor_copy.SETS["key_rotation_test"] == ["tests/c/test_key_rotation.c"]
+
+
+def test_the_c_header_passes_the_same_vectors(tmp_path):
+    import os
+    import shutil
+    import subprocess
+
+    compiler = shutil.which("cc") or shutil.which("gcc")
+    if compiler is None:
+        pytest.skip("no host C compiler")
+    binary = tmp_path / ("key_rotation.exe" if os.name == "nt" else "key_rotation")
+    base = [compiler, "-std=c11", "-Wall", "-Wextra", "-Wconversion", "-Werror", f"-I{ROOT / 'firmware_base'}", f"-I{ROOT / 'generated'}",
+            str(ROOT / "tests" / "c" / "test_key_rotation.c"), "-o", str(binary)]
+    attempt = subprocess.run(base + ["-fsanitize=address,undefined", "-fno-sanitize-recover=undefined"], capture_output=True, text=True)
+    if attempt.returncode != 0:
+        build = subprocess.run(base, capture_output=True, text=True)   # a compiler with no sanitizer runtime
+        assert build.returncode == 0, build.stderr
+    run = subprocess.run([str(binary)], capture_output=True, text=True)
+    assert run.returncode == 0, run.stdout + run.stderr
+    assert "all key rotation tests pass" in run.stdout

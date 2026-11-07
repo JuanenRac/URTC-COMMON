@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The rotation of the signing key has a portable C twin:** `firmware_base/urtc_key_rotation.h` decides which fingerprints are valid (the current one, and the previous one only inside a configurable window), builds the `0x7ED` frames and the `0x7EB` status and reads a status back, held to the same vectors as the Python reference (`generated/key_rotation_vectors.h`, now written by `tools/make_key_rotation_vectors.py`) by `tests/c/test_key_rotation.c`; new copy sets `firmware_key_rotation`, `key_rotation_c` and `key_rotation_test`. Not wired into a bootloader.
+
 - **The repository check compares the manifest with what can be computed:** `tools/ci_validate.py` now also runs the shared `tools/sync_manifests.py` offline, which compares the shipped version, the newest released heading of this changelog, the presence of tests and the claimed level of evidence with the manifest. It is part of the shared set of tools, so the copy is pinned by the lock.
 
 - **The table of status is refreshed from the manifests of the sibling repositories:** the evidence level of the updater is now shown as simulator.
