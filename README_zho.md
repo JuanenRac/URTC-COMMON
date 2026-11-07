@@ -19,11 +19,11 @@
 
 ---
 
-**诚实性检查 - 今天真正能运行的部分：** 本仓库包含一份规范、若干生成器、测试向量和一个小型 Python 库。所有内容都在 CI 中运行并经过测试，但目前只有 URTC-FLASHER、URTC-TESTER 和 URTC-WEB-STUDIO 在使用它（标识符、魔术载荷、硬件 ID 和共享向量，作为由锁文件保证一致的副本）；固件和传输层在各自迁移之前仍保留自己的协议副本。将规范与这些副本进行比较的测试，会在这些仓库与本仓库并排检出时读取它们的文本，否则跳过。这里的任何内容都没有在电路板或 CAN 适配器上运行过：传输层用模拟对象测试，规范则为每个标识符标明哪些实现定义了它，因此缺口是可见的，而不是被默认为已解决。
+**诚实性检查 - 今天真正能运行的部分：** 本仓库包含一份规范、若干生成器、测试向量和一个小型 Python 库。所有内容都在 CI 中运行并经过测试，但目前只有 URTC-FLASHER、URTC-TESTER 和 URTC-WEB-STUDIO 在使用它（标识符、魔术载荷、硬件 ID 和共享向量，作为由锁文件保证一致的副本）；固件和传输层在各自迁移之前仍保留自己的协议副本。将规范与这些副本进行比较的测试，会在这些仓库与本仓库并排检出时读取它们的文本，否则跳过。这里的任何内容都没有在板卡或 CAN 适配器上运行过：传输层用模拟对象测试，规范则为每个标识符标明哪些实现定义了它，因此缺口是可见的，而不是被默认为已解决。
 
 ---
 
-> **安全与安防现状:**本生态系统不是经认证的安全系统,目前也不存在已组装的 URTC 电路板。引导程序使用 CRC32 和共享密钥的 HMAC-SHA256 校验固件映像,而非非对称签名(计划中);已发布的应用映像使用公开的开发密钥签名(`signing_key_kind: dev`),因此任何人都可以生成引导程序接受的映像;尚未向任何真实电路板发送过任何内容。在依赖此处任何说法来保障人身安全之前,请先阅读[安全基线](https://github.com/JuanenRac/URTC-DOCS/blob/main/docs/SECURITY_BASELINE.md)和[威胁模型](https://github.com/JuanenRac/URTC-DOCS/blob/main/docs/THREAT_MODEL.md)。
+> **安全与安防现状:**本生态系统不是经认证的安全系统,目前也不存在已组装的 URTC 板卡。引导程序使用 CRC32 和共享密钥的 HMAC-SHA256 校验固件映像,而非非对称签名(计划中);已发布的应用映像使用公开的开发密钥签名(`signing_key_kind: dev`),因此任何人都可以生成引导程序接受的映像;尚未向任何真实板卡发送过任何内容。在依赖此处任何说法来保障人身安全之前,请先阅读[安全基线](https://github.com/JuanenRac/URTC-DOCS/blob/main/docs/SECURITY_BASELINE.md)和[威胁模型](https://github.com/JuanenRac/URTC-DOCS/blob/main/docs/THREAT_MODEL.md)。
 
 ## 📋 速览
 
@@ -71,13 +71,13 @@
 * 程序内的快速指南与共享的 README 章节：`help_text.py`（为刷写器、测试器和更新器各写的简短步骤，八种语言）、`help_qt.py` 和 `qml/HelpDialog.qml`（帮助窗口；用 `--set help` 和 `--set help_qml` 复制），以及 `spec/readme/sections.json` 与 `tools/readme_sections.py`（各程序的项目状态以及多个 README 共用的部分，用八种语言只写一次，并用标记注释放在结构中的相应位置；`check` 在夜间比对中运行）
 * 固件主机测试的断言：`firmware_base/urtc_test.h` 包含 `TEST_ASSERT`，即工具架、视觉工具和工具头固件原先各自定义了三次的宏；各仓库用 `vendor_copy.py --set firmware_test` 复制它，并保留各自声明测试套件的 `test_runner.h`。
 * 镜像头：`firmware_base/urtc_image_header.h`（位于固件镜像之前的 32 字节头，包含目标硬件、由四个部分组成的版本、长度和 CRC-32，并可检查整个镜像）、其参考实现 `src/urtc_common/image_header.py` 以及共享向量（`conformance/image_header_vectors.json`、`generated/image_header_vectors.h`）；发布的签名覆盖该头且是单独的记录，该头从不放进烧录的镜像（`docs/IMAGE_HEADER.md`）。
-* 引导程序标识与镜像认证：`firmware_base/urtc_ed25519.h`、`urtc_auth.h` 和 `urtc_bl_select.h`（Ed25519 验证器、带回滚计数器的已签名镜像安装判定，以及在多工具头总线上按序列号寻址单个引导程序），及其 Python 参考实现和共用向量；参见 [docs/BOOTLOADER_AUTH.md](docs/BOOTLOADER_AUTH.md)。仅在主机上设计和测试：尚无电路板运行它。
-* 签名密钥轮换与测试策略：`src/urtc_common/key_rotation.py` 是在轮换窗口（该窗口是一个参数）内同时公布两个密钥指纹（帧 `0x7ED`，状态在 `0x7EB`）的参考规则，并与 `conformance/key_rotation_vectors.json` 保持一致；验证器的基于属性的测试以及本地变异测试的方法见 [docs/TESTING_STRATEGY.md](docs/TESTING_STRATEGY.md)。该窗口的引导程序部分在有电路板之前保持待定。
+* 引导程序标识与镜像认证：`firmware_base/urtc_ed25519.h`、`urtc_auth.h` 和 `urtc_bl_select.h`（Ed25519 验证器、带回滚计数器的已签名镜像安装判定，以及在多工具头总线上按序列号寻址单个引导程序），及其 Python 参考实现和共用向量；参见 [docs/BOOTLOADER_AUTH.md](docs/BOOTLOADER_AUTH.md)。仅在主机上设计和测试：尚无板卡运行它。
+* 签名密钥轮换与测试策略：`src/urtc_common/key_rotation.py` 是在轮换窗口（该窗口是一个参数）内同时公布两个密钥指纹（帧 `0x7ED`，状态在 `0x7EB`）的参考规则，并与 `conformance/key_rotation_vectors.json` 保持一致；验证器的基于属性的测试以及本地变异测试的方法见 [docs/TESTING_STRATEGY.md](docs/TESTING_STRATEGY.md)。该窗口的引导程序部分在有板卡之前保持待定。
 * [一致性向量](conformance/can_vectors.json): 每个实现都必须重现的字节：每种布局、被拒绝的输入和 SLCAN 数据流。
 * [工具配置](spec/tools.json)：25 个工具配置（限值、看门狗、引脚、扩展板）以及每个工具面板的控件、读数和命令以数据形式保存；`generate_tools.py` 生成 TypeScript 和 Python 表格以及[工具表](docs/TOOLS_TABLE.md)。此外还有：支持导出 CSV 和 JSON 的黑匣子读取器（`blackbox.py`）、机架模拟器（`rack_sim.py`）、根据规范生成的用于板卡模糊测试的帧（`fuzz.py`），以及由 `spec/versions.json` 生成的发布[兼容性表](docs/COMPATIBILITY.md)，以及由各仓库清单生成的、说明已运行内容与尚未完成内容的[状态表](docs/STATUS.md)（`status_table.py`）。
 * [刀头的自由配置](docs/FREE_TOOL.md)：机架如何处理 ID 跳线读数为 `0x1F` 的刀头：先发出查询（`0x1A3`），校验应答，再像通过跳线读取的刀头一样使用该身份；在此之前刀头保持安全状态。已在 `rack_sim.py` 中建模，并有机架固件回放的共享向量（`conformance/rack_vectors.json`）。
 * [模拟总线场景](docs/BUS_SCENARIOS.md)：用 JSON 文件（`urtc-scenario/1`）描述 CAN 总线的故障：帧丢失、重复、乱序、延迟、成串丢失或被截短，节点保持沉默或拒绝命令并说明原因，以及处于自由配置、以不同方式回应 `0x1A3` 和 `0x1A2` 的刀头。`bus_scenario.py` 严格检查文件，将其应用于任何模拟传输，并根据种子生成测试场景；相同种子给出相同的帧。除非要求，否则不启用；烧录器和测试器用 `--scenario` 针对它运行各自的计划，并留下注明这是模拟的证据记录。
-* **虚拟板与辅助链路：** `virtual_board.py` 在 TCP 端口上提供一块位于 SLCAN 适配器之后的板子（`python -m urtc_common.virtual_board`）；在工具要求串口的地方输入 `socket://127.0.0.1:7777`，刷写器、测试器和网关即可在没有硬件的情况下端到端运行。使用 `--firmware-repo DIR`（URTC 仓库的检出副本）时，它会构建固件自身的虚拟板并桥接到它（在 Windows 上于 WSL 内运行），这样各个程序就可以针对固件真实的接收路径进行试验。指定 `--firmware-bootloader` 时，它会改为桥接到引导加载程序的孪生体（主板引导加载程序在主机上运行的真实 C 代码），这样就可以通过接受或拒绝更新的那段代码来刷写更新。`sensor_frame.py` 是视觉头传感器帧的参考实现；它和机架串口帧都是版本 2，与总线一样采用大端序，并附有各自的向量（`conformance/sensor_vectors.json`、`generated/sensor_vectors.h`）。
+* **虚拟板与辅助链路：** `virtual_board.py` 在 TCP 端口上提供一块位于 SLCAN 适配器之后的板卡（`python -m urtc_common.virtual_board`）；在工具要求串口的地方输入 `socket://127.0.0.1:7777`，刷写器、测试器和网关即可在没有硬件的情况下端到端运行。使用 `--firmware-repo DIR`（URTC 仓库的检出副本）时，它会构建固件自身的虚拟板并桥接到它（在 Windows 上于 WSL 内运行），这样各个程序就可以针对固件真实的接收路径进行试验。指定 `--firmware-bootloader` 时，它会改为桥接到引导加载程序的孪生体（主板引导加载程序在主机上运行的真实 C 代码），这样就可以通过接受或拒绝更新的那段代码来刷写更新。`sensor_frame.py` 是视觉头传感器帧的参考实现；它和机架串口帧都是版本 2，与总线一样采用大端序，并附有各自的向量（`conformance/sensor_vectors.json`、`generated/sensor_vectors.h`）。
 * **从已签名的包自我更新：** `self_update.py` 是程序从 GitHub 发布版自我更新的完整流程，自身不涉及网络和窗口（下载与进度由调用方传入）：只提供平台对应包且版本严格更高的更新，只从 GitHub 发布下载所用的主机下载，用程序中固定的密钥核对公布的大小、SHA-256 以及 `urtc-pkg/1|应用|版本|平台|sha256|大小` 的 Ed25519 签名，解压时绝不离开目标文件夹（不允许 `..`、绝对路径、链接或设备），总线上有操作进行时拒绝安装，保留最近两个发布版，首次启动失败时自动回退，并记录每一步。仅用标准库；用 `vendor_copy.py --set update` 复制。
 * **程序的“检查更新”菜单，可直接绘制：** `update_service.py` 包含选项（全部保守：本人不要求就不检查，`auto_check` 关闭，`require_confirmation` 开启，没有跳过校验和或签名的选项，也不能添加主机；设置与 `URTC_UPDATE_*` 环境变量，环境变量优先，某次运行降低保护时 `lowering_warnings` 会提示）、连同标识符固定的发布 Ed25519 密钥，以及 `check` / `prepare` / `install` / `rollback` 各步骤；`update_controller.py` 是窗口绘制的状态机（检查中、可用、下载中、就绪、安装中、已安装，带进度和编码错误），只有 `confirm_install` 之后才安装；`launcher.py` 启动 `current.txt` 指向的发布版，首次启动失败时退回上一个；`tools/make_update_package.py` 生成发布版可复现的 `.zip` / `.tar.gz` 及其 `.sha256` 和 `.sig`，并用固定的密钥验证。用 `vendor_copy.py --set update` 复制。
 * **工具：** `generate_constants.py` 写出 C 头文件、TypeScript 模块、Python 模块和协议表（`--check` 用于比对），`make_conformance.py` 写出向量（`--check`），`vendor_copy.py` 带锁文件把部分内容复制到其他仓库并检查副本，`ci_validate.py` 是通用的仓库检查。URTC-DOCS 的 `make_glance.py` 负责写出“速览”表。
@@ -162,7 +162,7 @@ URTC-COMMON/
 
 **目前已知的限制**
 
-* 这里的一切都没有在真实的板子或 CAN 适配器上运行过：传输层用模拟对象测试，规范会为每个标识符说明由哪些实现定义，因此缺口一目了然。
+* 这里的一切都没有在真实的板卡或 CAN 适配器上运行过：传输层用模拟对象测试，规范会为每个标识符说明由哪些实现定义，因此缺口一目了然。
 * 固件和传输层在各自迁移之前仍保留自己的协议副本；目前只有 URTC-FLASHER、URTC-TESTER 和 URTC-WEB-STUDIO 使用本仓库。
 * 把规范与其他仓库比较的测试，在那些仓库被检出到本仓库旁边时读取其文本，否则跳过。
 
@@ -179,14 +179,14 @@ README 和文本提供英语、西班牙语、法语、意大利语、德语、�
 URTC 由相互独立的仓库组成，每个仓库都有自己的版本、测试和 README。以下是按组划分的家族：
 
 * **URTC Tool Platform:**
-  * [URTC](https://github.com/JuanenRac/URTC) - 工具头电路板的固件(25 个工具配置、CAN 引导程序)以及 CAN 协议参考。
+  * [URTC](https://github.com/JuanenRac/URTC) - 工具头板卡的固件(25 个工具配置、CAN 引导程序)以及 CAN 协议参考。
   * **URTC-COMMON** (本仓库) - 只写一次的 CAN 协议数据(规范、生成的表格、一致性向量)以及各程序共享的代码。
-  * [URTC-FLASHER](https://github.com/JuanenRac/URTC-FLASHER) - 通过 CAN 或 SWD/JTAG 更新电路板固件的桌面工具。
+  * [URTC-FLASHER](https://github.com/JuanenRac/URTC-FLASHER) - 通过 CAN 或 SWD/JTAG 更新板卡固件的桌面工具。
   * [URTC-GATEWAY](https://github.com/JuanenRac/URTC-GATEWAY) - 位于 CAN 总线前的网关:只放行列表中的标识符,限制其速率,并要求会话密钥。
   * [URTC-SMART-RACK](https://github.com/JuanenRac/URTC-SMART-RACK) - 用于带预热和生命周期跟踪的工具架的、与硬件无关的 C 逻辑和命令协议。
-  * [URTC-TESTER](https://github.com/JuanenRac/URTC-TESTER) - 桌面实时 CAN 总线测试器,显示电路板所报告工具配置的控件和遥测。
+  * [URTC-TESTER](https://github.com/JuanenRac/URTC-TESTER) - 桌面实时 CAN 总线测试器,显示板卡所报告工具配置的控件和遥测。
   * [URTC-VISION-TOOL](https://github.com/JuanenRac/URTC-VISION-TOOL) - C 语言的传感器帧协议,以及用于检测工具头的 Python 热成像/RGB 配套程序。
-  * [URTC-WEB-STUDIO](https://github.com/JuanenRac/URTC-WEB-STUDIO) - 通过 Web Serial 和 SLCAN 烧录并测试电路板的浏览器应用,无需安装。
+  * [URTC-WEB-STUDIO](https://github.com/JuanenRac/URTC-WEB-STUDIO) - 通过 Web Serial 和 SLCAN 烧录并测试板卡的浏览器应用,无需安装。
 * **Ecosystem Operations:**
   * [URTC-DEVTOOLS](https://github.com/JuanenRac/URTC-DEVTOOLS) - 家族共用的仓库工具，作为带版本的整套工具，并用锁文件区分被改动的副本和已过时的副本。
   * [URTC-DOCS](https://github.com/JuanenRac/URTC-DOCS) - 生态系统的架构、接口、安全基线和生成的目录,以及比较所有仓库的工具。
@@ -215,7 +215,7 @@ URTC 由相互独立的仓库组成，每个仓库都有自己的版本、测试
 
 * 提交 Pull Request 之前请运行 `URTC_CI=1 python tools/ci_validate.py`：必须通过。参见 [CONTRIBUTING.md](CONTRIBUTING.md) 和[行为准则](CODE_OF_CONDUCT.md)。
 * README 有八种语言：修改文字时要同步修改全部八个文件，与其他仓库共用的章节由 URTC-COMMON 的 `tools/readme_sections.py` 写入。
-* 不要把仅仅构建过的东西描述为已在板子上运行。
+* 不要把仅仅构建过的东西描述为已在板卡上运行。
 * 请私下报告漏洞：[SECURITY.md](SECURITY.md)。问题、想法和报告：electrohobby3d@gmail.com（[SUPPORT.md](SUPPORT.md)）。
 
 ## 👤 作者

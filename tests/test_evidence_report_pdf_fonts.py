@@ -19,7 +19,7 @@ from urtc_common import evidence_report_strings as st
 HERE = Path(__file__).resolve().parent
 SHA = "e" * 64
 CHINESE_NAME = "测试板 主控制器"
-JAPANESE_NAME = "試験基板 ステータス"
+JAPANESE_NAME = "試験ボード ステータス"
 
 
 def record(when: str, name: str, *, detail: str = "", operator: str = "") -> dict:
