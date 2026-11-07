@@ -23,7 +23,7 @@
 
 ---
 
-> **安全与安防现状:**本生态系统不是经认证的安全系统,目前也不存在已组装的 URTC 板卡。引导程序使用 CRC32 和共享密钥的 HMAC-SHA256 校验固件映像,而非非对称签名(计划中);已发布的应用映像使用公开的开发密钥签名(`signing_key_kind: dev`),因此任何人都可以生成引导程序接受的映像;尚未向任何真实板卡发送过任何内容。在依赖此处任何说法来保障人身安全之前,请先阅读[安全基线](https://github.com/JuanenRac/URTC-DOCS/blob/main/docs/SECURITY_BASELINE.md)和[威胁模型](https://github.com/JuanenRac/URTC-DOCS/blob/main/docs/THREAT_MODEL.md)。
+> **安全与安防现状：**本生态系统不是经认证的安全系统，目前也不存在已组装的 URTC 板卡。引导程序使用 CRC32 和共享密钥的 HMAC-SHA256 校验固件映像，而非非对称签名（计划中）；已发布的应用映像使用公开的开发密钥签名（`signing_key_kind: dev`），因此任何人都可以生成引导程序接受的映像；尚未向任何真实板卡发送过任何内容。在依赖此处任何说法来保障人身安全之前，请先阅读[安全基线](https://github.com/JuanenRac/URTC-DOCS/blob/main/docs/SECURITY_BASELINE.md)和[威胁模型](https://github.com/JuanenRac/URTC-DOCS/blob/main/docs/THREAT_MODEL.md)。
 
 ## 📋 速览
 
@@ -57,14 +57,14 @@
 
 工具头的 CAN 协议只写一次，以数据形式保存，并由它派生出所有内容：
 
-* [规范](spec/can_protocol.json): 每个标识符的方向、长度规则、布局、适用工具和限制条件，魔术载荷、从机寄存器和 SLCAN 子集，以及哪些实现定义了每一项。
-* [契约](docs/CONTRACTS.md): 实现必须做到的事、目前谁实现了什么，以及已知的缺口和差异。
-* [规范格式](docs/SPEC_FORMAT.md): 文件的键，以及如何添加或修改标识符。
-* [迁移](docs/MIGRATION.md): 各仓库采用它的顺序，以及检查如何保持副本一致。
-* [协议表](docs/PROTOCOL_TABLE.md): 由规范生成的、包含全部标识符的一张表。
-* [一条总线上的多个工具头](docs/MULTINODE.md): 寻址、发现和安全规则；已在 URTC 固件中实现，位于默认关闭的开关之后，仅在计算机上测试，尚未在硬件上试过。
-* 界面辅助模块: `src/urtc_ui`：桌面程序可以共用的语言列表、状态徽章以及标识符、比特率和帧的格式化（不需要 Qt；URTC-FLASHER 和 URTC-TESTER 携带用 `vendor_copy.py --set ui` 生成的副本）。
-* 固件部件: `firmware_base/urtc_crc8.h`，把工具架和视觉串行帧的 CRC-8 集中在一处（用 `vendor_copy.py --set firmware_base` 复制），以及 `generated/urtc_fw_vectors.h`，以 C 表格形式给出固件自身必须通过的向量（版本字段、魔术载荷、CRC-8 校验值）（`--set fw_vectors`）。
+* [规范](spec/can_protocol.json)：每个标识符的方向、长度规则、布局、适用工具和限制条件，魔术载荷、从机寄存器和 SLCAN 子集，以及哪些实现定义了每一项。
+* [契约](docs/CONTRACTS.md)：实现必须做到的事、目前谁实现了什么，以及已知的缺口和差异。
+* [规范格式](docs/SPEC_FORMAT.md)：文件的键，以及如何添加或修改标识符。
+* [迁移](docs/MIGRATION.md)：各仓库采用它的顺序，以及检查如何保持副本一致。
+* [协议表](docs/PROTOCOL_TABLE.md)：由规范生成的、包含全部标识符的一张表。
+* [一条总线上的多个工具头](docs/MULTINODE.md)：寻址、发现和安全规则；已在 URTC 固件中实现，位于默认关闭的开关之后，仅在计算机上测试，尚未在硬件上试过。
+* 界面辅助模块：`src/urtc_ui`：桌面程序可以共用的语言列表、状态徽章以及标识符、比特率和帧的格式化（不需要 Qt；URTC-FLASHER 和 URTC-TESTER 携带用 `vendor_copy.py --set ui` 生成的副本）。
+* 固件部件：`firmware_base/urtc_crc8.h`，把工具架和视觉串行帧的 CRC-8 集中在一处（用 `vendor_copy.py --set firmware_base` 复制），以及 `generated/urtc_fw_vectors.h`，以 C 表格形式给出固件自身必须通过的向量（版本字段、魔术载荷、CRC-8 校验值）（`--set fw_vectors`）。
 * 串行链路的帧层与速率限制器：`firmware_base/urtc_frame.h`（长度字节位于给定位置的帧的起始字节、版本、长度、完整性和 CRC-8 判定，以及反向组帧）和 `firmware_base/urtc_rate_limiter.h`（已接受消息之间的最小间隔，可跨越毫秒计数器的回绕），附 Python 参考实现（`frame_layer.py`）、速率向量，以及一个把两个头文件对照机架和视觉传感器的每个解析向量进行检验的 C 测试（用 `vendor_copy.py --set firmware_frame` 复制）
 * 多个程序共用语句的术语表：`spec/i18n/glossary.json` 用八种语言把每条语句只定义一次，并列出必须这样表述的刷写器、测试器、网页工作室和更新器的键（关闭、刷新、清除、加热器 PID、端口搜索 等）；`tools/i18n_glossary.py` 检查该文件，检查与本仓库相邻的程序（大小写、重音和标点的差异可以容忍，不同的词则不行），并改写 `.lng` 和 `.json` 文件中有差异的行；夜间比对也会运行它
 * 语言文件的唯一来源：`spec/i18n/catalog/<程序>.json` 以八种语言保存刷写器、测试器、Web 工作室和更新器的所有文本（术语表列出的文本是对它的引用）；`tools/i18n_generate.py sync` 为每个程序写出 `.lng`、`.json` 和 `.py` 文件，并附带锁文件（`urtc_i18n.lock.json`）和自己的测试，`check`（也在夜间比较中运行）会在文件与目录生成的内容不一致时失败。
@@ -73,7 +73,7 @@
 * 镜像头：`firmware_base/urtc_image_header.h`（位于固件镜像之前的 32 字节头，包含目标硬件、由四个部分组成的版本、长度和 CRC-32，并可检查整个镜像）、其参考实现 `src/urtc_common/image_header.py` 以及共享向量（`conformance/image_header_vectors.json`、`generated/image_header_vectors.h`）；发布的签名覆盖该头且是单独的记录，该头从不放进烧录的镜像（`docs/IMAGE_HEADER.md`）。
 * 引导程序标识与镜像认证：`firmware_base/urtc_ed25519.h`、`urtc_auth.h` 和 `urtc_bl_select.h`（Ed25519 验证器、带回滚计数器的已签名镜像安装判定，以及在多工具头总线上按序列号寻址单个引导程序），及其 Python 参考实现和共用向量；参见 [docs/BOOTLOADER_AUTH.md](docs/BOOTLOADER_AUTH.md)。仅在主机上设计和测试：尚无板卡运行它。
 * 签名密钥轮换与测试策略：`src/urtc_common/key_rotation.py` 是在轮换窗口（该窗口是一个参数）内同时公布两个密钥指纹（帧 `0x7ED`，状态在 `0x7EB`）的参考规则，并与 `conformance/key_rotation_vectors.json` 保持一致；验证器的基于属性的测试以及本地变异测试的方法见 [docs/TESTING_STRATEGY.md](docs/TESTING_STRATEGY.md)。该窗口的引导程序部分在有板卡之前保持待定。
-* [一致性向量](conformance/can_vectors.json): 每个实现都必须重现的字节：每种布局、被拒绝的输入和 SLCAN 数据流。
+* [一致性向量](conformance/can_vectors.json)：每个实现都必须重现的字节：每种布局、被拒绝的输入和 SLCAN 数据流。
 * [工具配置](spec/tools.json)：25 个工具配置（限值、看门狗、引脚、扩展板）以及每个工具面板的控件、读数和命令以数据形式保存；`generate_tools.py` 生成 TypeScript 和 Python 表格以及[工具表](docs/TOOLS_TABLE.md)。此外还有：支持导出 CSV 和 JSON 的黑匣子读取器（`blackbox.py`）、机架模拟器（`rack_sim.py`）、根据规范生成的用于板卡模糊测试的帧（`fuzz.py`），以及由 `spec/versions.json` 生成的发布[兼容性表](docs/COMPATIBILITY.md)，以及由各仓库清单生成的、说明已运行内容与尚未完成内容的[状态表](docs/STATUS.md)（`status_table.py`）。
 * [刀头的自由配置](docs/FREE_TOOL.md)：机架如何处理 ID 跳线读数为 `0x1F` 的刀头：先发出查询（`0x1A3`），校验应答，再像通过跳线读取的刀头一样使用该身份；在此之前刀头保持安全状态。已在 `rack_sim.py` 中建模，并有机架固件回放的共享向量（`conformance/rack_vectors.json`）。
 * [模拟总线场景](docs/BUS_SCENARIOS.md)：用 JSON 文件（`urtc-scenario/1`）描述 CAN 总线的故障：帧丢失、重复、乱序、延迟、成串丢失或被截短，节点保持沉默或拒绝命令并说明原因，以及处于自由配置、以不同方式回应 `0x1A3` 和 `0x1A2` 的刀头。`bus_scenario.py` 严格检查文件，将其应用于任何模拟传输，并根据种子生成测试场景；相同种子给出相同的帧。除非要求，否则不启用；烧录器和测试器用 `--scenario` 针对它运行各自的计划，并留下注明这是模拟的证据记录。
@@ -81,7 +81,7 @@
 * **从已签名的包自我更新：** `self_update.py` 是程序从 GitHub 发布版自我更新的完整流程，自身不涉及网络和窗口（下载与进度由调用方传入）：只提供平台对应包且版本严格更高的更新，只从 GitHub 发布下载所用的主机下载，用程序中固定的密钥核对公布的大小、SHA-256 以及 `urtc-pkg/1|应用|版本|平台|sha256|大小` 的 Ed25519 签名，解压时绝不离开目标文件夹（不允许 `..`、绝对路径、链接或设备），总线上有操作进行时拒绝安装，保留最近两个发布版，首次启动失败时自动回退，并记录每一步。仅用标准库；用 `vendor_copy.py --set update` 复制。
 * **程序的“检查更新”菜单，可直接绘制：** `update_service.py` 包含选项（全部保守：本人不要求就不检查，`auto_check` 关闭，`require_confirmation` 开启，没有跳过校验和或签名的选项，也不能添加主机；设置与 `URTC_UPDATE_*` 环境变量，环境变量优先，某次运行降低保护时 `lowering_warnings` 会提示）、连同标识符固定的发布 Ed25519 密钥，以及 `check` / `prepare` / `install` / `rollback` 各步骤；`update_controller.py` 是窗口绘制的状态机（检查中、可用、下载中、就绪、安装中、已安装，带进度和编码错误），只有 `confirm_install` 之后才安装；`launcher.py` 启动 `current.txt` 指向的发布版，首次启动失败时退回上一个；`tools/make_update_package.py` 生成发布版可复现的 `.zip` / `.tar.gz` 及其 `.sha256` 和 `.sig`，并用固定的密钥验证。用 `vendor_copy.py --set update` 复制。
 * **工具：** `generate_constants.py` 写出 C 头文件、TypeScript 模块、Python 模块和协议表（`--check` 用于比对），`make_conformance.py` 写出向量（`--check`），`vendor_copy.py` 带锁文件把部分内容复制到其他仓库并检查副本，`ci_validate.py` 是通用的仓库检查。URTC-DOCS 的 `make_glance.py` 负责写出“速览”表。
-* **可安装的软件包:** 每个发布版本都附带带签名的 Python wheel(`urtc-common`,不在 PyPI 上)、带签名的源码归档以及带签名的生成 C 头文件,由 `make_release_artifacts.py`(`build`、`verify`、`reproduce`、`smoke`)以可复现的方式构建;签名就是各程序已经信任的发布密钥的签名。参见[指南](docs/PACKAGE.md)。`generate_canbus_doc.py` 根据规范写出固件仓库中 `docs/CANBUS.TXT` 的参考表(其周围的正文保持不变,`--check` 用于比较)。
+* **可安装的软件包：** 每个发布版本都附带带签名的 Python wheel(`urtc-common`，不在 PyPI 上)、带签名的源码归档以及带签名的生成 C 头文件，由 `make_release_artifacts.py`(`build`、`verify`、`reproduce`、`smoke`)以可复现的方式构建；签名就是各程序已经信任的发布密钥的签名。参见[指南](docs/PACKAGE.md)。`generate_canbus_doc.py` 根据规范写出固件仓库中 `docs/CANBUS.TXT` 的参考表（其周围的正文保持不变，`--check` 用于比较）。
 
 - **证据记录及其历史：** `evidence.py` 写入并检查记录（`urtc-evidence/1`，[docs/EVIDENCE.md](docs/EVIDENCE.md)）；`evidence_history.py` 按最新在前列出文件夹中的记录，并逐条检查；`evidence_history_qt.py`、`qml/EvidenceHistoryDialog.qml` 和 `evidence_history_strings.py`（八种语言）是 URTC-FLASHER、URTC-TESTER 和 URTC-UPDATER 共用的历史窗口（用 `vendor_copy.py --set history_qt` 和 `--set history_qml` 复制）。
 
@@ -179,18 +179,18 @@ README 和文本提供英语、西班牙语、法语、意大利语、德语、�
 URTC 由相互独立的仓库组成，每个仓库都有自己的版本、测试和 README。以下是按组划分的家族：
 
 * **URTC Tool Platform:**
-  * [URTC](https://github.com/JuanenRac/URTC) - 工具头板卡的固件(25 个工具配置、CAN 引导程序)以及 CAN 协议参考。
-  * **URTC-COMMON** (本仓库) - 只写一次的 CAN 协议数据(规范、生成的表格、一致性向量)以及各程序共享的代码。
+  * [URTC](https://github.com/JuanenRac/URTC) - 工具头板卡的固件（25 个工具配置、CAN 引导程序）以及 CAN 协议参考。
+  * **URTC-COMMON** (本仓库) - 只写一次的 CAN 协议数据（规范、生成的表格、一致性向量）以及各程序共享的代码。
   * [URTC-FLASHER](https://github.com/JuanenRac/URTC-FLASHER) - 通过 CAN 或 SWD/JTAG 更新板卡固件的桌面工具。
-  * [URTC-GATEWAY](https://github.com/JuanenRac/URTC-GATEWAY) - 位于 CAN 总线前的网关:只放行列表中的标识符,限制其速率,并要求会话密钥。
+  * [URTC-GATEWAY](https://github.com/JuanenRac/URTC-GATEWAY) - 位于 CAN 总线前的网关：只放行列表中的标识符，限制其速率，并要求会话密钥。
   * [URTC-SMART-RACK](https://github.com/JuanenRac/URTC-SMART-RACK) - 用于带预热和生命周期跟踪的工具架的、与硬件无关的 C 逻辑和命令协议。
-  * [URTC-TESTER](https://github.com/JuanenRac/URTC-TESTER) - 桌面实时 CAN 总线测试器,显示板卡所报告工具配置的控件和遥测。
-  * [URTC-VISION-TOOL](https://github.com/JuanenRac/URTC-VISION-TOOL) - C 语言的传感器帧协议,以及用于检测工具头的 Python 热成像/RGB 配套程序。
-  * [URTC-WEB-STUDIO](https://github.com/JuanenRac/URTC-WEB-STUDIO) - 通过 Web Serial 和 SLCAN 烧录并测试板卡的浏览器应用,无需安装。
+  * [URTC-TESTER](https://github.com/JuanenRac/URTC-TESTER) - 桌面实时 CAN 总线测试器，显示板卡所报告工具配置的控件和遥测。
+  * [URTC-VISION-TOOL](https://github.com/JuanenRac/URTC-VISION-TOOL) - C 语言的传感器帧协议，以及用于检测工具头的 Python 热成像/RGB 配套程序。
+  * [URTC-WEB-STUDIO](https://github.com/JuanenRac/URTC-WEB-STUDIO) - 通过 Web Serial 和 SLCAN 烧录并测试板卡的浏览器应用，无需安装。
 * **Ecosystem Operations:**
   * [URTC-DEVTOOLS](https://github.com/JuanenRac/URTC-DEVTOOLS) - 家族共用的仓库工具，作为带版本的整套工具，并用锁文件区分被改动的副本和已过时的副本。
-  * [URTC-DOCS](https://github.com/JuanenRac/URTC-DOCS) - 生态系统的架构、接口、安全基线和生成的目录,以及比较所有仓库的工具。
-  * [URTC-UPDATER](https://github.com/JuanenRac/URTC-UPDATER) - 检测、安装并更新 URTC 家族仓库的桌面工具,每次只执行一个明确的操作。
+  * [URTC-DOCS](https://github.com/JuanenRac/URTC-DOCS) - 生态系统的架构、接口、安全基线和生成的目录，以及比较所有仓库的工具。
+  * [URTC-UPDATER](https://github.com/JuanenRac/URTC-UPDATER) - 检测、安装并更新 URTC 家族仓库的桌面工具，每次只执行一个明确的操作。
 
 **姊妹项目（相互独立，共用同一基础和工具）：**
 

@@ -23,7 +23,7 @@
 
 ---
 
-> **安全性とセキュリティの現状:** このエコシステムは認証された安全システムではなく、実装済みの URTC ボードもまだ存在しません。ブートローダーはファームウェアイメージを CRC32 と共有鍵の HMAC-SHA256 で検査しており、非対称署名ではありません(予定)。公開されているアプリケーションイメージは公開の開発用鍵(`signing_key_kind: dev`)で署名されているため、誰でもブートローダーが受け入れるイメージを作れます。実際のボードには何も送信されていません。ここに書かれた内容を人の安全のために頼る前に、[セキュリティベースライン](https://github.com/JuanenRac/URTC-DOCS/blob/main/docs/SECURITY_BASELINE.md)と[脅威モデル](https://github.com/JuanenRac/URTC-DOCS/blob/main/docs/THREAT_MODEL.md)をお読みください。
+> **安全性とセキュリティの現状：** このエコシステムは認証された安全システムではなく、実装済みの URTC ボードもまだ存在しません。ブートローダーはファームウェアイメージを CRC32 と共有鍵の HMAC-SHA256 で検査しており、非対称署名ではありません（予定）。公開されているアプリケーションイメージは公開の開発用鍵（`signing_key_kind: dev`）で署名されているため、誰でもブートローダーが受け入れるイメージを作れます。実際のボードには何も送信されていません。ここに書かれた内容を人の安全のために頼る前に、[セキュリティベースライン](https://github.com/JuanenRac/URTC-DOCS/blob/main/docs/SECURITY_BASELINE.md)と[脅威モデル](https://github.com/JuanenRac/URTC-DOCS/blob/main/docs/THREAT_MODEL.md)をお読みください。
 
 ## 📋 ひと目で
 
@@ -57,31 +57,31 @@
 
 ツールヘッドの CAN プロトコルを一度だけデータとして書き、そこから導かれるものすべて：
 
-* [仕様](spec/can_protocol.json): 各識別子の方向、長さの規則、レイアウト、対象ツールとゲート、マジックペイロード、スレーブのレジスタ、SLCAN のサブセット、そして各識別子を定義している実装。
-* [コントラクト](docs/CONTRACTS.md): 実装が守るべきこと、現在どの実装が何を実装しているか、そして既知の欠落と相違。
-* [仕様のフォーマット](docs/SPEC_FORMAT.md): ファイルのキーと、識別子の追加・変更の方法。
-* [移行](docs/MIGRATION.md): 各リポジトリが採用できる順序と、チェックがコピーを一致させ続ける仕組み。
-* [プロトコル表](docs/PROTOCOL_TABLE.md): 仕様から生成された、すべての識別子を一つにまとめた表。
-* [1本のバスに複数のツールヘッド](docs/MULTINODE.md): アドレス指定・検出・安全規則。URTC ファームウェアに、既定でオフのスイッチの背後で実装済みで、コンピュータ上でのみテストされ、ハードウェアでは試していません。
-* インターフェース用ヘルパー: `src/urtc_ui`: デスクトップ用プログラムが共有できる言語一覧、状態バッジ、識別子・ビットレート・フレームの書式整形（Qt不要。URTC-FLASHER と URTC-TESTER は `vendor_copy.py --set ui` で作ったコピーを持っています）。
-* ファームウェア部品: `firmware_base/urtc_crc8.h`（ラックとビジョンのシリアルフレームの CRC-8 を一か所にまとめたもの。`vendor_copy.py --set firmware_base` でコピー）と、`generated/urtc_fw_vectors.h`（ファームウェア自身が通すべきベクター。バージョン欄、マジックペイロード、CRC-8 の確認値）を C のテーブルとして提供します（`--set fw_vectors`）。
+* [仕様](spec/can_protocol.json)：各識別子の方向、長さの規則、レイアウト、対象ツールとゲート、マジックペイロード、スレーブのレジスタ、SLCAN のサブセット、そして各識別子を定義している実装。
+* [コントラクト](docs/CONTRACTS.md)：実装が守るべきこと、現在どの実装が何を実装しているか、そして既知の欠落と相違。
+* [仕様のフォーマット](docs/SPEC_FORMAT.md)：ファイルのキーと、識別子の追加・変更の方法。
+* [移行](docs/MIGRATION.md)：各リポジトリが採用できる順序と、チェックがコピーを一致させ続ける仕組み。
+* [プロトコル表](docs/PROTOCOL_TABLE.md)：仕様から生成された、すべての識別子を一つにまとめた表。
+* [1本のバスに複数のツールヘッド](docs/MULTINODE.md)：アドレス指定・検出・安全規則。URTC ファームウェアに、既定でオフのスイッチの背後で実装済みで、コンピュータ上でのみテストされ、ハードウェアでは試していません。
+* インターフェース用ヘルパー：`src/urtc_ui`：デスクトップ用プログラムが共有できる言語一覧、状態バッジ、識別子・ビットレート・フレームの書式整形（Qt不要。URTC-FLASHER と URTC-TESTER は `vendor_copy.py --set ui` で作ったコピーを持っています）。
+* ファームウェア部品：`firmware_base/urtc_crc8.h`（ラックとビジョンのシリアルフレームの CRC-8 を一か所にまとめたもの。`vendor_copy.py --set firmware_base` でコピー）と、`generated/urtc_fw_vectors.h`（ファームウェア自身が通すべきベクター。バージョン欄、マジックペイロード、CRC-8 の確認値）を C のテーブルとして提供します（`--set fw_vectors`）。
 * シリアルリンクのフレーム層とレートリミッター：`firmware_base/urtc_frame.h`（長さバイトが決まった位置にあるフレームの開始バイト、バージョン、長さ、完全性、CRC-8 の判定と、逆方向の組み立て）と `firmware_base/urtc_rate_limiter.h`（受理したメッセージ間の最小間隔。ミリ秒カウンターの桁あふれをまたいでも正しく動作）。Python のリファレンス（`frame_layer.py`）、レートのベクター、そして両ヘッダーをラックとビジョンセンサーのすべての解析ベクターに照らす C テストが付きます（`vendor_copy.py --set firmware_frame` でコピー）
 * 複数のプログラムが使う語句の用語集：`spec/i18n/glossary.json` は各語句を 8 言語で一度だけ定め、その通りに表示すべきフラッシャー、テスター、Web スタジオ、アップデーターのキーを列挙します（閉じる、更新、クリア、ヒーターの PID、ポートの検索 など）。`tools/i18n_glossary.py` はファイルを検証し、このリポジトリの隣にあるプログラムを検査し（大文字小文字、アクセント、句読点の違いは許容し、別の語は許容しません）、異なる `.lng` と `.json` の行を書き換えます。夜間の比較でも実行されます
 * 言語ファイルの単一ソース：`spec/i18n/catalog/<プログラム>.json` がフラッシャー、テスター、Web スタジオ、アップデーターのすべてのテキストを 8 言語で保持します（用語集が挙げるテキストはその参照です）。`tools/i18n_generate.py sync` が各プログラムの `.lng`、`.json`、`.py` ファイルをロック（`urtc_i18n.lock.json`）と専用テストとともに書き出し、`check`（夜間の比較にも含まれます）はファイルがカタログの生成物と異なると失敗します。
 * プログラム内のクイックガイドと共有される README セクション：`help_text.py`（フラッシャー、テスター、アップデーターそれぞれに短い手順、8 言語）、`help_qt.py` と `qml/HelpDialog.qml`（ヘルプウィンドウ。`--set help` と `--set help_qml` でコピー）、そして `spec/readme/sections.json` と `tools/readme_sections.py`（各プログラムのプロジェクトの状況と、複数の README が共有する部分を 8 言語で一度だけ書き、マーカーコメントで挟んで構成上の所定の位置に配置します。`check` は夜間の比較で実行されます）
-* ファームウェアのホストテスト用アサーション: `firmware_base/urtc_test.h` は `TEST_ASSERT` を収めます。ラック、ビジョンツール、ツールヘッドの各ファームウェアが 3 回定義していたマクロです。各リポジトリは `vendor_copy.py --set firmware_test` でコピーし、自分のスイートを宣言する `test_runner.h` は各自で持ちます。
-* イメージヘッダー: `firmware_base/urtc_image_header.h`（ファームウェアイメージの前に置く 32 バイトのヘッダーで、対象ハードウェア、4 つの要素からなるバージョン、長さ、CRC-32 を持ち、イメージ全体の検査もできます）、そのリファレンス `src/urtc_common/image_header.py`、共有ベクトル（`conformance/image_header_vectors.json`、`generated/image_header_vectors.h`）。リリースの署名はヘッダーを対象に含む独立したレコードであり、ヘッダーが書き込み用イメージに入ることはありません（`docs/IMAGE_HEADER.md`）。
-* ブートローダーの識別とイメージ認証: `firmware_base/urtc_ed25519.h`、`urtc_auth.h`、`urtc_bl_select.h`（Ed25519 検証器、ロールバックカウンター付き署名イメージのインストール判定、複数ヘッドのバス上でシリアル番号により 1 つのブートローダーを指定する仕組み）、その Python リファレンスと共有ベクトル。[docs/BOOTLOADER_AUTH.md](docs/BOOTLOADER_AUTH.md) を参照。ホスト上でのみ設計・テストされており、実機のボードでは動作していません。
-* 署名鍵のローテーションとテスト戦略: `src/urtc_common/key_rotation.py` は、パラメーターであるローテーション期間内に 2 つの鍵フィンガープリントを同時に通知する（フレーム `0x7ED`、状態は `0x7EB`）ための基準ルールで、`conformance/key_rotation_vectors.json` に適合させています。検証器のプロパティベーステストとローカルで行うミューテーション実行の方法は [docs/TESTING_STRATEGY.md](docs/TESTING_STRATEGY.md) にあります。この期間のブートローダー側は、ボードが用意できるまで保留です。
-* [適合ベクトル](conformance/can_vectors.json): すべての実装が再現しなければならないバイト列：各レイアウト、拒否される入力、SLCAN ストリーム。
+* ファームウェアのホストテスト用アサーション：`firmware_base/urtc_test.h` は `TEST_ASSERT` を収めます。ラック、ビジョンツール、ツールヘッドの各ファームウェアが 3 回定義していたマクロです。各リポジトリは `vendor_copy.py --set firmware_test` でコピーし、自分のスイートを宣言する `test_runner.h` は各自で持ちます。
+* イメージヘッダー：`firmware_base/urtc_image_header.h`（ファームウェアイメージの前に置く 32 バイトのヘッダーで、対象ハードウェア、4 つの要素からなるバージョン、長さ、CRC-32 を持ち、イメージ全体の検査もできます）、そのリファレンス `src/urtc_common/image_header.py`、共有ベクトル（`conformance/image_header_vectors.json`、`generated/image_header_vectors.h`）。リリースの署名はヘッダーを対象に含む独立したレコードであり、ヘッダーが書き込み用イメージに入ることはありません（`docs/IMAGE_HEADER.md`）。
+* ブートローダーの識別とイメージ認証：`firmware_base/urtc_ed25519.h`、`urtc_auth.h`、`urtc_bl_select.h`（Ed25519 検証器、ロールバックカウンター付き署名イメージのインストール判定、複数ヘッドのバス上でシリアル番号により 1 つのブートローダーを指定する仕組み）、その Python リファレンスと共有ベクトル。[docs/BOOTLOADER_AUTH.md](docs/BOOTLOADER_AUTH.md) を参照。ホスト上でのみ設計・テストされており、実機のボードでは動作していません。
+* 署名鍵のローテーションとテスト戦略：`src/urtc_common/key_rotation.py` は、パラメーターであるローテーション期間内に 2 つの鍵フィンガープリントを同時に通知する（フレーム `0x7ED`、状態は `0x7EB`）ための基準ルールで、`conformance/key_rotation_vectors.json` に適合させています。検証器のプロパティベーステストとローカルで行うミューテーション実行の方法は [docs/TESTING_STRATEGY.md](docs/TESTING_STRATEGY.md) にあります。この期間のブートローダー側は、ボードが用意できるまで保留です。
+* [適合ベクトル](conformance/can_vectors.json)：すべての実装が再現しなければならないバイト列：各レイアウト、拒否される入力、SLCAN ストリーム。
 * [ツールプロファイル](spec/tools.json)：25 種類のツールプロファイル（上限・下限、ウォッチドッグ、ピン、拡張ボード）と、各ツールのパネルの操作部・読み値・コマンドをデータとして保持します。`generate_tools.py` が TypeScript と Python の表および[ツール一覧表](docs/TOOLS_TABLE.md)を生成します。ほかに、CSV と JSON に書き出せるブラックボックスの読み取り機能（`blackbox.py`）、ラックのシミュレーター（`rack_sim.py`）、仕様から作るボードのファジング用フレーム（`fuzz.py`）、`spec/versions.json` から作るリリースの[互換性表](docs/COMPATIBILITY.md)と、各リポジトリのマニフェストから作る、実行済みの内容と未了の内容の[状態表](docs/STATUS.md)（`status_table.py`）があります。
-* [ヘッドのフリー構成](docs/FREE_TOOL.md): IDジャンパが `0x1F` を示すヘッドをラックがどう扱うか。ラックは問い合わせ(`0x1A3`)、応答を検証し、ジャンパで読み取ったヘッドと同じように識別情報を使います。それまでヘッドは安全状態のままです。`rack_sim.py` でモデル化し、ラックのファームウェアが再生する共有ベクタ(`conformance/rack_vectors.json`)を備えます。
+* [ヘッドのフリー構成](docs/FREE_TOOL.md): IDジャンパが `0x1F` を示すヘッドをラックがどう扱うか。ラックは問い合わせ（`0x1A3`）、応答を検証し、ジャンパで読み取ったヘッドと同じように識別情報を使います。それまでヘッドは安全状態のままです。`rack_sim.py` でモデル化し、ラックのファームウェアが再生する共有ベクタ（`conformance/rack_vectors.json`）を備えます。
 * [シミュレートされたバスのシナリオ](docs/BUS_SCENARIOS.md)：CAN バスの障害を JSON ファイル（`urtc-scenario/1`）で記述します。フレームの欠落・重複・順序入れ替え・遅延・バースト欠落・短縮、無応答のノードや理由付きでコマンドを拒否するノード、`0x1A3` と `0x1A2` にさまざまな形で応答する自由構成のヘッドを扱えます。`bus_scenario.py` はファイルを厳密に検査し、任意のシミュレート転送に適用し、シードからテスト用シナリオを生成します。同じシードなら同じフレームになります。求めない限り無効で、フラッシャーとテスターは `--scenario` でプランを実行し、シミュレーションだったことを記したエビデンス記録を残します。
-* **仮想ボードと補助リンク:** `virtual_board.py` は SLCAN アダプターの背後にあるボードを TCP ポートで提供します (`python -m urtc_common.virtual_board`)。ツールがシリアルポートを尋ねる場所に `socket://127.0.0.1:7777` を入力すると、フラッシャー、テスター、ゲートウェイがハードウェアなしで最初から最後まで動きます。`--firmware-repo DIR`（URTC リポジトリのチェックアウト）を指定すると、ファームウェア自身の仮想ボードをビルドしてそこへ接続します（Windows では WSL 内）。これにより、各プログラムをファームウェアの実際の受信経路に対して試せます。`--firmware-bootloader` を指定すると、代わりにブートローダーのツイン（ホスト上で動くメインボードのブートローダーの実際の C コード）に接続するので、更新を受け入れるか拒否する実際のコードを通してフラッシュできます。`sensor_frame.py` はビジョンヘッドのセンサーフレームのリファレンスで、これとラックのシリアルフレームはバス同様にビッグエンディアンのバージョン 2 で、ベクトル (`conformance/sensor_vectors.json`、`generated/sensor_vectors.h`) があります。
-* **署名付きパッケージからの自己更新:** `self_update.py` は、GitHub のリリースから自分自身を更新するプログラムのための一連の流れ全体です。独自のネットワークやウィンドウは持たず（呼び出し側がダウンロードと進捗を渡します）、プラットフォーム向けパッケージのある厳密に高いバージョンだけを提示し、GitHub のリリースダウンロード用ホストからだけ取得し、告知されたサイズ、SHA-256、プログラムに固定された鍵による `urtc-pkg/1|アプリ|バージョン|プラットフォーム|sha256|サイズ` の Ed25519 署名を確認し、フォルダーの外に出ずに展開し（`..`、絶対パス、リンク、デバイスは不可）、バス上の操作が実行中はインストールを拒否し、直近 2 つのリリースを保持し、最初の起動に失敗したら自動で戻し、すべての手順を記録します。標準ライブラリのみ。`vendor_copy.py --set update` でコピーします。
-* **描画するだけで使える、プログラムの「更新を確認」メニュー:** `update_service.py` にオプション（すべて保守的: 本人が求めない限り確認しない、`auto_check` は無効、`require_confirmation` は有効、チェックサムや署名を省く設定もホストを追加する設定もない。設定と `URTC_UPDATE_*` 環境変数があり、環境変数が優先され、実行が保護を下げると `lowering_warnings` が知らせる）、識別子付きで固定したリリースの Ed25519 鍵、`check` / `prepare` / `install` / `rollback` の各手順があります。`update_controller.py` はウィンドウが描画する状態機械（確認中、更新あり、ダウンロード中、準備完了、インストール中、完了。進捗とコード化されたエラー付き）で、`confirm_install` の後にだけインストールします。`launcher.py` は `current.txt` が指すリリースを起動し、初回起動に失敗すると前のリリースに戻します。`tools/make_update_package.py` はリリースの再現可能な `.zip` / `.tar.gz` を `.sha256` と `.sig` 付きで作り、固定した鍵で検証します。`vendor_copy.py --set update` でコピーします。
+* **仮想ボードと補助リンク：** `virtual_board.py` は SLCAN アダプターの背後にあるボードを TCP ポートで提供します（`python -m urtc_common.virtual_board`）。ツールがシリアルポートを尋ねる場所に `socket://127.0.0.1:7777` を入力すると、フラッシャー、テスター、ゲートウェイがハードウェアなしで最初から最後まで動きます。`--firmware-repo DIR`（URTC リポジトリのチェックアウト）を指定すると、ファームウェア自身の仮想ボードをビルドしてそこへ接続します（Windows では WSL 内）。これにより、各プログラムをファームウェアの実際の受信経路に対して試せます。`--firmware-bootloader` を指定すると、代わりにブートローダーのツイン（ホスト上で動くメインボードのブートローダーの実際の C コード）に接続するので、更新を受け入れるか拒否する実際のコードを通してフラッシュできます。`sensor_frame.py` はビジョンヘッドのセンサーフレームのリファレンスで、これとラックのシリアルフレームはバス同様にビッグエンディアンのバージョン 2 で、ベクトル（`conformance/sensor_vectors.json`、`generated/sensor_vectors.h`） があります。
+* **署名付きパッケージからの自己更新：** `self_update.py` は、GitHub のリリースから自分自身を更新するプログラムのための一連の流れ全体です。独自のネットワークやウィンドウは持たず（呼び出し側がダウンロードと進捗を渡します）、プラットフォーム向けパッケージのある厳密に高いバージョンだけを提示し、GitHub のリリースダウンロード用ホストからだけ取得し、告知されたサイズ、SHA-256、プログラムに固定された鍵による `urtc-pkg/1|アプリ|バージョン|プラットフォーム|sha256|サイズ` の Ed25519 署名を確認し、フォルダーの外に出ずに展開し（`..`、絶対パス、リンク、デバイスは不可）、バス上の操作が実行中はインストールを拒否し、直近 2 つのリリースを保持し、最初の起動に失敗したら自動で戻し、すべての手順を記録します。標準ライブラリのみ。`vendor_copy.py --set update` でコピーします。
+* **描画するだけで使える、プログラムの「更新を確認」メニュー：** `update_service.py` にオプション（すべて保守的：本人が求めない限り確認しない、`auto_check` は無効、`require_confirmation` は有効、チェックサムや署名を省く設定もホストを追加する設定もない。設定と `URTC_UPDATE_*` 環境変数があり、環境変数が優先され、実行が保護を下げると `lowering_warnings` が知らせる）、識別子付きで固定したリリースの Ed25519 鍵、`check` / `prepare` / `install` / `rollback` の各手順があります。`update_controller.py` はウィンドウが描画する状態機械（確認中、更新あり、ダウンロード中、準備完了、インストール中、完了。進捗とコード化されたエラー付き）で、`confirm_install` の後にだけインストールします。`launcher.py` は `current.txt` が指すリリースを起動し、初回起動に失敗すると前のリリースに戻します。`tools/make_update_package.py` はリリースの再現可能な `.zip` / `.tar.gz` を `.sha256` と `.sig` 付きで作り、固定した鍵で検証します。`vendor_copy.py --set update` でコピーします。
 * **ツール：** `generate_constants.py` は C ヘッダー、TypeScript モジュール、Python モジュール、表を書き出します（`--check` で比較）。`make_conformance.py` はベクトルを書き出します（`--check`）。`vendor_copy.py` はロックファイル付きで他のリポジトリに一部をコピーし、そのコピーを検査します。`ci_validate.py` は共通のリポジトリ検査です。URTC-DOCS の `make_glance.py` が「ひと目で」の表を書きます。
-* **インストール可能なパッケージ:** 各リリースには、署名付きの Python ホイール(`urtc-common`、PyPI には公開しません)、署名付きのソースアーカイブ、署名付きの生成済み C ヘッダーが添付されます。これらは `make_release_artifacts.py`(`build`、`verify`、`reproduce`、`smoke`)で再現可能にビルドされ、署名は各プログラムがすでに信頼しているリリース鍵のものです。[ガイド](docs/PACKAGE.md)を参照してください。`generate_canbus_doc.py` は、ファームウェア側リポジトリの `docs/CANBUS.TXT` の参照表を仕様から書き出します(周囲の本文には触れず、`--check` で比較します)。
+* **インストール可能なパッケージ：** 各リリースには、署名付きの Python ホイール（`urtc-common`、PyPI には公開しません）、署名付きのソースアーカイブ、署名付きの生成済み C ヘッダーが添付されます。これらは `make_release_artifacts.py`(`build`、`verify`、`reproduce`、`smoke`)で再現可能にビルドされ、署名は各プログラムがすでに信頼しているリリース鍵のものです。[ガイド](docs/PACKAGE.md)を参照してください。`generate_canbus_doc.py` は、ファームウェア側リポジトリの `docs/CANBUS.TXT` の参照表を仕様から書き出します（周囲の本文には触れず、`--check` で比較します）。
 
 - **証跡レコードとその履歴：** `evidence.py` がレコード（`urtc-evidence/1`、[docs/EVIDENCE.md](docs/EVIDENCE.md)）を書き込んで検査し、`evidence_history.py` がフォルダー内のレコードを新しい順に一つずつ検査して一覧にします。`evidence_history_qt.py`、`qml/EvidenceHistoryDialog.qml`、`evidence_history_strings.py`（8 言語）は URTC-FLASHER、URTC-TESTER、URTC-UPDATER が共有する履歴ウィンドウです（`vendor_copy.py --set history_qt` と `--set history_qml` でコピー）。
 
@@ -179,8 +179,8 @@ README とテキストは、英語、スペイン語、フランス語、イタ�
 URTC は独立したリポジトリで構成され、それぞれに固有のバージョン、テスト、README があります。グループ別のファミリーは次のとおりです：
 
 * **URTC Tool Platform:**
-  * [URTC](https://github.com/JuanenRac/URTC) - ツールヘッドボードのファームウェア(25 のツールプロファイル、CAN ブートローダー)と CAN プロトコルのリファレンス。
-  * **URTC-COMMON** (このリポジトリ) - 一度だけデータとして書かれた CAN プロトコル(仕様、生成された表、適合ベクトル)と、各プログラムが共有するコード。
+  * [URTC](https://github.com/JuanenRac/URTC) - ツールヘッドボードのファームウェア（25 のツールプロファイル、CAN ブートローダー）と CAN プロトコルのリファレンス。
+  * **URTC-COMMON** (このリポジトリ) - 一度だけデータとして書かれた CAN プロトコル（仕様、生成された表、適合ベクトル）と、各プログラムが共有するコード。
   * [URTC-FLASHER](https://github.com/JuanenRac/URTC-FLASHER) - CAN または SWD/JTAG でボードのファームウェアを更新するデスクトップツール。
   * [URTC-GATEWAY](https://github.com/JuanenRac/URTC-GATEWAY) - CAN バスの手前に置くゲートウェイ。一覧にある識別子だけを通し、レートを制限し、セッション鍵を求めます。
   * [URTC-SMART-RACK](https://github.com/JuanenRac/URTC-SMART-RACK) - 予熱とライフサイクル追跡を備えたツールラック向けの、ハードウェア非依存の C ロジックとコマンドプロトコル。
