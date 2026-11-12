@@ -34,9 +34,8 @@ REM Runs URTC-COMMON's entry point. Run build.bat first. Forwards
 REM all arguments (e.g. "run.bat conformance").
 cd /d "%~dp0"
 
-if exist .venv\Scripts\activate.bat (
-    call .venv\Scripts\activate.bat
-)
+set "VENV_PYTHON=python"
+if exist .venv\Scripts\python.exe set "VENV_PYTHON=%CD%\.venv\Scripts\python.exe"
 
-python -m urtc_common.cli %*
+"%VENV_PYTHON%" -m urtc_common.cli %*
 %KEEP_OPEN%
