@@ -102,3 +102,52 @@ def test_a_bus_with_a_head_of_the_legacy_speed_that_is_heard_and_noisy_is_suspec
     limits = bh.thresholds_from_config({"legacy_heads": ["HEAD-OLD"], "tec_warn": 64})
     heard = {"tec": 70, "rec": 3, "bus_off_count": 0}                              # a head that is heard shows the errors the other one causes
     assert bh.warnings([heard], False, ["HEAD-OLD", "HEAD-NEW"], limits)[0] == bh.MIXED_BUS_SUSPECTED
+
+
+# ---- feeding the function from the frames that go by -------------------------------------------------------------------------------------------------
+class _Transport:
+    def __init__(self, frames):
+        self.frames = list(frames)
+
+    def read_frame(self, timeout: float = 0.05):
+        return self.frames.pop(0) if self.frames else None
+
+    def send_frame(self, can_id, data=b""):
+        return None
+
+
+def _health(tec=0, rec=0, bus_off=0) -> bytes:
+    return bytes([tec, rec, bus_off, 16, 7, 65, 0x0C, 0xE4])
+
+
+def test_a_health_frame_gives_the_three_fields_and_a_short_one_gives_none():
+    assert bh.profile_from_frame(_health(5, 6, 7)) == {"tec": 5, "rec": 6, "bus_off_count": 7}
+    assert bh.profile_from_frame(b"\x01\x02") is None and bh.profile_from_frame(b"") is None
+    assert bh.profiles_from_frames([_health(1), b"\x01", _health(2)]) == [{"tec": 1, "rec": 0, "bus_off_count": 0}, {"tec": 2, "rec": 0, "bus_off_count": 0}]
+    assert bh.CAN_ID_HEALTH_PROFILE == p.CAN_ID_HEALTH_PROFILE
+
+
+def test_the_tap_keeps_the_health_frames_that_are_read_and_nothing_else_changes():
+    transport = _Transport([(0x111, b"\x01"), (bh.CAN_ID_HEALTH_PROFILE, _health(120)), (0x7F9, b"\x02"), None])
+    tap = bh.HealthTap(transport)
+    assert type(transport) is _Transport and transport.read_frame is not _Transport.read_frame
+    assert [transport.read_frame() for _ in range(4)] == [(0x111, b"\x01"), (bh.CAN_ID_HEALTH_PROFILE, _health(120)), (0x7F9, b"\x02"), None]
+    assert tap.take() == [_health(120)] and tap.take() == []
+    assert bh.warnings(bh.profiles_from_frames([_health(120)])) == [bh.BUS_ERRORS]
+
+
+def test_the_tap_keeps_only_the_last_frames_and_can_give_the_transport_back():
+    transport = _Transport([(bh.CAN_ID_HEALTH_PROFILE, _health(i)) for i in range(10)])
+    tap = bh.HealthTap(transport, keep=3)
+    for _ in range(10):
+        transport.read_frame()
+    assert [frame[0] for frame in tap.take()] == [7, 8, 9]
+    tap.release()
+    assert transport.read_frame() is None and transport.read_frame.__func__ is _Transport.read_frame        # the transport reads as before
+
+
+def test_a_search_that_hears_the_virtual_head_at_one_megabit_gives_a_quiet_tap():
+    adapter = SlcanAdapter(VirtualBoard(), bus_bitrate_code=p.SLCAN_BITRATE_DEFAULT_CODE)
+    assert _heard(adapter, p.SLCAN_BITRATE_DEFAULT_CODE) is True
+    tap = bh.HealthTap(_Transport([]))
+    assert bh.warnings(bh.profiles_from_frames(tap.take())) == []
