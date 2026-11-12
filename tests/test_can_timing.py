@@ -99,3 +99,36 @@ def test_the_bus_limits_say_the_trunk_is_shorter_at_one_megabit():
 def test_the_discovery_window_of_the_multinode_scan_is_shorter_at_the_higher_rate():
     from urtc_common import multinode as mn
     assert mn.discover_window_ms(bitrate=1_000_000) <= mn.discover_window_ms(bitrate=500_000)
+
+
+# ---- a board on a bus at another speed (the virtual adapter) ---------------------------------------------------------------------------------------
+def _query(adapter, code: str) -> bytes:
+    from urtc_common.slcan import encode_line
+    adapter.feed(b"C\rS" + code.encode() + b"\rO\r")
+    return adapter.feed(encode_line(p.CAN_ID_QUERY_VERSION).encode() + b"\r")
+
+
+def test_a_board_on_a_one_megabit_bus_answers_an_adapter_at_one_megabit_and_is_deaf_to_one_at_another_speed():
+    from urtc_common.slcan import LineReader
+    from urtc_common.virtual_board import SlcanAdapter, VirtualBoard
+    adapter = SlcanAdapter(VirtualBoard(), bus_bitrate_code=p.SLCAN_BITRATE_DEFAULT_CODE)
+    right = LineReader().frames(_query(adapter, p.SLCAN_BITRATE_DEFAULT_CODE))
+    assert [frame.id for frame in right][:1] == [p.CAN_ID_VERSION_RESPONSE]
+    wrong = _query(adapter, "6")                         # the adapter set to the legacy 500 kbit/s on a 1 Mbit/s bus
+    assert wrong == b"z\r" and LineReader().frames(wrong) == []
+    assert adapter.board.received.count((p.CAN_ID_QUERY_VERSION, b"")) == 1       # the board heard only the frame sent at its own speed
+
+
+def test_a_board_on_a_legacy_bus_is_found_only_at_the_legacy_speed():
+    from urtc_common.slcan import LineReader
+    from urtc_common.virtual_board import SlcanAdapter, VirtualBoard
+    adapter = SlcanAdapter(VirtualBoard(), bus_bitrate_code="6")
+    assert LineReader().frames(_query(adapter, p.SLCAN_BITRATE_DEFAULT_CODE)) == []
+    assert LineReader().frames(_query(adapter, "6")) != []
+
+
+def test_without_a_bus_speed_the_adapter_behaves_as_before():
+    from urtc_common.slcan import LineReader
+    from urtc_common.virtual_board import SlcanAdapter, VirtualBoard
+    adapter = SlcanAdapter(VirtualBoard())
+    assert LineReader().frames(_query(adapter, "3")) != []
