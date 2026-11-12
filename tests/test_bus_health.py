@@ -185,3 +185,24 @@ def test_the_frames_and_the_warnings_of_the_vectors_are_what_the_module_says():
     for case in vectors["warnings"]:
         assert bh.warnings(case["profiles"], case["found_nobody"], case["heads"], bh.thresholds_from_config(case["section"])) == case["expected"]
     assert {code for case in vectors["warnings"] for code in case["expected"]} == set(bh.CODES)       # every warning is exercised
+
+
+def test_a_transport_without_a_reader_is_left_alone_and_gives_nothing():
+    class NoReader:
+        def send_frame(self, can_id, data=b""):
+            return None
+
+    transport = NoReader()
+    tap = bh.HealthTap(transport)
+    assert not hasattr(transport, "read_frame") and tap.take() == []
+    tap.release()
+    assert not hasattr(transport, "read_frame")
+
+
+def test_letting_go_twice_is_harmless():
+    transport = _Transport([])
+    tap = bh.HealthTap(transport)
+    tap.release()
+    tap.release()
+    assert transport.read_frame() is None
+
