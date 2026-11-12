@@ -920,10 +920,38 @@
   "constants": [
     {
       "name": "BITRATE",
-      "value": 500000,
-      "title": "Fixed bus bitrate",
+      "value": 1000000,
+      "title": "Default bus bit rate of the tool heads",
       "group": "protocol",
       "unit": "bit/s"
+    },
+    {
+      "name": "BITRATE_LEGACY",
+      "value": 500000,
+      "title": "Bit rate of the early boards, kept as the legacy option",
+      "group": "protocol",
+      "unit": "bit/s"
+    },
+    {
+      "name": "CAN_SAMPLE_POINT_PERMILLE",
+      "value": 875,
+      "title": "Wanted sample point of the bit",
+      "group": "protocol",
+      "unit": "per mille"
+    },
+    {
+      "name": "CAN_SAMPLE_POINT_MIN_PERMILLE",
+      "value": 750,
+      "title": "Lowest sample point a timing may have",
+      "group": "protocol",
+      "unit": "per mille"
+    },
+    {
+      "name": "CAN_SJW_TQ",
+      "value": 2,
+      "title": "Wanted synchronisation jump width",
+      "group": "protocol",
+      "unit": "time quanta"
     },
     {
       "name": "STANDARD_ID_MAX",
@@ -1537,7 +1565,7 @@
         "8"
       ]
     ],
-    "bitrate_default_code": "6",
+    "bitrate_default_code": "8",
     "rx_buffer_limit": 4096
   },
   "messages": [
