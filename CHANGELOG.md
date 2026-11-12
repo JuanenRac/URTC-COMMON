@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The register of the eight languages is tested over the whole catalog:** German and French keep the formal form, Portuguese the third person, Spanish no usted, Chinese no 您, every text has the same placeholders as the English one and no text is empty or missing in any of the eight languages.
+
 - **The bit timing and the bus-health judgement are tested over generated inputs with a fixed seed:** every timing that is found is exact and inside the limits of the controller, the search does not depend on the order of the calls, the tolerance never falls with a wider resynchronisation, impossible inputs give no timing, the warning codes are always known, unique and in order, more errors never remove a warning, any configuration gives thresholds inside the limits, and the tap over a bus keeps only the health frames and never more than it was asked to.
 
 - **A bus that mixes speeds is recognised by its symptoms:** `urtc_common.bus_health` turns what can be seen (the error counters and bus-off of the health frames `0x1B8` of the heads that are heard, a search at every speed that finds nobody, a head known to be built for 500 kbit/s) into warning codes, with thresholds read from the configuration file of each tool; no change of the protocol, because a head at another speed cannot be heard and so cannot state its speed. Tested with the virtual bus.
