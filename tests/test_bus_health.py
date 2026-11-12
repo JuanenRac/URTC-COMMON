@@ -151,3 +151,37 @@ def test_a_search_that_hears_the_virtual_head_at_one_megabit_gives_a_quiet_tap()
     assert _heard(adapter, p.SLCAN_BITRATE_DEFAULT_CODE) is True
     tap = bh.HealthTap(_Transport([]))
     assert bh.warnings(bh.profiles_from_frames(tap.take())) == []
+
+
+# ---- the cases every copy is held to ----------------------------------------------------------------------------------------------------------------
+def _vectors() -> dict:
+    import json
+    from pathlib import Path
+    return json.loads((Path(__file__).resolve().parent.parent / "conformance" / "bus_health_vectors.json").read_text(encoding="utf-8"))
+
+
+def test_the_vector_file_is_what_the_tool_writes():
+    import importlib.util
+    from pathlib import Path
+    path = Path(__file__).resolve().parent.parent / "tools" / "make_bus_health_vectors.py"
+    spec = importlib.util.spec_from_file_location("make_bus_health_vectors", path)
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    assert module.main(["--check"]) == 0
+
+
+def test_the_thresholds_of_the_vectors_are_what_the_module_reads():
+    for case in _vectors()["thresholds"]:
+        limits = bh.thresholds_from_config(case["section"])
+        assert {"tec_warn": limits.tec_warn, "rec_warn": limits.rec_warn, "bus_off_warn": limits.bus_off_warn, "legacy_heads": list(limits.legacy_heads)} == case["expected"]
+
+
+def test_the_frames_and_the_warnings_of_the_vectors_are_what_the_module_says():
+    vectors = _vectors()
+    for case in vectors["profiles"]:
+        assert bh.profile_from_frame(bytes(case["frame"])) == case["expected"]
+    assert len(vectors["warnings"]) >= 15
+    for case in vectors["warnings"]:
+        assert bh.warnings(case["profiles"], case["found_nobody"], case["heads"], bh.thresholds_from_config(case["section"])) == case["expected"]
+    assert {code for case in vectors["warnings"] for code in case["expected"]} == set(bh.CODES)       # every warning is exercised

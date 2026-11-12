@@ -43,6 +43,7 @@ SETS = {
         "src/urtc_common/transports.py", "src/urtc_common/versioning.py", "src/urtc_common/quick_state.py", "src/urtc_common/conformance.py", "src/urtc_common/bus_health.py",
     ],
     "typescript": ["generated/urtcCanIds.ts"],
+    "bus_health_vectors": ["conformance/bus_health_vectors.json"],
     "c": ["generated/urtc_can_ids.h"],
     "vectors": ["conformance/can_vectors.json"],
     "ui": [
