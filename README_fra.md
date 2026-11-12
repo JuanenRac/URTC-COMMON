@@ -13,7 +13,7 @@
   <img src="https://img.shields.io/badge/Format-JSON%20%2B%20Python-083fa1.svg" alt="Format">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
   <img src="https://img.shields.io/badge/Version-0.0.8-0f6cbd.svg" alt="Version">
-  <img src="https://img.shields.io/badge/Tests-2693-2ea44f.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Tests-2721-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
 
@@ -31,7 +31,7 @@
 |---|---|
 | Version | `0.2.5` |
 | Maturité | Fonctionnel |
-| Tests | 2693 |
+| Tests | 2721 |
 | Technologie | JSON / Python |
 | Sur matériel réel | Simulé seulement : testé avec des émulateurs, des doubles de test ou des simulateurs ; aucune exécution sur du matériel réel n'est consignée pour cette version |
 
@@ -70,7 +70,7 @@ Le protocole CAN de la tête d'outil, écrit une seule fois comme données, et t
 * Une seule source pour les fichiers de langue : `spec/i18n/catalog/<programme>.json` contient tous les textes du flasher, du testeur, du web studio et de l'outil de mise à jour dans les huit langues (un texte que nomme le glossaire en est une référence) ; `tools/i18n_generate.py sync` écrit les fichiers `.lng`, `.json` et `.py` de chaque programme avec un lock (`urtc_i18n.lock.json`) et un test propre, et `check` (aussi dans la comparaison nocturne) échoue quand un fichier n'est pas ce que génère le catalogue.
 * Le guide rapide dans les programmes et les sections de README qu'ils partagent : `help_text.py` (de courtes étapes chacun pour le flasher, le testeur et l'outil de mise à jour dans les huit langues), `help_qt.py` et `qml/HelpDialog.qml` (la fenêtre d'aide ; copiés avec `--set help` et `--set help_qml`), et `spec/readme/sections.json` avec `tools/readme_sections.py` (l'État du projet de chaque programme et les parties que plusieurs README partagent, écrites une seule fois dans les huit langues et placées entre des commentaires repères à leur place dans la structure ; `check` tourne dans la comparaison de nuit)
 * L'assertion des tests hôte du firmware : `firmware_base/urtc_test.h` contient `TEST_ASSERT`, la macro que les firmwares du rack, de l'outil de vision et de la tête d'outil définissaient trois fois ; chaque dépôt la copie avec `vendor_copy.py --set firmware_test` et garde son propre `test_runner.h` avec ses suites.
-* L'en-tête d'image : `firmware_base/urtc_image_header.h` (un en-tête de 32 octets devant une image de firmware avec le matériel visé, la version en quatre composantes, la longueur et le CRC-32, et la vérification d'une image entière), sa référence `src/urtc_common/image_header.py` et les vecteurs partagés (`conformance/image_header_vectors.json`, `generated/image_header_vectors.h`) ; la signature d'une version couvre l'en-tête et forme un enregistrement séparé, et l'en-tête n'est jamais placé dans l'image flashée (`docs/IMAGE_HEADER.md`).
+* L'en-tête d'image : `firmware_base/urtc_image_header.h` (un en-tête de 32 octets devant une image de firmware avec le matériel visé, la version en quatre composantes, la longueur et le CRC-32, et la vérification d'une image entière), sa référence `src/urtc_common/image_header.py` et les vecteurs partagés (`conformance/image_header_vectors.json`, `generated/image_header_vectors.h`) ; l'en-tête peut aussi se trouver dans l'image flashée, au décalage fixe `0x200` (`conformance/image_header_embedded_vectors.json`, `generated/image_header_embedded_vectors.h`), scellé après l'édition de liens par `tools/stamp_image.py seal` et lu par tous les outils avec une seule décision et un interrupteur de compatibilité ; la signature d'une version est un enregistrement séparé (`docs/IMAGE_HEADER.md`).
 * Identité du bootloader et authentification des images : `firmware_base/urtc_ed25519.h`, `urtc_auth.h` et `urtc_bl_select.h` (un vérificateur Ed25519, la décision d'installer une image signée avec un compteur anti-retour, et l'adressage d'un bootloader par son numéro de série sur un bus à plusieurs têtes), leurs références Python et des vecteurs partagés ; voir [docs/BOOTLOADER_AUTH.md](docs/BOOTLOADER_AUTH.md). Conçu et testé uniquement sur l'hôte : aucune carte ne l'exécute.
 * Rotation de la clé de signature et stratégie de test : `src/urtc_common/key_rotation.py` est la règle de référence pour annoncer deux empreintes de clé à la fois (trames `0x7ED`, état sur `0x7EB`) dans une fenêtre de rotation qui est un paramètre, tenue aux vecteurs `conformance/key_rotation_vectors.json` ; les tests de propriétés des validateurs et la méthode de l'exécution locale de mutation sont décrits dans [docs/TESTING_STRATEGY.md](docs/TESTING_STRATEGY.md). Le côté bootloader de la fenêtre reste en attente tant qu'aucune carte n'est disponible.
 * [Vecteurs de conformité](conformance/can_vectors.json) : les octets que toute implémentation doit reproduire : chaque structure, les refus et les flux SLCAN.
@@ -114,7 +114,7 @@ python -m mypy                                       # le contrôle des types de
 
 ## 🧪 Tests
 
-La suite compte 2693 tests (`python -m pytest tests -q`). Ils vérifient la spécification par rapport à son schéma, les fichiers C, TypeScript et Python générés par rapport à ce qu'écrivent les générateurs, les vecteurs de conformité en Python, en TypeScript avec Node et en C avec un compilateur de la machine, le codec SLCAN et les transports avec des faux, la carte virtuelle, le flux de mise à jour automatique signée et la comparaison avec les dépôts récupérés à côté de celui-ci. Quelques tests sont ignorés quand un outil optionnel (Node, un compilateur C, PySide6) ou un dépôt voisin manque. `python -m mypy` vérifie les types du paquet.
+La suite compte 2721 tests (`python -m pytest tests -q`). Ils vérifient la spécification par rapport à son schéma, les fichiers C, TypeScript et Python générés par rapport à ce qu'écrivent les générateurs, les vecteurs de conformité en Python, en TypeScript avec Node et en C avec un compilateur de la machine, le codec SLCAN et les transports avec des faux, la carte virtuelle, le flux de mise à jour automatique signée et la comparaison avec les dépôts récupérés à côté de celui-ci. Quelques tests sont ignorés quand un outil optionnel (Node, un compilateur C, PySide6) ou un dépôt voisin manque. `python -m mypy` vérifie les types du paquet.
 
 ## 🏗️ Compilation et publication
 

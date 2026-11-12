@@ -2,6 +2,13 @@
 
 All notable changes to this project are documented here.
 
+## [Unreleased]
+
+- **The header can be INSIDE the flashed image:** a 32-byte slot at the fixed offset `0x200` (after the vector table, so the flash map, the vector table and the length of the image do not change), flag bit 1, the length of the whole image and the CRC-32 of the image with the header taken as zeros; `URTC_IMAGE_EMBED_SLOT` and `urtc_image_verify_embedded` in C, `embedded_slot`, `seal_embedded` and `verify_embedded` in Python, the new statuses `bad_flags` and `not_sealed`, and `docs/IMAGE_HEADER.md` rewritten.
+- **One decision for every tool that reads a file to flash:** `inspect_image` with the compatibility switch `accept`, `warn` (the default) or `require` a header; a header that is there is always checked, a stamped `.urimg` file is never flashed and an unknown value means `require`.
+- **`tools/stamp_image.py seal` is the post-build step of the header inside the image**, and `check` tells the two forms apart and applies the switch (`--policy`).
+- **Shared vectors for the embedded form:** `conformance/image_header_embedded_vectors.json` and `generated/image_header_embedded_vectors.h` (21 images each way, 17 decisions of the switch), held by the Python reference and by the C header under the sanitizers.
+
 ## [0.2.5] - The Spanish texts say "grabar" and "velocidad de bus": the calques "flashear", "flasheo" and "bitrate" are replaced in the window, the guide, the Spanish README and the shared sections, with the gender of the sentence... (and 7 more changes)
 
 - **The Spanish texts say "grabar" and "velocidad de bus":** the calques "flashear", "flasheo" and "bitrate" are replaced in the window, the guide, the Spanish README and the shared sections, with the gender of the sentence corrected, so the README names what the window shows.

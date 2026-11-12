@@ -9,6 +9,12 @@
     python tools/stamp_image.py stamp URTC_MAIN_FIRMWARE_v0.8.1.3.bin --hardware main
     python tools/stamp_image.py stamp app.bin --hardware 0x303CB01 --version 0.8.1.3 --out app.urimg
     python tools/stamp_image.py check URTC_MAIN_FIRMWARE_v0.8.1.3.urimg
+    python tools/stamp_image.py seal URTC_MAIN_FIRMWARE_v0.8.1.3.bin
+    python tools/stamp_image.py check URTC_MAIN_FIRMWARE_v0.8.1.3.bin --policy require
+
+``seal`` is the post-build step of a firmware that emits the header slot (docs/IMAGE_HEADER.md, "The header inside the image"): it fills in the length and the
+CRC-32 of the header that sits inside the binary, in place (or into ``--out``); the flashed layout does not change. ``check`` detects which form a file has.
+With ``--policy`` it also applies the compatibility switch: ``accept``, ``warn`` (the default) or ``require`` a header.
 
 ``stamp`` writes ``<name>.urimg`` next to the binary (or ``--out``): the header followed by the bytes of the binary, so
 the identity, the version, the length and the CRC-32 travel with the file. The binary itself is not changed, which makes
@@ -74,10 +80,42 @@ def main(argv: list[str]) -> int:
     one.add_argument("--out", type=Path)
     two = sub.add_parser("check")
     two.add_argument("image", type=Path)
+    two.add_argument("--policy", choices=ih.POLICIES)
+    three = sub.add_parser("seal")
+    three.add_argument("binary", type=Path)
+    three.add_argument("--hardware")
+    three.add_argument("--version")
+    three.add_argument("--out", type=Path)
     args = parser.parse_args(argv)
 
+    if args.command == "seal":
+        try:
+            hardware = parse_hardware(args.hardware) if args.hardware else None
+            version = parse_version(args.version) if args.version else None
+            sealed = ih.seal_embedded(args.binary.read_bytes(), hardware, version)
+            status, info = ih.verify_embedded(sealed)
+            if status != ih.OK or info is None:
+                raise ValueError("the sealed image does not verify: " + ih.STATUS_NAMES[status])
+            (args.out or args.binary).write_bytes(sealed)
+        except (ValueError, OSError) as error:
+            print(f"STAMP_IMAGE=FAIL {error}")
+            return 1
+        print(f"STAMP_IMAGE=SEALED {(args.out or args.binary).name} hardware=0x{info.hardware_id:08X} version={info.version_text()} length={info.payload_length}")
+        return 0
+
     if args.command == "check":
-        status, info = ih.verify_image(args.image.read_bytes())
+        data = args.image.read_bytes()
+        if data[:4] != b"URIH":
+            check = ih.inspect_image(data, args.policy or ih.DEFAULT_POLICY)
+            if not check.accepted:
+                print(f"STAMP_IMAGE=FAIL {args.image.name}: {check.reason}")
+                return 1
+            if check.info is None:
+                print(f"STAMP_IMAGE=PASS {args.image.name}: no header ({check.reason})")
+                return 0
+            print(f"STAMP_IMAGE=PASS {args.image.name} embedded hardware=0x{check.info.hardware_id:08X} version={check.info.version_text()} length={check.info.payload_length}")
+            return 0
+        status, info = ih.verify_image(data)
         if status != ih.OK or info is None:
             print(f"STAMP_IMAGE=FAIL {args.image.name}: {ih.STATUS_NAMES[status]}")
             return 1

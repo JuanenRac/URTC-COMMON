@@ -60,3 +60,39 @@ def test_a_missing_version_a_bad_hardware_and_a_broken_image_are_refused(tmp_pat
 def test_a_version_that_is_not_four_numbers_is_refused(text):
     with pytest.raises(ValueError):
         stamp_image.parse_version(text)
+
+
+def _firmware_binary(length: int = 768) -> bytes:
+    raw = bytearray((i * 31 + 7) & 0x7F for i in range(length))
+    raw[ih.EMBED_OFFSET:ih.EMBED_OFFSET + 32] = ih.embedded_slot(0x0303CC01, (0, 8, 1, 3))
+    return bytes(raw)
+
+
+def test_sealing_fills_the_header_inside_the_binary_and_check_agrees(tmp_path, capsys):
+    binary = tmp_path / "URTC_MAIN_FIRMWARE_v0.8.1.3.bin"
+    original = _firmware_binary()
+    binary.write_bytes(original)
+    assert stamp_image.main(["check", str(binary)]) == 1   # the slot was never sealed
+    assert "header_not_sealed" in capsys.readouterr().out
+    assert stamp_image.main(["seal", str(binary), "--hardware", "main", "--version", "0.8.1.3"]) == 0
+    sealed = binary.read_bytes()
+    assert len(sealed) == len(original) and sealed[:ih.EMBED_OFFSET] == original[:ih.EMBED_OFFSET]
+    assert stamp_image.main(["check", str(binary), "--policy", "require"]) == 0
+    assert "embedded" in capsys.readouterr().out
+
+
+def test_sealing_is_refused_for_a_binary_without_the_slot_or_for_other_hardware(tmp_path, capsys):
+    plain = tmp_path / "plain.bin"
+    plain.write_bytes(bytes(768))
+    assert stamp_image.main(["seal", str(plain)]) == 1 and "no header slot" in capsys.readouterr().out
+    binary = tmp_path / "fw.bin"
+    binary.write_bytes(_firmware_binary())
+    assert stamp_image.main(["seal", str(binary), "--hardware", "slave"]) == 1 and "states hardware" in capsys.readouterr().out
+    assert binary.read_bytes() == _firmware_binary()   # nothing was written
+
+
+def test_check_applies_the_switch_to_an_image_without_a_header(tmp_path, capsys):
+    plain = tmp_path / "old.bin"
+    plain.write_bytes(bytes(range(256)) * 3)
+    assert stamp_image.main(["check", str(plain)]) == 0 and "no header" in capsys.readouterr().out
+    assert stamp_image.main(["check", str(plain), "--policy", "require"]) == 1 and "header_required" in capsys.readouterr().out

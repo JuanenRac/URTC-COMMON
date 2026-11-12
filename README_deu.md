@@ -13,7 +13,7 @@
   <img src="https://img.shields.io/badge/Format-JSON%20%2B%20Python-083fa1.svg" alt="Format">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
   <img src="https://img.shields.io/badge/Version-0.0.8-0f6cbd.svg" alt="Version">
-  <img src="https://img.shields.io/badge/Tests-2693-2ea44f.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Tests-2721-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
 
@@ -31,7 +31,7 @@
 |---|---|
 | Version | `0.2.5` |
 | Reifegrad | Funktionsfähig |
-| Tests | 2693 |
+| Tests | 2721 |
 | Technik | JSON / Python |
 | Auf echter Hardware | Nur simuliert: gegen Emulatoren, Attrappen oder Simulatoren getestet; für diese Version ist kein Lauf auf echter Hardware vermerkt |
 
@@ -70,7 +70,7 @@ Das CAN-Protokoll des Werkzeugkopfs, einmal als Daten geschrieben, und alles, wa
 * Eine Quelle für die Sprachdateien: `spec/i18n/catalog/<Programm>.json` enthält alle Texte von Flasher, Tester, Web-Studio und Updater in den acht Sprachen (ein Text, den das Glossar nennt, ist ein Verweis darauf); `tools/i18n_generate.py sync` schreibt die `.lng`-, `.json`- und `.py`-Dateien jedes Programms mit einem Lock (`urtc_i18n.lock.json`) und einem eigenen Test, und `check` (auch im nächtlichen Vergleich) schlägt fehl, wenn eine Datei nicht das ist, was der Katalog erzeugt.
 * Die Kurzanleitung in den Programmen und die gemeinsamen README-Abschnitte: `help_text.py` (je einige kurze Schritte für Flasher, Tester und Updater in den acht Sprachen), `help_qt.py` und `qml/HelpDialog.qml` (das Hilfefenster; kopiert mit `--set help` und `--set help_qml`) sowie `spec/readme/sections.json` mit `tools/readme_sections.py` (der Projektstatus jedes Programms und die Teile, die mehrere README-Dateien teilen, einmal in den acht Sprachen geschrieben und zwischen Markierungskommentare an ihren Platz im Aufbau gesetzt; `check` läuft im nächtlichen Vergleich)
 * Die Assertion der Host-Tests der Firmware: `firmware_base/urtc_test.h` enthält `TEST_ASSERT`, das Makro, das die Firmware von Rack, Vision-Tool und Werkzeugkopf dreimal definiert hatte; jedes Repository kopiert es mit `vendor_copy.py --set firmware_test` und behält sein eigenes `test_runner.h` mit seinen Suiten.
-* Der Image-Header: `firmware_base/urtc_image_header.h` (ein 32-Byte-Header vor einem Firmware-Image mit der Zielhardware, der Version in vier Komponenten, der Länge und dem CRC-32 sowie die Prüfung eines ganzen Images), seine Referenz `src/urtc_common/image_header.py` und die gemeinsamen Vektoren (`conformance/image_header_vectors.json`, `generated/image_header_vectors.h`); die Signatur eines Releases deckt den Header ab und ist ein eigener Datensatz, und der Header kommt nie in das geflashte Image (`docs/IMAGE_HEADER.md`).
+* Der Image-Header: `firmware_base/urtc_image_header.h` (ein 32-Byte-Header vor einem Firmware-Image mit der Zielhardware, der Version in vier Komponenten, der Länge und dem CRC-32 sowie die Prüfung eines ganzen Images), seine Referenz `src/urtc_common/image_header.py` und die gemeinsamen Vektoren (`conformance/image_header_vectors.json`, `generated/image_header_vectors.h`); der Header kann auch im geflashten Image selbst am festen Offset `0x200` liegen (`conformance/image_header_embedded_vectors.json`, `generated/image_header_embedded_vectors.h`), nach dem Linken mit `tools/stamp_image.py seal` versiegelt und von allen Werkzeugen mit einer einzigen Entscheidung und einem Kompatibilitätsschalter gelesen; die Signatur eines Releases ist ein eigener Datensatz (`docs/IMAGE_HEADER.md`).
 * Bootloader-Identität und Image-Authentifizierung: `firmware_base/urtc_ed25519.h`, `urtc_auth.h` und `urtc_bl_select.h` (ein Ed25519-Prüfer, die Entscheidung, ein signiertes Image mit Rollback-Zähler zu installieren, und die Adressierung eines Bootloaders über seine Seriennummer an einem Bus mit mehreren Köpfen), ihre Python-Referenzen und gemeinsame Vektoren; siehe [docs/BOOTLOADER_AUTH.md](docs/BOOTLOADER_AUTH.md). Nur auf dem Host entworfen und getestet: Keine Platine führt es aus.
 * Rotation des Signaturschlüssels und Teststrategie: `src/urtc_common/key_rotation.py` ist die Referenzregel, um innerhalb eines Rotationsfensters, das ein Parameter ist, zwei Schlüssel-Fingerabdrücke gleichzeitig anzukündigen (Frames `0x7ED`, Status auf `0x7EB`), gehalten an `conformance/key_rotation_vectors.json`; die eigenschaftsbasierten Tests der Prüfer und die Methode des lokalen Mutationslaufs stehen in [docs/TESTING_STRATEGY.md](docs/TESTING_STRATEGY.md). Die Bootloader-Seite des Fensters ist offen, bis eine Platine verfügbar ist.
 * [Konformitätsvektoren](conformance/can_vectors.json): die Bytes, die jede Implementierung reproduzieren muss: jeder Aufbau, die Ablehnungen und die SLCAN-Datenströme.
@@ -114,7 +114,7 @@ python -m mypy                                       # die Typprüfung von urtc_
 
 ## 🧪 Tests
 
-Die Suite hat 2693 Tests (`python -m pytest tests -q`). Sie prüfen die Spezifikation gegen ihr Schema, die erzeugten C-, TypeScript- und Python-Dateien gegen das, was die Generatoren schreiben, die Konformitätsvektoren in Python, in TypeScript mit Node und in C mit einem Host-Compiler, den SLCAN-Codec und die Transporte mit Attrappen, die virtuelle Platine, den signierten Selbstaktualisierungsablauf und den Vergleich mit den Repositorys, die neben diesem ausgecheckt sind. Einige Tests werden übersprungen, wenn ein optionales Werkzeug (Node, ein C-Compiler, PySide6) oder ein Nachbar-Repository fehlt. `python -m mypy` prüft die Typen des Pakets.
+Die Suite hat 2721 Tests (`python -m pytest tests -q`). Sie prüfen die Spezifikation gegen ihr Schema, die erzeugten C-, TypeScript- und Python-Dateien gegen das, was die Generatoren schreiben, die Konformitätsvektoren in Python, in TypeScript mit Node und in C mit einem Host-Compiler, den SLCAN-Codec und die Transporte mit Attrappen, die virtuelle Platine, den signierten Selbstaktualisierungsablauf und den Vergleich mit den Repositorys, die neben diesem ausgecheckt sind. Einige Tests werden übersprungen, wenn ein optionales Werkzeug (Node, ein C-Compiler, PySide6) oder ein Nachbar-Repository fehlt. `python -m mypy` prüft die Typen des Pakets.
 
 ## 🏗️ Build und Veröffentlichung
 

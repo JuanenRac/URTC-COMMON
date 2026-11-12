@@ -13,7 +13,7 @@
   <img src="https://img.shields.io/badge/Format-JSON%20%2B%20Python-083fa1.svg" alt="Format">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
   <img src="https://img.shields.io/badge/Version-0.0.8-0f6cbd.svg" alt="Version">
-  <img src="https://img.shields.io/badge/Tests-2693-2ea44f.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Tests-2721-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
 
@@ -31,7 +31,7 @@
 |---|---|
 | Version | `0.2.5` |
 | Maturity | Functional |
-| Tests | 2693 |
+| Tests | 2721 |
 | Stack | JSON / Python |
 | On real hardware | Simulated only: tested against emulators, fakes or simulators; no run on real hardware is recorded for this version |
 
@@ -70,7 +70,7 @@ The CAN protocol of the tool head, written once as data, and everything that fol
 * One source for the language files: `spec/i18n/catalog/<program>.json` holds every text of the flasher, the tester, the web studio and the updater in the eight languages (a text the glossary names is a reference to it); `tools/i18n_generate.py sync` writes the `.lng`, `.json` and `.py` files of each program with a lock (`urtc_i18n.lock.json`) and a test of its own, and `check` (also in the nightly comparison) fails when a file is not what the catalog generates.
 * The quick guide inside the programs and the README sections they share: `help_text.py` (short steps each for the flasher, the tester and the updater in the eight languages), `help_qt.py` and `qml/HelpDialog.qml` (the Help window; copied with `--set help` and `--set help_qml`), and `spec/readme/sections.json` with `tools/readme_sections.py` (the Project status of each program and the parts that several README files share, written once in the eight languages and put between marker comments in their place of the layout; `check` runs in the nightly comparison)
 * The assertion of the host tests of the firmware: `firmware_base/urtc_test.h` holds `TEST_ASSERT`, the one macro the rack, the vision tool and the tool head firmware used to define three times; each repository copies it with `vendor_copy.py --set firmware_test` and keeps its own `test_runner.h` with its suites.
-* The image header: `firmware_base/urtc_image_header.h` (a 32-byte header in front of a firmware image with the hardware it is for, the version as four components, the length and the CRC-32, and the check of a whole image), its reference `src/urtc_common/image_header.py` and the shared vectors (`conformance/image_header_vectors.json`, `generated/image_header_vectors.h`); the signature of a release covers the header and is a separate record, and the header is never put in the flashed image (`docs/IMAGE_HEADER.md`).
+* The image header: `firmware_base/urtc_image_header.h` (a 32-byte header in front of a firmware image with the hardware it is for, the version as four components, the length and the CRC-32, and the check of a whole image), its reference `src/urtc_common/image_header.py` and the shared vectors (`conformance/image_header_vectors.json`, `generated/image_header_vectors.h`); the header can also sit inside the flashed image at the fixed offset `0x200` (`conformance/image_header_embedded_vectors.json`, `generated/image_header_embedded_vectors.h`), sealed after the link by `tools/stamp_image.py seal` and read by every tool through one decision with a compatibility switch; the signature of a release is a separate record (`docs/IMAGE_HEADER.md`).
 * Bootloader identity and image authentication: `firmware_base/urtc_ed25519.h`, `urtc_auth.h` and `urtc_bl_select.h` (an Ed25519 verifier, the decision to install a signed image with a rollback counter, and addressing one bootloader by its serial number on a bus with several heads), their Python references and shared vectors; see [docs/BOOTLOADER_AUTH.md](docs/BOOTLOADER_AUTH.md). Designed and tested on the host only: no board runs it.
 * Rotation of the signing key and testing strategy: `src/urtc_common/key_rotation.py` is the reference rule for announcing two key fingerprints at once (frames `0x7ED`, status on `0x7EB`) inside a rotation window that is a parameter, held to `conformance/key_rotation_vectors.json`; the property-based tests of the validators and the method of the local mutation run are described in [docs/TESTING_STRATEGY.md](docs/TESTING_STRATEGY.md). The bootloader side of the window is pending until a board is available.
 * [Conformance vectors](conformance/can_vectors.json): the bytes every implementation must reproduce: every layout, the refusals and the SLCAN streams.
@@ -114,7 +114,7 @@ python -m mypy                                       # the type check of urtc_co
 
 ## 🧪 Testing
 
-The suite has 2693 tests (`python -m pytest tests -q`). They check the specification against its schema, the generated C, TypeScript and Python files against what the generators write, the conformance vectors in Python, in TypeScript with Node and in C with a host compiler, the SLCAN codec and the transports with fakes, the virtual board, the signed self-update flow, and the comparison with the repositories checked out next to this one. A few tests skip where an optional tool (Node, a C compiler, PySide6) or a neighbouring repository is missing. `python -m mypy` type-checks the package.
+The suite has 2721 tests (`python -m pytest tests -q`). They check the specification against its schema, the generated C, TypeScript and Python files against what the generators write, the conformance vectors in Python, in TypeScript with Node and in C with a host compiler, the SLCAN codec and the transports with fakes, the virtual board, the signed self-update flow, and the comparison with the repositories checked out next to this one. A few tests skip where an optional tool (Node, a C compiler, PySide6) or a neighbouring repository is missing. `python -m mypy` type-checks the package.
 
 ## 🏗️ Build & Release
 

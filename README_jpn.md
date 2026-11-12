@@ -13,7 +13,7 @@
   <img src="https://img.shields.io/badge/Format-JSON%20%2B%20Python-083fa1.svg" alt="Format">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
   <img src="https://img.shields.io/badge/Version-0.0.8-0f6cbd.svg" alt="Version">
-  <img src="https://img.shields.io/badge/Tests-2693-2ea44f.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Tests-2721-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
 
@@ -31,7 +31,7 @@
 |---|---|
 | バージョン | `0.2.5` |
 | 成熟度 | 機能する |
-| テスト | 2693 |
+| テスト | 2721 |
 | 技術 | JSON / Python |
 | 実機での確認 | シミュレーションのみ：エミュレーター、模擬部品、シミュレーターで試験済み。このバージョンについて実機での動作記録はありません |
 
@@ -70,7 +70,7 @@
 * 言語ファイルの単一ソース：`spec/i18n/catalog/<プログラム>.json` がフラッシャー、テスター、Web スタジオ、アップデーターのすべてのテキストを 8 言語で保持します（用語集が挙げるテキストはその参照です）。`tools/i18n_generate.py sync` が各プログラムの `.lng`、`.json`、`.py` ファイルをロック（`urtc_i18n.lock.json`）と専用テストとともに書き出し、`check`（夜間の比較にも含まれます）はファイルがカタログの生成物と異なると失敗します。
 * プログラム内のクイックガイドと共有される README セクション：`help_text.py`（フラッシャー、テスター、アップデーターそれぞれに短い手順、8 言語）、`help_qt.py` と `qml/HelpDialog.qml`（ヘルプウィンドウ。`--set help` と `--set help_qml` でコピー）、そして `spec/readme/sections.json` と `tools/readme_sections.py`（各プログラムのプロジェクトの状況と、複数の README が共有する部分を 8 言語で一度だけ書き、マーカーコメントで挟んで構成上の所定の位置に配置します。`check` は夜間の比較で実行されます）
 * ファームウェアのホストテスト用アサーション：`firmware_base/urtc_test.h` は `TEST_ASSERT` を収めます。ラック、ビジョンツール、ツールヘッドの各ファームウェアが 3 回定義していたマクロです。各リポジトリは `vendor_copy.py --set firmware_test` でコピーし、自分のスイートを宣言する `test_runner.h` は各自で持ちます。
-* イメージヘッダー：`firmware_base/urtc_image_header.h`（ファームウェアイメージの前に置く 32 バイトのヘッダーで、対象ハードウェア、4 つの要素からなるバージョン、長さ、CRC-32 を持ち、イメージ全体の検査もできます）、そのリファレンス `src/urtc_common/image_header.py`、共有ベクトル（`conformance/image_header_vectors.json`、`generated/image_header_vectors.h`）。リリースの署名はヘッダーを対象に含む独立したレコードであり、ヘッダーが書き込み用イメージに入ることはありません（`docs/IMAGE_HEADER.md`）。
+* イメージヘッダー：`firmware_base/urtc_image_header.h`（ファームウェアイメージの前に置く 32 バイトのヘッダーで、対象ハードウェア、4 つの要素からなるバージョン、長さ、CRC-32 を持ち、イメージ全体の検査もできます）、そのリファレンス `src/urtc_common/image_header.py`、共有ベクトル（`conformance/image_header_vectors.json`、`generated/image_header_vectors.h`）。ヘッダーは書き込み用イメージの内部、固定オフセット `0x200` に置くこともでき（`conformance/image_header_embedded_vectors.json`, `generated/image_header_embedded_vectors.h`）、リンク後に `tools/stamp_image.py seal` で封印され、すべてのツールが 1 つの判定と互換性スイッチで読み取ります。リリースの署名は独立したレコードです（`docs/IMAGE_HEADER.md`）。
 * ブートローダーの識別とイメージ認証：`firmware_base/urtc_ed25519.h`、`urtc_auth.h`、`urtc_bl_select.h`（Ed25519 検証器、ロールバックカウンター付き署名イメージのインストール判定、複数ヘッドのバス上でシリアル番号により 1 つのブートローダーを指定する仕組み）、その Python リファレンスと共有ベクトル。[docs/BOOTLOADER_AUTH.md](docs/BOOTLOADER_AUTH.md) を参照。ホスト上でのみ設計・テストされており、実機のボードでは動作していません。
 * 署名鍵のローテーションとテスト戦略：`src/urtc_common/key_rotation.py` は、パラメーターであるローテーション期間内に 2 つの鍵フィンガープリントを同時に通知する（フレーム `0x7ED`、状態は `0x7EB`）ための基準ルールで、`conformance/key_rotation_vectors.json` に適合させています。検証器のプロパティベーステストとローカルで行うミューテーション実行の方法は [docs/TESTING_STRATEGY.md](docs/TESTING_STRATEGY.md) にあります。この期間のブートローダー側は、ボードが用意できるまで保留です。
 * [適合ベクトル](conformance/can_vectors.json)：すべての実装が再現しなければならないバイト列：各レイアウト、拒否される入力、SLCAN ストリーム。
@@ -114,7 +114,7 @@ python -m mypy                                       # urtc_common と urtc_ui �
 
 ## 🧪 テスト
 
-テストスイートは 2693 件です（`python -m pytest tests -q`）。仕様とそのスキーマ、生成された C・TypeScript・Python ファイルとジェネレーターの出力、Python・Node 上の TypeScript・ホストコンパイラ上の C での適合ベクトル、SLCAN コーデックと模擬を使ったトランスポート、仮想ボード、署名付き自己更新の流れ、そしてこのリポジトリの隣にチェックアウトされたリポジトリとの比較を検査します。任意のツール（Node、C コンパイラ、PySide6）や隣のリポジトリがない場合、一部のテストはスキップされます。`python -m mypy` がパッケージの型を検査します。
+テストスイートは 2721 件です（`python -m pytest tests -q`）。仕様とそのスキーマ、生成された C・TypeScript・Python ファイルとジェネレーターの出力、Python・Node 上の TypeScript・ホストコンパイラ上の C での適合ベクトル、SLCAN コーデックと模擬を使ったトランスポート、仮想ボード、署名付き自己更新の流れ、そしてこのリポジトリの隣にチェックアウトされたリポジトリとの比較を検査します。任意のツール（Node、C コンパイラ、PySide6）や隣のリポジトリがない場合、一部のテストはスキップされます。`python -m mypy` がパッケージの型を検査します。
 
 ## 🏗️ ビルドとリリース
 

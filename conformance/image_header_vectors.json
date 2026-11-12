@@ -11,7 +11,9 @@
     "bad_size",
     "bad_header_crc",
     "bad_length",
-    "bad_payload_crc"
+    "bad_payload_crc",
+    "bad_flags",
+    "not_sealed"
   ],
   "signing_key_for_the_vectors": "000102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D1E1F",
   "cases": [

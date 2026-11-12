@@ -24,9 +24,14 @@
 // The signed metadata: the signature of an image (HMAC-SHA256) covers bytes 0..27 of the header followed by the payload, so the identity, the length and the
 // CRC that the header states cannot be changed without invalidating it. The signature is made by the tooling that builds the release, never by this file.
 //
+// The embedded form (the header INSIDE the flashed binary): the firmware emits a 32-byte slot with URTC_IMAGE_EMBED_SLOT at the fixed offset
+// URTC_IMAGE_EMBED_OFFSET (its linker script puts the section there, after the vector table, so the flash map and the vector table do not move); the post-build
+// step (tools/stamp_image.py seal) fills in the length of the whole image and its CRC-32 taken with the 32 bytes of the header as zeros. Flag bit 1 marks it.
+// urtc_image_verify_embedded checks such an image, whole or read back from the flash.
+//
 // Header only, no library; the checks never read past the bytes they are given. Copied into the firmware repositories by tools/vendor_copy.py (set
-// "firmware_image_header"); the reference in Python is src/urtc_common/image_header.py and the shared vectors are conformance/image_header_vectors.json. Nothing
-// puts this header in an image yet: that is a change of the linker scripts and the post-build step of each firmware, to be made with a build on the bench.
+// "firmware_image_header"); the reference in Python is src/urtc_common/image_header.py and the shared vectors are conformance/image_header_vectors.json and
+// conformance/image_header_embedded_vectors.json. See docs/IMAGE_HEADER.md.
 #ifndef URTC_IMAGE_HEADER_H
 #define URTC_IMAGE_HEADER_H
 
@@ -37,6 +42,8 @@
 #define URTC_IMAGE_HEADER_VERSION   1u
 #define URTC_IMAGE_HEADER_SIZE      32u
 #define URTC_IMAGE_FLAG_SIGNED      0x0001u       // a 32-byte HMAC-SHA256 trailer follows the payload
+#define URTC_IMAGE_FLAG_EMBEDDED    0x0002u       // the header sits inside the image at URTC_IMAGE_EMBED_OFFSET
+#define URTC_IMAGE_EMBED_OFFSET     0x200u
 #define URTC_IMAGE_SIGNATURE_SIZE   32u
 #define URTC_IMAGE_SIGNED_HEADER    28u           // the bytes of the header the signature covers (all but the header CRC)
 
@@ -48,8 +55,14 @@ typedef enum {
     URTC_IMAGE_BAD_SIZE,          // the header does not say it is 32 bytes
     URTC_IMAGE_BAD_HEADER_CRC,
     URTC_IMAGE_BAD_LENGTH,        // the bytes after the header are not the payload (and trailer) the header announces
-    URTC_IMAGE_BAD_PAYLOAD_CRC
+    URTC_IMAGE_BAD_PAYLOAD_CRC,
+    URTC_IMAGE_BAD_FLAGS,         // embedded form: the header does not say it is embedded, or it also claims a signature trailer
+    URTC_IMAGE_NOT_SEALED         // embedded form: the slot the firmware emitted was never sealed by the post-build step
 } urtc_image_status_t;
+
+// The slot the firmware emits (32 bytes, header CRC zero until the post-build step seals it). Use it as the initializer of a const array placed in the
+// linker section that ends at URTC_IMAGE_EMBED_OFFSET: `const uint8_t slot[32] = URTC_IMAGE_EMBED_SLOT(hardware, major, minor, patch, build);`
+#define URTC_IMAGE_EMBED_SLOT(hw, major, minor, patch, build) {     0x55u, 0x52u, 0x49u, 0x48u, 1u, 32u, 0u, (uint8_t)URTC_IMAGE_FLAG_EMBEDDED,     (uint8_t)(((uint32_t)(hw) >> 24) & 0xFFu), (uint8_t)(((uint32_t)(hw) >> 16) & 0xFFu), (uint8_t)(((uint32_t)(hw) >> 8) & 0xFFu), (uint8_t)((uint32_t)(hw) & 0xFFu),     (uint8_t)(((unsigned)(major) >> 8) & 0xFFu), (uint8_t)((unsigned)(major) & 0xFFu), (uint8_t)(minor), (uint8_t)(patch),     (uint8_t)(((unsigned)(build) >> 8) & 0xFFu), (uint8_t)((unsigned)(build) & 0xFFu), 0u, 0u,     0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u }
 
 typedef struct {
     uint32_t hardware_id;
@@ -146,6 +159,41 @@ static inline urtc_image_status_t urtc_image_verify(const uint8_t *image, size_t
         return URTC_IMAGE_BAD_LENGTH;
     }
     if (urtc_image_crc32(image + URTC_IMAGE_HEADER_SIZE, parsed.payload_length) != parsed.payload_crc32) {
+        return URTC_IMAGE_BAD_PAYLOAD_CRC;
+    }
+    *info = parsed;
+    return URTC_IMAGE_OK;
+}
+
+// The embedded form: the header at URTC_IMAGE_EMBED_OFFSET of `image` (`total` bytes, the whole flashed binary). It must hold, be sealed, say it is embedded,
+// state the length of the whole image and the CRC-32 of the image with the 32 bytes of the header taken as zeros. Fills `info` only when all of that holds.
+static inline urtc_image_status_t urtc_image_verify_embedded(const uint8_t *image, size_t total, urtc_image_info_t *info)
+{
+    if (image == NULL || info == NULL || total < (size_t)URTC_IMAGE_EMBED_OFFSET + URTC_IMAGE_HEADER_SIZE) {
+        return URTC_IMAGE_SHORT;
+    }
+    const uint8_t *slot = image + URTC_IMAGE_EMBED_OFFSET;
+    if (urtc_image_get32(slot) == URTC_IMAGE_MAGIC && urtc_image_get32(slot + 28) == 0u) {
+        return URTC_IMAGE_NOT_SEALED;
+    }
+    urtc_image_info_t parsed;
+    const urtc_image_status_t status = urtc_image_header_parse(slot, URTC_IMAGE_HEADER_SIZE, &parsed);
+    if (status != URTC_IMAGE_OK) {
+        return status;
+    }
+    if ((parsed.flags & URTC_IMAGE_FLAG_EMBEDDED) == 0u || (parsed.flags & URTC_IMAGE_FLAG_SIGNED) != 0u) {
+        return URTC_IMAGE_BAD_FLAGS;
+    }
+    if (parsed.payload_length != (uint32_t)total || (uint64_t)total != (uint64_t)parsed.payload_length) {
+        return URTC_IMAGE_BAD_LENGTH;
+    }
+    uint32_t crc = urtc_image_crc32_update(0xFFFFFFFFu, image, URTC_IMAGE_EMBED_OFFSET);
+    for (uint8_t i = 0; i < URTC_IMAGE_HEADER_SIZE; i++) {
+        const uint8_t zero = 0u;
+        crc = urtc_image_crc32_update(crc, &zero, 1u);
+    }
+    crc = urtc_image_crc32_update(crc, image + URTC_IMAGE_EMBED_OFFSET + URTC_IMAGE_HEADER_SIZE, total - URTC_IMAGE_EMBED_OFFSET - URTC_IMAGE_HEADER_SIZE) ^ 0xFFFFFFFFu;
+    if (crc != parsed.payload_crc32) {
         return URTC_IMAGE_BAD_PAYLOAD_CRC;
     }
     *info = parsed;

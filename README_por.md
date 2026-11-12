@@ -13,7 +13,7 @@
   <img src="https://img.shields.io/badge/Format-JSON%20%2B%20Python-083fa1.svg" alt="Format">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
   <img src="https://img.shields.io/badge/Version-0.0.8-0f6cbd.svg" alt="Version">
-  <img src="https://img.shields.io/badge/Tests-2693-2ea44f.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Tests-2721-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
 
@@ -31,7 +31,7 @@
 |---|---|
 | Versão | `0.2.5` |
 | Maturidade | Funcional |
-| Testes | 2693 |
+| Testes | 2721 |
 | Tecnologia | JSON / Python |
 | Em hardware real | Só simulado: testado com emuladores, dublês de teste ou simuladores; não há registo de execução em hardware real para esta versão |
 
@@ -70,7 +70,7 @@ O protocolo CAN da cabeça de ferramenta, escrito uma só vez como dados, e tudo
 * Uma só fonte para os ficheiros de idioma: `spec/i18n/catalog/<programa>.json` guarda todos os textos do flasher, do tester, do web studio e do atualizador nos oito idiomas (um texto que o glossário nomeia é uma referência a ele); `tools/i18n_generate.py sync` escreve os ficheiros `.lng`, `.json` e `.py` de cada programa com um lock (`urtc_i18n.lock.json`) e um teste próprio, e `check` (também na comparação noturna) falha quando um ficheiro não é o que o catálogo gera.
 * O guia rápido dentro dos programas e as secções de README que partilham: `help_text.py` (passos curtos para cada um de flasher, tester e atualizador nas oito línguas), `help_qt.py` e `qml/HelpDialog.qml` (a janela de ajuda; copiados com `--set help` e `--set help_qml`), e `spec/readme/sections.json` com `tools/readme_sections.py` (o Estado do projeto de cada programa e as partes que vários README partilham, escritas uma só vez nas oito línguas e colocadas entre comentários marcadores no seu lugar da estrutura; `check` corre na comparação noturna)
 * A asserção dos testes de host do firmware: `firmware_base/urtc_test.h` contém `TEST_ASSERT`, a macro que o firmware do rack, da ferramenta de visão e da cabeça definia três vezes; cada repositório copia-a com `vendor_copy.py --set firmware_test` e mantém o seu próprio `test_runner.h` com as suas suites.
-* O cabeçalho de imagem: `firmware_base/urtc_image_header.h` (um cabeçalho de 32 bytes à frente de uma imagem de firmware com o hardware a que se destina, a versão em quatro componentes, o comprimento e o CRC-32, e a verificação de uma imagem inteira), a sua referência `src/urtc_common/image_header.py` e os vetores partilhados (`conformance/image_header_vectors.json`, `generated/image_header_vectors.h`); a assinatura de uma versão cobre o cabeçalho e é um registo separado, e o cabeçalho nunca é colocado na imagem gravada (`docs/IMAGE_HEADER.md`).
+* O cabeçalho de imagem: `firmware_base/urtc_image_header.h` (um cabeçalho de 32 bytes à frente de uma imagem de firmware com o hardware a que se destina, a versão em quatro componentes, o comprimento e o CRC-32, e a verificação de uma imagem inteira), a sua referência `src/urtc_common/image_header.py` e os vetores partilhados (`conformance/image_header_vectors.json`, `generated/image_header_vectors.h`); o cabeçalho também pode ficar dentro da imagem gravada, no desvio fixo `0x200` (`conformance/image_header_embedded_vectors.json`, `generated/image_header_embedded_vectors.h`), selado após a ligação por `tools/stamp_image.py seal` e lido por todas as ferramentas com uma única decisão e um interruptor de compatibilidade; a assinatura de uma versão é um registo separado (`docs/IMAGE_HEADER.md`).
 * Identidade do bootloader e autenticação de imagens: `firmware_base/urtc_ed25519.h`, `urtc_auth.h` e `urtc_bl_select.h` (um verificador Ed25519, a decisão de instalar uma imagem assinada com contador anti-retrocesso e o endereçamento de um bootloader pelo número de série num barramento com várias cabeças), as suas referências em Python e os vetores partilhados; veja [docs/BOOTLOADER_AUTH.md](docs/BOOTLOADER_AUTH.md). Concebido e testado apenas no anfitrião: nenhuma placa o executa.
 * Rotação da chave de assinatura e estratégia de testes: `src/urtc_common/key_rotation.py` é a regra de referência para anunciar duas impressões digitais de chave em simultâneo (tramas `0x7ED`, estado em `0x7EB`) dentro de uma janela de rotação que é um parâmetro, ajustada a `conformance/key_rotation_vectors.json`; os testes de propriedades dos validadores e o método da execução local de mutação estão descritos em [docs/TESTING_STRATEGY.md](docs/TESTING_STRATEGY.md). O lado do bootloader da janela fica pendente até haver uma placa.
 * [Vetores de conformidade](conformance/can_vectors.json): os bytes que toda a implementação deve reproduzir: cada estrutura, as recusas e os fluxos SLCAN.
@@ -114,7 +114,7 @@ python -m mypy                                       # a verificação de tipos 
 
 ## 🧪 Testes
 
-O conjunto tem 2693 testes (`python -m pytest tests -q`). Verificam a especificação contra o seu esquema, os ficheiros C, TypeScript e Python gerados contra o que os geradores escrevem, os vetores de conformidade em Python, em TypeScript com Node e em C com um compilador do computador, o codec SLCAN e os transportes com simulações, a placa virtual, o fluxo de autoatualização assinada e a comparação com os repositórios obtidos ao lado deste. Alguns testes são ignorados quando falta uma ferramenta opcional (Node, um compilador de C, PySide6) ou um repositório vizinho. `python -m mypy` verifica os tipos do pacote.
+O conjunto tem 2721 testes (`python -m pytest tests -q`). Verificam a especificação contra o seu esquema, os ficheiros C, TypeScript e Python gerados contra o que os geradores escrevem, os vetores de conformidade em Python, em TypeScript com Node e em C com um compilador do computador, o codec SLCAN e os transportes com simulações, a placa virtual, o fluxo de autoatualização assinada e a comparação com os repositórios obtidos ao lado deste. Alguns testes são ignorados quando falta uma ferramenta opcional (Node, um compilador de C, PySide6) ou um repositório vizinho. `python -m mypy` verifica os tipos do pacote.
 
 ## 🏗️ Compilação e publicação
 
