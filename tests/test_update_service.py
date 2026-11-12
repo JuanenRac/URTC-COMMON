@@ -366,6 +366,84 @@ def test_verify_refuses_a_file_that_is_not_a_package(tmp_path):
         mk.verify(tmp_path / "x.rar")
 
 
+# ---- signing a package that was packed somewhere else (the Windows build of the repository) ----------------------------
+def unsigned_copy(tmp_path, platform="windows-x64", entry="flasher.exe", name_override=None):
+    """The package the build in Actions makes: the same bytes as a signed one, with no companions."""
+    package = make_package(tmp_path, platform=platform, entry=entry)
+    folder = tmp_path / "unsigned"
+    folder.mkdir()
+    target = folder / (name_override or package.name)
+    target.write_bytes(package.read_bytes())
+    return package, target
+
+
+def test_signing_an_existing_package_gives_the_same_companions_as_building_it_signed(tmp_path):
+    signed, unsigned = unsigned_copy(tmp_path)
+    before = unsigned.read_bytes()
+    assert mk.sign_existing(unsigned, SEED) == KEY_ID
+    assert unsigned.read_bytes() == before   # the package itself is never rewritten: an attestation of its bytes stays true
+    for suffix in (".sha256", ".sig"):
+        assert (unsigned.parent / (unsigned.name + suffix)).read_bytes() == (signed.parent / (signed.name + suffix)).read_bytes()
+
+
+def test_signing_works_for_a_tar_package_too(tmp_path):
+    signed, unsigned = unsigned_copy(tmp_path, platform="linux-x64", entry="flasher")
+    assert mk.sign_existing(unsigned, SEED) == KEY_ID
+    assert (unsigned.parent / (unsigned.name + ".sig")).read_bytes() == (signed.parent / (signed.name + ".sig")).read_bytes()
+
+
+def test_signing_refuses_a_package_whose_name_and_content_disagree(tmp_path):
+    _, unsigned = unsigned_copy(tmp_path)
+    for name in ("urtc-flasher-0.6.0-windows-x64.zip", "urtc-tester-0.5.0-windows-x64.zip", "urtc-flasher-0.5.0-windows-arm64.zip"):
+        other = unsigned.parent / name
+        other.write_bytes(unsigned.read_bytes())
+        with pytest.raises(SystemExit) as caught:
+            mk.sign_existing(other, SEED)
+        assert "app_info.json says" in str(caught.value)
+        assert not other.with_name(name + ".sig").exists() and not other.with_name(name + ".sha256").exists()
+
+
+def test_signing_refuses_what_is_not_a_package(tmp_path):
+    folder = tmp_path / "x"
+    folder.mkdir()
+    for name, content in (("urtc-flasher-0.5.0-windows-x64.zip", b"not a zip"), ("urtc-flasher-0.5.0-linux-x64.tar.gz", b"not a tar")):
+        broken = folder / name
+        broken.write_bytes(content)
+        with pytest.raises(SystemExit) as caught:
+            mk.sign_existing(broken, SEED)
+        assert "app_info.json" in str(caught.value)
+    with pytest.raises(SystemExit):
+        mk.sign_existing(folder / "x.rar", SEED)
+    with pytest.raises(SystemExit):
+        mk.sign_existing(folder / "a-b.zip", SEED)
+    with pytest.raises(su.UpdateError):
+        mk.sign_existing(folder / "urtc-flasher-x-windows-x64.zip", SEED)
+
+
+def test_a_tar_package_without_app_info_is_refused(tmp_path):
+    import tarfile as tar_module
+
+    path = tmp_path / "urtc-flasher-0.5.0-linux-x64.tar.gz"
+    with tar_module.open(path, "w:gz") as archive:
+        data = b"x"
+        member = tar_module.TarInfo("other.txt")
+        member.size = len(data)
+        archive.addfile(member, io.BytesIO(data))
+    with pytest.raises(SystemExit) as caught:
+        mk.sign_existing(path, SEED)
+    assert "app_info.json" in str(caught.value)
+
+
+def test_the_command_line_signs_with_the_pinned_key_only(tmp_path, capsys):
+    _, unsigned = unsigned_copy(tmp_path)
+    der = bytes.fromhex("302e020100300506032b657004220420") + SEED
+    pem = tmp_path / "k.pem"
+    pem.write_text("-----BEGIN PRIVATE KEY-----\n" + base64.b64encode(der).decode() + "\n-----END PRIVATE KEY-----\n", encoding="ascii")
+    # this test key is not the key of the releases: the command says so
+    assert mk.main(["sign", str(unsigned), "--key", str(pem)]) == 1
+    assert "the programs trust" in capsys.readouterr().err
+
+
 # ---- the state machine behind the menu ---------------------------------------------------------------------------
 from urtc_common import update_controller as uc  # noqa: E402
 
