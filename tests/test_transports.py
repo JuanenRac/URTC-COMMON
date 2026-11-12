@@ -95,7 +95,7 @@ def slcan_port(monkeypatch):
 # =============================================================================
 def test_slcan_open_closes_sets_the_bitrate_and_opens(slcan_port):
     slcan_port.open_channel()
-    assert slcan_port.ser.written == [b"C\r", b"S6\r", b"O\r"]
+    assert slcan_port.ser.written == [b"C\r", b"S8\r", b"O\r"]
     assert slcan_port.listen_only is False
     assert slcan_port.ser.timeout == 0.02 and slcan_port.ser.baudrate == 115200
 
@@ -438,7 +438,7 @@ def test_python_can_opens_the_spec_and_sends_standard_frames():
     module, holder = fake_can_module()
     port = transports.PythonCAN("pcan:PCAN_USBBUS1", can_module=module)
     port.open_channel()
-    assert holder["bus"].kwargs == {"interface": "pcan", "channel": "PCAN_USBBUS1", "bitrate": 500000}
+    assert holder["bus"].kwargs == {"interface": "pcan", "channel": "PCAN_USBBUS1", "bitrate": 1000000}
     port.send_frame(0x100, b"\x01")
     message = holder["bus"].sent[0]
     assert message.arbitration_id == 0x100 and message.data == b"\x01" and message.is_extended_id is False
