@@ -40,7 +40,7 @@ LOCK_NAME = "urtc_common.lock.json"
 SETS = {
     "python": [
         "src/urtc_common/__init__.py", "src/urtc_common/protocol.py", "src/urtc_common/framing.py", "src/urtc_common/slcan.py",
-        "src/urtc_common/transports.py", "src/urtc_common/versioning.py", "src/urtc_common/quick_state.py", "src/urtc_common/conformance.py",
+        "src/urtc_common/transports.py", "src/urtc_common/versioning.py", "src/urtc_common/quick_state.py", "src/urtc_common/conformance.py", "src/urtc_common/bus_health.py",
     ],
     "typescript": ["generated/urtcCanIds.ts"],
     "c": ["generated/urtc_can_ids.h"],
