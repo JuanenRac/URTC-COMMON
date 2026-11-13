@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The Spanish, German, French and European Portuguese README were read sentence by sentence:** calques ("rueda" for a Python wheel, "forgiven" for ignored, "lock"), words of another language and mixed names of the programs (tester, updater, Web Studio) were corrected so that each program is called the same way throughout, and the rate limiter of the serial links is worded as frequency ("cadence" in French) and never as bit rate.
+
 - **Two checks of the workflows and of the lessons of past CI failures, both opt in and with a baseline:** `tools/workflow_hygiene.py` reports actions not pinned to a SHA, jobs without `timeout-minutes`, workflows without top-level `permissions`, release workflows without `concurrency`, `pull_request_target` that checks out the pull request and secrets written inside `run:`; `tools/lessons_lint.py` reports `subprocess` calls without a timeout, visible text outside the language catalogue, a coverage floor above the last measured coverage, language keys missing from one of the eight languages and a version that differs between its places. A repository turns them on with `tools/hygiene_config.json` (or a baseline file), and only findings that are not in its baseline fail `ci_validate`; `--write-baseline` saves today's findings, and without either file the step never blocks. Tests included.
 
 - **The comparison with the web studio accepts the reasons only the slave reports:** the list of verify-fail reasons of the web studio must hold the ones of the bootloader and may hold the ones of the expansion slave (not confirmed, digest chunk missing), which the comparison used to reject.
