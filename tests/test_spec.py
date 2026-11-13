@@ -63,10 +63,10 @@ def test_names_are_unique(spec):
 
 
 def test_statistics_the_documents_quote(spec):
-    assert len(spec["messages"]) == 106
+    assert len(spec["messages"]) == 107
     assert len(spec["tools"]) == 26 and [t["id"] for t in spec["tools"]] == list(range(26))
     assert sum(len(b["entries"]) for b in spec["registers"].values()) == 27
-    assert len(spec["magic_payloads"]) == 4
+    assert len(spec["magic_payloads"]) == 5
 
 
 def test_every_layout_fits_a_classic_frame(spec):
@@ -157,7 +157,7 @@ def test_a_magic_payload_is_four_bytes_and_every_gated_message_uses_it(spec):
         assert len(fixed) == 1 and fixed[0]["fixed"] == by_name[name]["data"], message["name"]
         assert message["id"] == by_name[name]["id"] or message["id"] in by_name[name].get("also_on", [])
     # four distinct payloads: one cannot be mistaken for another
-    assert len({m["data"] for m in spec["magic_payloads"]}) == 4
+    assert len({m["data"] for m in spec["magic_payloads"]}) == 5
 
 
 def test_enum_values_are_unique_and_flags_are_single_bits(spec):

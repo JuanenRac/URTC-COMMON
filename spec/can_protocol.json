@@ -867,6 +867,21 @@
           "value": 8,
           "name": "THERMAL_PID",
           "title": "PID with anti-windup and relay autotune for the heaters"
+        },
+        {
+          "value": 16,
+          "name": "CLEAR_ERROR",
+          "title": "The clear-error command (0x1B2) works: a latched error is lifted without a power cycle once the board is cool and every actuator is off"
+        },
+        {
+          "value": 32,
+          "name": "COMMS_WATCHDOG",
+          "title": "Communication watchdog of the stepper moves and of the electromagnet (silence of the host)"
+        },
+        {
+          "value": 64,
+          "name": "MAGNET_RELEASE",
+          "title": "With the communication watchdog: the electromagnet lets go when the host falls silent (without it, it holds)"
         }
       ]
     },
@@ -951,6 +966,102 @@
           "value": 4,
           "name": "AUTOTUNE_FAILED",
           "title": "Autotune gave up; the previous gains are kept"
+        }
+      ]
+    },
+    {
+      "name": "error_reason",
+      "title": "Why the board latched its critical error",
+      "prefix": "ERROR_REASON_",
+      "kind": "value",
+      "values": [
+        {
+          "value": 0,
+          "name": "NONE",
+          "title": "No error"
+        },
+        {
+          "value": 1,
+          "name": "UNKNOWN",
+          "title": "Raised by a path that does not record its reason"
+        },
+        {
+          "value": 2,
+          "name": "THERMAL",
+          "title": "Thermal guard or heater control (see thermal_fault)"
+        },
+        {
+          "value": 3,
+          "name": "SENSOR",
+          "title": "A reading of the board could not be trusted"
+        },
+        {
+          "value": 4,
+          "name": "TOOL_ID",
+          "title": "No valid tool for the jumper setting (never cleared by command)"
+        },
+        {
+          "value": 5,
+          "name": "COMMS_WATCHDOG",
+          "title": "An actuator was cut because its refresh stopped"
+        },
+        {
+          "value": 6,
+          "name": "FAN_STALL",
+          "title": "The hotend fan stalled"
+        },
+        {
+          "value": 7,
+          "name": "STEPPER_SILENCE",
+          "title": "A stepper move was cut because the host fell silent"
+        },
+        {
+          "value": 8,
+          "name": "MAGNET_RELEASE",
+          "title": "The electromagnet was released because the host fell silent"
+        }
+      ]
+    },
+    {
+      "name": "clear_error_result",
+      "title": "Outcome of the last clear-error command",
+      "prefix": "CLEAR_ERROR_",
+      "kind": "value",
+      "values": [
+        {
+          "value": 0,
+          "name": "NONE",
+          "title": "No clear-error command since power-up"
+        },
+        {
+          "value": 1,
+          "name": "CLEARED",
+          "title": "The error was lifted"
+        },
+        {
+          "value": 2,
+          "name": "REFUSED_SWITCH_OFF",
+          "title": "The CLEAR_ERROR feature is off"
+        },
+        {
+          "value": 3,
+          "name": "REFUSED_NO_ERROR",
+          "title": "There was no error to clear"
+        },
+        {
+          "value": 4,
+          "name": "REFUSED_NOT_CLEARABLE",
+          "title": "The error cannot be lifted by command (no valid tool)"
+        },
+        {
+          "value": 5,
+          "name": "REFUSED_HOT",
+          "title": "The temperature is not below the limit, or it is unknown"
+        },
+        {
+          "value": 6,
+          "name": "REFUSED_ACTUATOR_ON",
+          "title": "An actuator is not at zero"
         }
       ]
     }
@@ -1233,6 +1344,34 @@
       "value": 22,
       "title": "Chunks of the fault recorder record read by 0x1A8",
       "group": "protocol"
+    },
+    {
+      "name": "CLEAR_ERROR_MAX_TEMP_C",
+      "value": 50,
+      "title": "A latched error is lifted only below this temperature",
+      "group": "protocol",
+      "unit": "C"
+    },
+    {
+      "name": "STEPPER_SILENCE_MIN_MS",
+      "value": 1000,
+      "title": "Least silence of the host that cuts a stepper move (communication watchdog on)",
+      "group": "timing",
+      "unit": "ms"
+    },
+    {
+      "name": "STEPPER_SILENCE_PERCENT",
+      "value": 50,
+      "title": "Silence that cuts a stepper move, as a percentage of the time the move should take (never below the least)",
+      "group": "timing",
+      "unit": "%"
+    },
+    {
+      "name": "MAGNET_SILENCE_MS",
+      "value": 5000,
+      "title": "Silence of the host after which the electromagnet lets go (communication watchdog and release policy on)",
+      "group": "timing",
+      "unit": "ms"
     }
   ],
   "magic_payloads": [
@@ -1262,6 +1401,12 @@
       "id": "0x131",
       "data": "52535030",
       "title": "Reset the solder wire feeder position (ASCII RSP0)"
+    },
+    {
+      "name": "clear_error",
+      "id": "0x1B2",
+      "data": "434C4552",
+      "title": "Lift a latched critical error (ASCII CLER)"
     }
   ],
   "registers": {
@@ -1841,7 +1986,7 @@
           "role": "response",
           "dlc": {
             "min": 4,
-            "max": 6
+            "max": 8
           },
           "fields": [
             {
@@ -1898,6 +2043,24 @@
               "note": "Absent from firmware before the reset-cause byte: not reported, not zero.",
               "offset": 5,
               "width": 1
+            },
+            {
+              "name": "error_reason",
+              "type": "u8",
+              "enum": "error_reason",
+              "optional": true,
+              "note": "Why the critical error is latched, 0 = none. Absent from firmware before the error reason: not reported, not zero.",
+              "offset": 6,
+              "width": 1
+            },
+            {
+              "name": "clear_result",
+              "type": "u8",
+              "enum": "clear_error_result",
+              "optional": true,
+              "note": "Outcome of the last clear-error command (0x1B2) since power-up. Absent from firmware before the error reason.",
+              "offset": 7,
+              "width": 1
             }
           ],
           "examples": [
@@ -1928,7 +2091,8 @@
       ],
       "notes": [
         "Byte 0 is the already-resolved tool, never the raw jumper reading (see 0x1A3).",
-        "A host must treat missing bytes as not reported."
+        "A host must treat missing bytes as not reported.",
+        "Also the answer to the clear-error command 0x1B2, whose outcome is in the last byte."
       ],
       "implemented_by": {
         "firmware": true,
@@ -2038,7 +2202,8 @@
       ],
       "notes": [
         "The prose names tools 1, 2, 3, 6, 7 and the soldering iron's wire feeder; the firmware routing table also sends tools 12 and 16 here.",
-        "With eight bytes the frame also carries a cruise speed and a speed profile. A board whose MOTION_RAMPS feature is off ignores bytes 5 to 7, exactly as before."
+        "With eight bytes the frame also carries a cruise speed and a speed profile. A board whose MOTION_RAMPS feature is off ignores bytes 5 to 7, exactly as before.",
+        "While the COMMS_WATCHDOG feature of 0x1AE runs, a move is cut and the critical error latched (reason STEPPER_SILENCE) when the board hears no frame at all for longer than STEPPER_SILENCE_PERCENT of the time the move should take (steps over speed), and never for less than STEPPER_SILENCE_MIN_MS. With the feature off there is no watchdog, as before."
       ],
       "firmware_accepts_dlc": {
         "min": 5,
@@ -4500,7 +4665,7 @@
               "type": "u8",
               "range": [
                 0,
-                15
+                127
               ],
               "enum": "firmware_feature",
               "note": "Bit mask: the features to have on; the others are off.",
@@ -4585,7 +4750,7 @@
               "type": "u8",
               "range": [
                 0,
-                15
+                127
               ],
               "note": "The mask the F-RAM record says.",
               "offset": 0,
@@ -4596,7 +4761,7 @@
               "type": "u8",
               "range": [
                 0,
-                15
+                127
               ],
               "note": "The mask in force now; it differs from stored until the next power-up.",
               "offset": 1,
@@ -4607,7 +4772,7 @@
               "type": "u8",
               "range": [
                 0,
-                15
+                127
               ],
               "note": "The features this firmware has.",
               "offset": 2,
@@ -4683,7 +4848,7 @@
         }
       ],
       "notes": [
-        "Deliberately no watchdog: staying energised is the safer failure mode."
+        "No watchdog by default: staying energised is the safer failure mode. With the COMMS_WATCHDOG and MAGNET_RELEASE features of 0x1AE both on, the coil lets go when the board hears no frame for MAGNET_SILENCE_MS and the critical error is latched (reason MAGNET_RELEASE); with MAGNET_RELEASE off the coil is held."
       ],
       "firmware_accepts_dlc": {
         "min": 1,
@@ -4698,6 +4863,64 @@
       "client_names": {
         "tester": "CAN_ID_ELECTROMAGNET_CMD",
         "web_studio": "CAN_ID_ELECTROMAGNET_CMD"
+      }
+    },
+    {
+      "id": "0x1B2",
+      "name": "CLEAR_ERROR",
+      "group": "global",
+      "title": "Lift a latched critical error without a power cycle (feature CLEAR_ERROR, off by default)",
+      "direction": "host_to_board",
+      "handled_by": "application",
+      "tools": "any",
+      "gates": {
+        "blocked_by_critical_error": false,
+        "needs_magic": "clear_error"
+      },
+      "layouts": [
+        {
+          "role": "request",
+          "dlc": {
+            "exact": 4
+          },
+          "fields": [
+            {
+              "name": "magic",
+              "type": "bytes",
+              "length": 4,
+              "fixed": "434C4552",
+              "offset": 0,
+              "width": 4
+            }
+          ],
+          "examples": [
+            {
+              "name": "clear",
+              "fields": {
+                "magic": "434C4552"
+              },
+              "data": "434C4552"
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "Works only while the CLEAR_ERROR feature of 0x1AE runs; with it off the command changes nothing and 0x111 says so in its last byte.",
+        "The error is lifted only when the temperature of the tool is known and below CLEAR_ERROR_MAX_TEMP_C and every actuator is at zero (laser, drill, heater set-points, fans, UV, hot-air blower, stepper moves); otherwise it stays and the last byte of 0x111 says why. An error for lack of a valid tool is never lifted.",
+        "Always answered with 0x111, whose error_reason byte tells why the error was latched and whose last byte tells what this command did."
+      ],
+      "firmware_accepts_dlc": {
+        "exact": 4
+      },
+      "implemented_by": {
+        "firmware": true,
+        "flasher": false,
+        "tester": true,
+        "web_studio": true
+      },
+      "client_names": {
+        "tester": "CAN_ID_CLEAR_ERROR",
+        "web_studio": "CAN_ID_CLEAR_ERROR"
       }
     },
     {

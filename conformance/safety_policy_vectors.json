@@ -1,0 +1,386 @@
+{
+  "format": 1,
+  "about": "Cases of the clear-error command and of the communication watchdog, run through urtc_common.safety_policy. Temperature 65535 is unknown.",
+  "constants": {
+    "clear_error_max_temp_c": 50,
+    "stepper_silence_min_ms": 1000,
+    "stepper_silence_percent": 50,
+    "magnet_silence_ms": 5000,
+    "default_speed_sps": 500
+  },
+  "clear": [
+    {
+      "feature_on": false,
+      "error_latched": true,
+      "reason": 5,
+      "temperature_c": 20,
+      "actuators_off": true,
+      "result": 2
+    },
+    {
+      "feature_on": false,
+      "error_latched": false,
+      "reason": 0,
+      "temperature_c": 20,
+      "actuators_off": true,
+      "result": 2
+    },
+    {
+      "feature_on": true,
+      "error_latched": false,
+      "reason": 0,
+      "temperature_c": 20,
+      "actuators_off": true,
+      "result": 3
+    },
+    {
+      "feature_on": true,
+      "error_latched": true,
+      "reason": 4,
+      "temperature_c": 20,
+      "actuators_off": true,
+      "result": 4
+    },
+    {
+      "feature_on": true,
+      "error_latched": true,
+      "reason": 5,
+      "temperature_c": 49,
+      "actuators_off": true,
+      "result": 1
+    },
+    {
+      "feature_on": true,
+      "error_latched": true,
+      "reason": 5,
+      "temperature_c": 50,
+      "actuators_off": true,
+      "result": 5
+    },
+    {
+      "feature_on": true,
+      "error_latched": true,
+      "reason": 5,
+      "temperature_c": 51,
+      "actuators_off": true,
+      "result": 5
+    },
+    {
+      "feature_on": true,
+      "error_latched": true,
+      "reason": 2,
+      "temperature_c": 0,
+      "actuators_off": true,
+      "result": 1
+    },
+    {
+      "feature_on": true,
+      "error_latched": true,
+      "reason": 2,
+      "temperature_c": 300,
+      "actuators_off": true,
+      "result": 5
+    },
+    {
+      "feature_on": true,
+      "error_latched": true,
+      "reason": 3,
+      "temperature_c": 65535,
+      "actuators_off": true,
+      "result": 5
+    },
+    {
+      "feature_on": true,
+      "error_latched": true,
+      "reason": 5,
+      "temperature_c": 20,
+      "actuators_off": false,
+      "result": 6
+    },
+    {
+      "feature_on": true,
+      "error_latched": true,
+      "reason": 7,
+      "temperature_c": 20,
+      "actuators_off": false,
+      "result": 6
+    },
+    {
+      "feature_on": true,
+      "error_latched": true,
+      "reason": 8,
+      "temperature_c": 0,
+      "actuators_off": true,
+      "result": 1
+    },
+    {
+      "feature_on": true,
+      "error_latched": true,
+      "reason": 6,
+      "temperature_c": 35,
+      "actuators_off": true,
+      "result": 1
+    },
+    {
+      "feature_on": true,
+      "error_latched": true,
+      "reason": 1,
+      "temperature_c": 20,
+      "actuators_off": true,
+      "result": 1
+    },
+    {
+      "feature_on": true,
+      "error_latched": true,
+      "reason": 4,
+      "temperature_c": 300,
+      "actuators_off": false,
+      "result": 4
+    },
+    {
+      "feature_on": true,
+      "error_latched": true,
+      "reason": 2,
+      "temperature_c": 65535,
+      "actuators_off": false,
+      "result": 5
+    },
+    {
+      "feature_on": false,
+      "error_latched": false,
+      "reason": 4,
+      "temperature_c": 65535,
+      "actuators_off": false,
+      "result": 2
+    }
+  ],
+  "stepper_limit": [
+    {
+      "steps": 0,
+      "speed_sps": 0,
+      "limit_ms": 1000
+    },
+    {
+      "steps": 1,
+      "speed_sps": 0,
+      "limit_ms": 1000
+    },
+    {
+      "steps": 100,
+      "speed_sps": 500,
+      "limit_ms": 1000
+    },
+    {
+      "steps": 500,
+      "speed_sps": 500,
+      "limit_ms": 1000
+    },
+    {
+      "steps": 1000,
+      "speed_sps": 500,
+      "limit_ms": 1000
+    },
+    {
+      "steps": 1500,
+      "speed_sps": 500,
+      "limit_ms": 1500
+    },
+    {
+      "steps": 4000,
+      "speed_sps": 500,
+      "limit_ms": 4000
+    },
+    {
+      "steps": 4000,
+      "speed_sps": 0,
+      "limit_ms": 4000
+    },
+    {
+      "steps": 10000,
+      "speed_sps": 500,
+      "limit_ms": 10000
+    },
+    {
+      "steps": 100000,
+      "speed_sps": 500,
+      "limit_ms": 100000
+    },
+    {
+      "steps": 100000,
+      "speed_sps": 2000,
+      "limit_ms": 25000
+    },
+    {
+      "steps": 100000,
+      "speed_sps": 1,
+      "limit_ms": 50000000
+    },
+    {
+      "steps": 4294967295,
+      "speed_sps": 1,
+      "limit_ms": 4294967295
+    },
+    {
+      "steps": 4294967295,
+      "speed_sps": 500,
+      "limit_ms": 4294967295
+    },
+    {
+      "steps": 4294967295,
+      "speed_sps": 65535,
+      "limit_ms": 32768500
+    },
+    {
+      "steps": 7,
+      "speed_sps": 3,
+      "limit_ms": 1166
+    },
+    {
+      "steps": 999,
+      "speed_sps": 1000,
+      "limit_ms": 1000
+    },
+    {
+      "steps": 2000,
+      "speed_sps": 1000,
+      "limit_ms": 1000
+    }
+  ],
+  "stepper_stop": [
+    {
+      "feature_on": true,
+      "moving": true,
+      "silence_ms": 1001,
+      "limit_ms": 1000,
+      "stop": true
+    },
+    {
+      "feature_on": true,
+      "moving": true,
+      "silence_ms": 1000,
+      "limit_ms": 1000,
+      "stop": false
+    },
+    {
+      "feature_on": true,
+      "moving": true,
+      "silence_ms": 999,
+      "limit_ms": 1000,
+      "stop": false
+    },
+    {
+      "feature_on": false,
+      "moving": true,
+      "silence_ms": 5000,
+      "limit_ms": 1000,
+      "stop": false
+    },
+    {
+      "feature_on": true,
+      "moving": false,
+      "silence_ms": 5000,
+      "limit_ms": 1000,
+      "stop": false
+    },
+    {
+      "feature_on": true,
+      "moving": true,
+      "silence_ms": 0,
+      "limit_ms": 0,
+      "stop": false
+    },
+    {
+      "feature_on": true,
+      "moving": true,
+      "silence_ms": 1,
+      "limit_ms": 0,
+      "stop": true
+    },
+    {
+      "feature_on": true,
+      "moving": true,
+      "silence_ms": 4294967295,
+      "limit_ms": 4294967294,
+      "stop": true
+    },
+    {
+      "feature_on": true,
+      "moving": true,
+      "silence_ms": 4294967295,
+      "limit_ms": 4294967295,
+      "stop": false
+    },
+    {
+      "feature_on": false,
+      "moving": false,
+      "silence_ms": 4294967295,
+      "limit_ms": 0,
+      "stop": false
+    }
+  ],
+  "magnet": [
+    {
+      "watchdog_on": true,
+      "release_on": true,
+      "energised": true,
+      "silence_ms": 5001,
+      "release": true
+    },
+    {
+      "watchdog_on": true,
+      "release_on": true,
+      "energised": true,
+      "silence_ms": 5000,
+      "release": false
+    },
+    {
+      "watchdog_on": true,
+      "release_on": true,
+      "energised": true,
+      "silence_ms": 4999,
+      "release": false
+    },
+    {
+      "watchdog_on": true,
+      "release_on": true,
+      "energised": false,
+      "silence_ms": 60000,
+      "release": false
+    },
+    {
+      "watchdog_on": true,
+      "release_on": false,
+      "energised": true,
+      "silence_ms": 60000,
+      "release": false
+    },
+    {
+      "watchdog_on": false,
+      "release_on": true,
+      "energised": true,
+      "silence_ms": 60000,
+      "release": false
+    },
+    {
+      "watchdog_on": false,
+      "release_on": false,
+      "energised": true,
+      "silence_ms": 60000,
+      "release": false
+    },
+    {
+      "watchdog_on": true,
+      "release_on": true,
+      "energised": true,
+      "silence_ms": 0,
+      "release": false
+    },
+    {
+      "watchdog_on": true,
+      "release_on": true,
+      "energised": true,
+      "silence_ms": 4294967295,
+      "release": true
+    }
+  ]
+}
