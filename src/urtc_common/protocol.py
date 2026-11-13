@@ -419,8 +419,8 @@ ENUM_TITLES = {'tool': {0: 'Soldering Iron',
  'slave_bootloader_status': {8: "Image verified by the slave; waiting ten seconds for the master's confirmation"},
  'slave_verify_fail_reason': {6: 'The master did not confirm the image in time, or its confirmation does not match '
                                  'this session and image',
-                              7: 'The master bridge counted fewer than 4 digest chunks (0x212) between the start '
-                                 '(0x211) and the end (0x214); a frame was lost'},
+                              7: 'The master bridge found a group of digest chunks (0x212) left half way when the '
+                                 'end (0x214) arrived; a frame was lost'},
  'responder': {0: 'The running application', 1: 'The bootloader'},
  'thermal_fault': {0: 'None',
                    1: 'Temperature above the hard ceiling',
