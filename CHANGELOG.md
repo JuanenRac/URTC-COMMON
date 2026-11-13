@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The web studio asks before it lifts an error, in the eight languages, and the virtual board loads the decisions late:** the text of the confirmation of the clear-error button is in the catalog of the web studio. `virtual_board.py` imports `safety_policy` only when the clear-error command arrives, so a program that copied the virtual board before the decisions existed (and refreshes only the files it already lists) keeps importing it.
+
 - **The comparison with the web studio accepts the reasons only the slave reports:** the list of verify-fail reasons of the web studio must hold the ones of the bootloader and may hold the ones of the expansion slave (not confirmed, digest chunk missing), which the comparison used to reject.
 
 - **Texts for the bus speed selector and for the thermal head status in the web studio catalog:** the "Bus speed" selector (label, "Automatic (listen only)" and its hint), the message for a speed chosen by hand that no head answers, the rewritten no-response message (the bus is only listened to, nothing is sent) and the two reasons of the thermal view (capture error, head not ready), in the eight languages.

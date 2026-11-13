@@ -53,7 +53,7 @@ from dataclasses import replace
 from pathlib import Path
 from typing import Any, Callable, Iterable
 
-from . import key_rotation as kr, key_rotation_command as krc, protocol, safety_policy
+from . import key_rotation as kr, key_rotation_command as krc, protocol
 from .framing import FrameError
 from .heater_sim import SolderingIronModel
 from .local_build import local_build_refusal
@@ -148,6 +148,7 @@ class VirtualBoard:
         """0x1B2: with the magic payload the decision of ``safety_policy`` is applied; the answer is the quick state, whose last byte tells the outcome."""
         if data != protocol.MAGIC_CLEAR_ERROR:
             return []   # any other payload is ignored, like every command that needs its magic
+        from . import safety_policy   # here and not at the top: a program that copied this file before the decisions existed still imports it
         reason = self.error_reason if self.error_reason is not None else protocol.ERROR_REASON_UNKNOWN
         result = safety_policy.clear_error_decision(bool(self.features & protocol.FEATURE_CLEAR_ERROR), self.system_error, reason, self.temperature_c,
                                                     self.actuators_off)
