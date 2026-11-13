@@ -215,6 +215,7 @@ SLAVE_STATUS_AWAIT_CONFIRM = 0x08
 
 # Verify-fail reasons only the expansion slave bootloader reports (the others are verify_fail_reason)
 SLAVE_VERIFY_FAIL_REASON_NOT_CONFIRMED = 0x06
+SLAVE_VERIFY_FAIL_REASON_DIGEST_CHUNK_MISSING = 0x07
 
 # Answering side
 RESPONDER_APPLICATION = 0x00
@@ -351,7 +352,7 @@ ENUM_NAMES = {'tool': {0: 'SOLDERING_IRON',
                        255: 'ERROR'},
  'verify_fail_reason': {1: 'INCOMPLETE', 2: 'CRC32', 3: 'HMAC', 4: 'HARDWARE_ID', 5: 'ROLLBACK'},
  'slave_bootloader_status': {8: 'AWAIT_CONFIRM'},
- 'slave_verify_fail_reason': {6: 'NOT_CONFIRMED'},
+ 'slave_verify_fail_reason': {6: 'NOT_CONFIRMED', 7: 'DIGEST_CHUNK_MISSING'},
  'responder': {0: 'APPLICATION', 1: 'BOOTLOADER'},
  'thermal_fault': {0: 'NONE', 1: 'MAXTEMP', 2: 'HEATING_NO_RISE', 3: 'DROPPED_AT_TARGET'},
  'reset_cause': {1: 'IWDG', 2: 'WWDG', 4: 'SOFTWARE', 8: 'POWER_ON', 16: 'PIN', 32: 'LOW_POWER', 64: 'OPTION_BYTES'},
@@ -417,7 +418,9 @@ ENUM_TITLES = {'tool': {0: 'Soldering Iron',
                         5: 'Rollback rejected'},
  'slave_bootloader_status': {8: "Image verified by the slave; waiting ten seconds for the master's confirmation"},
  'slave_verify_fail_reason': {6: 'The master did not confirm the image in time, or its confirmation does not match '
-                                 'this session and image'},
+                                 'this session and image',
+                              7: 'The master bridge counted fewer than 4 digest chunks (0x212) between the start '
+                                 '(0x211) and the end (0x214); a frame was lost'},
  'responder': {0: 'The running application', 1: 'The bootloader'},
  'thermal_fault': {0: 'None',
                    1: 'Temperature above the hard ceiling',

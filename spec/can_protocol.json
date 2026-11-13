@@ -487,6 +487,11 @@
           "value": 6,
           "name": "NOT_CONFIRMED",
           "title": "The master did not confirm the image in time, or its confirmation does not match this session and image"
+        },
+        {
+          "value": 7,
+          "name": "DIGEST_CHUNK_MISSING",
+          "title": "The master bridge counted fewer than 4 digest chunks (0x212) between the start (0x211) and the end (0x214); a frame was lost"
         }
       ]
     },
@@ -5678,7 +5683,7 @@
             }
           ],
           "frames": 4,
-          "note": "Four sequential frames, bytes 0-7, 8-15, 16-23 and 24-31 of the SHA-256 (no key) of the slave image, right after 0x211 and before the first 0x213. The slave compares it with the hash of what it received; WHO vouched for the image is decided by the master from the record of 0x21A.",
+          "note": "Four sequential frames, bytes 0-7, 8-15, 16-23 and 24-31 of the SHA-256 (no key) of the slave image, right after 0x211 and before the first 0x213. The slave compares it with the hash of what it received; WHO vouched for the image is decided by the master from the record of 0x21A. The frames carry no index: the position is implicit, a counter that every 0x211 sets to zero and every 0x212 raises by one. When the end frame 0x214 arrives and the counter is between 1 and 3, a frame was lost: the master does not forward the end frame, reports 0x215 VERIFY_FAIL and answers 0x219 with DIGEST_CHUNK_MISSING (7). A counter of 0 (a sender that does not send the digest) behaves as before.",
           "examples": [
             {
               "name": "first of four",
@@ -6189,7 +6194,8 @@
         }
       ],
       "notes": [
-        "Only meaningful right after 0x215 reports VERIFY_FAIL."
+        "Only meaningful right after 0x215 reports VERIFY_FAIL.",
+        "DIGEST_CHUNK_MISSING (7) is answered by the master bridge itself, not by the slave bootloader: fewer than 4 digest chunks (0x212) arrived between 0x211 and 0x214. The legacy signature chunks (0x7F7) of the old bootloaders keep their order-only layout; the current bootloader reads the Ed25519 record instead."
       ],
       "implemented_by": {
         "firmware": true,
