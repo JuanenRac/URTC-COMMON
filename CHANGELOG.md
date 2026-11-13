@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The comparison with the prose counts the identifier of the clear-error command:** the document of the firmware has one more header (`0x1B2`), so the count that the check expects is 106.
+
 - **Seven speed rules for the workflows, opt in:** `tools/workflow_hygiene.py --speed` (or `"speed": true` in `tools/hygiene_config.json`) reports a macOS job that starts on every pull request, a plain `cancel-in-progress: true` next to a push trigger (it would cancel main and the tags), a pull request workflow that never cancels a superseded branch run, a Gradle, Xcode, ESP-IDF, PlatformIO, Flutter, Renode or ARM firmware script job without a paths filter, skipped jobs without a job that always runs after them, a job that measures a coverage floor or tests infrastructure (systemd, mosquitto, containers) on `ubuntu-latest` instead of a pinned `ubuntu-24.04`, and a CHANGELOG without `merge=union`. The rules are off by default, so no repository changes until it opts in; the tests cover each rule and the workflows of this repository.
 - **The code scan cancels only branch runs:** `codeql.yml` no longer cancels the scan of main or of a tag when a newer push arrives.
 - **CHANGELOG entries added at the same place do not conflict:** `.gitattributes` sets `merge=union` for `CHANGELOG.md`, `CHANGELOG_*.md` and `CHANGELOG.*.md`, so git keeps both entries when it merges or rebases; the checks of the CHANGELOG compare the set of entries, so the order does not matter.
