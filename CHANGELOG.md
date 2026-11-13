@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **Texts for the bus speed selector and for the thermal head status in the web studio catalog:** the "Bus speed" selector (label, "Automatic (listen only)" and its hint), the message for a speed chosen by hand that no head answers, the rewritten no-response message (the bus is only listened to, nothing is sent) and the two reasons of the thermal view (capture error, head not ready), in the eight languages.
+
 - **The nozzle setpoint of the 3D printer head can be sent alone:** the identifier 0x170 has a second layout of 2 bytes (the setpoint only), next to the 6 bytes it always had (setpoint, extruder direction and 24 steps), which stay as they are. The long frame with 0 steps stops the extruder, so the keepalive of a heater that is on while the extruder moves cancelled the move every 150 ms; the short frame sets the setpoint and refreshes the watchdog and leaves the extruder alone. The specification, the generated modules, the documents and the shared vectors carry both layouts.
 
 - **The host of several heads and the text adapter of the virtual board are tested at their edges:** every reason why a head is not commanded and every way a selection lapses, a selection that is suspended or released, the short status query, every command that is not allowed in the state of the channel, a stream cut in pieces of any size and a stream of noise that never raises and never grows without limit.
