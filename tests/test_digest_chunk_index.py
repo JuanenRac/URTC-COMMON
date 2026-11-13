@@ -22,8 +22,8 @@ def relay_verdict(events: list[str]) -> int | None:
             count = 0
             verdict = None
         elif event == "chunk":
-            count += 1
-        elif event == "end" and 1 <= count < 4:
+            count = (count + 1) % 4
+        elif event == "end" and count != 0:
             verdict = protocol.SLAVE_VERIFY_FAIL_REASON_DIGEST_CHUNK_MISSING
     return verdict
 
