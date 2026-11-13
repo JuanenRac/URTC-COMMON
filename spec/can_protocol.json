@@ -2818,14 +2818,53 @@
               "data": "000001000000"
             }
           ]
+        },
+        {
+          "role": "request",
+          "variant": "heater_only",
+          "dlc": {
+            "exact": 2
+          },
+          "fields": [
+            {
+              "name": "nozzle_setpoint_c",
+              "type": "u16",
+              "range": [
+                0,
+                300
+              ],
+              "unit": "C",
+              "note": "The hosts offer 0 to 300 C; the firmware hard ceiling is 310 C.",
+              "offset": 0,
+              "width": 2
+            }
+          ],
+          "note": "Only the heater: the setpoint is set and the watchdog is refreshed, and a move of the extruder that is under way is left alone. The long frame with 0 steps stops the extruder, so the keepalive of a heater that is on while the extruder moves uses this one.",
+          "examples": [
+            {
+              "name": "keep a 200 C setpoint alive without touching the extruder",
+              "fields": {
+                "nozzle_setpoint_c": 200
+              },
+              "data": "00C8"
+            },
+            {
+              "name": "heater off, extruder untouched",
+              "fields": {
+                "nozzle_setpoint_c": 0
+              },
+              "data": "0000"
+            }
+          ]
         }
       ],
       "notes": [
         "The watchdog covers the nozzle setpoint only, not the extruder motion.",
+        "A frame of 2 bytes (heater only) leaves the extruder as it was; a frame of 6 bytes with 0 steps stops it (unchanged).",
         "Only the extruder steps wait for the boot sequence; the nozzle setpoint is accepted during it."
       ],
       "firmware_accepts_dlc": {
-        "min": 6,
+        "min": 2,
         "max": 8
       },
       "implemented_by": {
