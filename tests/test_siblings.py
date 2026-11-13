@@ -311,9 +311,11 @@ def test_limits_and_timings_the_hosts_use_equal_the_specification(spec, sibling)
     assert web["THERMAL_CHUNK_COUNT"] == const["THERMAL_CHUNK_COUNT_MLX90640"]
     # a host keeps every refresh interval under the watchdog it serves
     assert const["KEEPALIVE_INTERVAL_MS"] < const["WATCHDOG_MS"] and const["LAYER_FAN_KEEPALIVE_INTERVAL_MS"] < const["LAYER_FAN_WATCHDOG_MS"]
-    assert tester["BITRATE_500K_SLCAN_CODE" if "BITRATE_500K_SLCAN_CODE" in tester else "THIS_HARDWARE_ID"] is not None
+    assert tester["THIS_HARDWARE_ID"] is not None
     config = text(sibling(TESTER_CONFIG))
-    assert re.search(r'BITRATE_500K_SLCAN_CODE = "6"', config)
+    # the default bitrate of the tester is the one of the specification (the speed of the bus of the tool heads), taken from the shared protocol
+    assert re.search(r'BITRATE_DEFAULT_SLCAN_CODE = protocol\.SLCAN_BITRATE_DEFAULT_CODE', config)
+    assert spec["slcan"]["bitrate_default_code"] == "8"
     assert re.search(r'\("500 kbit/s", "6"\)', config)
 
 
