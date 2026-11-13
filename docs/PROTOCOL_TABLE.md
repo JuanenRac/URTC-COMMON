@@ -24,7 +24,7 @@ Every identifier of `spec/can_protocol.json`, one row each. **Dir**: H>B host to
 | `0x155` | AOI_TELEMETRY | B>H | 1 | 8 | `F . T W` |  |
 | `0x160` | LASER_CMD | H>B | 2 | 9 | `F . T W` |  |
 | `0x165` | LASER_TELEMETRY | B>H | 1 | 9 | `F . T W` |  |
-| `0x170` | PRINTER_THERMAL_MOTION | H>B | 6 | 10 | `F . T W` |  |
+| `0x170` | PRINTER_THERMAL_MOTION | H>B | 6 2 | 10 | `F . T W` |  |
 | `0x173` | PRINTER_LAYERFAN_CMD | H>B | 1 | 10 | `F . T W` |  |
 | `0x175` | PRINTER_HOTEND_TELEMETRY | B>H | 2 | 10 | `F . T W` |  |
 | `0x177` | PRINTER_LAYERFAN_RPM | B>H | 2 | 10 | `F . T W` |  |
