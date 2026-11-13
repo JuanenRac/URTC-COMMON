@@ -31,7 +31,7 @@
 |---|---|
 | Version | `0.2.6` |
 | Maturity | Functional |
-| Tests | 2814 |
+| Tests | 2905 |
 | Stack | JSON / Python |
 | On real hardware | Simulated only: tested against emulators, fakes or simulators; no run on real hardware is recorded for this version |
 
