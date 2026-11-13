@@ -4,6 +4,10 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The host of several heads and the text adapter of the virtual board are tested at their edges:** every reason why a head is not commanded and every way a selection lapses, a selection that is suspended or released, the short status query, every command that is not allowed in the state of the channel, a stream cut in pieces of any size and a stream of noise that never raises and never grows without limit.
+
+- **A line that is not text is answered with a bell and its terminator by the virtual board:** it was answered with a bell alone, which joined the next reply in the stream; the other refusals already ended with the terminator.
+
 - **A reusable workflow to skip expensive jobs on changes that cannot affect them:** `changed-paths.yml` takes globs (and an optional pull request label that forces the answer) and tells a caller, with `matched` and `reason`, whether a change touches them; it reads two commits with a sparse checkout, asks for `contents: read` only, and answers `true` whenever it cannot find what the change is compared with. `test-changed-paths.yml` tries its rules on throw-away repositories (a pull request that touches the paths and one that does not, the label, a push, a manual run, the patterns) and makes one real call. No workflow of the family calls it yet.
 
 - **The workflows have a time limit and a concurrency group:** the CI jobs (baseline and Windows), the dashboard notice and the nightly comparison gained `timeout-minutes`, and the workflows that lacked one gained a `concurrency` group (a newer run cancels an older one of the same branch except on `main`; the nightly run and the dashboard notice are never cancelled).
