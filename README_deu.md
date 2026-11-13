@@ -19,7 +19,7 @@
 
 ---
 
-**Ehrlicher Zwischenstand: Was heute wirklich läuft:** dieses Repository enthält eine Spezifikation, Generatoren, Testvektoren und eine kleine Python-Bibliothek. Alles läuft und wird in der CI getestet, aber bisher verwenden es nur URTC-FLASHER, URTC-TESTER und URTC-WEB-STUDIO (die Identifier, die Magic-Payloads, die Hardware-IDs und die gemeinsamen Vektoren, als Kopien, deren Unverändertheit eine Sperrdatei prüft); die Firmware und die Transporte behalten ihre eigene Kopie des Protokolls, bis jedes einzelne migriert. Die Tests, die die Spezifikation mit diesen Kopien vergleichen, lesen deren Text, wenn die Repositories neben diesem ausgecheckt sind, und werden übersprungen, wenn nicht. Nichts davon wurde gegen eine Platine oder einen CAN-Adapter ausgeführt: Die Transporte werden mit Attrappen getestet, und die Spezifikation nennt für jeden Identifier, welche Implementierungen ihn definieren, sodass die Lücken sichtbar sind, statt als gelöst angenommen zu werden.
+**Ehrlicher Zwischenstand: Was heute wirklich läuft:** dieses Repository enthält eine Spezifikation, Generatoren, Testvektoren und eine kleine Python-Bibliothek. Alles läuft und wird in der CI getestet, aber bisher verwenden es nur URTC-FLASHER, URTC-TESTER und URTC-WEB-STUDIO (die Identifier, die magischen Nutzlasten, die Hardware-IDs und die gemeinsamen Vektoren, als Kopien, deren Unverändertheit eine Sperrdatei prüft); die Firmware und die Transporte behalten ihre eigene Kopie des Protokolls, bis jedes einzelne migriert. Die Tests, die die Spezifikation mit diesen Kopien vergleichen, lesen deren Text, wenn die Repositories neben diesem geklont sind, und werden übersprungen, wenn nicht. Nichts davon wurde gegen eine Platine oder einen CAN-Adapter ausgeführt: Die Transporte werden mit Attrappen getestet, und die Spezifikation nennt für jeden Identifier, welche Implementierungen ihn definieren, sodass die Lücken sichtbar sind, statt als gelöst angenommen zu werden.
 
 ---
 
@@ -64,7 +64,7 @@ Das CAN-Protokoll des Werkzeugkopfs, einmal als Daten geschrieben, und alles, wa
 * [Protokolltabelle](docs/PROTOCOL_TABLE.md): alle Identifier in einer Tabelle, aus der Spezifikation erzeugt.
 * [Mehrere Werkzeugköpfe an einem Bus](docs/MULTINODE.md): Adressierung, Erkennung und Sicherheitsregeln; in der URTC-Firmware hinter einem standardmäßig ausgeschalteten Schalter umgesetzt, nur auf dem Rechner getestet und nicht an Hardware erprobt.
 * Hilfen für die Oberfläche: `src/urtc_ui`: die Sprachliste, Statusabzeichen und die Formatierung von Identifiern, Bitraten und Frames, die die Desktop-Programme gemeinsam nutzen können (ohne Qt; URTC-FLASHER und URTC-TESTER tragen eine mit `vendor_copy.py --set ui` erstellte Kopie).
-* Firmware-Bausteine: `firmware_base/urtc_crc8.h`, das CRC-8 der seriellen Frames von Rack und Vision an einer Stelle (kopiert mit `vendor_copy.py --set firmware_base`), und `generated/urtc_fw_vectors.h`, die Vektoren, die die Firmware selbst bestehen muss (Versionsfelder, Magic-Nutzdaten, Prüfwerte des CRC-8) als C-Tabellen (`--set fw_vectors`).
+* Firmware-Bausteine: `firmware_base/urtc_crc8.h`, das CRC-8 der seriellen Frames von Rack und Vision an einer Stelle (kopiert mit `vendor_copy.py --set firmware_base`), und `generated/urtc_fw_vectors.h`, die Vektoren, die die Firmware selbst bestehen muss (Versionsfelder, magische Nutzlasten, Prüfwerte des CRC-8) als C-Tabellen (`--set fw_vectors`).
 * Frame-Schicht und Ratenbegrenzer der seriellen Verbindungen: `firmware_base/urtc_frame.h` (Startbyte, Version, Länge, Vollständigkeit und CRC-8 eines Frames, dessen Längenbyte an einer vorgegebenen Stelle sitzt, und der Weg zurück) und `firmware_base/urtc_rate_limiter.h` (der Mindestabstand zwischen angenommenen Nachrichten, über den Überlauf des Millisekundenzählers hinweg), mit einer Python-Referenz (`frame_layer.py`), Vektoren des Ratenbegrenzers und einem C-Test, der beide Header gegen jeden Auswertungsvektor des Racks und des Vision-Sensors prüft (kopiert mit `vendor_copy.py --set firmware_frame`)
 * Ein Glossar der Formulierungen, die mehrere Programme verwenden: `spec/i18n/glossary.json` nennt jede einmal in den acht Sprachen und listet die Schlüssel von Flasher, Tester, Web-Studio und Updater, die sie so sagen müssen (Schließen, Aktualisieren, Leeren, Heizungs-PID, Portsuche ...); `tools/i18n_glossary.py` prüft die Datei, prüft die Programme neben diesem Repository (Groß- und Kleinschreibung, Akzente und Satzzeichen werden ignoriert, ein anderes Wort nicht) und schreibt die abweichenden Zeilen der `.lng`- und `.json`-Dateien um; der nächtliche Vergleich führt es aus
 * Eine Quelle für die Sprachdateien: `spec/i18n/catalog/<Programm>.json` enthält alle Texte von Flasher, Tester, Web-Studio und Updater in den acht Sprachen (ein Text, den das Glossar nennt, ist ein Verweis darauf); `tools/i18n_generate.py sync` schreibt die `.lng`-, `.json`- und `.py`-Dateien jedes Programms mit einer Sperrdatei (`urtc_i18n.lock.json`) und einem eigenen Test, und `check` (auch im nächtlichen Vergleich) schlägt fehl, wenn eine Datei nicht das ist, was der Katalog erzeugt.
@@ -85,7 +85,7 @@ Das CAN-Protokoll des Werkzeugkopfs, einmal als Daten geschrieben, und alles, wa
 
 - **Nachweisdatensätze und ihr Verlauf:** `evidence.py` schreibt und prüft die Datensätze (`urtc-evidence/1`, [docs/EVIDENCE.md](docs/EVIDENCE.md)); `evidence_history.py` listet die eines Ordners auf, die neuesten zuerst, jeden geprüft; `evidence_history_qt.py`, `qml/EvidenceHistoryDialog.qml` und `evidence_history_strings.py` (acht Sprachen) sind das Verlaufsfenster, das URTC-FLASHER, URTC-TESTER und URTC-UPDATER teilen (kopiert mit `vendor_copy.py --set history_qt` und `--set history_qml`).
 
-- **Notizen einer Version:** `tools/changelog_section.py VERSION [--heading] [--compat]` gibt den Abschnitt des CHANGELOG einer Version aus und, mit `--compat`, danach die Kompatibilitätstabelle aus `docs/COMPATIBILITY.md`; die Programme tragen eine Kopie (`vendor_copy.py --set release_notes`, mit `--set compat` für die Tabelle), damit der Text ihrer Version dieselbe Form hat.
+- **Versionshinweise:** `tools/changelog_section.py VERSION [--heading] [--compat]` gibt den Abschnitt des CHANGELOG einer Version aus und, mit `--compat`, danach die Kompatibilitätstabelle aus `docs/COMPATIBILITY.md`; die Programme tragen eine Kopie (`vendor_copy.py --set release_notes`, mit `--set compat` für die Tabelle), damit der Text ihrer Version dieselbe Form hat.
 
 ## 🧩 Rolle in URTC
 
@@ -114,7 +114,7 @@ python -m mypy                                       # die Typprüfung von urtc_
 
 ## 🧪 Tests
 
-Die Suite hat 2905 Tests (`python -m pytest tests -q`). Sie prüfen die Spezifikation gegen ihr Schema, die erzeugten C-, TypeScript- und Python-Dateien gegen das, was die Generatoren schreiben, die Konformitätsvektoren in Python, in TypeScript mit Node und in C mit einem Host-Compiler, den SLCAN-Codec und die Transporte mit Attrappen, die virtuelle Platine, den signierten Selbstaktualisierungsablauf und den Vergleich mit den Repositories, die neben diesem ausgecheckt sind. Einige Tests werden übersprungen, wenn ein optionales Werkzeug (Node, ein C-Compiler, PySide6) oder ein Nachbar-Repository fehlt. `python -m mypy` prüft die Typen des Pakets.
+Die Suite hat 2905 Tests (`python -m pytest tests -q`). Sie prüfen die Spezifikation gegen ihr Schema, die erzeugten C-, TypeScript- und Python-Dateien gegen das, was die Generatoren schreiben, die Konformitätsvektoren in Python, in TypeScript mit Node und in C mit einem Host-Compiler, den SLCAN-Codec und die Transporte mit Attrappen, die virtuelle Platine, den signierten Selbstaktualisierungsablauf und den Vergleich mit den Repositories, die neben diesem geklont sind. Einige Tests werden übersprungen, wenn ein optionales Werkzeug (Node, ein C-Compiler, PySide6) oder ein Nachbar-Repository fehlt. `python -m mypy` prüft die Typen des Pakets.
 
 ## 🏗️ Build und Veröffentlichung
 
@@ -162,9 +162,9 @@ URTC-COMMON/
 
 **Bekannte Grenzen heute**
 
-* Nichts davon lief gegen eine Platine oder einen CAN-Adapter: Die Transporte werden mit Attrappen getestet, und die Spezifikation nennt für jeden Bezeichner, welche Implementierungen ihn definieren, sodass die Lücken sichtbar sind.
+* Nichts davon lief gegen eine Platine oder einen CAN-Adapter: Die Transporte werden mit Attrappen getestet, und die Spezifikation nennt für jeden Identifier, welche Implementierungen ihn definieren, sodass die Lücken sichtbar sind.
 * Die Firmware und die Transporte behalten ihre eigenen Kopien des Protokolls, bis jede migriert; heute nutzen nur URTC-FLASHER, URTC-TESTER und URTC-WEB-STUDIO dieses Repository.
-* Die Tests, die die Spezifikation mit den anderen Repositories vergleichen, lesen deren Text, wenn sie neben diesem ausgecheckt sind, und werden sonst übersprungen.
+* Die Tests, die die Spezifikation mit den anderen Repositories vergleichen, lesen deren Text, wenn sie neben diesem geklont sind, und werden sonst übersprungen.
 
 **Als Nächstes**
 
@@ -183,9 +183,9 @@ URTC besteht aus unabhängigen Repositories mit jeweils eigener Version, eigenen
   * **URTC-COMMON** (dieses Repository) - das CAN-Protokoll einmal als Daten geschrieben (Spezifikation, erzeugte Tabellen, Konformitätsvektoren) und der Code, den die Programme teilen.
   * [URTC-FLASHER](https://github.com/JuanenRac/URTC-FLASHER) - Desktop-Werkzeug, das die Platinen-Firmware über CAN oder über SWD/JTAG aktualisiert.
   * [URTC-GATEWAY](https://github.com/JuanenRac/URTC-GATEWAY) - Gateway vor dem CAN-Bus: lässt nur gelistete Kennungen durch, begrenzt ihre Rate und verlangt einen Sitzungsschlüssel.
-  * [URTC-SMART-RACK](https://github.com/JuanenRac/URTC-SMART-RACK) - hardwareunabhängige C-Logik und Befehlsprotokoll für eine Werkzeugablage mit Vorheizen und Lebenszyklusverfolgung.
+  * [URTC-SMART-RACK](https://github.com/JuanenRac/URTC-SMART-RACK) - hardwareunabhängige C-Logik und Befehlsprotokoll für ein Werkzeug-Rack mit Vorheizen und Lebenszyklusverfolgung.
   * [URTC-TESTER](https://github.com/JuanenRac/URTC-TESTER) - Desktop-Live-Tester für den CAN-Bus, der die Bedienelemente und die Telemetrie des von einer Platine gemeldeten Werkzeugprofils zeigt.
-  * [URTC-VISION-TOOL](https://github.com/JuanenRac/URTC-VISION-TOOL) - Sensorrahmen-Protokoll in C und ein Python-Thermo-/RGB-Begleiter für einen Inspektions-Werkzeugkopf.
+  * [URTC-VISION-TOOL](https://github.com/JuanenRac/URTC-VISION-TOOL) - Sensor-Frame-Protokoll in C und ein Python-Thermo-/RGB-Begleiter für einen Inspektions-Werkzeugkopf.
   * [URTC-WEB-STUDIO](https://github.com/JuanenRac/URTC-WEB-STUDIO) - Browser-App, die die Platine über Web Serial und SLCAN flasht und testet, ohne Installation.
 * **Ecosystem Operations:**
   * [URTC-DEVTOOLS](https://github.com/JuanenRac/URTC-DEVTOOLS) - die gemeinsamen Repository-Werkzeuge der Familie als versionierter Satz, mit einer Sperrdatei, die eine bearbeitete von einer veralteten Kopie unterscheidet.
