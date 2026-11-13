@@ -44,6 +44,7 @@ import sys
 import warnings
 from collections import Counter
 from pathlib import Path
+from typing import Any
 
 LANGS = ("en", "es", "de", "fr", "it", "ja", "zh", "pt")
 RULES = ("subprocess-timeout", "visible-text", "coverage-floor", "lang-keys", "version-mismatch")
@@ -435,10 +436,10 @@ def lint_repo(repo: Path, rules=RULES, measured=None, config: str | None = None,
         findings += lint_lang_keys(repo, catalogs)
     if "version-mismatch" in rules:
         findings += lint_versions(repo)
-    ignore = sec.get("ignore") if isinstance(sec.get("ignore"), dict) else {}
+    ignore: dict[str, Any] = sec["ignore"] if isinstance(sec.get("ignore"), dict) else {}
     findings = [f for f in findings if not is_ignored(f, ignore)]
     findings.sort(key=lambda x: (x["rule"], x["file"], x["line"]))
-    result = {"repo": repo.name, "catalogs": [c.relative_to(repo).as_posix() or "." for c in catalogs], "findings": findings, "notes": notes}
+    result: dict[str, Any] = {"repo": repo.name, "catalogs": [c.relative_to(repo).as_posix() or "." for c in catalogs], "findings": findings, "notes": notes}
     left = load_baseline(repo / (baseline or sec.get("baseline") or DEFAULT_BASELINE))
     for f in findings:
         k = finding_key(f)

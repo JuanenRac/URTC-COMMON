@@ -37,6 +37,7 @@ import re
 import sys
 from collections import Counter, defaultdict
 from pathlib import Path
+from typing import Any
 
 DEFAULT_ROOT = Path(".")
 SKIP_DIRS = {"third_party", "node_modules", ".git"}   # plus every folder whose name starts with "_" or "."; more with --skip
@@ -375,7 +376,7 @@ def score(findings) -> int:
 
 
 def summarize(repos: dict) -> dict:
-    eco = defaultdict(lambda: {"repos": 0, "workflows": 0, "findings": 0, "score": 0, "by_rule": Counter()})
+    eco: defaultdict[str, dict[str, Any]] = defaultdict(lambda: {"repos": 0, "workflows": 0, "findings": 0, "score": 0, "by_rule": Counter()})
     for r in repos.values():
         e = eco[r["ecosystem"]]
         e["repos"] += 1
