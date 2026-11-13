@@ -18,3 +18,8 @@ src/urtc_common/tools_catalog.py text eol=lf
 src/urtc_common/tool_panels.py text eol=lf
 src/urtc_common/firmware_names.py text eol=lf
 conformance/fuzz_corpus.txt text eol=lf
+
+# Two pull requests that add an entry to the CHANGELOG at the same place do not conflict: git keeps both entries when it merges or rebases.
+CHANGELOG.md merge=union
+CHANGELOG_*.md merge=union
+CHANGELOG.*.md merge=union
