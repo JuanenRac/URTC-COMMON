@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [0.2.6] - Bus at 1 Mbit/s, image header, signed packages and catalogs in 8 languages
+
 - **The register of the eight languages is tested over the whole catalog:** German and French keep the formal form, Portuguese the third person, Spanish no usted, Chinese no 您, every text has the same placeholders as the English one and no text is empty or missing in any of the eight languages.
 
 - **The bit timing and the bus-health judgement are tested over generated inputs with a fixed seed:** every timing that is found is exact and inside the limits of the controller, the search does not depend on the order of the calls, the tolerance never falls with a wider resynchronisation, impossible inputs give no timing, the warning codes are always known, unique and in order, more errors never remove a warning, any configuration gives thresholds inside the limits, and the tap over a bus keeps only the health frames and never more than it was asked to.
