@@ -162,7 +162,10 @@ def test_bootloader_status_and_verify_reason_codes_agree_everywhere(spec, siblin
     web = text(sibling(WEB_IDS))
     codes = re.search(r"VERIFY_FAIL_CODES[^=]*=\s*\[(.*?)\]", web, re.S)
     assert codes, "the web studio lists the verify-fail reason codes it can word"
-    assert sorted(int(k, 0) for k in re.findall(r"0x[0-9a-fA-F]+", codes.group(1))) == sorted(enums["verify_fail_reason"])
+    # the web studio words the reasons of the bootloader and the ones only the expansion slave (and its bridge in the master) reports
+    web_codes = {int(k, 0) for k in re.findall(r"0x[0-9a-fA-F]+", codes.group(1))}
+    slave_codes = set(enums.get("slave_verify_fail_reason", {}))
+    assert set(enums["verify_fail_reason"]) <= web_codes <= set(enums["verify_fail_reason"]) | slave_codes
 
 
 def test_expansion_and_sensor_tables_have_the_same_number_of_entries(spec, sibling):
