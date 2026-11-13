@@ -277,12 +277,12 @@ def test_the_compatibility_table_is_current_and_names_the_protocol():
     doc = compat_table.load()
     assert compat_table.check(doc, None) == []
     text = compat_table.render(doc)
-    assert "Protocol version **1**" in text and "`URTC-TESTER`" in text
+    assert "Protocol version **2**" in text and "`URTC-TESTER`" in text
 
 
 def test_a_protocol_version_that_differs_from_the_specification_is_reported():
     doc = json.loads(json.dumps(compat_table.load()))
-    doc["protocol_version"] = 2
+    doc["protocol_version"] = 1
     assert any("protocol_version" in p for p in compat_table.check(doc, None))
 
 
