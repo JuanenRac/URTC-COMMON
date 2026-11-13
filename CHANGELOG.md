@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The Related Projects section follows the shared texts of the documentation repository:** the programs are called the same way in every language (tester, updater, Web Studio) and the rate limit of the gateway is a frequency, never a bit rate.
+
 - **A second sentence-by-sentence reading of the Spanish, German, French and European Portuguese README and a terminology pass on the Chinese one:** the tool rack, the vision sensor frame, the magic payloads, the lock file, the cloned repositories and the host compiler are named the same way throughout each file, the self-update, the nightly comparison and the download wording no longer mix two words, and the Chinese text uses one word each for image, bootloader and nightly comparison.
 - **The web studio asks before it lifts an error, in the eight languages, and the virtual board loads the decisions late:** the text of the confirmation of the clear-error button is in the catalog of the web studio. `virtual_board.py` imports `safety_policy` only when the clear-error command arrives, so a program that copied the virtual board before the decisions existed (and refreshes only the files it already lists) keeps importing it.
 
