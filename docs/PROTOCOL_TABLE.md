@@ -11,7 +11,7 @@ Every identifier of `spec/can_protocol.json`, one row each. **Dir**: H>B host to
 | `0x095` | IMPACT_EVENT | B>H | 1 | 11 | `F . T W` |  |
 | `0x100` | GLOBAL_STATUS | H>B | 8 | any | `F . T W` |  |
 | `0x110` | QUERY_ACTIVE_TOOL | H>B | any | any | `F . T W` |  |
-| `0x111` | ACTIVE_TOOL_RESP | B>H | 4-6 | any | `F . T W` |  |
+| `0x111` | ACTIVE_TOOL_RESP | B>H | 4-8 | any | `F . T W` |  |
 | `0x120` | MOTION_CMD | H>B | 5-8 | 0,1,2,3,6,7,12,16 | `F . T W` |  |
 | `0x130` | SOLDER_SETPOINT | H>B | 2 | 0 | `F . T W` |  |
 | `0x131` | SOLDER_FEEDER_RESET | H>B | 4 | 0 | `F . T W` | magic solder_feeder_reset |
@@ -54,6 +54,7 @@ Every identifier of `spec/can_protocol.json`, one row each. **Dir**: H>B host to
 | `0x1AE` | SET_FEATURES | H>B | 5 | any | `F . T W` |  |
 | `0x1AF` | FEATURES_RESP | both | any / 3 | any | `F . T W` |  |
 | `0x1B0` | ELECTROMAGNET_CMD | H>B | 1 | 13 | `F . T W` |  |
+| `0x1B2` | CLEAR_ERROR | H>B | 4 | any | `F . T W` | magic clear_error |
 | `0x1B8` | HEALTH_PROFILE | B>H | 8 | any | `F . . .` | no host implements it |
 | `0x1B9` | PID_CONFIG | H>B | 7 | any | `F . T W` |  |
 | `0x1BA` | PID_STATE_RESP | both | any / 8 | any | `F . T W` |  |
@@ -115,7 +116,7 @@ Every identifier of `spec/can_protocol.json`, one row each. **Dir**: H>B host to
 | `0x7FE` | READBACK | both | any / 4 (size) / 1-8 (data) | any | `F L . W` |  |
 | `0x7FF` | READBACK_PAGE_ACK | H>B | 4 | any | `F L . W` |  |
 
-106 identifiers, 26 tool values, 27 slave registers, 4 magic payloads.
+107 identifiers, 26 tool values, 27 slave registers, 5 magic payloads.
 
 ## Tool rack
 

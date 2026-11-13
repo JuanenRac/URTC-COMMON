@@ -62,14 +62,15 @@ def test_the_quick_state_reproduces_every_vector_byte_for_byte(vectors):
         if expect is None:
             continue
         board = VirtualBoard(tool_id=expect["tool_id"], system_error=expect["system_error"], can_error=expect["can_error"],
-                             booting=expect["booting"], thermal_fault=expect["thermal_fault"], reset_cause=expect["reset_cause"])
+                             booting=expect["booting"], thermal_fault=expect["thermal_fault"], reset_cause=expect["reset_cause"],
+                             error_reason=expect.get("error_reason"), clear_result=expect.get("clear_result"))
         ((can_id, data),) = board.handle(protocol.CAN_ID_QUERY_ACTIVE_TOOL)
         assert can_id == protocol.CAN_ID_ACTIVE_TOOL_RESP
         assert data.hex().upper() == entry["data"].upper(), entry["name"]
         decoded = quick_state.decode(data)
         assert all(decoded[key] == value for key, value in expect.items()), entry["name"]
         checked += 1
-    assert checked == 4
+    assert checked == 7
 
 
 def test_only_the_exact_magic_payload_enters_the_bootloader(vectors):
