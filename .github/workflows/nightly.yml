@@ -18,10 +18,15 @@ permissions:
   contents: read
   issues: write
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   siblings:
     name: Compare the specification with the implementations
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - name: Check out this repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
