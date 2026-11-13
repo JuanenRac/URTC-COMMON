@@ -46,8 +46,8 @@ def test_a_known_legacy_head_is_reported_and_with_errors_the_bus_is_suspected_of
 
 def test_the_codes_are_listed_from_the_most_to_the_least_serious_and_each_once():
     limits = bh.Thresholds(legacy_heads=("1",))
-    result = bh.warnings([{"tec": 200, "bus_off_count": 3}], True, [1], limits)
-    assert result == [bh.MIXED_BUS_SUSPECTED, bh.NO_HEAD_AT_ANY_SPEED, bh.BUS_ERRORS, bh.LEGACY_HEAD_KNOWN]
+    result = bh.warnings([{"tec": 200, "bus_off_count": 3}], True, [1], limits, [1_000_000, 500_000])
+    assert result == [bh.RATES_DECLARED_DIFFER, bh.MIXED_BUS_SUSPECTED, bh.NO_HEAD_AT_ANY_SPEED, bh.BUS_ERRORS, bh.LEGACY_HEAD_KNOWN]
     assert sorted(result) == sorted(bh.CODES) and result == [code for code in bh.CODES if code in result]
 
 
@@ -183,8 +183,19 @@ def test_the_frames_and_the_warnings_of_the_vectors_are_what_the_module_says():
         assert bh.profile_from_frame(bytes(case["frame"])) == case["expected"]
     assert len(vectors["warnings"]) >= 15
     for case in vectors["warnings"]:
-        assert bh.warnings(case["profiles"], case["found_nobody"], case["heads"], bh.thresholds_from_config(case["section"])) == case["expected"]
+        assert bh.warnings(case["profiles"], case["found_nobody"], case["heads"], bh.thresholds_from_config(case["section"]), case["declared"]) == case["expected"]
     assert {code for case in vectors["warnings"] for code in case["expected"]} == set(bh.CODES)       # every warning is exercised
+
+
+def test_the_identity_frames_of_the_vectors_are_what_the_module_reads():
+    from urtc_common import health_info as hi
+    for case in _vectors()["info"]:
+        info = hi.parse(bytes(case["frame"]))
+        if case["expected"] is None:
+            assert info is None
+        else:
+            assert info is not None and {"protocol_version": info.protocol_version, "reset_cause": info.reset_cause, "fw_minor": info.fw_minor, "fw_patch": info.fw_patch,
+                                         "fw_build": info.fw_build, "uptime_s": info.uptime_s, "rate_code": info.rate_code, "rate_bps": info.rate_bps} == case["expected"]
 
 
 def test_a_transport_without_a_reader_is_left_alone_and_gives_nothing():

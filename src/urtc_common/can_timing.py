@@ -13,8 +13,10 @@ Standard library only.
 """
 from __future__ import annotations
 
+from collections.abc import Iterable
 from dataclasses import dataclass
 
+from . import health_info
 from . import protocol as p
 
 BITRATE_DEFAULT = p.BITRATE
@@ -118,3 +120,12 @@ def mixed_rate_warning(rates: list[int]) -> str | None:
     if len(known) <= 1:
         return None
     return "mixed_bitrates: " + ", ".join(f"{r // 1000} kbit/s" for r in known)
+
+
+def declared_rate_warning(info_frames: Iterable[bytes], fallback_rates: Iterable[int] = ()) -> str | None:
+    """The same warning as ``mixed_rate_warning``, from the rates the heads DECLARE in their identity frames (0x1BB, protocol version 2).
+
+    A head of older firmware declares nothing: when no frame declares a rate, ``fallback_rates`` (the rates the tool knows some other way) are judged instead, and the
+    symptom detector of ``bus_health`` stays the last resort. Declared rates win over the fallback, because they come from the head itself."""
+    declared = health_info.declared_rates(info_frames)
+    return mixed_rate_warning(declared if declared else list(fallback_rates))

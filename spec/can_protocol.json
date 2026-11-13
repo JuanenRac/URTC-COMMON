@@ -1,6 +1,6 @@
 {
   "format": 1,
-  "protocol_version": 1,
+  "protocol_version": 2,
   "title": "URTC CAN protocol",
   "about": "Machine-readable specification of the CAN bus protocol of the URTC tool head: every identifier with its direction, length rule and payload layout, the magic payloads, the registers of the expansion slave, the version procedures and the SLCAN subset the host tools rely on. All multi-byte fields are big-endian.",
   "byte_order": "big",
@@ -576,6 +576,39 @@
           "value": 64,
           "name": "OPTION_BYTES",
           "title": "Option-byte load"
+        }
+      ]
+    },
+    {
+      "name": "bus_rate_code",
+      "title": "Bit rate of the CAN bus a head declares in its identity frame (0x1BB, protocol version 2 and later)",
+      "prefix": "BUS_RATE_",
+      "kind": "value",
+      "values": [
+        {
+          "value": 0,
+          "name": "UNKNOWN",
+          "title": "Not declared"
+        },
+        {
+          "value": 1,
+          "name": "MBIT_1",
+          "title": "1 Mbit/s"
+        },
+        {
+          "value": 2,
+          "name": "KBIT_500",
+          "title": "500 kbit/s"
+        },
+        {
+          "value": 3,
+          "name": "KBIT_250",
+          "title": "250 kbit/s"
+        },
+        {
+          "value": 4,
+          "name": "KBIT_125",
+          "title": "125 kbit/s"
         }
       ]
     },
@@ -4916,7 +4949,7 @@
       "id": "0x1BB",
       "name": "HEALTH_INFO",
       "group": "diagnostics",
-      "title": "Identity and life of the board: protocol byte, last reset cause, firmware version and uptime (sent with the health frame)",
+      "title": "Identity and life of the board: protocol byte, last reset cause, firmware version, bus bit rate and uptime (sent with the health frame)",
       "direction": "board_to_host",
       "handled_by": "application",
       "tools": "any",
@@ -4969,32 +5002,42 @@
               "width": 1
             },
             {
-              "name": "uptime_s",
-              "type": "u24",
-              "unit": "s",
-              "note": "Seconds since power-up or the last reset, from the 32-bit millisecond tick of the firmware, so it restarts from 0 after about 49 days.",
+              "name": "bus_rate_code",
+              "type": "u8",
+              "enum": "bus_rate_code",
+              "note": "The bit rate of the bus this head runs at (protocol version 2 and later): 0 not declared, 1 is 1 Mbit/s, 2 is 500 kbit/s, 3 is 250 kbit/s, 4 is 125 kbit/s. A head at another rate than its bus is not heard at all, so the value names the rate the head was built for and the rate of the bus that carries this frame; a host that reads two different values on one bus has a mixed bus. In a frame of protocol version 1 this byte is the top byte of the uptime, so it is only read when protocol_version is 2 or more.",
               "offset": 5,
-              "width": 3
+              "width": 1
+            },
+            {
+              "name": "uptime_s",
+              "type": "u16",
+              "unit": "s",
+              "note": "Seconds since power-up or the last reset, in 16 bits (protocol version 2 and later; version 1 had 24 bits at offsets 5 to 7). It stops at 65535, about 18 hours, instead of wrapping, and restarts from 0 at a reset.",
+              "offset": 6,
+              "width": 2
             }
           ],
           "examples": [
             {
-              "name": "board running 0.4.4 for one hour after a power-on",
+              "name": "board running 0.4.4 for one hour after a power-on, on a 1 Mbit/s bus",
               "fields": {
-                "protocol_version": 1,
+                "protocol_version": 2,
                 "reset_cause": 8,
                 "fw_minor": 4,
                 "fw_patch": 4,
                 "fw_build": 0,
+                "bus_rate_code": 1,
                 "uptime_s": 3600
               },
-              "data": "0108040400000E10"
+              "data": "0208040400010E10"
             }
           ]
         }
       ],
       "notes": [
-        "Sent every ten seconds, right after a health frame, by a board whose health feature runs. It adds what the one-second health frame has no room for."
+        "Sent every ten seconds, right after a health frame, by a board whose health feature runs. It adds what the one-second health frame has no room for.",
+        "Protocol version 2 declares the bit rate of the bus in byte 5 and keeps the uptime in the last two bytes. Compatibility: a host reads byte 5 as a rate only when byte 0 is 2 or more; for a frame of version 1 it reads bytes 5 to 7 as a 24-bit uptime and treats the rate as unknown (urtc_common.health_info does this). A host that predates version 2 reads the new frame with an uptime that is too large by the rate code times 65536, which is only a display error: no host acts on this uptime."
       ],
       "implemented_by": {
         "firmware": true,
