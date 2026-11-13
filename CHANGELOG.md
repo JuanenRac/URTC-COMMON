@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The image header is tested over every bit and over random input:** no single bit of a sealed image can change without being refused, random bytes never raise nor pass for an image, the version a caller expects may have three or four components, the hardware is compared exactly and before the version, a slot with a signature flag or a reserved byte is not the slot of the firmware, and strange settings of the compatibility switch never loosen it.
+
 ## [0.2.6] - Bus at 1 Mbit/s, image header, signed packages and catalogs in 8 languages
 
 - **The register of the eight languages is tested over the whole catalog:** German and French keep the formal form, Portuguese the third person, Spanish no usted, Chinese no 您, every text has the same placeholders as the English one and no text is empty or missing in any of the eight languages.
