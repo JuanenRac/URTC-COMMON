@@ -262,6 +262,20 @@ def _screenshots_ci(root: Path) -> list[str]:
     return screenshots_check.run_in_ci(root)
 
 
+def _hygiene_ci(root: Path) -> list[str]:
+    """Workflow hygiene and the lessons of past CI failures, only when the repository opted in with tools/hygiene_config.json (or a baseline);
+    only findings that are not in the baseline fail. See tools/workflow_hygiene.py and tools/lessons_lint.py."""
+    problems: list[str] = []
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    for name in ("workflow_hygiene", "lessons_lint"):
+        try:
+            module = __import__(name)
+        except ImportError:
+            continue
+        problems.extend(module.run_in_ci(root))
+    return problems
+
+
 def main() -> int:
     try:
         manifest = json.loads(MANIFEST_PATH.read_text(encoding="utf-8"))
@@ -349,6 +363,8 @@ def main() -> int:
         fail(_facts_problem)
     for _shots_problem in _screenshots_ci(ROOT):
         fail(_shots_problem)
+    for _hygiene_problem in _hygiene_ci(ROOT):
+        fail(_hygiene_problem)
     print(f"CI_VALIDATION=PASS project={manifest['name']} version={manifest['version']}")
     return 0
 

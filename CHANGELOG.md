@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **Two checks of the workflows and of the lessons of past CI failures, both opt in and with a baseline:** `tools/workflow_hygiene.py` reports actions not pinned to a SHA, jobs without `timeout-minutes`, workflows without top-level `permissions`, release workflows without `concurrency`, `pull_request_target` that checks out the pull request and secrets written inside `run:`; `tools/lessons_lint.py` reports `subprocess` calls without a timeout, visible text outside the language catalogue, a coverage floor above the last measured coverage, language keys missing from one of the eight languages and a version that differs between its places. A repository turns them on with `tools/hygiene_config.json` (or a baseline file), and only findings that are not in its baseline fail `ci_validate`; `--write-baseline` saves today's findings, and without either file the step never blocks. Tests included.
+
 - **The comparison with the web studio accepts the reasons only the slave reports:** the list of verify-fail reasons of the web studio must hold the ones of the bootloader and may hold the ones of the expansion slave (not confirmed, digest chunk missing), which the comparison used to reject.
 
 - **Texts for the bus speed selector and for the thermal head status in the web studio catalog:** the "Bus speed" selector (label, "Automatic (listen only)" and its hint), the message for a speed chosen by hand that no head answers, the rewritten no-response message (the bus is only listened to, nothing is sent) and the two reasons of the thermal view (capture error, head not ready), in the eight languages.
