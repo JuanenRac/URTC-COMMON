@@ -13,7 +13,7 @@
   <img src="https://img.shields.io/badge/Format-JSON%20%2B%20Python-083fa1.svg" alt="Format">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
   <img src="https://img.shields.io/badge/Version-0.2.6-0f6cbd.svg" alt="Version">
-  <img src="https://img.shields.io/badge/Tests-2905-2ea44f.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Tests-3008-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
 
@@ -31,7 +31,7 @@
 |---|---|
 | Version | `0.2.6` |
 | Maturité | Fonctionnel |
-| Tests | 2905 |
+| Tests | 3008 |
 | Technologie | JSON / Python |
 | Sur matériel réel | Simulé seulement : testé avec des émulateurs, des doubles de test ou des simulateurs ; aucune exécution sur du matériel réel n'est consignée pour cette version |
 
@@ -114,7 +114,7 @@ python -m mypy                                       # le contrôle des types de
 
 ## 🧪 Tests
 
-La suite compte 2905 tests (`python -m pytest tests -q`). Ils vérifient la spécification par rapport à son schéma, les fichiers C, TypeScript et Python générés par rapport à ce qu'écrivent les générateurs, les vecteurs de conformité en Python, en TypeScript avec Node et en C avec un compilateur hôte, le codec SLCAN et les transports avec des simulations, la carte virtuelle, le flux d'auto-mise à jour signée et la comparaison avec les dépôts clonés à côté de celui-ci. Quelques tests sont ignorés quand un outil optionnel (Node, un compilateur C, PySide6) ou un dépôt voisin manque. `python -m mypy` vérifie les types du paquet.
+La suite compte 3008 tests (`python -m pytest tests -q`). Ils vérifient la spécification par rapport à son schéma, les fichiers C, TypeScript et Python générés par rapport à ce qu'écrivent les générateurs, les vecteurs de conformité en Python, en TypeScript avec Node et en C avec un compilateur hôte, le codec SLCAN et les transports avec des simulations, la carte virtuelle, le flux d'auto-mise à jour signée et la comparaison avec les dépôts clonés à côté de celui-ci. Quelques tests sont ignorés quand un outil optionnel (Node, un compilateur C, PySide6) ou un dépôt voisin manque. `python -m mypy` vérifie les types du paquet.
 
 ## 🏗️ Compilation et publication
 
