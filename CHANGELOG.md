@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The texts of the Control tab of the web studio say that it sends to the real bus:** the label "Real bus", its hint and the notice of the tab are written in the eight languages for the Control tab that sends to a connected board without a switch, and the hint tells that a drill or a laser that is on asks again for a change of power over the percentage of the configuration file.
+
 - **The image header is tested over every bit and over random input:** no single bit of a sealed image can change without being refused, random bytes never raise nor pass for an image, the version a caller expects may have three or four components, the hardware is compared exactly and before the version, a slot with a signature flag or a reserved byte is not the slot of the firmware, and strange settings of the compatibility switch never loosen it.
 
 ## [0.2.6] - Bus at 1 Mbit/s, image header, signed packages and catalogs in 8 languages
