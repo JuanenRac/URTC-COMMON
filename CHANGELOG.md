@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The Chinese comments of the flasher language file name the expansion slave "从机":** two section comments of the catalog still said "扩展从属" where every text says "从机". No visible text changes.
+
 - **The shared texts say the same term the same way in every program:** a read of the catalogs of the eight languages against the glossary found a few terms written two ways inside one language. German said "Heizer" in four texts and the glossary entries where the rest of the catalog says "Heizung" (`Heizungs-PID`, `Heizungsausgang`); Chinese said the firmware file as "映像" in eight texts of the flasher, the updater and the web studio where the other 82 say "镜像", and the expansion slave as "从属" in 21 texts of the web studio where the flasher says "从机"; French said "micrologiciel" once where the other 100 texts say "firmware"; European Portuguese used "você" in three texts of the web studio. The programs take the corrected texts when they synchronise their language files.
 
 ## [0.2.7] - Clear-error command, bus speed declaration, communication watchdog and workflow speed rules
