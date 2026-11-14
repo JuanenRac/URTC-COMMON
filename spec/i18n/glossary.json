@@ -806,7 +806,7 @@
       "text": {
         "english": "Kp {kp}  Ki {ki}  Kd {kd}  |  State: {state}  |  Heater output: {duty} %",
         "spanish": "Kp {kp}  Ki {ki}  Kd {kd}  |  Estado: {state}  |  Salida del calentador: {duty} %",
-        "german": "Kp {kp}  Ki {ki}  Kd {kd}  |  Zustand: {state}  |  Heizerausgang: {duty} %",
+        "german": "Kp {kp}  Ki {ki}  Kd {kd}  |  Zustand: {state}  |  Heizungsausgang: {duty} %",
         "french": "Kp {kp}  Ki {ki}  Kd {kd}  |  État : {state}  |  Sortie du chauffage : {duty} %",
         "italian": "Kp {kp}  Ki {ki}  Kd {kd}  |  Stato: {state}  |  Uscita del riscaldatore: {duty} %",
         "japanese": "Kp {kp}  Ki {ki}  Kd {kd}  |  状態: {state}  |  ヒーター出力: {duty} %",
@@ -1033,7 +1033,7 @@
       "text": {
         "english": "No answer (firmware without the heater PID)",
         "spanish": "Sin respuesta (firmware sin el PID del calentador)",
-        "german": "Keine Antwort (Firmware ohne Heizer-PID)",
+        "german": "Keine Antwort (Firmware ohne Heizungs-PID)",
         "french": "Pas de réponse (firmware sans PID du chauffage)",
         "italian": "Nessuna risposta (firmware senza il PID del riscaldatore)",
         "japanese": "応答なし（ヒーター PID のないファームウェア）",

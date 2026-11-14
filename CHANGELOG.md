@@ -2,6 +2,10 @@
 
 All notable changes to this project are documented here.
 
+## [Unreleased]
+
+- **The shared texts say the same term the same way in every program:** a read of the catalogs of the eight languages against the glossary found a few terms written two ways inside one language. German said "Heizer" in four texts and the glossary entries where the rest of the catalog says "Heizung" (`Heizungs-PID`, `Heizungsausgang`); Chinese said the firmware file as "映像" in eight texts of the flasher, the updater and the web studio where the other 82 say "镜像", and the expansion slave as "从属" in 21 texts of the web studio where the flasher says "从机"; French said "micrologiciel" once where the other 100 texts say "firmware"; European Portuguese used "você" in three texts of the web studio. The programs take the corrected texts when they synchronise their language files.
+
 ## [0.2.7] - Clear-error command, bus speed declaration, communication watchdog and workflow speed rules
 
 - **The comparison with the prose counts the identifier of the clear-error command:** the document of the firmware has one more header (`0x1B2`), so the count that the check expects is 106.
