@@ -12,7 +12,7 @@
 | Updater (`URTC-UPDATER`) | established | Run against a simulated or fake board | A run on a real board |
 | Smart rack (`URTC-SMART-RACK`) | functional | Run against a simulated or fake board | A run on a real board<br>It has never been run on a board<br>Real CAN/F-RAM/GPIO I/O needs a real PCB, which does not exist yet |
 | Vision tool (`URTC-VISION-TOOL`) | functional | Run against a simulated or fake board | A run on a real board<br>and has never been run on a board or with a real sensor<br>real dual-modal capture and per-pixel calibration still need a real PCB and real cameras |
-| Documentation generator (`URTC-DOCS`) | functional | Unit tests and scenarios on a PC | A run on a real board<br>Scaffolding on purpose: the nightly comparison of all the repositories has not yet been exercised over time |
+| Documentation generator (`URTC-DOCS`) | functional | Run against a simulated or fake board | A run on a real board<br>runs simulated nights of the comparison with faults and repairs; the nightly comparison of all the repositories has not yet been observed over real days |
 | Shared protocol and code (`URTC-COMMON`) | functional | Run against a simulated or fake board | A run on a real board |
 
 "What has run" is the `evidence` level of the manifest of each repository and "Still pending" is what its own notes say has not been done; no board of the family has been populated yet, so nothing here has been run on one.

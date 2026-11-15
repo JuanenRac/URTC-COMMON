@@ -77,9 +77,9 @@
       "repo": "URTC-DOCS",
       "title": "Documentation generator",
       "maturity": "functional",
-      "evidence": "host-test",
+      "evidence": "simulator",
       "pending": [
-        "Scaffolding on purpose: the nightly comparison of all the repositories has not yet been exercised over time"
+        "runs simulated nights of the comparison with faults and repairs; the nightly comparison of all the repositories has not yet been observed over real days"
       ]
     },
     {
