@@ -4,12 +4,20 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [0.2.8] - The release files are attached again, and the web studio, the emergency stop frame and the wording of the catalogs
+
+- **The release files are attached again: 0.2.7 was published without them.** The wheel, the source archive and the generated C header of a release, each with its `.sha256` and `.sig`, are what the programs and the firmware repositories take from the release, and a release that has none cannot be used. They are built by the manual workflow `release-files-build.yml` (the commit it is started from, no key in Actions) and signed on the maintainer's computer over the very bytes of that build, so a version is published only with the three files and their companions.
+
 - **The web studio can say the emergency stop switch and its two error reasons:** the catalog of the web studio now carries the texts of the `ESTOP_FOLLOW` feature and of the error reasons `ESTOP` and `ESTOP_SILENCE` in the eight languages, with the same wording as the tester, so the check box of the optional functions and the error line read the same in both programs.
 - **The protocol describes how a tool head follows the emergency stop frame of the stack (the feature is a switch that starts off):** the feature `ESTOP_FOLLOW` (bit 128, so the masks of `0x1AE` and `0x1AF` now reach the eighth bit), the error reasons `ESTOP` (9) and `ESTOP_SILENCE` (10) and the constants `ESTOP_CAN_ID` (0x001) and `ESTOP_ALIVE_TIMEOUT_MS` (100). The decisions are written apart from the firmware in `urtc_common.estop_follow`: a stop is never refused (a trip, a malformed frame, a heartbeat that says tripped and a bus-off latch the head at once); only the way out is checked (a release needs a latched head, a live master, the epoch of the stop it knows, a newer sequence and, after a bus-off, a new heartbeat); a ready head that hears no new heartbeat for the timeout latches again with its own reason. `tools/make_estop_vectors.py` writes thirteen scenarios, the frames and the malformed cases as JSON and as C tables (`generated/estop_follow_vectors.h`) for the firmware to replay, the virtual board follows the frame when the feature is on, and the three new texts are in the eight languages. The clear-error command never lifts an error that came from the stop: it ends with a release on `0x001`. Nothing of this has run on a board.
 
 - **The Chinese comments of the flasher language file name the expansion slave "从机":** two section comments of the catalog still said "扩展从属" where every text says "从机". No visible text changes.
 
 - **The shared texts say the same term the same way in every program:** a read of the catalogs of the eight languages against the glossary found a few terms written two ways inside one language. German said "Heizer" in four texts and the glossary entries where the rest of the catalog says "Heizung" (`Heizungs-PID`, `Heizungsausgang`); Chinese said the firmware file as "映像" in eight texts of the flasher, the updater and the web studio where the other 82 say "镜像", and the expansion slave as "从属" in 21 texts of the web studio where the flasher says "从机"; French said "micrologiciel" once where the other 100 texts say "firmware"; European Portuguese used "você" in three texts of the web studio. The programs take the corrected texts when they synchronise their language files.
+
+## [0.2.8]
+
+- Build version synchronized with `urtc.project.json` and the repository-native version source.
 
 ## [0.2.7] - Clear-error command, bus speed declaration, communication watchdog and workflow speed rules
 
