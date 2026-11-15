@@ -37,8 +37,8 @@ def test_the_three_new_features_are_switches_that_start_off_in_the_mask():
     assert len(set(features.values())) == len(features)          # no two features share a bit
     assert all(value & (value - 1) == 0 for value in features.values())   # each is one bit
     ranges = [f["range"] for lay in message("0x1AE")["layouts"] + message("0x1AF")["layouts"] for f in lay["fields"] if "range" in f]
-    assert ranges and all(r == [0, 127] for r in ranges), "the mask fields must reach the seventh bit"
-    assert max(features.values()) * 2 - 1 == 127
+    assert ranges and all(r == [0, 255] for r in ranges), "the mask fields must reach the eighth bit"
+    assert max(features.values()) * 2 - 1 == 255
 
 
 def test_the_clear_error_command_needs_its_magic_and_passes_the_error_gate():

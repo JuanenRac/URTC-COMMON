@@ -1,0 +1,707 @@
+{
+  "format": 1,
+  "about": "Frames and scenarios of the emergency stop frame as a tool head follows it, run through urtc_common.estop_follow. Time is in milliseconds.",
+  "constants": {
+    "can_id": 1,
+    "alive_timeout_ms": 100,
+    "reason_stop": 9,
+    "reason_silence": 10
+  },
+  "frames": [
+    {
+      "name": "trip by the operator, brain, epoch 1, sequence 1",
+      "kind": 1,
+      "detail": 1,
+      "source": 0,
+      "epoch": 1,
+      "seq": 1,
+      "data_hex": "010100010100fefe"
+    },
+    {
+      "name": "trip by a controller fault on slot 3",
+      "kind": 1,
+      "detail": 6,
+      "source": 3,
+      "epoch": 6,
+      "seq": 13,
+      "data_hex": "010603060d00fef9"
+    },
+    {
+      "name": "trip by the CM5 bridge, stop-all",
+      "kind": 1,
+      "detail": 2,
+      "source": 16,
+      "epoch": 255,
+      "seq": 65535,
+      "data_hex": "010210fffffffefd"
+    },
+    {
+      "name": "trip with the unspecified reason",
+      "kind": 1,
+      "detail": 255,
+      "source": 8,
+      "epoch": 0,
+      "seq": 0,
+      "data_hex": "01ff08000000fe00"
+    },
+    {
+      "name": "release for epoch 5",
+      "kind": 2,
+      "detail": 0,
+      "source": 0,
+      "epoch": 5,
+      "seq": 12,
+      "data_hex": "020000050c00fdff"
+    },
+    {
+      "name": "alive, not tripped",
+      "kind": 3,
+      "detail": 0,
+      "source": 0,
+      "epoch": 0,
+      "seq": 300,
+      "data_hex": "030000002c01fcff"
+    },
+    {
+      "name": "alive, tripped",
+      "kind": 3,
+      "detail": 1,
+      "source": 0,
+      "epoch": 9,
+      "seq": 0,
+      "data_hex": "030100090000fcfe"
+    }
+  ],
+  "malformed": [
+    {
+      "name": "complement of the kind is wrong",
+      "data_hex": "01010001010000fe"
+    },
+    {
+      "name": "complement of the detail is wrong",
+      "data_hex": "010100010100fe00"
+    },
+    {
+      "name": "seven bytes",
+      "data_hex": "010100010100fe"
+    },
+    {
+      "name": "nine bytes",
+      "data_hex": "010100010100fefe00"
+    },
+    {
+      "name": "no bytes",
+      "data_hex": ""
+    },
+    {
+      "name": "unknown kind with a valid complement",
+      "data_hex": "040000010100fbff"
+    },
+    {
+      "name": "trip with an unknown reason",
+      "data_hex": "012000010100fedf"
+    },
+    {
+      "name": "trip from an unknown source",
+      "data_hex": "010109010100fefe"
+    },
+    {
+      "name": "release from a slot board",
+      "data_hex": "020003010100fdff"
+    },
+    {
+      "name": "release with a detail",
+      "data_hex": "020100010100fdfe"
+    },
+    {
+      "name": "alive from the CM5 bridge",
+      "data_hex": "030010010100fcff"
+    },
+    {
+      "name": "alive with an unknown state",
+      "data_hex": "030200010100fcfd"
+    }
+  ],
+  "seq_newer": [
+    {
+      "have_last": false,
+      "candidate": 0,
+      "last": 0,
+      "newer": true
+    },
+    {
+      "have_last": true,
+      "candidate": 1,
+      "last": 0,
+      "newer": true
+    },
+    {
+      "have_last": true,
+      "candidate": 0,
+      "last": 0,
+      "newer": false
+    },
+    {
+      "have_last": true,
+      "candidate": 32767,
+      "last": 0,
+      "newer": true
+    },
+    {
+      "have_last": true,
+      "candidate": 32768,
+      "last": 0,
+      "newer": false
+    },
+    {
+      "have_last": true,
+      "candidate": 0,
+      "last": 65535,
+      "newer": true
+    },
+    {
+      "have_last": true,
+      "candidate": 5,
+      "last": 65534,
+      "newer": true
+    },
+    {
+      "have_last": true,
+      "candidate": 65535,
+      "last": 0,
+      "newer": false
+    },
+    {
+      "have_last": true,
+      "candidate": 100,
+      "last": 99,
+      "newer": true
+    },
+    {
+      "have_last": true,
+      "candidate": 99,
+      "last": 100,
+      "newer": false
+    }
+  ],
+  "scenarios": [
+    {
+      "name": "power-up: latched, and nothing is heard",
+      "steps": [
+        {
+          "t": 0,
+          "do": "tick",
+          "expect": "LATCHED",
+          "state_after": "LATCHED",
+          "stop_reason": 0,
+          "released": false
+        },
+        {
+          "t": 5000,
+          "do": "tick",
+          "expect": "LATCHED",
+          "state_after": "LATCHED",
+          "stop_reason": 0,
+          "released": false
+        }
+      ]
+    },
+    {
+      "name": "normal way out: announce, release for the same epoch",
+      "steps": [
+        {
+          "t": 0,
+          "frame": "030100050a00fcfe",
+          "expect": "LATCHED",
+          "state_after": "LATCHED",
+          "stop_reason": 9,
+          "released": false
+        },
+        {
+          "t": 20,
+          "frame": "030100050b00fcfe",
+          "expect": "LATCHED",
+          "state_after": "LATCHED",
+          "stop_reason": 9,
+          "released": false
+        },
+        {
+          "t": 30,
+          "frame": "020000050c00fdff",
+          "expect": "READY",
+          "state_after": "READY",
+          "stop_reason": 0,
+          "released": true
+        }
+      ]
+    },
+    {
+      "name": "a replayed or mismatched release does not end a newer trip",
+      "steps": [
+        {
+          "t": 0,
+          "frame": "030100050a00fcfe",
+          "state_after": "LATCHED",
+          "stop_reason": 9,
+          "released": false
+        },
+        {
+          "t": 10,
+          "frame": "020000050b00fdff",
+          "expect": "READY",
+          "state_after": "READY",
+          "stop_reason": 0,
+          "released": true
+        },
+        {
+          "t": 100,
+          "frame": "010603060d00fef9",
+          "expect": "LATCHED",
+          "state_after": "LATCHED",
+          "stop_reason": 9,
+          "released": false
+        },
+        {
+          "t": 110,
+          "frame": "030100060e00fcfe",
+          "expect": "LATCHED",
+          "state_after": "LATCHED",
+          "stop_reason": 9,
+          "released": false
+        },
+        {
+          "t": 120,
+          "frame": "020000050f00fdff",
+          "expect": "LATCHED",
+          "state_after": "LATCHED",
+          "stop_reason": 0,
+          "released": false
+        },
+        {
+          "t": 130,
+          "frame": "020000060c00fdff",
+          "expect": "LATCHED",
+          "state_after": "LATCHED",
+          "stop_reason": 0,
+          "released": false
+        },
+        {
+          "t": 140,
+          "frame": "020000061000fdff",
+          "expect": "READY",
+          "state_after": "READY",
+          "stop_reason": 0,
+          "released": true
+        }
+      ]
+    },
+    {
+      "name": "a release without a live master is ignored",
+      "steps": [
+        {
+          "t": 0,
+          "frame": "030100011200fcfe",
+          "state_after": "LATCHED",
+          "stop_reason": 9,
+          "released": false
+        },
+        {
+          "t": 150,
+          "frame": "020000011300fdff",
+          "expect": "LATCHED",
+          "state_after": "LATCHED",
+          "stop_reason": 0,
+          "released": false
+        }
+      ]
+    },
+    {
+      "name": "a release before any announcement is ignored (epoch unknown)",
+      "steps": [
+        {
+          "t": 0,
+          "frame": "020000011300fdff",
+          "expect": "LATCHED",
+          "state_after": "LATCHED",
+          "stop_reason": 0,
+          "released": false
+        }
+      ]
+    },
+    {
+      "name": "silence of the master latches a ready head, exactly after the timeout",
+      "steps": [
+        {
+          "t": 0,
+          "frame": "030100011200fcfe",
+          "state_after": "LATCHED",
+          "stop_reason": 9,
+          "released": false
+        },
+        {
+          "t": 10,
+          "frame": "020000011300fdff",
+          "expect": "READY",
+          "state_after": "READY",
+          "stop_reason": 0,
+          "released": true
+        },
+        {
+          "t": 20,
+          "frame": "030000011400fcff",
+          "state_after": "READY",
+          "stop_reason": 0,
+          "released": false
+        },
+        {
+          "t": 120,
+          "do": "tick",
+          "expect": "READY",
+          "state_after": "READY",
+          "stop_reason": 0,
+          "released": false
+        },
+        {
+          "t": 121,
+          "do": "tick",
+          "expect": "LATCHED",
+          "state_after": "LATCHED",
+          "stop_reason": 10,
+          "released": false
+        }
+      ]
+    },
+    {
+      "name": "a frozen sender (same sequence again) does not keep the head alive",
+      "steps": [
+        {
+          "t": 0,
+          "frame": "030100011200fcfe",
+          "state_after": "LATCHED",
+          "stop_reason": 9,
+          "released": false
+        },
+        {
+          "t": 10,
+          "frame": "020000011300fdff",
+          "state_after": "READY",
+          "stop_reason": 0,
+          "released": true
+        },
+        {
+          "t": 20,
+          "frame": "030000011400fcff",
+          "state_after": "READY",
+          "stop_reason": 0,
+          "released": false
+        },
+        {
+          "t": 60,
+          "frame": "030000011400fcff",
+          "expect": "READY",
+          "state_after": "READY",
+          "stop_reason": 0,
+          "released": false
+        },
+        {
+          "t": 120,
+          "do": "tick",
+          "expect": "READY",
+          "state_after": "READY",
+          "stop_reason": 0,
+          "released": false
+        },
+        {
+          "t": 121,
+          "do": "tick",
+          "expect": "LATCHED",
+          "state_after": "LATCHED",
+          "stop_reason": 10,
+          "released": false
+        }
+      ]
+    },
+    {
+      "name": "the sequence wraps from 65535 to 0 and still counts as newer",
+      "steps": [
+        {
+          "t": 0,
+          "frame": "03010001fafffcfe",
+          "state_after": "LATCHED",
+          "stop_reason": 9,
+          "released": false
+        },
+        {
+          "t": 10,
+          "frame": "02000001fefffdff",
+          "state_after": "READY",
+          "stop_reason": 0,
+          "released": true
+        },
+        {
+          "t": 20,
+          "frame": "03000001fffffcff",
+          "state_after": "READY",
+          "stop_reason": 0,
+          "released": false
+        },
+        {
+          "t": 60,
+          "frame": "030000010000fcff",
+          "state_after": "READY",
+          "stop_reason": 0,
+          "released": false
+        },
+        {
+          "t": 150,
+          "do": "tick",
+          "expect": "READY",
+          "state_after": "READY",
+          "stop_reason": 0,
+          "released": false
+        },
+        {
+          "t": 161,
+          "do": "tick",
+          "expect": "LATCHED",
+          "state_after": "LATCHED",
+          "stop_reason": 10,
+          "released": false
+        }
+      ]
+    },
+    {
+      "name": "the clock wraps at 32 bits and the timeout still counts",
+      "steps": [
+        {
+          "t": 4294967200,
+          "frame": "030100011200fcfe",
+          "state_after": "LATCHED",
+          "stop_reason": 9,
+          "released": false
+        },
+        {
+          "t": 4294967210,
+          "frame": "020000011300fdff",
+          "expect": "READY",
+          "state_after": "READY",
+          "stop_reason": 0,
+          "released": true
+        },
+        {
+          "t": 4294967290,
+          "frame": "030000011400fcff",
+          "state_after": "READY",
+          "stop_reason": 0,
+          "released": false
+        },
+        {
+          "t": 94,
+          "do": "tick",
+          "expect": "READY",
+          "state_after": "READY",
+          "stop_reason": 0,
+          "released": false
+        },
+        {
+          "t": 95,
+          "do": "tick",
+          "expect": "LATCHED",
+          "state_after": "LATCHED",
+          "stop_reason": 10,
+          "released": false
+        }
+      ]
+    },
+    {
+      "name": "an alive frame that says tripped recovers a trip this head never heard",
+      "steps": [
+        {
+          "t": 0,
+          "frame": "030100021c00fcfe",
+          "state_after": "LATCHED",
+          "stop_reason": 9,
+          "released": false
+        },
+        {
+          "t": 10,
+          "frame": "020000021d00fdff",
+          "expect": "READY",
+          "state_after": "READY",
+          "stop_reason": 0,
+          "released": true
+        },
+        {
+          "t": 20,
+          "frame": "030100031e00fcfe",
+          "expect": "LATCHED",
+          "state_after": "LATCHED",
+          "stop_reason": 9,
+          "released": false
+        }
+      ]
+    },
+    {
+      "name": "malformed frames on 0x001 are a trip",
+      "steps": [
+        {
+          "t": 0,
+          "frame": "030100012800fcfe",
+          "state_after": "LATCHED",
+          "stop_reason": 9,
+          "released": false
+        },
+        {
+          "t": 10,
+          "frame": "020000012900fdff",
+          "expect": "READY",
+          "state_after": "READY",
+          "stop_reason": 0,
+          "released": true
+        },
+        {
+          "t": 20,
+          "frame": "01010001010000fe",
+          "expect": "LATCHED",
+          "state_after": "LATCHED",
+          "stop_reason": 9,
+          "released": false
+        },
+        {
+          "t": 30,
+          "frame": "030100012a00fcfe",
+          "state_after": "LATCHED",
+          "stop_reason": 9,
+          "released": false
+        },
+        {
+          "t": 40,
+          "frame": "020000012b00fdff",
+          "expect": "READY",
+          "state_after": "READY",
+          "stop_reason": 0,
+          "released": true
+        },
+        {
+          "t": 50,
+          "frame": "0101",
+          "expect": "LATCHED",
+          "state_after": "LATCHED",
+          "stop_reason": 9,
+          "released": false
+        },
+        {
+          "t": 60,
+          "frame": "030100012c00fcfe",
+          "state_after": "LATCHED",
+          "stop_reason": 9,
+          "released": false
+        },
+        {
+          "t": 70,
+          "frame": "020000012d00fdff",
+          "expect": "READY",
+          "state_after": "READY",
+          "stop_reason": 0,
+          "released": true
+        },
+        {
+          "t": 80,
+          "frame": "020003012e00fdff",
+          "expect": "LATCHED",
+          "state_after": "LATCHED",
+          "stop_reason": 9,
+          "released": false
+        }
+      ]
+    },
+    {
+      "name": "bus-off latches, and the bus coming back does not release",
+      "steps": [
+        {
+          "t": 0,
+          "frame": "030100013200fcfe",
+          "state_after": "LATCHED",
+          "stop_reason": 9,
+          "released": false
+        },
+        {
+          "t": 10,
+          "frame": "020000013300fdff",
+          "expect": "READY",
+          "state_after": "READY",
+          "stop_reason": 0,
+          "released": true
+        },
+        {
+          "t": 20,
+          "do": "bus_off",
+          "expect": "LATCHED",
+          "state_after": "LATCHED",
+          "stop_reason": 9,
+          "released": false
+        },
+        {
+          "t": 30,
+          "frame": "030000013400fcff",
+          "expect": "LATCHED",
+          "state_after": "LATCHED",
+          "stop_reason": 0,
+          "released": false
+        }
+      ]
+    },
+    {
+      "name": "after a bus-off a release waits for a new heartbeat of the master",
+      "steps": [
+        {
+          "t": 0,
+          "frame": "030100010a00fcfe",
+          "state_after": "LATCHED",
+          "stop_reason": 9,
+          "released": false
+        },
+        {
+          "t": 10,
+          "frame": "020000010b00fdff",
+          "expect": "READY",
+          "state_after": "READY",
+          "stop_reason": 0,
+          "released": true
+        },
+        {
+          "t": 20,
+          "do": "bus_off",
+          "expect": "LATCHED",
+          "state_after": "LATCHED",
+          "stop_reason": 9,
+          "released": false
+        },
+        {
+          "t": 30,
+          "frame": "020000010c00fdff",
+          "expect": "LATCHED",
+          "state_after": "LATCHED",
+          "stop_reason": 0,
+          "released": false
+        },
+        {
+          "t": 40,
+          "frame": "030000010d00fcff",
+          "expect": "LATCHED",
+          "state_after": "LATCHED",
+          "stop_reason": 0,
+          "released": false
+        },
+        {
+          "t": 50,
+          "frame": "020000010e00fdff",
+          "expect": "READY",
+          "state_after": "READY",
+          "stop_reason": 0,
+          "released": true
+        }
+      ]
+    }
+  ]
+}

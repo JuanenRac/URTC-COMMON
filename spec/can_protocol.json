@@ -882,6 +882,11 @@
           "value": 64,
           "name": "MAGNET_RELEASE",
           "title": "With the communication watchdog: the electromagnet lets go when the host falls silent (without it, it holds)"
+        },
+        {
+          "value": 128,
+          "name": "ESTOP_FOLLOW",
+          "title": "The head follows the emergency stop frame 0x001 of the stack: it goes to its safe state on a stop, on a malformed frame and when the master falls silent"
         }
       ]
     },
@@ -1019,6 +1024,16 @@
           "value": 8,
           "name": "MAGNET_RELEASE",
           "title": "The electromagnet was released because the host fell silent"
+        },
+        {
+          "value": 9,
+          "name": "ESTOP",
+          "title": "The emergency stop frame 0x001 (or a malformed frame on it) put the head in its safe state"
+        },
+        {
+          "value": 10,
+          "name": "ESTOP_SILENCE",
+          "title": "The master of the emergency stop fell silent while the head was ready"
         }
       ]
     },
@@ -1370,6 +1385,19 @@
       "name": "MAGNET_SILENCE_MS",
       "value": 5000,
       "title": "Silence of the host after which the electromagnet lets go (communication watchdog and release policy on)",
+      "group": "timing",
+      "unit": "ms"
+    },
+    {
+      "name": "ESTOP_CAN_ID",
+      "value": 1,
+      "title": "Identifier of the emergency stop frame of the stack, which a head with the ESTOP_FOLLOW feature obeys (standard frame, eight bytes)",
+      "group": "protocol"
+    },
+    {
+      "name": "ESTOP_ALIVE_TIMEOUT_MS",
+      "value": 100,
+      "title": "Silence of the master of the emergency stop after which a head that is ready goes back to its safe state (ESTOP_FOLLOW feature on)",
       "group": "timing",
       "unit": "ms"
     }
@@ -4665,7 +4693,7 @@
               "type": "u8",
               "range": [
                 0,
-                127
+                255
               ],
               "enum": "firmware_feature",
               "note": "Bit mask: the features to have on; the others are off.",
@@ -4750,7 +4778,7 @@
               "type": "u8",
               "range": [
                 0,
-                127
+                255
               ],
               "note": "The mask the F-RAM record says.",
               "offset": 0,
@@ -4761,7 +4789,7 @@
               "type": "u8",
               "range": [
                 0,
-                127
+                255
               ],
               "note": "The mask in force now; it differs from stored until the next power-up.",
               "offset": 1,
@@ -4772,7 +4800,7 @@
               "type": "u8",
               "range": [
                 0,
-                127
+                255
               ],
               "note": "The features this firmware has.",
               "offset": 2,
@@ -4906,7 +4934,7 @@
       ],
       "notes": [
         "Works only while the CLEAR_ERROR feature of 0x1AE runs; with it off the command changes nothing and 0x111 says so in its last byte.",
-        "The error is lifted only when the temperature of the tool is known and below CLEAR_ERROR_MAX_TEMP_C and every actuator is at zero (laser, drill, heater set-points, fans, UV, hot-air blower, stepper moves); otherwise it stays and the last byte of 0x111 says why. An error for lack of a valid tool is never lifted.",
+        "The error is lifted only when the temperature of the tool is known and below CLEAR_ERROR_MAX_TEMP_C and every actuator is at zero (laser, drill, heater set-points, fans, UV, hot-air blower, stepper moves); otherwise it stays and the last byte of 0x111 says why. An error for lack of a valid tool is never lifted, and neither is one that came from the emergency stop frame 0x001 (ESTOP_FOLLOW feature): that one ends with a release on 0x001.",
         "Always answered with 0x111, whose error_reason byte tells why the error was latched and whose last byte tells what this command did."
       ],
       "firmware_accepts_dlc": {
