@@ -349,20 +349,23 @@ def test_slave_registers_equal_the_specification(spec, sibling):
 # ---------------------------------------------------------------------------------------------------------------------
 # 0x260-0x26F are reserved for the tool rack: the prose says so, the firmware answers none of them, the specification does not list them.
 RACK_RESERVED = set(range(0x260, 0x270))
+# 0x001 is the emergency stop frame of the stack: the prose of the head describes how it follows it, the specification keeps it as the constant ESTOP_CAN_ID.
+STACK_DEFINED = {0x001}
+NOT_MESSAGES = RACK_RESERVED | STACK_DEFINED
 
 
 def test_the_prose_and_the_specification_list_the_same_identifiers(spec, sibling):
     prose = text(sibling(CANBUS))
     headers = {int(v, 16) for v in re.findall(r"^ID: (0x[0-9A-Fa-f]+)", prose, re.M)}
     summary = {int(v, 16) for v in re.findall(r"^  (0x[0-9A-F]{3}) ->", prose, re.M)}
-    documented = (headers | summary) - RACK_RESERVED
+    documented = (headers | summary) - NOT_MESSAGES
     table = by_id(spec)
     assert documented <= set(table), sorted(documented - set(table))
     not_in_prose = set(table) - documented
     assert not_in_prose == {v for v, m in table.items() if m.get("documented_in_prose") is False} == set()
     # an identifier that appears only in the summary and the section intro is the one a scan of the headers would miss
     assert summary - headers == {0x243}
-    assert len(headers - RACK_RESERVED) == 106
+    assert len(headers - NOT_MESSAGES) == 106
 
 
 def test_exact_lengths_in_the_prose_are_the_lengths_of_the_specification(spec, sibling):
@@ -371,7 +374,7 @@ def test_exact_lengths_in_the_prose_are_the_lengths_of_the_specification(spec, s
     checked = 0
     for block in re.split(r"(?m)^(?=ID: 0x)", prose):
         header = re.match(r"ID: (0x[0-9A-Fa-f]+)", block)
-        if not header or int(header.group(1), 16) in RACK_RESERVED:
+        if not header or int(header.group(1), 16) in NOT_MESSAGES:
             continue
         length = re.search(r"(?m)^DLC: (\d+) bytes?\b", block)
         if not length:
