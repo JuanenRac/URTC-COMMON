@@ -48,6 +48,10 @@ CLEAR_INPUTS = [
     (True, True, R.ERROR_REASON_TOOL_ID, 300, False),
     (True, True, R.ERROR_REASON_THERMAL, sp.TEMPERATURE_UNKNOWN, False),
     (False, False, R.ERROR_REASON_TOOL_ID, sp.TEMPERATURE_UNKNOWN, False),
+    (True, True, R.ERROR_REASON_ESTOP, 20, True),
+    (True, True, R.ERROR_REASON_ESTOP_SILENCE, 20, True),
+    (True, True, R.ERROR_REASON_ESTOP, 300, False),
+    (False, True, R.ERROR_REASON_ESTOP, 20, True),
 ]
 LIMIT_INPUTS = [
     (0, 0), (1, 0), (100, 500), (500, 500), (1000, 500), (1500, 500), (4000, 500), (4000, 0), (10000, 500), (100000, 500), (100000, 2000), (100000, 1),

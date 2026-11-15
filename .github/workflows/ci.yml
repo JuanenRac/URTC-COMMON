@@ -44,6 +44,7 @@ jobs:
           python tools/generate_tools.py --check
           python tools/make_extra_vectors.py --check
           python tools/make_safety_vectors.py --check
+          python tools/make_estop_vectors.py --check
           python tools/compat_table.py --check
           python tools/status_table.py --check
       - name: Check the release files build the same bytes twice and run apart from the checkout
@@ -84,6 +85,7 @@ jobs:
           python tools/generate_tools.py --check
           python tools/make_extra_vectors.py --check
           python tools/make_safety_vectors.py --check
+          python tools/make_estop_vectors.py --check
           python tools/compat_table.py --check
           python tools/status_table.py --check
           python -m pytest tests -q

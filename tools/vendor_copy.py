@@ -59,7 +59,7 @@ SETS = {
     "thermal": ["src/urtc_common/thermal_view.py", "conformance/thermal_vectors.json"],
     "rack_c": ["generated/rack_vectors.h"],
     "fuzz": ["src/urtc_common/fuzz.py", "conformance/fuzz_corpus.txt"],
-    "virtual_board": ["src/urtc_common/virtual_board.py", "src/urtc_common/safety_policy.py", "src/urtc_common/heater_sim.py", "src/urtc_common/heater_model.json", "src/urtc_common/local_build.py"],
+    "virtual_board": ["src/urtc_common/virtual_board.py", "src/urtc_common/safety_policy.py", "src/urtc_common/estop_follow.py", "src/urtc_common/heater_sim.py", "src/urtc_common/heater_model.json", "src/urtc_common/local_build.py"],
     "local_build": ["src/urtc_common/local_build.py"],
     "bus_scenario": ["src/urtc_common/bus_scenario.py"],
     "update": ["src/urtc_common/self_update.py", "src/urtc_common/update_service.py", "src/urtc_common/update_controller.py", "src/urtc_common/launcher.py"],
@@ -112,6 +112,7 @@ SETS = {
     "rate_c": ["generated/rate_vectors.h"],
     "blackbox_c": ["generated/blackbox_vectors.h"],
     "safety_c": ["generated/safety_policy_vectors.h"],
+    "estop_c": ["generated/estop_follow_vectors.h"],
     "fw_vectors": ["generated/urtc_fw_vectors.h"],
     "multinode": [
         "src/urtc_common/multinode.py", "src/urtc_common/multinode_sim.py", "src/urtc_common/multinode_host.py",

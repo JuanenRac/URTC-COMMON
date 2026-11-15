@@ -152,6 +152,38 @@
       "temperature_c": 65535,
       "actuators_off": false,
       "result": 2
+    },
+    {
+      "feature_on": true,
+      "error_latched": true,
+      "reason": 9,
+      "temperature_c": 20,
+      "actuators_off": true,
+      "result": 4
+    },
+    {
+      "feature_on": true,
+      "error_latched": true,
+      "reason": 10,
+      "temperature_c": 20,
+      "actuators_off": true,
+      "result": 4
+    },
+    {
+      "feature_on": true,
+      "error_latched": true,
+      "reason": 9,
+      "temperature_c": 300,
+      "actuators_off": false,
+      "result": 4
+    },
+    {
+      "feature_on": false,
+      "error_latched": true,
+      "reason": 9,
+      "temperature_c": 20,
+      "actuators_off": true,
+      "result": 2
     }
   ],
   "stepper_limit": [
