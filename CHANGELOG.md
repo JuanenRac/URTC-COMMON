@@ -4,6 +4,7 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The safety and security note of the README describes the Ed25519 bootloader:** the main bootloader verifies an Ed25519 record against a table of public keys and holds no secret; the note (in the eight languages) no longer speaks of a shared-key HMAC.
 ## [0.2.8] - The release files are attached again, and the web studio, the emergency stop frame and the wording of the catalogs
 
 - **The release files are attached again: 0.2.7 was published without them.** The wheel, the source archive and the generated C header of a release, each with its `.sha256` and `.sig`, are what the programs and the firmware repositories take from the release, and a release that has none cannot be used. They are built by the manual workflow `release-files-build.yml` (the commit it is started from, no key in Actions) and signed on the maintainer's computer over the very bytes of that build, so a version is published only with the three files and their companions.
