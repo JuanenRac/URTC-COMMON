@@ -492,6 +492,11 @@
           "value": 7,
           "name": "DIGEST_CHUNK_MISSING",
           "title": "The master bridge found a group of digest chunks (0x212) left half way when the end (0x214) arrived; a frame was lost"
+        },
+        {
+          "value": 8,
+          "name": "ACTUATOR_ACTIVE",
+          "title": "The master bridge refused the end of the update (0x214) because an actuator of the board was active; the image was not installed"
         }
       ]
     },
@@ -6446,7 +6451,8 @@
       ],
       "notes": [
         "Only meaningful right after 0x215 reports VERIFY_FAIL.",
-        "DIGEST_CHUNK_MISSING (7) is answered by the master bridge itself, not by the slave bootloader: a group of digest chunks (0x212) was left half way when 0x214 arrived. The legacy signature chunks (0x7F7) of the old bootloaders keep their order-only layout; the current bootloader reads the Ed25519 record instead."
+        "DIGEST_CHUNK_MISSING (7) is answered by the master bridge itself, not by the slave bootloader: a group of digest chunks (0x212) was left half way when 0x214 arrived. The legacy signature chunks (0x7F7) of the old bootloaders keep their order-only layout; the current bootloader reads the Ed25519 record instead.",
+        "ACTUATOR_ACTIVE (8) is answered by the master bridge itself: the end of the update (0x214) arrived while a heater, the laser, the drill, a fan, the blower, a stepper move or the electromagnet was active. Nothing is verified, forwarded or confirmed and the slave stays as it is; 0x215 answers VERIFY_FAIL and 0x219 answers this reason until the next start (0x211). Stop the tool and send the update again."
       ],
       "implemented_by": {
         "firmware": true,
