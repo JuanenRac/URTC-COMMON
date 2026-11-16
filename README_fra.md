@@ -31,7 +31,7 @@
 |---|---|
 | Version | `0.2.8` |
 | Maturité | Fonctionnel |
-| Tests | 3027 |
+| Tests | 3030 |
 | Technologie | JSON / Python |
 | Sur matériel réel | Simulé seulement : testé avec des émulateurs, des doubles de test ou des simulateurs ; aucune exécution sur du matériel réel n'est consignée pour cette version |
 
