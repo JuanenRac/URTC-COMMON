@@ -1069,6 +1069,13 @@ def render_c(spec: dict) -> str:
         for old, new in aliases:
             add(f"#define URTC_{old} URTC_{new}")
         add("")
+    host_ids = sorted({0x001} | {int(m["id"], 16) for m in spec["messages"] if m["direction"] in ("host_to_board", "both")})
+    add("/* --- identifiers of the frames of the host side (commands and queries of the host, the frames both sides use and the emergency stop frame), sorted --- */")
+    add("#define URTC_HOST_FRAME_ID_COUNT " + str(len(host_ids)) + "u")
+    add("#define URTC_HOST_FRAME_IDS { \\")
+    for i in range(0, len(host_ids), 8):
+        add("    " + " ".join(f"0x{v:03X}u," for v in host_ids[i:i + 8]) + (" \\" if i + 8 < len(host_ids) else " }"))
+    add("")
     rack = spec.get("rack")
     if rack:
         add("/* --- " + rack["title"] + ": see docs/PROTOCOL_TABLE.md --- */")

@@ -214,3 +214,15 @@ def test_the_vectors_of_the_host_frames_cover_every_identifier_of_the_table():
     cases = {c["id"]: c["host"] for c in VECTORS["host_frame"]}
     assert set(p.MESSAGES) <= set(cases)
     assert all(cases[i] == sp.is_host_frame_id(i) for i in cases)
+
+
+def test_the_list_of_host_frames_in_the_c_header_is_the_reference_decision():
+    import re
+
+    header = (ROOT / "generated" / "urtc_can_ids.h").read_text(encoding="utf-8")
+    block = re.search(r"#define URTC_HOST_FRAME_IDS \{(.*?)\}", header, re.S)
+    assert block
+    ids = [int(x, 16) for x in re.findall(r"0x([0-9A-Fa-f]+)u", block.group(1))]
+    assert ids == sorted(ids) and len(set(ids)) == len(ids)
+    assert f"#define URTC_HOST_FRAME_ID_COUNT {len(ids)}u" in header
+    assert ids == [i for i in range(0x800) if sp.is_host_frame_id(i)]
