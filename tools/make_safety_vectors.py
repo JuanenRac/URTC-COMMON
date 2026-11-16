@@ -67,6 +67,9 @@ MAGNET_INPUTS = [
 ]
 
 
+FEED_IDS = sorted(set(R.MESSAGES) | {0x000, 0x001, 0x002, 0x07F, 0x080, 0x7F0, 0x7FF, 0x1FF, 0x300, 0x500})
+
+
 def build() -> dict:
     return {
         "format": 1,
@@ -86,6 +89,7 @@ def build() -> dict:
         "magnet": [
             {"watchdog_on": w, "release_on": r, "energised": e, "silence_ms": s, "release": sp.magnet_must_release(w, r, e, s)} for w, r, e, s in MAGNET_INPUTS
         ],
+        "host_frame": [{"id": i, "host": sp.is_host_frame_id(i)} for i in FEED_IDS],
     }
 
 
@@ -107,6 +111,7 @@ def c_header(data: dict) -> str:
         "typedef struct { uint32_t steps, speed_sps, limit_ms; } safety_limit_case_t;",
         "typedef struct { uint8_t feature_on, moving; uint32_t silence_ms, limit_ms; uint8_t stop; } safety_stop_case_t;",
         "typedef struct { uint8_t watchdog_on, release_on, energised; uint32_t silence_ms; uint8_t release; } safety_magnet_case_t;",
+        "typedef struct { uint16_t id; uint8_t host; } safety_host_frame_case_t;",
         "",
         "static const safety_clear_case_t SAFETY_CLEAR_CASES[] = {",
     ]
@@ -117,6 +122,8 @@ def c_header(data: dict) -> str:
     lines += [f"    {{{b(c['feature_on'])}, {b(c['moving'])}, {c['silence_ms']}u, {c['limit_ms']}u, {b(c['stop'])}}}," for c in data["stepper_stop"]]
     lines += ["};", "", "static const safety_magnet_case_t SAFETY_MAGNET_CASES[] = {"]
     lines += [f"    {{{b(c['watchdog_on'])}, {b(c['release_on'])}, {b(c['energised'])}, {c['silence_ms']}u, {b(c['release'])}}}," for c in data["magnet"]]
+    lines += ["};", "", "static const safety_host_frame_case_t SAFETY_HOST_FRAME_CASES[] = {"]
+    lines += [f"    {{0x{c['id']:03X}u, {b(c['host'])}}}," for c in data["host_frame"]]
     lines += ["};", "", "#define SAFETY_VEC_COUNT(a) ((int)(sizeof(a) / sizeof((a)[0])))", "", "#endif // SAFETY_POLICY_VECTORS_H", ""]
     return "\n".join(lines)
 
