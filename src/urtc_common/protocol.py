@@ -223,6 +223,7 @@ SLAVE_STATUS_AWAIT_CONFIRM = 0x08
 # Verify-fail reasons only the expansion slave bootloader reports (the others are verify_fail_reason)
 SLAVE_VERIFY_FAIL_REASON_NOT_CONFIRMED = 0x06
 SLAVE_VERIFY_FAIL_REASON_DIGEST_CHUNK_MISSING = 0x07
+SLAVE_VERIFY_FAIL_REASON_ACTUATOR_ACTIVE = 0x08
 
 # Answering side
 RESPONDER_APPLICATION = 0x00
@@ -385,7 +386,7 @@ ENUM_NAMES = {'tool': {0: 'SOLDERING_IRON',
                        255: 'ERROR'},
  'verify_fail_reason': {1: 'INCOMPLETE', 2: 'CRC32', 3: 'HMAC', 4: 'HARDWARE_ID', 5: 'ROLLBACK'},
  'slave_bootloader_status': {8: 'AWAIT_CONFIRM'},
- 'slave_verify_fail_reason': {6: 'NOT_CONFIRMED', 7: 'DIGEST_CHUNK_MISSING'},
+ 'slave_verify_fail_reason': {6: 'NOT_CONFIRMED', 7: 'DIGEST_CHUNK_MISSING', 8: 'ACTUATOR_ACTIVE'},
  'responder': {0: 'APPLICATION', 1: 'BOOTLOADER'},
  'thermal_fault': {0: 'NONE', 1: 'MAXTEMP', 2: 'HEATING_NO_RISE', 3: 'DROPPED_AT_TARGET'},
  'reset_cause': {1: 'IWDG', 2: 'WWDG', 4: 'SOFTWARE', 8: 'POWER_ON', 16: 'PIN', 32: 'LOW_POWER', 64: 'OPTION_BYTES'},
@@ -478,7 +479,9 @@ ENUM_TITLES = {'tool': {0: 'Soldering Iron',
  'slave_verify_fail_reason': {6: 'The master did not confirm the image in time, or its confirmation does not match '
                                  'this session and image',
                               7: 'The master bridge found a group of digest chunks (0x212) left half way when the '
-                                 'end (0x214) arrived; a frame was lost'},
+                                 'end (0x214) arrived; a frame was lost',
+                              8: 'The master bridge refused the end of the update (0x214) because an actuator of the '
+                                 'board was active; the image was not installed'},
  'responder': {0: 'The running application', 1: 'The bootloader'},
  'thermal_fault': {0: 'None',
                    1: 'Temperature above the hard ceiling',

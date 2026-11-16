@@ -4,6 +4,7 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **A new reason for the answer of 0x219, ACTUATOR_ACTIVE (8):** the master bridge answers it when it refused the end of an update of the expansion board because a tool was active (a heater, the laser, the drill, a fan, the blower, a stepper move or the electromagnet). It joins the generated constants (C header, TypeScript, Python), the CAN bus document and the text of the flasher in the eight languages. No frame changes its length, and a flasher that does not know the reason shows its number.
 - **The safety and security note of the README describes the Ed25519 bootloader:** the main bootloader verifies an Ed25519 record against a table of public keys and holds no secret; the note (in the eight languages) no longer speaks of a shared-key HMAC.
 ## [0.2.8] - The release files are attached again, and the web studio, the emergency stop frame and the wording of the catalogs
 
