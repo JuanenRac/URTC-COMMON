@@ -414,5 +414,467 @@
       "silence_ms": 4294967295,
       "release": true
     }
+  ],
+  "host_frame": [
+    {
+      "id": 0,
+      "host": false
+    },
+    {
+      "id": 1,
+      "host": true
+    },
+    {
+      "id": 2,
+      "host": false
+    },
+    {
+      "id": 127,
+      "host": false
+    },
+    {
+      "id": 128,
+      "host": false
+    },
+    {
+      "id": 149,
+      "host": false
+    },
+    {
+      "id": 256,
+      "host": true
+    },
+    {
+      "id": 272,
+      "host": true
+    },
+    {
+      "id": 273,
+      "host": false
+    },
+    {
+      "id": 288,
+      "host": true
+    },
+    {
+      "id": 304,
+      "host": true
+    },
+    {
+      "id": 305,
+      "host": true
+    },
+    {
+      "id": 306,
+      "host": true
+    },
+    {
+      "id": 309,
+      "host": false
+    },
+    {
+      "id": 320,
+      "host": true
+    },
+    {
+      "id": 325,
+      "host": false
+    },
+    {
+      "id": 327,
+      "host": false
+    },
+    {
+      "id": 336,
+      "host": true
+    },
+    {
+      "id": 341,
+      "host": false
+    },
+    {
+      "id": 352,
+      "host": true
+    },
+    {
+      "id": 357,
+      "host": false
+    },
+    {
+      "id": 368,
+      "host": true
+    },
+    {
+      "id": 371,
+      "host": true
+    },
+    {
+      "id": 373,
+      "host": false
+    },
+    {
+      "id": 375,
+      "host": false
+    },
+    {
+      "id": 376,
+      "host": true
+    },
+    {
+      "id": 377,
+      "host": false
+    },
+    {
+      "id": 384,
+      "host": true
+    },
+    {
+      "id": 385,
+      "host": false
+    },
+    {
+      "id": 386,
+      "host": true
+    },
+    {
+      "id": 387,
+      "host": false
+    },
+    {
+      "id": 400,
+      "host": true
+    },
+    {
+      "id": 401,
+      "host": false
+    },
+    {
+      "id": 402,
+      "host": true
+    },
+    {
+      "id": 416,
+      "host": true
+    },
+    {
+      "id": 417,
+      "host": true
+    },
+    {
+      "id": 418,
+      "host": true
+    },
+    {
+      "id": 419,
+      "host": true
+    },
+    {
+      "id": 420,
+      "host": true
+    },
+    {
+      "id": 421,
+      "host": true
+    },
+    {
+      "id": 422,
+      "host": true
+    },
+    {
+      "id": 423,
+      "host": true
+    },
+    {
+      "id": 424,
+      "host": true
+    },
+    {
+      "id": 425,
+      "host": false
+    },
+    {
+      "id": 426,
+      "host": true
+    },
+    {
+      "id": 427,
+      "host": false
+    },
+    {
+      "id": 428,
+      "host": true
+    },
+    {
+      "id": 429,
+      "host": true
+    },
+    {
+      "id": 430,
+      "host": true
+    },
+    {
+      "id": 431,
+      "host": true
+    },
+    {
+      "id": 432,
+      "host": true
+    },
+    {
+      "id": 434,
+      "host": true
+    },
+    {
+      "id": 440,
+      "host": false
+    },
+    {
+      "id": 441,
+      "host": true
+    },
+    {
+      "id": 442,
+      "host": true
+    },
+    {
+      "id": 443,
+      "host": false
+    },
+    {
+      "id": 444,
+      "host": true
+    },
+    {
+      "id": 445,
+      "host": false
+    },
+    {
+      "id": 448,
+      "host": true
+    },
+    {
+      "id": 464,
+      "host": true
+    },
+    {
+      "id": 480,
+      "host": true
+    },
+    {
+      "id": 496,
+      "host": true
+    },
+    {
+      "id": 511,
+      "host": false
+    },
+    {
+      "id": 512,
+      "host": true
+    },
+    {
+      "id": 528,
+      "host": true
+    },
+    {
+      "id": 529,
+      "host": true
+    },
+    {
+      "id": 530,
+      "host": true
+    },
+    {
+      "id": 531,
+      "host": true
+    },
+    {
+      "id": 532,
+      "host": true
+    },
+    {
+      "id": 533,
+      "host": true
+    },
+    {
+      "id": 534,
+      "host": true
+    },
+    {
+      "id": 535,
+      "host": true
+    },
+    {
+      "id": 536,
+      "host": false
+    },
+    {
+      "id": 537,
+      "host": true
+    },
+    {
+      "id": 538,
+      "host": true
+    },
+    {
+      "id": 544,
+      "host": true
+    },
+    {
+      "id": 545,
+      "host": true
+    },
+    {
+      "id": 546,
+      "host": false
+    },
+    {
+      "id": 560,
+      "host": true
+    },
+    {
+      "id": 561,
+      "host": true
+    },
+    {
+      "id": 576,
+      "host": true
+    },
+    {
+      "id": 577,
+      "host": true
+    },
+    {
+      "id": 578,
+      "host": true
+    },
+    {
+      "id": 579,
+      "host": false
+    },
+    {
+      "id": 592,
+      "host": true
+    },
+    {
+      "id": 593,
+      "host": true
+    },
+    {
+      "id": 594,
+      "host": true
+    },
+    {
+      "id": 595,
+      "host": false
+    },
+    {
+      "id": 596,
+      "host": true
+    },
+    {
+      "id": 597,
+      "host": false
+    },
+    {
+      "id": 768,
+      "host": false
+    },
+    {
+      "id": 1280,
+      "host": false
+    },
+    {
+      "id": 2025,
+      "host": false
+    },
+    {
+      "id": 2026,
+      "host": true
+    },
+    {
+      "id": 2027,
+      "host": false
+    },
+    {
+      "id": 2028,
+      "host": true
+    },
+    {
+      "id": 2029,
+      "host": false
+    },
+    {
+      "id": 2030,
+      "host": true
+    },
+    {
+      "id": 2031,
+      "host": false
+    },
+    {
+      "id": 2032,
+      "host": true
+    },
+    {
+      "id": 2033,
+      "host": true
+    },
+    {
+      "id": 2034,
+      "host": true
+    },
+    {
+      "id": 2035,
+      "host": false
+    },
+    {
+      "id": 2036,
+      "host": true
+    },
+    {
+      "id": 2037,
+      "host": false
+    },
+    {
+      "id": 2038,
+      "host": false
+    },
+    {
+      "id": 2039,
+      "host": true
+    },
+    {
+      "id": 2040,
+      "host": true
+    },
+    {
+      "id": 2041,
+      "host": false
+    },
+    {
+      "id": 2042,
+      "host": false
+    },
+    {
+      "id": 2043,
+      "host": true
+    },
+    {
+      "id": 2044,
+      "host": false
+    },
+    {
+      "id": 2045,
+      "host": true
+    },
+    {
+      "id": 2046,
+      "host": true
+    },
+    {
+      "id": 2047,
+      "host": true
+    }
   ]
 }

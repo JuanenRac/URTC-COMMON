@@ -51,8 +51,8 @@ Every identifier of `spec/can_protocol.json`, one row each. **Dir**: H>B host to
 | `0x1AB` | THERMAL_STATS_RESP | B>H | 8 | any | `F . T .` |  |
 | `0x1AC` | SET_MULTINODE | H>B | 6 | any | `F . . .` | no host implements it |
 | `0x1AD` | MULTINODE_CONFIG_RESP | both | any / 4 | any | `F . . .` | no host implements it |
-| `0x1AE` | SET_FEATURES | H>B | 5 | any | `F . T W` |  |
-| `0x1AF` | FEATURES_RESP | both | any / 3 | any | `F . T W` |  |
+| `0x1AE` | SET_FEATURES | H>B | 5 6 | any | `F . T W` |  |
+| `0x1AF` | FEATURES_RESP | both | any 1 / 3 / 6 (extended) | any | `F . T W` |  |
 | `0x1B0` | ELECTROMAGNET_CMD | H>B | 1 | 13 | `F . T W` |  |
 | `0x1B2` | CLEAR_ERROR | H>B | 4 | any | `F . T W` | magic clear_error |
 | `0x1B8` | HEALTH_PROFILE | B>H | 8 | any | `F . . .` | no host implements it |

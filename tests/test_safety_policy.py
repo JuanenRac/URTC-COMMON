@@ -169,3 +169,60 @@ def test_the_vectors_cover_every_outcome_and_both_sides_of_every_limit():
     assert {4999, 5000, 5001} <= silences
     constants = VECTORS["constants"]
     assert constants["clear_error_max_temp_c"] == p.CLEAR_ERROR_MAX_TEMP_C and constants["magnet_silence_ms"] == p.MAGNET_SILENCE_MS
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# the second byte of the switch map and the frames that feed the watchdog
+# ---------------------------------------------------------------------------------------------------------------------
+def test_the_second_byte_of_the_map_starts_with_one_switch_and_the_five_byte_form_still_exists():
+    ext = ENUMS["firmware_feature_ext"]
+    assert ext == {"WATCHDOG_HOST_ONLY": 1} and p.FEATURE_EXT_WATCHDOG_HOST_ONLY == 1
+    assert all(value & (value - 1) == 0 and 0 < value < 256 for value in ext.values())
+    layouts = message("0x1AE")["layouts"]
+    assert [(lay.get("variant"), lay["dlc"]["exact"]) for lay in layouts] == [(None, 5), ("extended", 6)]
+    assert message("0x1AE")["firmware_accepts_dlc"] == {"min": 5, "max": 6}
+    assert [f["name"] for f in layouts[1]["fields"]] == ["magic", "features", "features_ext"]
+    assert [(lay["role"], lay.get("variant"), lay["dlc"]) for lay in message("0x1AF")["layouts"]] == [
+        ("request", None, {"any": True}), ("request", "extended", {"exact": 1}), ("response", None, {"exact": 3}), ("response", "extended", {"exact": 6})]
+
+
+def test_the_extended_frames_round_trip_and_the_old_ones_are_unchanged():
+    identifier, data = p.encode_set_features_request(0x20, magic=b"FEAT")
+    assert (identifier, data) == (0x1AE, b"FEAT\x20")
+    identifier, data = p.encode_set_features_request_extended(0x20, 0x01, magic=b"FEAT")
+    assert (identifier, data) == (0x1AE, b"FEAT\x20\x01")
+    assert p.decode_set_features_request_extended(data)["features_ext"] == 1
+    assert p.encode_features_resp_response(2, 0, 15)[1] == bytes([2, 0, 15])
+    assert p.encode_features_resp_response_extended(0x20, 0, 0xFF, 1, 0, 1)[1] == bytes.fromhex("2000FF010001")
+    assert p.encode_features_resp_request_extended()[1] == b"\x02"
+
+
+def test_a_frame_of_the_host_side_is_a_command_a_query_or_the_stop_and_never_a_report_of_a_head():
+    for identifier, entry in p.MESSAGES.items():
+        assert sp.is_host_frame_id(identifier) == (entry["direction"] in ("host_to_board", "both")), hex(identifier)
+    assert sp.is_host_frame_id(0x001) and sp.is_host_frame_id(0x1AE) and sp.is_host_frame_id(0x1AF)
+    assert not sp.is_host_frame_id(0x095) and not sp.is_host_frame_id(0x000) and not sp.is_host_frame_id(0x300)
+
+
+def test_the_watchdog_is_fed_by_any_frame_until_the_switch_is_on():
+    for identifier in (0x000, 0x095, 0x120, 0x1AF, 0x500):
+        assert sp.watchdog_feeds(False, identifier) is True
+    assert sp.watchdog_feeds(True, 0x120) is True and sp.watchdog_feeds(True, 0x095) is False and sp.watchdog_feeds(True, 0x500) is False
+
+
+def test_the_vectors_of_the_host_frames_cover_every_identifier_of_the_table():
+    cases = {c["id"]: c["host"] for c in VECTORS["host_frame"]}
+    assert set(p.MESSAGES) <= set(cases)
+    assert all(cases[i] == sp.is_host_frame_id(i) for i in cases)
+
+
+def test_the_list_of_host_frames_in_the_c_header_is_the_reference_decision():
+    import re
+
+    header = (ROOT / "generated" / "urtc_can_ids.h").read_text(encoding="utf-8")
+    block = re.search(r"#define URTC_HOST_FRAME_IDS \{(.*?)\}", header, re.S)
+    assert block
+    ids = [int(x, 16) for x in re.findall(r"0x([0-9A-Fa-f]+)u", block.group(1))]
+    assert ids == sorted(ids) and len(set(ids)) == len(ids)
+    assert f"#define URTC_HOST_FRAME_ID_COUNT {len(ids)}u" in header
+    assert ids == [i for i in range(0x800) if sp.is_host_frame_id(i)]
