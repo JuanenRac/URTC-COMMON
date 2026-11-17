@@ -116,6 +116,10 @@ python -m mypy                                       # die Typprüfung von urtc_
 
 Die Suite hat 3036 Tests (`python -m pytest tests -q`). Sie prüfen die Spezifikation gegen ihr Schema, die erzeugten C-, TypeScript- und Python-Dateien gegen das, was die Generatoren schreiben, die Konformitätsvektoren in Python, in TypeScript mit Node und in C mit einem Host-Compiler, den SLCAN-Codec und die Transporte mit Attrappen, die virtuelle Platine, den signierten Selbstaktualisierungsablauf und den Vergleich mit den Repositories, die neben diesem geklont sind. Einige Tests werden übersprungen, wenn ein optionales Werkzeug (Node, ein C-Compiler, PySide6) oder ein Nachbar-Repository fehlt. `python -m mypy` prüft die Typen des Pakets.
 
+### Betrieb und Werkzeuge
+
+* **Erster Start eines aktualisierten Programms:** `python -m urtc_common.launcher ROOT [-- arguments]` startet die Version, auf die `current.txt` zeigt, und kehrt von selbst zur vorherigen zurück, wenn ein erster Start scheitert (er endet mit einem Fehler, bevor das Programm `mark_started` gemeldet hat). Wird `URTC_UPDATE_FIRST_START_MIN_S` auf eine Sekundenzahl über null gesetzt, gilt auch ein erster Start als gescheitert, der früher mit Code 0 endet; ohne Wert, mit 0 oder einem negativen Wert ändert sich nichts, ein Kommandozeilenprogramm, das absichtlich schnell endet, ist also nicht betroffen.
+
 ## 🏗️ Build und Veröffentlichung
 
 `build.sh` / `build.bat` installieren das Paket und führen die Tests aus; `build-test.sh` / `build-test.bat` prüfen, ohne eine Version zu ändern; `run.sh` / `run.bat` starten die Befehlszeile (`conformance`, `describe`, `decode`, `slcan`). Jedes Release enthält ein signiertes Python-Wheel (`urtc-common`, nicht auf PyPI), ein signiertes Quellarchiv und den signierten erzeugten C-Header, reproduzierbar gebaut von `tools/make_release_artifacts.py` (`build`, `verify`, `reproduce`, `smoke`); siehe [die Paketanleitung](docs/PACKAGE.md).

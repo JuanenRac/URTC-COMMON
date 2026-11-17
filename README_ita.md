@@ -116,6 +116,10 @@ python -m mypy                                       # il controllo dei tipi di 
 
 La suite ha 3036 test (`python -m pytest tests -q`). Verificano la specifica rispetto al suo schema, i file C, TypeScript e Python generati rispetto a ciò che scrivono i generatori, i vettori di conformità in Python, in TypeScript con Node e in C con un compilatore del computer, il codec SLCAN e i trasporti con simulazioni, la scheda virtuale, il flusso di aggiornamento automatico firmato e il confronto con i repository clonati accanto a questo. Alcuni test vengono saltati quando manca uno strumento opzionale (Node, un compilatore C, PySide6) o un repository vicino. `python -m mypy` controlla i tipi del pacchetto.
 
+### Operatività e strumenti
+
+* **Primo avvio di un programma aggiornato:** `python -m urtc_common.launcher ROOT [-- arguments]` esegue la versione a cui punta `current.txt` e torna da solo alla precedente se il primo avvio fallisce (termina con un errore prima che il programma segnali `mark_started`). Se `URTC_UPDATE_FIRST_START_MIN_S` è impostata a un numero di secondi maggiore di zero, è considerato fallito anche un primo avvio che termina con codice 0 prima di quel tempo; non definita, a 0 o negativa non cambia nulla, quindi un programma da riga di comando che termina presto di proposito non è toccato.
+
 ## 🏗️ Compilazione e rilascio
 
 `build.sh` / `build.bat` installano il pacchetto ed eseguono i test; `build-test.sh` / `build-test.bat` controllano senza cambiare alcuna versione; `run.sh` / `run.bat` avviano la riga di comando (`conformance`, `describe`, `decode`, `slcan`). Ogni release allega una wheel Python firmata (`urtc-common`, non su PyPI), un archivio sorgente firmato e l'header C generato firmato, costruiti in modo riproducibile da `tools/make_release_artifacts.py` (`build`, `verify`, `reproduce`, `smoke`); vedi [la guida del pacchetto](docs/PACKAGE.md).

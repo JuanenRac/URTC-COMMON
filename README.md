@@ -116,6 +116,10 @@ python -m mypy                                       # the type check of urtc_co
 
 The suite has 3036 tests (`python -m pytest tests -q`). They check the specification against its schema, the generated C, TypeScript and Python files against what the generators write, the conformance vectors in Python, in TypeScript with Node and in C with a host compiler, the SLCAN codec and the transports with fakes, the virtual board, the signed self-update flow, and the comparison with the repositories checked out next to this one. A few tests skip where an optional tool (Node, a C compiler, PySide6) or a neighbouring repository is missing. `python -m mypy` type-checks the package.
 
+### Operation and tools
+
+* **First start of an updated program:** `python -m urtc_common.launcher ROOT [-- arguments]` runs the release `current.txt` points to and goes back to the previous release by itself when a first start fails (it ends with an error before the program reported `mark_started`). Setting `URTC_UPDATE_FIRST_START_MIN_S` to a number of seconds above zero also counts as failed a first start that ends with code 0 sooner than that; unset, 0 or a negative value changes nothing, so a command-line program that ends quickly on purpose is not affected.
+
 ## 🏗️ Build & Release
 
 `build.sh` / `build.bat` install the package and run the tests; `build-test.sh` / `build-test.bat` check without changing any version; `run.sh` / `run.bat` start the command line (`conformance`, `describe`, `decode`, `slcan`). Each release attaches a signed Python wheel (`urtc-common`, not on PyPI), a signed source archive and the signed generated C header, built reproducibly by `tools/make_release_artifacts.py` (`build`, `verify`, `reproduce`, `smoke`); see [the package guide](docs/PACKAGE.md).
