@@ -905,6 +905,11 @@
           "value": 1,
           "name": "WATCHDOG_HOST_ONLY",
           "title": "With the communication watchdog: only a frame with an identifier of the host (a command or a query from the host side) counts as a sign of life; the answers of other heads on the bus do not"
+        },
+        {
+          "value": 2,
+          "name": "ALLOW_UPDATE_ACTIVE_ACTUATOR",
+          "title": "The end of an update of a slave board is accepted while a tool of the head is active (without it, as before, the end is refused with the reason ACTUATOR_ACTIVE); the check of the signature record then holds the safety ticks of the board for most of a second"
         }
       ]
     },
