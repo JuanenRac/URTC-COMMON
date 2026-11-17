@@ -233,6 +233,10 @@ def test_gates_of_the_firmware_match_the_specification(spec, sibling):
     assert gated == spec_gated, (sorted(gated ^ spec_gated))
 
 
+# Identifiers whose length is checked inside a parser that has no identifier in it: (function, the condition in its source, the rule the specification records).
+PARSER_CHECKED = {0x1AE: ("Feat_ParseCommandEx", "dlc != 5 && dlc != 6", {"min": 5, "max": 6})}
+
+
 def test_length_checks_of_the_firmware_match_the_specification(spec, sibling):
     source = firmware_source(sibling)
     table = by_id(spec)
@@ -251,6 +255,12 @@ def test_length_checks_of_the_firmware_match_the_specification(spec, sibling):
     # every rule the specification records for the firmware is really in its source
     for frame_id, message in table.items():
         if "firmware_accepts_dlc" in message:
+            if frame_id in PARSER_CHECKED:
+                # the length is checked by a pure parser (tested on the host), not by a comparison of the identifier: its source must say the same range
+                function, condition, rule = PARSER_CHECKED[frame_id]
+                assert function in source and condition in source, f"0x{frame_id:03X}: the length check of {function} is not in the source"
+                assert message["firmware_accepts_dlc"] == rule, (hex(frame_id), message["firmware_accepts_dlc"], rule)
+                continue
             assert frame_id in found, f"0x{frame_id:03X}: the spec records a firmware length check that the source does not have"
     # whatever the firmware accepts, the layout the hosts must send is never looser than that
     for frame_id, message in table.items():
