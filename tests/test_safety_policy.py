@@ -174,9 +174,10 @@ def test_the_vectors_cover_every_outcome_and_both_sides_of_every_limit():
 # ---------------------------------------------------------------------------------------------------------------------
 # the second byte of the switch map and the frames that feed the watchdog
 # ---------------------------------------------------------------------------------------------------------------------
-def test_the_second_byte_of_the_map_starts_with_one_switch_and_the_five_byte_form_still_exists():
+def test_the_second_byte_of_the_map_has_two_switches_and_the_five_byte_form_still_exists():
     ext = ENUMS["firmware_feature_ext"]
-    assert ext == {"WATCHDOG_HOST_ONLY": 1} and p.FEATURE_EXT_WATCHDOG_HOST_ONLY == 1
+    assert ext == {"WATCHDOG_HOST_ONLY": 1, "ALLOW_UPDATE_ACTIVE_ACTUATOR": 2}
+    assert p.FEATURE_EXT_WATCHDOG_HOST_ONLY == 1 and p.FEATURE_EXT_ALLOW_UPDATE_ACTIVE_ACTUATOR == 2
     assert all(value & (value - 1) == 0 and 0 < value < 256 for value in ext.values())
     layouts = message("0x1AE")["layouts"]
     assert [(lay.get("variant"), lay["dlc"]["exact"]) for lay in layouts] == [(None, 5), ("extended", 6)]

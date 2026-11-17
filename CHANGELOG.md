@@ -4,6 +4,7 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **A second switch in the second byte of the switch map, `ALLOW_UPDATE_ACTIVE_ACTUATOR` (off by default):** with it on, the master board accepts the end of an update of a slave board while a tool of the head is active; with it off the end is refused with the reason ACTUATOR_ACTIVE, as before. The switch has its text in the eight languages in the tester and the web studio.
 - **Three log labels of the tester for the choice about dangerous identifiers:** the name of the choice and the two failures (it could not be saved, the word is not known), in the eight languages of the catalog.
 
 - **Four texts of the tester for the choice of what a plan does with a dangerous identifier:** the label and the three words (send it, ask first, refuse it) of the switch of the tester deck, in the eight languages of the catalog.
