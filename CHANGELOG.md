@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The comparison with the firmware knows the switch map checks its length inside its parser:** since the switch map of the optional features takes five or six bytes, the length of `0x1AE` is checked by `Feat_ParseCommandEx` and no longer in a comparison with the identifier; the nightly comparison of the sibling repositories now looks for that condition in the source and for the range `5` to `6` in the specification instead of failing.
+
 - **One rule says which identifiers a host must not send without being sure:** `dangerous_ids.dangerous_reason` (the bootloader and the update of the expansion slave, the erase of the saved state, every persistent setting; a question never is) is now shared, so the gateway and the plans of the tester judge an identifier the same way, and the catalog of the tester carries the two texts that name the refusal and the question, in the eight languages. Tested over the real table of the protocol and over small tables.
 
 - **The catalogs carry the texts of the signature precheck of the flasher and of the first-installation list of the updater:** five texts for the check of the signature record before a transfer (verified, not verified, refused, and the two reasons) and one for the question that lists the build and tool files a first installation will run, each in the eight languages.
