@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **One rule says which identifiers a host must not send without being sure:** `dangerous_ids.dangerous_reason` (the bootloader and the update of the expansion slave, the erase of the saved state, every persistent setting; a question never is) is now shared, so the gateway and the plans of the tester judge an identifier the same way, and the catalog of the tester carries the two texts that name the refusal and the question, in the eight languages. Tested over the real table of the protocol and over small tables.
+
 - **The catalogs carry the texts of the signature precheck of the flasher and of the first-installation list of the updater:** five texts for the check of the signature record before a transfer (verified, not verified, refused, and the two reasons) and one for the question that lists the build and tool files a first installation will run, each in the eight languages.
 
 - **A first start can be required to last a minimum time:** with `URTC_UPDATE_FIRST_START_MIN_S` set to a number of seconds above zero, the launcher treats a newly installed release that ends with code 0 before that time without having reported `mark_started` as a failed first start and goes back to the previous release; without the variable (or with 0) nothing changes, so a command-line program that ends quickly on purpose is not affected. The launcher's copies in the programs follow when they are refreshed. Tested with an injected clock.
