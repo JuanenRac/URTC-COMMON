@@ -116,6 +116,10 @@ python -m mypy                                       # urtc_common 和 urtc_ui �
 
 测试套件共有 3036 个测试（`python -m pytest tests -q`）。它们检查：规范是否符合其模式；生成的 C、TypeScript 和 Python 文件是否与生成器写出的一致；用 Python、用 Node 运行的 TypeScript 和用主机编译器编译的 C 来核对一致性向量；SLCAN 编解码器和使用模拟对象的传输层；虚拟板；经过签名的自我更新流程；以及与放在本仓库旁边的各仓库的比较。缺少可选工具（Node、C 编译器、PySide6）或相邻仓库时，部分测试会被跳过。`python -m mypy` 检查软件包的类型。
 
+### 运维与工具
+
+* **更新后程序的首次启动：** `python -m urtc_common.launcher ROOT [-- arguments]` 运行 `current.txt` 指向的版本；首次启动失败（在程序报告 `mark_started` 之前以错误结束）时会自动回到上一版本。把 `URTC_UPDATE_FIRST_START_MIN_S` 设为大于零的秒数后，比该时间更早以代码 0 结束的首次启动同样视为失败；未设置、为 0 或为负数时不会有任何变化，因此有意快速结束的命令行程序不受影响。
+
 ## 🏗️ 构建与发布
 
 `build.sh` / `build.bat` 安装软件包并运行测试；`build-test.sh` / `build-test.bat` 只检查，不改变任何版本；`run.sh` / `run.bat` 启动命令行（`conformance`、`describe`、`decode`、`slcan`）。每个发布版都附带经过签名的 Python wheel（`urtc-common`，不在 PyPI 上）、签名的源码压缩包和签名的生成 C 头文件，由 `tools/make_release_artifacts.py`（`build`、`verify`、`reproduce`、`smoke`）可复现地构建；参见[软件包指南](docs/PACKAGE.md)。

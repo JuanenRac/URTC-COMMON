@@ -116,6 +116,10 @@ python -m mypy                                       # le contrôle des types de
 
 La suite compte 3036 tests (`python -m pytest tests -q`). Ils vérifient la spécification par rapport à son schéma, les fichiers C, TypeScript et Python générés par rapport à ce qu'écrivent les générateurs, les vecteurs de conformité en Python, en TypeScript avec Node et en C avec un compilateur hôte, le codec SLCAN et les transports avec des simulations, la carte virtuelle, le flux d'auto-mise à jour signée et la comparaison avec les dépôts clonés à côté de celui-ci. Quelques tests sont ignorés quand un outil optionnel (Node, un compilateur C, PySide6) ou un dépôt voisin manque. `python -m mypy` vérifie les types du paquet.
 
+### Exploitation et outils
+
+* **Premier démarrage d'un programme mis à jour :** `python -m urtc_common.launcher ROOT [-- arguments]` lance la version vers laquelle pointe `current.txt` et revient seul à la précédente si le premier démarrage échoue (il se termine par une erreur avant que le programme ait signalé `mark_started`). Si `URTC_UPDATE_FIRST_START_MIN_S` est réglée à un nombre de secondes supérieur à zéro, un premier démarrage qui se termine avec le code 0 plus tôt que cela est aussi considéré comme échoué ; non définie, à 0 ou négative, rien ne change : un programme en ligne de commande qui se termine vite exprès n'est pas touché.
+
 ## 🏗️ Compilation et publication
 
 `build.sh` / `build.bat` installent le paquet et lancent les tests ; `build-test.sh` / `build-test.bat` vérifient sans changer aucune version ; `run.sh` / `run.bat` lancent la ligne de commande (`conformance`, `describe`, `decode`, `slcan`). Chaque release joint un paquet wheel Python signé (`urtc-common`, absent de PyPI), une archive source signée et l'en-tête C généré signé, construits de façon reproductible par `tools/make_release_artifacts.py` (`build`, `verify`, `reproduce`, `smoke`) ; voir [le guide du paquet](docs/PACKAGE.md).

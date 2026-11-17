@@ -116,6 +116,10 @@ python -m mypy                                       # urtc_common と urtc_ui �
 
 テストスイートは 3036 件です（`python -m pytest tests -q`）。仕様とそのスキーマ、生成された C・TypeScript・Python ファイルとジェネレーターの出力、Python・Node 上の TypeScript・ホストコンパイラ上の C での適合ベクトル、SLCAN コーデックと模擬を使ったトランスポート、仮想ボード、署名付き自己更新の流れ、そしてこのリポジトリの隣にチェックアウトされたリポジトリとの比較を検査します。任意のツール（Node、C コンパイラ、PySide6）や隣のリポジトリがない場合、一部のテストはスキップされます。`python -m mypy` がパッケージの型を検査します。
 
+### 運用とツール
+
+* **更新したプログラムの初回起動：** `python -m urtc_common.launcher ROOT [-- arguments]` は `current.txt` が指すリリースを実行し、初回起動が失敗した場合（プログラムが `mark_started` を報告する前にエラーで終了した場合）は自動的に前のリリースへ戻します。`URTC_UPDATE_FIRST_START_MIN_S` に 0 より大きい秒数を設定すると、それより早くコード 0 で終了した初回起動も失敗とみなします。未設定、0、負の値では何も変わらないため、意図的にすぐ終了するコマンドラインプログラムには影響しません。
+
 ## 🏗️ ビルドとリリース
 
 `build.sh` / `build.bat` はパッケージをインストールしてテストを実行します。`build-test.sh` / `build-test.bat` はバージョンを変えずに検査します。`run.sh` / `run.bat` はコマンドライン（`conformance`、`describe`、`decode`、`slcan`）を起動します。各リリースには、署名付きの Python ホイール（`urtc-common`、PyPI には公開しません）、署名付きのソースアーカイブ、署名付きの生成 C ヘッダーが付属し、`tools/make_release_artifacts.py`（`build`、`verify`、`reproduce`、`smoke`）で再現可能にビルドされます。[パッケージガイド](docs/PACKAGE.md)を参照してください。
