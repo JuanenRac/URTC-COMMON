@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **Three log labels of the tester for the choice about dangerous identifiers:** the name of the choice and the two failures (it could not be saved, the word is not known), in the eight languages of the catalog.
+
 - **Four texts of the tester for the choice of what a plan does with a dangerous identifier:** the label and the three words (send it, ask first, refuse it) of the switch of the tester deck, in the eight languages of the catalog.
 
 - **The comparison with the firmware knows the switch map checks its length inside its parser:** since the switch map of the optional features takes five or six bytes, the length of `0x1AE` is checked by `Feat_ParseCommandEx` and no longer in a comparison with the identifier; the nightly comparison of the sibling repositories now looks for that condition in the source and for the range `5` to `6` in the specification instead of failing.
