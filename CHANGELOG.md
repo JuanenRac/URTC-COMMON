@@ -4,6 +4,7 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The tester log line for the switch that lets the end of a slave update be accepted while a tool is active:** one entry in the tester catalog, in the eight languages.
 - **The text of the web studio confirmation for the switch that lets an update of a slave board end while a tool is active:** one entry in the web studio catalog, in the eight languages, with the formal register.
 
 ## [0.2.9] - Catalog texts for the web studio, the second switch byte and the dangerous identifier choice
