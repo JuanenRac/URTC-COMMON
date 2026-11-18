@@ -155,7 +155,7 @@ def make_zip(version="0.5.0", app="urtc-flasher", info=True, extra=None) -> byte
     out = io.BytesIO()
     with zipfile.ZipFile(out, "w") as zf:
         if info:
-            zf.writestr("app_info.json", json.dumps({"name": app, "version": version}))
+            zf.writestr("app_info.json", json.dumps({"name": app, "version": version, "entry": "bin/app.exe"}))
         zf.writestr("bin/app.exe", b"MZ" + bytes(100))
         for name, data in (extra or {}).items():
             zf.writestr(name, data)
@@ -359,6 +359,60 @@ def test_rollback_goes_to_the_previous_release_and_fails_when_there_is_none(tmp_
     install(tmp_path, "0.5.1")
     assert su.rollback(root) == "0.5.0" and su.current_version(root) == "0.5.0"
     assert su.read_history(root)[-1]["event"] == "rollback"
+
+
+def _two_releases(tmp_path):
+    install(tmp_path, "0.5.0")
+    install(tmp_path, "0.5.1")
+    return tmp_path / "root"
+
+
+def _refused_and_untouched(root):
+    before = (root / "current.txt").read_bytes()
+    with pytest.raises(su.UpdateError) as caught:
+        su.rollback(root)
+    assert caught.value.code == "rollback_target_damaged"
+    assert (root / "current.txt").read_bytes() == before and su.current_version(root) == "0.5.1"
+    assert not (root / "current.txt.new").exists()
+    last = su.read_history(root)[-1]
+    assert (last["event"], last["result"], last["to"]) == ("rollback", "refused", "0.5.0")
+
+
+def test_a_rollback_to_a_release_without_app_info_is_refused_and_changes_nothing(tmp_path):
+    root = _two_releases(tmp_path)
+    (root / "releases" / "0.5.0" / "app_info.json").unlink()
+    _refused_and_untouched(root)
+
+
+def test_a_rollback_to_a_release_with_an_unreadable_or_entryless_app_info_is_refused(tmp_path):
+    root = _two_releases(tmp_path)
+    info = root / "releases" / "0.5.0" / "app_info.json"
+    for content in ("{not json", "[]", json.dumps({"name": "urtc-flasher", "version": "0.5.0"}), json.dumps({"entry": 7})):
+        info.write_text(content, encoding="utf-8")
+        _refused_and_untouched(root)
+
+
+def test_a_rollback_to_a_release_whose_entry_is_missing_is_refused(tmp_path):
+    root = _two_releases(tmp_path)
+    (root / "releases" / "0.5.0" / "bin" / "app.exe").unlink()
+    _refused_and_untouched(root)
+    (root / "releases" / "0.5.0" / "bin" / "app.exe").mkdir()
+    _refused_and_untouched(root)
+
+
+def test_a_rollback_to_a_release_whose_entry_leaves_the_tree_is_refused(tmp_path):
+    root = _two_releases(tmp_path)
+    (root / "outside.exe").write_bytes(b"MZ")
+    info = root / "releases" / "0.5.0" / "app_info.json"
+    info.write_text(json.dumps({"name": "urtc-flasher", "version": "0.5.0", "entry": "../../outside.exe"}), encoding="utf-8")
+    _refused_and_untouched(root)
+
+
+def test_a_valid_release_is_still_rolled_back_and_the_check_is_only_for_the_one_it_goes_to(tmp_path):
+    root = _two_releases(tmp_path)
+    (root / "releases" / "0.5.1" / "app_info.json").unlink()      # the current one may be the damaged one: that is why one goes back
+    assert su.rollback(root) == "0.5.0" and su.current_version(root) == "0.5.0"
+    assert su.read_history(root)[-1]["result"] == "ok"
 
 
 def test_a_new_release_that_fails_its_first_start_is_replaced_by_the_previous_one(tmp_path):
