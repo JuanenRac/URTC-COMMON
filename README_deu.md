@@ -31,7 +31,7 @@
 |---|---|
 | Version | `0.2.9` |
 | Reifegrad | Funktionsfähig |
-| Tests | 3036 |
+| Tests | 3044 |
 | Technik | JSON / Python |
 | Auf echter Hardware | Nur simuliert: gegen Emulatoren, Attrappen oder Simulatoren getestet; für diese Version ist kein Lauf auf echter Hardware vermerkt |
 

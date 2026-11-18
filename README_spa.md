@@ -31,7 +31,7 @@
 |---|---|
 | Versión | `0.2.9` |
 | Madurez | Funcional |
-| Tests | 3036 |
+| Tests | 3044 |
 | Tecnología | JSON / Python |
 | En hardware real | Solo simulado: probado con emuladores, dobles de prueba o simuladores; no consta ninguna ejecución en hardware real para esta versión |
 
