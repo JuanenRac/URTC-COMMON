@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The text of the web studio confirmation for the switch that lets an update of a slave board end while a tool is active:** one entry in the web studio catalog, in the eight languages, with the formal register.
+
 ## [0.2.9] - Catalog texts for the web studio, the second switch byte and the dangerous identifier choice
 
 - **The texts of the web studio window that asks before an image without a release signature goes to the board:** seven entries in the web studio catalog (the confirmation, the refusal when going on without a signature is not allowed, the check box and its note, and the three log lines), in the eight languages.
