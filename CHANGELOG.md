@@ -4,6 +4,7 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The text of the update window for a rollback that is refused because the previous release is damaged:** one entry (`UPD_ERR_ROLLBACK_DAMAGED`) in the update catalog, in the eight languages with the formal register, tied to the error code `rollback_target_damaged`.
 - **The tester log line for the switch that lets the end of a slave update be accepted while a tool is active:** one entry in the tester catalog, in the eight languages.
 - **The text of the web studio confirmation for the switch that lets an update of a slave board end while a tool is active:** one entry in the web studio catalog, in the eight languages, with the formal register.
 
