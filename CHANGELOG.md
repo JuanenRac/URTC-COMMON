@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [0.3.1] - A configurable silence of the emergency stop master, with its texts in every catalog
+
 - **The catalogs of the flasher, the tester and the web studio have the texts to read and write the silence of the master:** a label with the limits, the read and write buttons, the confirmation of the flasher, and the log lines (the value read, a value outside the limits, a head that did not keep the value, a head that does not answer the query), in the eight languages with the formal register.
 
 - **The lowest silence of the master of the emergency stop is 40 ms, and the value travels over the bus:** `ESTOP_ALIVE_TIMEOUT_MIN_MS` goes from 20 to 40 ms (the check runs every 20 ms, so 20 ms was up to twice as imprecise); a stored value below it is rejected and the default of 100 ms applies. `0x1AE` has a form of eight bytes (`FEAT`, the two masks, `estop_timeout_ms`, big endian) that sets the silence together with the switches (0 clears it, otherwise 40 to 500, anything else makes the firmware ignore the whole frame), and `0x1AF` answers a query of the byte 3 (silence in force) or 4 (silence stored) with an eight-byte form that ends in the silence, which is also how a master announces its value. The lengths and queries that exist stay exactly as they were; the heartbeat on `0x001` is untouched. The twin (`parse_features_write`, `query_form`, `encode_timeout_answer`), the generated frame builders and the vectors (`feature_writes`, `feature_queries`, `timeout_answers`) are in the repository; `docs/ESTOP_FOLLOW_TIMEOUT.md` has the table.
@@ -107,8 +109,6 @@ All notable changes to this project are documented here.
 - **The texts of the Control tab of the web studio say that it sends to the real bus:** the label "Real bus", its hint and the notice of the tab are written in the eight languages for the Control tab that sends to a connected board without a switch, and the hint tells that a drill or a laser that is on asks again for a change of power over the percentage of the configuration file.
 
 - **The image header is tested over every bit and over random input:** no single bit of a sealed image can change without being refused, random bytes never raise nor pass for an image, the version a caller expects may have three or four components, the hardware is compared exactly and before the version, a slot with a signature flag or a reserved byte is not the slot of the firmware, and strange settings of the compatibility switch never loosen it.
-
-## [Unreleased]
 
 ## [0.2.6] - Bus at 1 Mbit/s, image header, signed packages and catalogs in 8 languages
 
