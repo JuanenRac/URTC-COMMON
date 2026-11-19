@@ -311,8 +311,8 @@ def test_the_wire_frames_of_the_silence_round_trip_and_are_big_endian():
     identifier, data = p.encode_set_features_request_estop_timeout(0x80, 0, 50, magic=b"FEAT")
     assert (identifier, data) == (0x1AE, bytes.fromhex("4645415480000032"))
     assert p.decode_set_features_request_estop_timeout(data)["estop_timeout_ms"] == 50
-    assert p.encode_features_resp_request_estop_timeout(3) == (0x1AF, b"\x03")
-    assert p.encode_features_resp_request_estop_timeout(4) == (0x1AF, b"\x04")
+    assert p.encode_features_resp_request_estop_timeout() == (0x1AF, b"\x03")
+    assert p.encode_features_resp_request_estop_timeout_stored() == (0x1AF, b"\x04")
     _, answer = p.encode_features_resp_response_estop_timeout(0x80, 0x80, 255, 0, 0, 3, 500)
     assert answer == ef.encode_timeout_answer(0x80, 0x80, 0, 0, 500) and answer[6:] == b"\x01\xf4"
     assert ef.decode_timeout_answer(answer)["timeout_ms"] == 500

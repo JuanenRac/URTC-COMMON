@@ -185,7 +185,7 @@ def test_the_second_byte_of_the_map_has_two_switches_and_the_five_byte_form_stil
     assert [f["name"] for f in layouts[1]["fields"]] == ["magic", "features", "features_ext"]
     assert [(lay["role"], lay.get("variant"), lay["dlc"]) for lay in message("0x1AF")["layouts"]] == [
         ("request", None, {"any": True}), ("request", "extended", {"exact": 1}),
-        ("request", "estop_timeout", {"exact": 1}), ("response", None, {"exact": 3}), ("response", "extended", {"exact": 6}), ("response", "estop_timeout", {"exact": 8})]
+        ("request", "estop_timeout", {"exact": 1}), ("request", "estop_timeout_stored", {"exact": 1}), ("response", None, {"exact": 3}), ("response", "extended", {"exact": 6}), ("response", "estop_timeout", {"exact": 8})]
 
 
 def test_the_extended_frames_round_trip_and_the_old_ones_are_unchanged():
