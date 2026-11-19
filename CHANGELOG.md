@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [0.3.0] - Catalog texts for the update window and the tester, and a rollback that checks its target
+
 - **A rollback checks the release it goes back to:** `self_update.rollback` now reads the `app_info.json` of that release and its `entry` first. A missing or unreadable file, no `entry`, an `entry` that leaves the release folder or is not a file are refused with the error `rollback_target_damaged`; `current.txt` is not touched and the refusal is written in the history. Tested for each case and for the valid rollback.
 - **The text of the update window for a rollback that is refused because the previous release is damaged:** one entry (`UPD_ERR_ROLLBACK_DAMAGED`) in the update catalog, in the eight languages with the formal register, tied to the error code `rollback_target_damaged`.
 - **The tester log line for the switch that lets the end of a slave update be accepted while a tool is active:** one entry in the tester catalog, in the eight languages.
