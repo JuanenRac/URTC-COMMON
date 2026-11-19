@@ -1,12 +1,12 @@
 {
-  "format": 1,
+  "format": 2,
   "about": "Frames and scenarios of the emergency stop frame as a tool head follows it, run through urtc_common.estop_follow. Time is in milliseconds.",
   "constants": {
     "can_id": 1,
     "alive_timeout_ms": 100,
     "reason_stop": 9,
     "reason_silence": 10,
-    "alive_timeout_min_ms": 20,
+    "alive_timeout_min_ms": 40,
     "alive_timeout_max_ms": 500
   },
   "frames": [
@@ -835,7 +835,7 @@
           "released": false
         }
       ],
-      "alive_timeout_ms": 19
+      "alive_timeout_ms": 39
     },
     {
       "name": "a configured value above the limit is rejected and the default of 100 ms is used",
@@ -1029,8 +1029,8 @@
       "status": 0
     },
     {
-      "requested": 20,
-      "ms": 20,
+      "requested": 40,
+      "ms": 40,
       "status": 0
     },
     {
@@ -1039,7 +1039,12 @@
       "status": 0
     },
     {
-      "requested": 19,
+      "requested": 39,
+      "ms": 100,
+      "status": 1
+    },
+    {
+      "requested": 20,
       "ms": 100,
       "status": 1
     },
@@ -1090,20 +1095,26 @@
       "status": 2
     },
     {
-      "own": 20,
+      "own": 40,
       "master": 500,
-      "ms": 20,
+      "ms": 40,
       "status": 2
     },
     {
       "own": 500,
-      "master": 20,
-      "ms": 20,
+      "master": 40,
+      "ms": 40,
       "status": 2
     },
     {
       "own": 100,
-      "master": 19,
+      "master": 39,
+      "ms": 100,
+      "status": 3
+    },
+    {
+      "own": 100,
+      "master": 20,
       "ms": 100,
       "status": 3
     },
@@ -1118,6 +1129,330 @@
       "master": 65535,
       "ms": 60,
       "status": 3
+    }
+  ],
+  "feature_writes": [
+    {
+      "data_hex": "4645415400",
+      "valid": true,
+      "mask": 0,
+      "mask_ext": 0,
+      "timeout_ms": -1
+    },
+    {
+      "data_hex": "464541540A",
+      "valid": true,
+      "mask": 10,
+      "mask_ext": 0,
+      "timeout_ms": -1
+    },
+    {
+      "data_hex": "464541542001",
+      "valid": true,
+      "mask": 32,
+      "mask_ext": 1,
+      "timeout_ms": -1
+    },
+    {
+      "data_hex": "4645415480",
+      "valid": true,
+      "mask": 128,
+      "mask_ext": 0,
+      "timeout_ms": -1
+    },
+    {
+      "data_hex": "46454154800000",
+      "valid": false,
+      "mask": 0,
+      "mask_ext": 0,
+      "timeout_ms": -1
+    },
+    {
+      "data_hex": "4645415480000032",
+      "valid": true,
+      "mask": 128,
+      "mask_ext": 0,
+      "timeout_ms": 50
+    },
+    {
+      "data_hex": "4645415480000000",
+      "valid": true,
+      "mask": 128,
+      "mask_ext": 0,
+      "timeout_ms": 0
+    },
+    {
+      "data_hex": "4645415480000028",
+      "valid": true,
+      "mask": 128,
+      "mask_ext": 0,
+      "timeout_ms": 40
+    },
+    {
+      "data_hex": "46454154800001F4",
+      "valid": true,
+      "mask": 128,
+      "mask_ext": 0,
+      "timeout_ms": 500
+    },
+    {
+      "data_hex": "4645415480000027",
+      "valid": false,
+      "mask": 0,
+      "mask_ext": 0,
+      "timeout_ms": -1
+    },
+    {
+      "data_hex": "46454154800001F5",
+      "valid": false,
+      "mask": 0,
+      "mask_ext": 0,
+      "timeout_ms": -1
+    },
+    {
+      "data_hex": "4645415480FFFF",
+      "valid": false,
+      "mask": 0,
+      "mask_ext": 0,
+      "timeout_ms": -1
+    },
+    {
+      "data_hex": "464541548000FFFF",
+      "valid": false,
+      "mask": 0,
+      "mask_ext": 0,
+      "timeout_ms": -1
+    },
+    {
+      "data_hex": "4645415480000014",
+      "valid": false,
+      "mask": 0,
+      "mask_ext": 0,
+      "timeout_ms": -1
+    },
+    {
+      "data_hex": "4645415480000001",
+      "valid": false,
+      "mask": 0,
+      "mask_ext": 0,
+      "timeout_ms": -1
+    },
+    {
+      "data_hex": "464541548000",
+      "valid": true,
+      "mask": 128,
+      "mask_ext": 0,
+      "timeout_ms": -1
+    },
+    {
+      "data_hex": "46454154800003",
+      "valid": false,
+      "mask": 0,
+      "mask_ext": 0,
+      "timeout_ms": -1
+    },
+    {
+      "data_hex": "464541548000003200",
+      "valid": false,
+      "mask": 0,
+      "mask_ext": 0,
+      "timeout_ms": -1
+    },
+    {
+      "data_hex": "4645415480000032",
+      "valid": true,
+      "mask": 128,
+      "mask_ext": 0,
+      "timeout_ms": 50
+    },
+    {
+      "data_hex": "46454154FF0300FF",
+      "valid": true,
+      "mask": 255,
+      "mask_ext": 3,
+      "timeout_ms": 255
+    },
+    {
+      "data_hex": "464541548004",
+      "valid": false,
+      "mask": 0,
+      "mask_ext": 0,
+      "timeout_ms": -1
+    },
+    {
+      "data_hex": "4645415480040032",
+      "valid": false,
+      "mask": 0,
+      "mask_ext": 0,
+      "timeout_ms": -1
+    },
+    {
+      "data_hex": "4645415501",
+      "valid": false,
+      "mask": 0,
+      "mask_ext": 0,
+      "timeout_ms": -1
+    },
+    {
+      "data_hex": "4645415400000000",
+      "valid": true,
+      "mask": 0,
+      "mask_ext": 0,
+      "timeout_ms": 0
+    },
+    {
+      "data_hex": "47454154800000",
+      "valid": false,
+      "mask": 0,
+      "mask_ext": 0,
+      "timeout_ms": -1
+    },
+    {
+      "data_hex": "",
+      "valid": false,
+      "mask": 0,
+      "mask_ext": 0,
+      "timeout_ms": -1
+    },
+    {
+      "data_hex": "464541",
+      "valid": false,
+      "mask": 0,
+      "mask_ext": 0,
+      "timeout_ms": -1
+    },
+    {
+      "data_hex": "46454154",
+      "valid": false,
+      "mask": 0,
+      "mask_ext": 0,
+      "timeout_ms": -1
+    },
+    {
+      "data_hex": "4645415480010064",
+      "valid": true,
+      "mask": 128,
+      "mask_ext": 1,
+      "timeout_ms": 100
+    },
+    {
+      "data_hex": "4645415480030064",
+      "valid": true,
+      "mask": 128,
+      "mask_ext": 3,
+      "timeout_ms": 100
+    }
+  ],
+  "feature_queries": [
+    {
+      "data_hex": "",
+      "form": 0
+    },
+    {
+      "data_hex": "00",
+      "form": 0
+    },
+    {
+      "data_hex": "01",
+      "form": 0
+    },
+    {
+      "data_hex": "02",
+      "form": 1
+    },
+    {
+      "data_hex": "03",
+      "form": 2
+    },
+    {
+      "data_hex": "04",
+      "form": 3
+    },
+    {
+      "data_hex": "05",
+      "form": 0
+    },
+    {
+      "data_hex": "FF",
+      "form": 0
+    },
+    {
+      "data_hex": "0203",
+      "form": 0
+    },
+    {
+      "data_hex": "0304",
+      "form": 0
+    },
+    {
+      "data_hex": "0000",
+      "form": 0
+    }
+  ],
+  "timeout_answers": [
+    {
+      "stored": 0,
+      "running": 0,
+      "stored_ext": 0,
+      "running_ext": 0,
+      "timeout_ms": 0,
+      "data_hex": "0000ff0000030000"
+    },
+    {
+      "stored": 128,
+      "running": 128,
+      "stored_ext": 0,
+      "running_ext": 0,
+      "timeout_ms": 50,
+      "data_hex": "8080ff0000030032"
+    },
+    {
+      "stored": 128,
+      "running": 0,
+      "stored_ext": 0,
+      "running_ext": 0,
+      "timeout_ms": 100,
+      "data_hex": "8000ff0000030064"
+    },
+    {
+      "stored": 128,
+      "running": 128,
+      "stored_ext": 1,
+      "running_ext": 1,
+      "timeout_ms": 500,
+      "data_hex": "8080ff01010301f4"
+    },
+    {
+      "stored": 255,
+      "running": 255,
+      "stored_ext": 3,
+      "running_ext": 3,
+      "timeout_ms": 40,
+      "data_hex": "ffffff0303030028"
+    },
+    {
+      "stored": 2,
+      "running": 0,
+      "stored_ext": 0,
+      "running_ext": 0,
+      "timeout_ms": 0,
+      "data_hex": "0200ff0000030000"
+    },
+    {
+      "stored": 128,
+      "running": 128,
+      "stored_ext": 0,
+      "running_ext": 0,
+      "timeout_ms": 255,
+      "data_hex": "8080ff00000300ff"
+    },
+    {
+      "stored": 128,
+      "running": 128,
+      "stored_ext": 0,
+      "running_ext": 0,
+      "timeout_ms": 256,
+      "data_hex": "8080ff0000030100"
     }
   ]
 }

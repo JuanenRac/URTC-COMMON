@@ -226,7 +226,7 @@ def test_a_release_does_not_lift_an_error_that_did_not_come_from_a_stop():
 # ---------------------------------------------------------------------------------------------------------------------
 def test_the_timeout_constants_are_in_the_specification_and_the_default_is_unchanged():
     assert CONSTANTS["ESTOP_ALIVE_TIMEOUT_MS"]["value"] == 100 == p.ESTOP_ALIVE_TIMEOUT_MS == ef.TIMEOUT_DEFAULT_MS
-    assert CONSTANTS["ESTOP_ALIVE_TIMEOUT_MIN_MS"]["value"] == 20 == ef.TIMEOUT_MIN_MS
+    assert CONSTANTS["ESTOP_ALIVE_TIMEOUT_MIN_MS"]["value"] == 40 == ef.TIMEOUT_MIN_MS
     assert CONSTANTS["ESTOP_ALIVE_TIMEOUT_MAX_MS"]["value"] == 500 == ef.TIMEOUT_MAX_MS
     assert ef.TIMEOUT_MIN_MS <= ef.TIMEOUT_DEFAULT_MS <= ef.TIMEOUT_MAX_MS
 
@@ -254,8 +254,8 @@ def test_the_configuration_file_key():
 
 
 def test_the_master_value_never_makes_the_head_more_tolerant():
-    for own in (20, 60, 100, 250, 500):
-        for master in (None, 0, 19, 20, 60, 100, 300, 500, 501, 65535):
+    for own in (40, 60, 100, 250, 500):
+        for master in (None, 0, 19, 20, 39, 40, 60, 100, 300, 500, 501, 65535):
             value, status = ef.effective_timeout(own, master)
             assert value <= own, (own, master)
             if master and ef.TIMEOUT_MIN_MS <= master <= ef.TIMEOUT_MAX_MS:
@@ -279,7 +279,7 @@ def test_the_timeout_tables_of_the_vectors_are_the_reference_answers():
         assert ef.resolve_timeout(case["requested"]) == (case["ms"], case["status"])
     for case in VECTORS["timeout_master"]:
         assert ef.effective_timeout(case["own"], case["master"]) == (case["ms"], case["status"])
-    assert VECTORS["constants"]["alive_timeout_min_ms"] == 20 and VECTORS["constants"]["alive_timeout_max_ms"] == 500
+    assert VECTORS["constants"]["alive_timeout_min_ms"] == 40 and VECTORS["constants"]["alive_timeout_max_ms"] == 500
 
 
 def test_the_silence_is_exact_at_the_edges_of_the_limits():
@@ -293,12 +293,74 @@ def test_the_silence_is_exact_at_the_edges_of_the_limits():
 
 
 def test_the_virtual_head_uses_the_configured_timeout():
-    board = VirtualBoard(features=p.FEATURE_ESTOP_FOLLOW, error_reason=p.ERROR_REASON_NONE, clear_result=0, estop_alive_timeout_ms=30)
+    board = VirtualBoard(features=p.FEATURE_ESTOP_FOLLOW, error_reason=p.ERROR_REASON_NONE, clear_result=0, estop_alive_timeout_ms=40)
     board.handle(p.ESTOP_CAN_ID, ALIVE_TRIPPED(1))
     board.advance(0.005)
     board.handle(p.ESTOP_CAN_ID, RELEASE(2))
     assert board.system_error is False
     board.advance(0.02)
     assert board.system_error is False
-    board.advance(0.02)                                  # 40 ms of silence: above the 30 ms of this head, below the default 100 ms
+    board.advance(0.02)                                  # 45 ms of silence: above the 40 ms of this head, below the default 100 ms
     assert board.system_error and board.error_reason == p.ERROR_REASON_ESTOP_SILENCE
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# the silence of the master on the bus: 0x1AE with DLC 8 writes it, 0x1AF with the byte 3 or 4 asks for it
+# ---------------------------------------------------------------------------------------------------------------------
+def test_the_wire_frames_of_the_silence_round_trip_and_are_big_endian():
+    identifier, data = p.encode_set_features_request_estop_timeout(0x80, 0, 50, magic=b"FEAT")
+    assert (identifier, data) == (0x1AE, bytes.fromhex("4645415480000032"))
+    assert p.decode_set_features_request_estop_timeout(data)["estop_timeout_ms"] == 50
+    assert p.encode_features_resp_request_estop_timeout(3) == (0x1AF, b"\x03")
+    assert p.encode_features_resp_request_estop_timeout(4) == (0x1AF, b"\x04")
+    _, answer = p.encode_features_resp_response_estop_timeout(0x80, 0x80, 255, 0, 0, 3, 500)
+    assert answer == ef.encode_timeout_answer(0x80, 0x80, 0, 0, 500) and answer[6:] == b"\x01\xf4"
+    assert ef.decode_timeout_answer(answer)["timeout_ms"] == 500
+    assert ef.decode_timeout_answer(answer[:6]) is None
+
+
+def test_the_old_write_and_query_forms_behave_exactly_as_before():
+    assert ef.parse_features_write(bytes.fromhex("464541542001")) == ef.FeaturesWrite(0x20, 0x01, ef.KEEP_STORED_TIMEOUT, 6)
+    assert ef.parse_features_write(bytes.fromhex("4645415480")) == ef.FeaturesWrite(0x80, 0, ef.KEEP_STORED_TIMEOUT, 5)   # keeps the stored silence
+    assert ef.query_form(b"") == ef.QUERY_BASIC and ef.query_form(b"\x00") == ef.QUERY_BASIC and ef.query_form(b"\x02") == ef.QUERY_EXTENDED
+    assert ef.query_form(b"\x03\x03") == ef.QUERY_BASIC     # only a query of exactly one byte asks for more
+
+
+def test_a_write_of_the_silence_is_taken_only_inside_the_limits_and_never_in_part():
+    for ms in range(0, 65536):
+        data = bytes.fromhex("464541548000") + ms.to_bytes(2, "big")
+        write = ef.parse_features_write(data)
+        if ms == 0 or ef.TIMEOUT_MIN_MS <= ms <= ef.TIMEOUT_MAX_MS:
+            assert write == ef.FeaturesWrite(0x80, 0, ms, 8), ms
+        else:
+            assert write is None, ms   # the whole frame is ignored: not even the switches change
+    assert ef.parse_features_write(bytes.fromhex("46454154800000")) is None     # DLC 7
+    assert ef.parse_features_write(bytes.fromhex("464541548000003200")) is None  # DLC 9
+    assert ef.parse_features_write(bytes.fromhex("4645415480040032")) is None    # a switch of the second byte this firmware does not have
+
+
+def test_the_wire_vectors_are_the_ones_of_the_twin():
+    for case in VECTORS["feature_writes"]:
+        write = ef.parse_features_write(bytes.fromhex(case["data_hex"]))
+        assert (write is not None) == case["valid"], case
+        if write:
+            assert (write.mask, write.mask_ext) == (case["mask"], case["mask_ext"])
+            assert case["timeout_ms"] == (-1 if write.timeout_ms is None else write.timeout_ms)
+    for case in VECTORS["feature_queries"]:
+        assert ef.query_form(bytes.fromhex(case["data_hex"])) == case["form"], case
+    for case in VECTORS["timeout_answers"]:
+        data = ef.encode_timeout_answer(case["stored"], case["running"], case["stored_ext"], case["running_ext"], case["timeout_ms"])
+        assert data.hex() == case["data_hex"]
+    assert {c["timeout_ms"] for c in VECTORS["feature_writes"] if c["valid"]} >= {-1, 0, 40, 50, 500}
+    assert not any(c["valid"] for c in VECTORS["feature_writes"] if c["data_hex"].endswith(("0027", "01F5", "0014", "0001")) and len(c["data_hex"]) == 16)
+
+
+def test_a_master_that_answers_with_a_lower_silence_shortens_the_head_but_never_lengthens_it():
+    answer = ef.decode_timeout_answer(ef.encode_timeout_answer(0x80, 0x80, 0, 0, 60))
+    node = ef.Node(200)
+    assert node.set_master_timeout(answer["timeout_ms"]) == ef.TIMEOUT_MASTER_DIFFERS and node.alive_timeout_ms == 60
+    node = ef.Node(60)
+    node.set_master_timeout(400)
+    assert node.alive_timeout_ms == 60
+    node = ef.Node(100)
+    assert node.set_master_timeout(0) == ef.TIMEOUT_OK and node.alive_timeout_ms == 100   # a board with ESTOP_FOLLOW off answers 0: nothing announced
