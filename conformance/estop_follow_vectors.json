@@ -5,7 +5,9 @@
     "can_id": 1,
     "alive_timeout_ms": 100,
     "reason_stop": 9,
-    "reason_silence": 10
+    "reason_silence": 10,
+    "alive_timeout_min_ms": 20,
+    "alive_timeout_max_ms": 500
   },
   "frames": [
     {
@@ -702,6 +704,420 @@
           "released": true
         }
       ]
+    },
+    {
+      "name": "a head configured at 50 ms latches after exactly 50 ms of silence",
+      "steps": [
+        {
+          "t": 0,
+          "frame": "030100011200fcfe",
+          "state_after": "LATCHED",
+          "stop_reason": 9,
+          "released": false
+        },
+        {
+          "t": 10,
+          "frame": "020000011300fdff",
+          "expect": "READY",
+          "state_after": "READY",
+          "stop_reason": 0,
+          "released": true
+        },
+        {
+          "t": 20,
+          "frame": "030000011400fcff",
+          "state_after": "READY",
+          "stop_reason": 0,
+          "released": false
+        },
+        {
+          "t": 70,
+          "do": "tick",
+          "expect": "READY",
+          "state_after": "READY",
+          "stop_reason": 0,
+          "released": false
+        },
+        {
+          "t": 71,
+          "do": "tick",
+          "expect": "LATCHED",
+          "state_after": "LATCHED",
+          "stop_reason": 10,
+          "released": false
+        }
+      ],
+      "alive_timeout_ms": 50
+    },
+    {
+      "name": "a head configured at 500 ms waits the whole 500 ms",
+      "steps": [
+        {
+          "t": 0,
+          "frame": "030100011200fcfe",
+          "state_after": "LATCHED",
+          "stop_reason": 9,
+          "released": false
+        },
+        {
+          "t": 10,
+          "frame": "020000011300fdff",
+          "expect": "READY",
+          "state_after": "READY",
+          "stop_reason": 0,
+          "released": true
+        },
+        {
+          "t": 20,
+          "frame": "030000011400fcff",
+          "state_after": "READY",
+          "stop_reason": 0,
+          "released": false
+        },
+        {
+          "t": 520,
+          "do": "tick",
+          "expect": "READY",
+          "state_after": "READY",
+          "stop_reason": 0,
+          "released": false
+        },
+        {
+          "t": 521,
+          "do": "tick",
+          "expect": "LATCHED",
+          "state_after": "LATCHED",
+          "stop_reason": 10,
+          "released": false
+        }
+      ],
+      "alive_timeout_ms": 500
+    },
+    {
+      "name": "a configured value below the limit is rejected and the default of 100 ms is used",
+      "steps": [
+        {
+          "t": 0,
+          "frame": "030100011200fcfe",
+          "state_after": "LATCHED",
+          "stop_reason": 9,
+          "released": false
+        },
+        {
+          "t": 10,
+          "frame": "020000011300fdff",
+          "expect": "READY",
+          "state_after": "READY",
+          "stop_reason": 0,
+          "released": true
+        },
+        {
+          "t": 20,
+          "frame": "030000011400fcff",
+          "state_after": "READY",
+          "stop_reason": 0,
+          "released": false
+        },
+        {
+          "t": 120,
+          "do": "tick",
+          "expect": "READY",
+          "state_after": "READY",
+          "stop_reason": 0,
+          "released": false
+        },
+        {
+          "t": 121,
+          "do": "tick",
+          "expect": "LATCHED",
+          "state_after": "LATCHED",
+          "stop_reason": 10,
+          "released": false
+        }
+      ],
+      "alive_timeout_ms": 19
+    },
+    {
+      "name": "a configured value above the limit is rejected and the default of 100 ms is used",
+      "steps": [
+        {
+          "t": 0,
+          "frame": "030100011200fcfe",
+          "state_after": "LATCHED",
+          "stop_reason": 9,
+          "released": false
+        },
+        {
+          "t": 10,
+          "frame": "020000011300fdff",
+          "expect": "READY",
+          "state_after": "READY",
+          "stop_reason": 0,
+          "released": true
+        },
+        {
+          "t": 20,
+          "frame": "030000011400fcff",
+          "state_after": "READY",
+          "stop_reason": 0,
+          "released": false
+        },
+        {
+          "t": 120,
+          "do": "tick",
+          "expect": "READY",
+          "state_after": "READY",
+          "stop_reason": 0,
+          "released": false
+        },
+        {
+          "t": 121,
+          "do": "tick",
+          "expect": "LATCHED",
+          "state_after": "LATCHED",
+          "stop_reason": 10,
+          "released": false
+        }
+      ],
+      "alive_timeout_ms": 501
+    },
+    {
+      "name": "a master that announces a lower timeout than the head's is obeyed (the lower one wins)",
+      "steps": [
+        {
+          "t": 0,
+          "frame": "030100011200fcfe",
+          "state_after": "LATCHED",
+          "stop_reason": 9,
+          "released": false
+        },
+        {
+          "t": 10,
+          "frame": "020000011300fdff",
+          "expect": "READY",
+          "state_after": "READY",
+          "stop_reason": 0,
+          "released": true
+        },
+        {
+          "t": 20,
+          "frame": "030000011400fcff",
+          "state_after": "READY",
+          "stop_reason": 0,
+          "released": false
+        },
+        {
+          "t": 80,
+          "do": "tick",
+          "expect": "READY",
+          "state_after": "READY",
+          "stop_reason": 0,
+          "released": false
+        },
+        {
+          "t": 81,
+          "do": "tick",
+          "expect": "LATCHED",
+          "state_after": "LATCHED",
+          "stop_reason": 10,
+          "released": false
+        }
+      ],
+      "alive_timeout_ms": 200,
+      "master_timeout_ms": 60
+    },
+    {
+      "name": "a master that announces a higher timeout than the head's never makes the head more tolerant",
+      "steps": [
+        {
+          "t": 0,
+          "frame": "030100011200fcfe",
+          "state_after": "LATCHED",
+          "stop_reason": 9,
+          "released": false
+        },
+        {
+          "t": 10,
+          "frame": "020000011300fdff",
+          "expect": "READY",
+          "state_after": "READY",
+          "stop_reason": 0,
+          "released": true
+        },
+        {
+          "t": 20,
+          "frame": "030000011400fcff",
+          "state_after": "READY",
+          "stop_reason": 0,
+          "released": false
+        },
+        {
+          "t": 80,
+          "do": "tick",
+          "expect": "READY",
+          "state_after": "READY",
+          "stop_reason": 0,
+          "released": false
+        },
+        {
+          "t": 81,
+          "do": "tick",
+          "expect": "LATCHED",
+          "state_after": "LATCHED",
+          "stop_reason": 10,
+          "released": false
+        }
+      ],
+      "alive_timeout_ms": 60,
+      "master_timeout_ms": 400
+    },
+    {
+      "name": "a master that announces a value outside the limits is ignored",
+      "steps": [
+        {
+          "t": 0,
+          "frame": "030100011200fcfe",
+          "state_after": "LATCHED",
+          "stop_reason": 9,
+          "released": false
+        },
+        {
+          "t": 10,
+          "frame": "020000011300fdff",
+          "expect": "READY",
+          "state_after": "READY",
+          "stop_reason": 0,
+          "released": true
+        },
+        {
+          "t": 20,
+          "frame": "030000011400fcff",
+          "state_after": "READY",
+          "stop_reason": 0,
+          "released": false
+        },
+        {
+          "t": 170,
+          "do": "tick",
+          "expect": "READY",
+          "state_after": "READY",
+          "stop_reason": 0,
+          "released": false
+        },
+        {
+          "t": 171,
+          "do": "tick",
+          "expect": "LATCHED",
+          "state_after": "LATCHED",
+          "stop_reason": 10,
+          "released": false
+        }
+      ],
+      "alive_timeout_ms": 150,
+      "master_timeout_ms": 5000
+    }
+  ],
+  "timeout_config": [
+    {
+      "requested": 0,
+      "ms": 100,
+      "status": 0
+    },
+    {
+      "requested": 100,
+      "ms": 100,
+      "status": 0
+    },
+    {
+      "requested": 20,
+      "ms": 20,
+      "status": 0
+    },
+    {
+      "requested": 500,
+      "ms": 500,
+      "status": 0
+    },
+    {
+      "requested": 19,
+      "ms": 100,
+      "status": 1
+    },
+    {
+      "requested": 501,
+      "ms": 100,
+      "status": 1
+    },
+    {
+      "requested": 1,
+      "ms": 100,
+      "status": 1
+    },
+    {
+      "requested": 65535,
+      "ms": 100,
+      "status": 1
+    },
+    {
+      "requested": 250,
+      "ms": 250,
+      "status": 0
+    }
+  ],
+  "timeout_master": [
+    {
+      "own": 100,
+      "master": 0,
+      "ms": 100,
+      "status": 0
+    },
+    {
+      "own": 100,
+      "master": 100,
+      "ms": 100,
+      "status": 0
+    },
+    {
+      "own": 100,
+      "master": 60,
+      "ms": 60,
+      "status": 2
+    },
+    {
+      "own": 100,
+      "master": 300,
+      "ms": 100,
+      "status": 2
+    },
+    {
+      "own": 20,
+      "master": 500,
+      "ms": 20,
+      "status": 2
+    },
+    {
+      "own": 500,
+      "master": 20,
+      "ms": 20,
+      "status": 2
+    },
+    {
+      "own": 100,
+      "master": 19,
+      "ms": 100,
+      "status": 3
+    },
+    {
+      "own": 100,
+      "master": 501,
+      "ms": 100,
+      "status": 3
+    },
+    {
+      "own": 60,
+      "master": 65535,
+      "ms": 60,
+      "status": 3
     }
   ]
 }

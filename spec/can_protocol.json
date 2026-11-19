@@ -1423,6 +1423,20 @@
       "title": "Silence of the master of the emergency stop after which a head that is ready goes back to its safe state (ESTOP_FOLLOW feature on)",
       "group": "timing",
       "unit": "ms"
+    },
+    {
+      "name": "ESTOP_ALIVE_TIMEOUT_MIN_MS",
+      "value": 20,
+      "title": "Lowest silence of the master of the emergency stop a head accepts as its configured timeout; below it the value is rejected and the default is used (ESTOP_FOLLOW feature on)",
+      "group": "timing",
+      "unit": "ms"
+    },
+    {
+      "name": "ESTOP_ALIVE_TIMEOUT_MAX_MS",
+      "value": 500,
+      "title": "Highest silence of the master of the emergency stop a head accepts as its configured timeout; above it the value is rejected and the default is used (ESTOP_FOLLOW feature on)",
+      "group": "timing",
+      "unit": "ms"
     }
   ],
   "magic_payloads": [
