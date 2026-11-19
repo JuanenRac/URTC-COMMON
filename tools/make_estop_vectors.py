@@ -130,11 +130,64 @@ SCENARIOS = [
         {"t": 30, "frame": "020000010c00fdff", "expect": "LATCHED"},
         {"t": 40, "frame": "030000010d00fcff", "expect": "LATCHED"},
         {"t": 50, "frame": "020000010e00fdff", "expect": "READY"}]},
+    {"name": "a head configured at 50 ms latches after exactly 50 ms of silence", "alive_timeout_ms": 50, "steps": [
+        {"t": 0, "frame": "030100011200fcfe"},
+        {"t": 10, "frame": "020000011300fdff", "expect": "READY"},
+        {"t": 20, "frame": "030000011400fcff"},
+        {"t": 70, "do": "tick", "expect": "READY"},
+        {"t": 71, "do": "tick", "expect": "LATCHED"}]},
+    {"name": "a head configured at 500 ms waits the whole 500 ms", "alive_timeout_ms": 500, "steps": [
+        {"t": 0, "frame": "030100011200fcfe"},
+        {"t": 10, "frame": "020000011300fdff", "expect": "READY"},
+        {"t": 20, "frame": "030000011400fcff"},
+        {"t": 520, "do": "tick", "expect": "READY"},
+        {"t": 521, "do": "tick", "expect": "LATCHED"}]},
+    {"name": "a configured value below the limit is rejected and the default of 100 ms is used", "alive_timeout_ms": 19, "steps": [
+        {"t": 0, "frame": "030100011200fcfe"},
+        {"t": 10, "frame": "020000011300fdff", "expect": "READY"},
+        {"t": 20, "frame": "030000011400fcff"},
+        {"t": 120, "do": "tick", "expect": "READY"},
+        {"t": 121, "do": "tick", "expect": "LATCHED"}]},
+    {"name": "a configured value above the limit is rejected and the default of 100 ms is used", "alive_timeout_ms": 501, "steps": [
+        {"t": 0, "frame": "030100011200fcfe"},
+        {"t": 10, "frame": "020000011300fdff", "expect": "READY"},
+        {"t": 20, "frame": "030000011400fcff"},
+        {"t": 120, "do": "tick", "expect": "READY"},
+        {"t": 121, "do": "tick", "expect": "LATCHED"}]},
+    {"name": "a master that announces a lower timeout than the head's is obeyed (the lower one wins)", "alive_timeout_ms": 200, "master_timeout_ms": 60, "steps": [
+        {"t": 0, "frame": "030100011200fcfe"},
+        {"t": 10, "frame": "020000011300fdff", "expect": "READY"},
+        {"t": 20, "frame": "030000011400fcff"},
+        {"t": 80, "do": "tick", "expect": "READY"},
+        {"t": 81, "do": "tick", "expect": "LATCHED"}]},
+    {"name": "a master that announces a higher timeout than the head's never makes the head more tolerant", "alive_timeout_ms": 60, "master_timeout_ms": 400, "steps": [
+        {"t": 0, "frame": "030100011200fcfe"},
+        {"t": 10, "frame": "020000011300fdff", "expect": "READY"},
+        {"t": 20, "frame": "030000011400fcff"},
+        {"t": 80, "do": "tick", "expect": "READY"},
+        {"t": 81, "do": "tick", "expect": "LATCHED"}]},
+    {"name": "a master that announces a value outside the limits is ignored", "alive_timeout_ms": 150, "master_timeout_ms": 5000, "steps": [
+        {"t": 0, "frame": "030100011200fcfe"},
+        {"t": 10, "frame": "020000011300fdff", "expect": "READY"},
+        {"t": 20, "frame": "030000011400fcff"},
+        {"t": 170, "do": "tick", "expect": "READY"},
+        {"t": 171, "do": "tick", "expect": "LATCHED"}]},
+]
+
+# Resolution of a configured value: requested (0 = not set), the milliseconds in use and the status (0 ok, 1 rejected).
+TIMEOUT_CONFIG_CASES = [
+    (0, 100, 0), (100, 100, 0), (20, 20, 0), (500, 500, 0), (19, 100, 1), (501, 100, 1), (1, 100, 1), (65535, 100, 1), (250, 250, 0),
+]
+# The head's own value, what the master announced (0 = nothing), the milliseconds in use and the status (0 ok, 2 differs and the lower is used, 3 ignored).
+TIMEOUT_MASTER_CASES = [
+    (100, 0, 100, 0), (100, 100, 100, 0), (100, 60, 60, 2), (100, 300, 100, 2), (20, 500, 20, 2), (500, 20, 20, 2), (100, 19, 100, 3), (100, 501, 100, 3), (60, 65535, 60, 3),
 ]
 
 
 def run_scenario(scenario: dict) -> dict:
-    node = ef.Node()
+    node = ef.Node(scenario.get("alive_timeout_ms"))
+    if "master_timeout_ms" in scenario:
+        node.set_master_timeout(scenario["master_timeout_ms"])
     steps = []
     for step in scenario["steps"]:
         if "frame" in step:
@@ -150,7 +203,11 @@ def run_scenario(scenario: dict) -> dict:
         if "expect" in step:
             assert step["expect"] == out["state_after"], (scenario["name"], step)
         steps.append(out)
-    return {"name": scenario["name"], "steps": steps}
+    out = {"name": scenario["name"], "steps": steps}
+    for key in ("alive_timeout_ms", "master_timeout_ms"):
+        if key in scenario:
+            out[key] = scenario[key]
+    return out
 
 
 def build() -> dict:
@@ -170,11 +227,14 @@ def build() -> dict:
         "constants": {
             "can_id": R.ESTOP_CAN_ID, "alive_timeout_ms": R.ESTOP_ALIVE_TIMEOUT_MS,
             "reason_stop": R.ERROR_REASON_ESTOP, "reason_silence": R.ERROR_REASON_ESTOP_SILENCE,
+            "alive_timeout_min_ms": R.ESTOP_ALIVE_TIMEOUT_MIN_MS, "alive_timeout_max_ms": R.ESTOP_ALIVE_TIMEOUT_MAX_MS,
         },
         "frames": frames,
         "malformed": malformed,
         "seq_newer": [{"have_last": h, "candidate": c, "last": ls, "newer": ef.seq_newer(c, h, ls)} for h, c, ls in SEQ_CASES],
         "scenarios": [run_scenario(s) for s in SCENARIOS],
+        "timeout_config": [dict(zip(("requested", "ms", "status"), (r, *ef.resolve_timeout(r)))) for r, _, _ in TIMEOUT_CONFIG_CASES],
+        "timeout_master": [dict(zip(("own", "master", "ms", "status"), (o, m, *ef.effective_timeout(o, m)))) for o, m, _, _ in TIMEOUT_MASTER_CASES],
     }
 
 
@@ -203,6 +263,10 @@ def c_header(data: dict) -> str:
         "typedef struct { uint8_t dlc; uint8_t data[9]; } estop_malformed_case_t;",
         "typedef struct { uint8_t have_last; uint16_t candidate, last; uint8_t newer; } estop_seq_case_t;",
         "// kind: 0 a frame, 1 a tick, 2 a bus-off. expect_state: 0 latched, 1 ready, 255 not checked. state_after is the twin's state; stop_reason is 0 when no stop applies.",
+        "typedef struct { uint16_t requested, ms; uint8_t status; } estop_timeout_config_case_t;",
+        "typedef struct { uint16_t own, master, ms; uint8_t status; } estop_timeout_master_case_t;",
+        "// Per scenario: the timeout the head is configured with (0 = not set) and the one the master announces (0 = nothing).",
+        "typedef struct { uint16_t own, master; } estop_scenario_cfg_t;",
         "typedef struct { uint8_t scenario; uint32_t t; uint8_t kind, dlc; uint8_t data[9]; uint8_t expect_state, state_after, stop_reason, released; } estop_step_t;",
         "",
         "static const estop_frame_case_t ESTOP_FRAME_CASES[] = {",
@@ -225,9 +289,20 @@ def c_header(data: dict) -> str:
             expect = {"LATCHED": "0", "READY": "1"}.get(step.get("expect", ""), "255")
             after = "1" if step["state_after"] == "READY" else "0"
             lines.append(f"    {{{i}, {step['t']}u, {kind}, {dlc}, {payload}, {expect}, {after}, {step['stop_reason']}, {b(step['released'])}}},")
+    lines += ["};", "", "static const estop_scenario_cfg_t ESTOP_SCENARIO_CFG[] = {"]
+    for scenario in data["scenarios"]:
+        lines.append(f"    {{{scenario.get('alive_timeout_ms', 0)}u, {scenario.get('master_timeout_ms', 0)}u}},")
+    lines += ["};", "", "static const estop_timeout_config_case_t ESTOP_TIMEOUT_CONFIG_CASES[] = {"]
+    for c in data["timeout_config"]:
+        lines.append(f"    {{{c['requested']}u, {c['ms']}u, {c['status']}}},")
+    lines += ["};", "", "static const estop_timeout_master_case_t ESTOP_TIMEOUT_MASTER_CASES[] = {"]
+    for c in data["timeout_master"]:
+        lines.append(f"    {{{c['own']}u, {c['master']}u, {c['ms']}u, {c['status']}}},")
     lines += [
         "};", "",
         f"#define ESTOP_SCENARIO_COUNT {len(data['scenarios'])}",
+        f"#define ESTOP_TIMEOUT_MIN_MS {data['constants']['alive_timeout_min_ms']}u",
+        f"#define ESTOP_TIMEOUT_MAX_MS {data['constants']['alive_timeout_max_ms']}u",
         "#define ESTOP_VEC_COUNT(a) ((int)(sizeof(a) / sizeof((a)[0])))", "",
         "#endif // ESTOP_FOLLOW_VECTORS_H", "",
     ]
