@@ -4974,28 +4974,46 @@
           "fields": [
             {
               "name": "format",
-              "type": "u8",
-              "range": [
-                3,
-                4
-              ],
-              "note": "Asks for the eight-byte answer. 3: the silence of the master in force now. 4: the silence stored in the record (0 = the default). Any other value gets the three-byte answer, as before.",
+              "type": "bytes",
+              "length": 1,
+              "fixed": "03",
               "offset": 0,
-              "width": 1
+              "width": 1,
+              "note": "Asks for the eight-byte answer with the silence of the master in force now (0 while ESTOP_FOLLOW is not running)."
             }
           ],
           "examples": [
             {
               "name": "ask the value in force",
               "fields": {
-                "format": 3
+                "format": "03"
               },
               "data": "03"
-            },
+            }
+          ]
+        },
+        {
+          "role": "request",
+          "variant": "estop_timeout_stored",
+          "dlc": {
+            "exact": 1
+          },
+          "fields": [
+            {
+              "name": "format",
+              "type": "bytes",
+              "length": 1,
+              "fixed": "04",
+              "offset": 0,
+              "width": 1,
+              "note": "Asks for the eight-byte answer with the silence of the master stored in the record (0 = the default). Any other one-byte query gets the three-byte answer, as before."
+            }
+          ],
+          "examples": [
             {
               "name": "ask the stored value",
               "fields": {
-                "format": 4
+                "format": "04"
               },
               "data": "04"
             }
