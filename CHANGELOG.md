@@ -4,7 +4,7 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
-- **The flasher catalog has the texts of an optional functions panel:** a title, the check box of the emergency stop following, the write button, a help paragraph that says nothing is written without the button and a flash never writes the switch, and the two log lines of the answer, in the eight languages (formal register in French, German and Portuguese).
+- **The flasher catalog has the texts of an optional functions panel:** a title, the check box of the emergency stop following, the write button, a help paragraph that says nothing is written without the button and a flash never writes the switch, and the log lines (the answer and the three states of the button), in the eight languages (formal register in French, German and Portuguese).
 
 ## [0.3.0] - Catalog texts for the update window and the tester, and a rollback that checks its target
 
