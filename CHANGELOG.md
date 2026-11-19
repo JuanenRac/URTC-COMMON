@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The flasher catalog has the texts of an optional functions panel:** a title, the check box of the emergency stop following, the write button, a help paragraph that says nothing is written without the button and a flash never writes the switch, and the two log lines of the answer, in the eight languages (formal register in French, German and Portuguese).
+
 ## [0.3.0] - Catalog texts for the update window and the tester, and a rollback that checks its target
 
 - **A rollback checks the release it goes back to:** `self_update.rollback` now reads the `app_info.json` of that release and its `entry` first. A missing or unreadable file, no `entry`, an `entry` that leaves the release folder or is not a file are refused with the error `rollback_target_damaged`; `current.txt` is not touched and the refusal is written in the history. Tested for each case and for the valid rollback.
