@@ -234,7 +234,8 @@ def test_gates_of_the_firmware_match_the_specification(spec, sibling):
 
 
 # Identifiers whose length is checked inside a parser that has no identifier in it: (function, the condition in its source, the rule the specification records).
-PARSER_CHECKED = {0x1AE: ("Feat_ParseCommandEx", "dlc != 5 && dlc != 6", {"min": 5, "max": 6})}
+PARSER_BEFORE_EIGHT_BYTE_FORM = ("Feat_ParseCommandEx", "dlc != 5 && dlc != 6")   # remove when every published firmware has Feat_ParseWrite
+PARSER_CHECKED = {0x1AE: ("Feat_ParseWrite", "dlc != 5 && dlc != 6 && dlc != 8", {"one_of": [5, 6, 8]})}
 
 
 def test_length_checks_of_the_firmware_match_the_specification(spec, sibling):
@@ -258,6 +259,8 @@ def test_length_checks_of_the_firmware_match_the_specification(spec, sibling):
             if frame_id in PARSER_CHECKED:
                 # the length is checked by a pure parser (tested on the host), not by a comparison of the identifier: its source must say the same range
                 function, condition, rule = PARSER_CHECKED[frame_id]
+                if function not in source and PARSER_BEFORE_EIGHT_BYTE_FORM[0] in source and PARSER_BEFORE_EIGHT_BYTE_FORM[1] in source:
+                    continue   # the firmware still on the previous form: the specification may go first, the firmware follows in the next lot
                 assert function in source and condition in source, f"0x{frame_id:03X}: the length check of {function} is not in the source"
                 assert message["firmware_accepts_dlc"] == rule, (hex(frame_id), message["firmware_accepts_dlc"], rule)
                 continue

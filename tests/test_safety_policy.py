@@ -36,7 +36,7 @@ def test_the_three_new_features_are_switches_that_start_off_in_the_mask():
     assert features["CLEAR_ERROR"] == 16 and features["COMMS_WATCHDOG"] == 32 and features["MAGNET_RELEASE"] == 64
     assert len(set(features.values())) == len(features)          # no two features share a bit
     assert all(value & (value - 1) == 0 for value in features.values())   # each is one bit
-    ranges = [f["range"] for lay in message("0x1AE")["layouts"] + message("0x1AF")["layouts"] for f in lay["fields"] if "range" in f]
+    ranges = [f["range"] for lay in message("0x1AE")["layouts"] + message("0x1AF")["layouts"] for f in lay["fields"] if "range" in f and f["name"] not in ("estop_timeout_ms", "format")]
     assert ranges and all(r == [0, 255] for r in ranges), "the mask fields must reach the eighth bit"
     assert max(features.values()) * 2 - 1 == 255
 
@@ -180,11 +180,12 @@ def test_the_second_byte_of_the_map_has_two_switches_and_the_five_byte_form_stil
     assert p.FEATURE_EXT_WATCHDOG_HOST_ONLY == 1 and p.FEATURE_EXT_ALLOW_UPDATE_ACTIVE_ACTUATOR == 2
     assert all(value & (value - 1) == 0 and 0 < value < 256 for value in ext.values())
     layouts = message("0x1AE")["layouts"]
-    assert [(lay.get("variant"), lay["dlc"]["exact"]) for lay in layouts] == [(None, 5), ("extended", 6)]
-    assert message("0x1AE")["firmware_accepts_dlc"] == {"min": 5, "max": 6}
+    assert [(lay.get("variant"), lay["dlc"]["exact"]) for lay in layouts] == [(None, 5), ("extended", 6), ("estop_timeout", 8)]
+    assert message("0x1AE")["firmware_accepts_dlc"] == {"one_of": [5, 6, 8]}
     assert [f["name"] for f in layouts[1]["fields"]] == ["magic", "features", "features_ext"]
     assert [(lay["role"], lay.get("variant"), lay["dlc"]) for lay in message("0x1AF")["layouts"]] == [
-        ("request", None, {"any": True}), ("request", "extended", {"exact": 1}), ("response", None, {"exact": 3}), ("response", "extended", {"exact": 6})]
+        ("request", None, {"any": True}), ("request", "extended", {"exact": 1}),
+        ("request", "estop_timeout", {"exact": 1}), ("response", None, {"exact": 3}), ("response", "extended", {"exact": 6}), ("response", "estop_timeout", {"exact": 8})]
 
 
 def test_the_extended_frames_round_trip_and_the_old_ones_are_unchanged():

@@ -1426,7 +1426,7 @@
     },
     {
       "name": "ESTOP_ALIVE_TIMEOUT_MIN_MS",
-      "value": 20,
+      "value": 40,
       "title": "Lowest silence of the master of the emergency stop a head accepts as its configured timeout; below it the value is rejected and the default is used (ESTOP_FOLLOW feature on)",
       "group": "timing",
       "unit": "ms"
@@ -4808,16 +4808,96 @@
               "data": "464541542001"
             }
           ]
+        },
+        {
+          "role": "request",
+          "variant": "estop_timeout",
+          "dlc": {
+            "exact": 8
+          },
+          "fields": [
+            {
+              "name": "magic",
+              "type": "bytes",
+              "length": 4,
+              "fixed": "46454154",
+              "offset": 0,
+              "width": 4
+            },
+            {
+              "name": "features",
+              "type": "u8",
+              "range": [
+                0,
+                255
+              ],
+              "enum": "firmware_feature",
+              "note": "Bit mask of the first byte: the features to have on; the others are off.",
+              "offset": 4,
+              "width": 1
+            },
+            {
+              "name": "features_ext",
+              "type": "u8",
+              "range": [
+                0,
+                255
+              ],
+              "enum": "firmware_feature_ext",
+              "note": "Bit mask of the second byte: the features to have on; the others are off.",
+              "offset": 5,
+              "width": 1
+            },
+            {
+              "name": "estop_timeout_ms",
+              "type": "u16",
+              "range": [
+                0,
+                500
+              ],
+              "unit": "ms",
+              "note": "ESTOP_FOLLOW: the silence of the master after which a ready head goes back to its safe state. 0 clears the stored value (the default, 100 ms); otherwise ESTOP_ALIVE_TIMEOUT_MIN_MS to ESTOP_ALIVE_TIMEOUT_MAX_MS. A value outside the limits makes the firmware ignore the whole frame: nothing is changed and nothing is answered.",
+              "offset": 6,
+              "width": 2
+            }
+          ],
+          "examples": [
+            {
+              "name": "ESTOP_FOLLOW on with a silence of 50 ms",
+              "fields": {
+                "magic": "46454154",
+                "features": 128,
+                "features_ext": 0,
+                "estop_timeout_ms": 50
+              },
+              "data": "4645415480000032"
+            },
+            {
+              "name": "ESTOP_FOLLOW on, stored silence cleared (default)",
+              "fields": {
+                "magic": "46454154",
+                "features": 128,
+                "features_ext": 0,
+                "estop_timeout_ms": 0
+              },
+              "data": "4645415480000000"
+            }
+          ]
         }
       ],
       "notes": [
         "Every feature is off on a board that was never written, with an erased or damaged record, or when a bit outside the supported mask is set. Any other payload or length is ignored.",
         "Answered with 0x1AF, which reports the stored mask, the mask in force and the mask this firmware supports.",
-        "The five-byte form sets the second byte of the map to zero (every feature of it off) and is answered with the three-byte form of 0x1AF; the six-byte form is answered with the six-byte form. A host that only knows the five-byte form keeps working."
+        "The five-byte form sets the second byte of the map to zero (every feature of it off) and is answered with the three-byte form of 0x1AF; the six-byte form is answered with the six-byte form. A host that only knows the five-byte form keeps working.",
+        "The eight-byte form also sets the silence of the master of ESTOP_FOLLOW (estop_timeout_ms, stored in the same record, in force after the next power-up like the switches). The five-byte and six-byte forms never touch it: they keep the stored value. The eight-byte form is answered with the eight-byte form of 0x1AF carrying the stored value. A value outside 0 and ESTOP_ALIVE_TIMEOUT_MIN_MS to ESTOP_ALIVE_TIMEOUT_MAX_MS is refused as a whole (ignored, as any invalid payload), so a host reads back with 0x1AF to see that nothing was stored. A host must ask the user before it writes this and must never write it while a firmware update is in progress.",
+        "A DLC of 7 is ignored."
       ],
       "firmware_accepts_dlc": {
-        "min": 5,
-        "max": 6
+        "one_of": [
+          5,
+          6,
+          8
+        ]
       },
       "implemented_by": {
         "firmware": true,
@@ -4882,6 +4962,42 @@
                 "format": "02"
               },
               "data": "02"
+            }
+          ]
+        },
+        {
+          "role": "request",
+          "variant": "estop_timeout",
+          "dlc": {
+            "exact": 1
+          },
+          "fields": [
+            {
+              "name": "format",
+              "type": "u8",
+              "range": [
+                3,
+                4
+              ],
+              "note": "Asks for the eight-byte answer. 3: the silence of the master in force now. 4: the silence stored in the record (0 = the default). Any other value gets the three-byte answer, as before.",
+              "offset": 0,
+              "width": 1
+            }
+          ],
+          "examples": [
+            {
+              "name": "ask the value in force",
+              "fields": {
+                "format": 3
+              },
+              "data": "03"
+            },
+            {
+              "name": "ask the stored value",
+              "fields": {
+                "format": 4
+              },
+              "data": "04"
             }
           ]
         },
@@ -5028,10 +5144,116 @@
               "data": "2000FF010001"
             }
           ]
+        },
+        {
+          "role": "response",
+          "variant": "estop_timeout",
+          "dlc": {
+            "exact": 8
+          },
+          "fields": [
+            {
+              "name": "stored",
+              "type": "u8",
+              "range": [
+                0,
+                255
+              ],
+              "note": "The first byte of the mask the F-RAM record says.",
+              "offset": 0,
+              "width": 1
+            },
+            {
+              "name": "running",
+              "type": "u8",
+              "range": [
+                0,
+                255
+              ],
+              "note": "The first byte of the mask in force now.",
+              "offset": 1,
+              "width": 1
+            },
+            {
+              "name": "supported",
+              "type": "u8",
+              "range": [
+                0,
+                255
+              ],
+              "note": "The features of the first byte this firmware has.",
+              "offset": 2,
+              "width": 1
+            },
+            {
+              "name": "stored_ext",
+              "type": "u8",
+              "range": [
+                0,
+                255
+              ],
+              "enum": "firmware_feature_ext",
+              "note": "The second byte of the mask the F-RAM record says.",
+              "offset": 3,
+              "width": 1
+            },
+            {
+              "name": "running_ext",
+              "type": "u8",
+              "range": [
+                0,
+                255
+              ],
+              "enum": "firmware_feature_ext",
+              "note": "The second byte of the mask in force now.",
+              "offset": 4,
+              "width": 1
+            },
+            {
+              "name": "supported_ext",
+              "type": "u8",
+              "range": [
+                0,
+                255
+              ],
+              "enum": "firmware_feature_ext",
+              "note": "The features of the second byte this firmware has.",
+              "offset": 5,
+              "width": 1
+            },
+            {
+              "name": "estop_timeout_ms",
+              "type": "u16",
+              "range": [
+                0,
+                65535
+              ],
+              "unit": "ms",
+              "note": "ESTOP_FOLLOW silence of the master. After a query 3 (or the answer to a write): the value in force now, 0 while ESTOP_FOLLOW is not running. After a query 4: the value stored in the record, 0 meaning the default. A board that announces this value is announcing its own master silence: a head takes the lower of its own and the announced one (see docs/ESTOP_FOLLOW_TIMEOUT.md).",
+              "offset": 6,
+              "width": 2
+            }
+          ],
+          "examples": [
+            {
+              "name": "ESTOP_FOLLOW running with a silence of 50 ms",
+              "fields": {
+                "stored": 128,
+                "running": 128,
+                "supported": 255,
+                "stored_ext": 0,
+                "running_ext": 0,
+                "supported_ext": 3,
+                "estop_timeout_ms": 50
+              },
+              "data": "8080FF0000030032"
+            }
+          ]
         }
       ],
       "notes": [
-        "A query with the single byte 02 is answered with the six-byte form; any other query, empty or not, with the three-byte form as before."
+        "A query with the single byte 02 is answered with the six-byte form; a query with 03 or 04 with the eight-byte form (the last two bytes are the silence of the master of ESTOP_FOLLOW, in force for 03, stored for 04); any other query, empty or not, with the three-byte form as before.",
+        "The eight-byte form is also the answer to a valid eight-byte write of 0x1AE, with the stored silence."
       ],
       "implemented_by": {
         "firmware": true,
