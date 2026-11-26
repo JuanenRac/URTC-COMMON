@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The rule for an image without a patch number can be kept in a bootloader and changed by a signed command:** `firmware_base/urtc_version_compat.h` and its Python twin `urtc_common.version_compat` define the command on `0x7EE` (its own range of chunk indexes), the query, the answer on `0x7EF`, the 16-byte record and the register that relaxes the rule of the expansion slave for one update session. Strict stays the default, a bootloader only reads any of it when it is built with the feature (off by default), the signed rollback counter is not touched, and the shared vectors cover a bad signature, a repeated or older command and a damaged record. See `docs/VERSION_COMPAT.md`.
+
 ## [0.3.1] - A configurable silence of the emergency stop master, with its texts in every catalog
 
 - **The catalogs of the flasher, the tester and the web studio have the texts to read and write the silence of the master:** a label with the limits, the read and write buttons, the confirmation of the flasher, and the log lines (the value read, a value outside the limits, a head that did not keep the value, a head that does not answer the query), in the eight languages with the formal register.
