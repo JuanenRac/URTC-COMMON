@@ -15,6 +15,15 @@ by a signed command. **It is off in the builds**: a bootloader built without it 
 Major and minor still decide, two known patches are still compared, and the signed rollback counter still refuses anything below its floor. A damaged or
 unreadable record reads as nothing stored.
 
+## What accept_patchless does not do
+
+The signature of an image covers its patch number, and a bootloader that receives no patch rebuilds the signed header with patch 0. So:
+
+- Only an image whose signed header says patch 0 can be installed without sending the patch. An image released as x.y.3 and sent by a flasher that drops the
+  3 still fails, with the signature reason.
+- While the mode is in force, such an x.y.0 image can replace an installed x.y.Z of the same major.minor without the downgrade authorization, and the board
+  then records no patch for it. The signed rollback counter is the protection that remains. Set the mode back to strict when the old flasher is gone.
+
 ## The command
 
 On `0x7EE`, 12 frames of 8 bytes whose first byte is `0x40` to `0x4B` (the serial command uses `0x00` to `0x0B`), carrying 84 bytes, big-endian:
