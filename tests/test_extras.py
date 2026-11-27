@@ -293,6 +293,58 @@ def test_the_table_lists_a_manifest_version_it_is_given(tmp_path):
     assert projects == [{"repo": "URTC-TESTER", "title": "Tester", "kind": "program", "version": "9.9.9"}]
 
 
+def _family(base: Path, doc: dict, version: str = "9.9.9") -> Path:
+    """A repository next to this one with its manifest and a copy of the table; returns the copy."""
+    repo = base / "URTC-TESTER"
+    (repo / "docs").mkdir(parents=True)
+    (repo / "urtc.project.json").write_text(json.dumps({"version": version}), encoding="utf-8")
+    lock = {"urtc_common_version": "1.0.0", "files": {"COMPATIBILITY.md": {"from": "docs/COMPATIBILITY.md", "sha256": ""}}}
+    (repo / "docs" / "urtc_common.lock.json").write_text(json.dumps(lock), encoding="utf-8")
+    copy = repo / "docs" / "COMPATIBILITY.md"
+    copy.write_bytes(compat_table.render(doc).replace("\n", "\r\n").encode("utf-8"))   # a checkout on Windows
+    return copy
+
+
+def _doc_with_the_tester_at(version: str) -> dict:
+    doc = json.loads(json.dumps(compat_table.load()))
+    doc["projects"] = [{"repo": "URTC-TESTER", "title": "Tester", "kind": "program", "version": version, "common": "1.0.0"}]
+    return doc
+
+
+def _lagging(doc: dict, base: Path) -> list[str]:
+    """The problems that come from the repositories next to this one (not those of the files of this repository)."""
+    return [p for p in compat_table.check(doc, base) if p not in compat_table.check(doc, None)]
+
+
+def test_a_table_that_follows_the_repositories_and_their_copies_passes(tmp_path):
+    doc = _doc_with_the_tester_at("9.9.9")
+    _family(tmp_path, doc)
+    assert _lagging(doc, tmp_path) == []
+
+
+def test_a_table_left_behind_by_a_repository_is_reported(tmp_path):
+    doc = _doc_with_the_tester_at("0.4.1")
+    _family(tmp_path, doc, "9.9.9")
+    assert any("says 0.4.1" in p and "says 9.9.9" in p for p in _lagging(doc, tmp_path))
+
+
+def test_an_old_or_missing_copy_of_the_table_is_reported(tmp_path):
+    doc = _doc_with_the_tester_at("9.9.9")
+    copy = _family(tmp_path, doc)
+    copy.write_text("old\n", encoding="utf-8")
+    assert any("old copy" in p for p in _lagging(doc, tmp_path))
+    copy.unlink()
+    assert any("old copy" in p for p in _lagging(doc, tmp_path))
+
+
+def test_a_repository_the_table_does_not_list_and_a_folder_with_none_are_reported(tmp_path):
+    doc = _doc_with_the_tester_at("9.9.9")
+    assert any("nothing was compared" in p for p in _lagging(doc, tmp_path))
+    _family(tmp_path, doc)
+    doc["projects"] = []
+    assert any("not in spec/versions.json" in p for p in _lagging(doc, tmp_path))
+
+
 # ---- thermal view ------------------------------------------------------------------------------------------------------------
 THERMAL = json.loads((ROOT / "conformance" / "thermal_vectors.json").read_text(encoding="utf-8"))
 

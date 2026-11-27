@@ -13,7 +13,7 @@ speaks and which copy of this repository's shared code it carries. The table tha
     python tools/compat_table.py --refresh      # read the manifests of the repositories next to this one into spec/versions.json
     python tools/compat_table.py --write        # write docs/COMPATIBILITY.md
     python tools/compat_table.py --check        # fail when the file is out of date, or the protocol version differs from the spec
-    python tools/compat_table.py --check --siblings   # also fail when spec/versions.json lags behind the repositories next to this one
+    python tools/compat_table.py --check --siblings   # also fail when spec/versions.json or a copy of the table lags behind the repositories next to this one
     python tools/compat_table.py --markdown     # print the table (for a release body)
 """
 from __future__ import annotations
@@ -89,6 +89,31 @@ def render_data(doc: dict) -> str:
     return json.dumps(doc, indent=2) + "\n"
 
 
+def stale_copies(doc: dict, base: Path) -> list[str]:
+    """The copies of the table (and of its data) that the repositories next to this one carry and that are not the current ones."""
+    current = {"docs/COMPATIBILITY.md": render(doc), "generated/compat.json": render_data(doc)}
+    problems = []
+    for repo, _title, _kind in REPOS:
+        if repo == "URTC-COMMON":
+            continue
+        for lock in sorted((base / repo).rglob("urtc_common.lock.json")):
+            if any(part in {"node_modules", ".venv", "build", "dist"} for part in lock.parts):
+                continue
+            try:
+                files = json.loads(lock.read_text(encoding="utf-8")).get("files", {})
+            except (OSError, ValueError):
+                problems.append(f"{repo}: {lock.relative_to(base / repo).as_posix()} cannot be read")
+                continue
+            for name, entry in files.items():
+                wanted = current.get(entry.get("from"))
+                if wanted is None:
+                    continue
+                copy = lock.parent / name
+                if not copy.is_file() or copy.read_bytes().decode("utf-8", errors="replace").replace("\r\n", "\n") != wanted:
+                    problems.append(f"{repo}: {copy.relative_to(base / repo).as_posix()} is an old copy (run tools/vendor_copy.py refresh)")
+    return problems
+
+
 def check(doc: dict, siblings: Path | None) -> list[str]:
     problems = []
     protocol = json.loads(PROTOCOL.read_text(encoding="utf-8"))["protocol_version"]
@@ -102,7 +127,14 @@ def check(doc: dict, siblings: Path | None) -> list[str]:
         live = {p["repo"]: p for p in refresh(siblings)["projects"]}
         for p in doc["projects"]:
             if p["repo"] in live and live[p["repo"]] != p:
-                problems.append(f"{p['repo']}: spec/versions.json says {p['version']}, the repository says {live[p['repo']]['version']} (run --refresh)")
+                now = live[p["repo"]]
+                problems.append(f"{p['repo']}: spec/versions.json says {p['version']} with shared code {p.get('common', '-')}, "
+                                f"the repository says {now['version']} with {now.get('common', '-')} (run --refresh)")
+        listed = {p["repo"] for p in doc["projects"]}
+        problems += [f"{repo} is next to this repository and not in spec/versions.json (run --refresh)" for repo in live if repo not in listed]
+        if not set(live) - {"URTC-COMMON"}:
+            problems.append(f"no other repository of the family in {siblings}: nothing was compared")
+        problems += stale_copies(doc, siblings)
     return problems
 
 

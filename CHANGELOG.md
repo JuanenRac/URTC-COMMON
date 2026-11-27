@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The compatibility table is current again and a table left behind is reported:** `docs/COMPATIBILITY.md`, which the notes of a release carry, still named versions of long ago. It is made again from the manifests, and `tools/compat_table.py --check --siblings`, which the nightly run of the family now calls, also fails on a repository that the table does not list and on an old copy of the table or of its data.
+
 - **An update after a rollback keeps the release that worked:** installing a newer release after one had failed its first start removed the release that was in use and kept the failed one, so the next rollback went back to it.
 
 - **Texts for a published file that cannot be read:** the catalogs of the flasher and the web studio have, in the eight languages, the message shown when a digest or manifest file is next to an image but cannot be read and the update is refused. The flasher also has the message for a backup that is shorter than the memory it was read from.
