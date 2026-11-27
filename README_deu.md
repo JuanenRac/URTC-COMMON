@@ -19,7 +19,7 @@
 
 ---
 
-**Ehrlicher Zwischenstand: Was heute wirklich läuft:** dieses Repository enthält eine Spezifikation, Generatoren, Testvektoren und eine kleine Python-Bibliothek. Alles läuft und wird in der CI getestet, aber bisher verwenden es nur URTC-FLASHER, URTC-TESTER und URTC-WEB-STUDIO (die Identifier, die magischen Nutzlasten, die Hardware-IDs und die gemeinsamen Vektoren, als Kopien, deren Unverändertheit eine Sperrdatei prüft); die Firmware und die Transporte behalten ihre eigene Kopie des Protokolls, bis jedes einzelne migriert. Die Tests, die die Spezifikation mit diesen Kopien vergleichen, lesen deren Text, wenn die Repositories neben diesem geklont sind, und werden übersprungen, wenn nicht. Nichts davon wurde gegen eine Platine oder einen CAN-Adapter ausgeführt: Die Transporte werden mit Attrappen getestet, und die Spezifikation nennt für jeden Identifier, welche Implementierungen ihn definieren, sodass die Lücken sichtbar sind, statt als gelöst angenommen zu werden.
+**Ehrlicher Zwischenstand: Was heute wirklich läuft:** dieses Repository enthält eine Spezifikation, Generatoren, Testvektoren und eine kleine Python-Bibliothek. Alles läuft und wird in der CI getestet, und URTC, URTC-FLASHER, URTC-TESTER, URTC-UPDATER, URTC-WEB-STUDIO, URTC-GATEWAY, URTC-SMART-RACK und URTC-VISION-TOOL führen Kopien von Teilen davon, deren Unverändertheit eine Sperrdatei prüft; was ein Repository nicht von hier übernimmt, schreibt es weiterhin von Hand. Die Tests, die die Spezifikation mit diesen Kopien vergleichen, lesen deren Text, wenn die Repositories neben diesem geklont sind, und werden übersprungen, wenn nicht. Nichts davon wurde gegen eine Platine oder einen CAN-Adapter ausgeführt: Die Transporte werden mit Attrappen getestet, und die Spezifikation nennt für jeden Identifier, welche Implementierungen ihn definieren, sodass die Lücken sichtbar sind, statt als gelöst angenommen zu werden.
 
 ---
 
@@ -167,7 +167,7 @@ URTC-COMMON/
 **Bekannte Grenzen heute**
 
 * Nichts davon lief gegen eine Platine oder einen CAN-Adapter: Die Transporte werden mit Attrappen getestet, und die Spezifikation nennt für jeden Identifier, welche Implementierungen ihn definieren, sodass die Lücken sichtbar sind.
-* Die Firmware und die Transporte behalten ihre eigenen Kopien des Protokolls, bis jede migriert; heute nutzen nur URTC-FLASHER, URTC-TESTER und URTC-WEB-STUDIO dieses Repository.
+* Jedes Repository übernimmt nur die Teile, die es braucht, als gesperrte Kopien; was es nicht übernimmt, schreibt es weiterhin von Hand (siehe docs/MIGRATION.md).
 * Die Tests, die die Spezifikation mit den anderen Repositories vergleichen, lesen deren Text, wenn sie neben diesem geklont sind, und werden sonst übersprungen.
 
 **Als Nächstes**
