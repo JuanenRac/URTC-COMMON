@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The texts about a signing key of the flasher and the web studio are current:** their catalogs say that the current bootloaders install only an image with its signature record, and that a typed or configured HMAC key serves only a bootloader of the earlier generation. Eight languages.
+
 - **Two texts of the web studio for an off frame that did not go out:** the catalog of its language files has them in the eight languages.
 
 - **The README says who carries copies of this repository:** it still named only the flasher, the tester and the web studio; the firmware, the updater, the gateway, the smart rack and the vision tool carry locked copies too. Eight languages.
