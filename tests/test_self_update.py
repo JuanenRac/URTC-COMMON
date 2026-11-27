@@ -361,6 +361,16 @@ def test_rollback_goes_to_the_previous_release_and_fails_when_there_is_none(tmp_
     assert su.read_history(root)[-1]["event"] == "rollback"
 
 
+def test_an_install_after_a_rollback_keeps_the_release_that_worked_not_the_one_that_failed(tmp_path):
+    install(tmp_path, "0.5.0")
+    install(tmp_path, "0.5.1")
+    root = tmp_path / "root"
+    assert su.finish_first_start(root, False) == "0.5.0"
+    install(tmp_path, "0.5.2")
+    assert su.installed_versions(root) == ["0.5.0", "0.5.2"]
+    assert su.rollback(root) == "0.5.0"
+
+
 def _two_releases(tmp_path):
     install(tmp_path, "0.5.0")
     install(tmp_path, "0.5.1")
