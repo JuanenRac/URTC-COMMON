@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **Two texts of the web studio for an off frame that did not go out:** the catalog of its language files has them in the eight languages.
+
 - **The README says who carries copies of this repository:** it still named only the flasher, the tester and the web studio; the firmware, the updater, the gateway, the smart rack and the vision tool carry locked copies too. Eight languages.
 
 ## [0.3.2] - An update that keeps the release that worked, the version rule command and a current compatibility table
