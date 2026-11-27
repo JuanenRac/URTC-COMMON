@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **A check or a download of an update cut in the middle is reported:** an incomplete answer ended the worker with an error nobody handled and the window stayed busy; it is now a network error like the others. A damaged `current.txt` or history of the updates no longer raises.
+
 - **The rule for an image without a patch number can be kept in a bootloader and changed by a signed command:** `firmware_base/urtc_version_compat.h` and its Python twin `urtc_common.version_compat` define the command on `0x7EE` (its own range of chunk indexes), the query, the answer on `0x7EF`, the 16-byte record and the register that relaxes the rule of the expansion slave for one update session. Strict stays the default, a bootloader only reads any of it when it is built with the feature (off by default), the signed rollback counter is not touched, and the shared vectors cover a bad signature, a repeated or older command and a damaged record. See `docs/VERSION_COMPAT.md`.
 
 ## [0.3.1] - A configurable silence of the emergency stop master, with its texts in every catalog
