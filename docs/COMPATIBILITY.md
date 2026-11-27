@@ -15,6 +15,6 @@ Protocol version **2** (identifiers, layouts and magic payloads of `spec/can_pro
 | Smart rack (`URTC-SMART-RACK`) | firmware | 0.2.9 | 0.2.6 |
 | Vision tool (`URTC-VISION-TOOL`) | firmware | 0.2.3 | 0.2.6 |
 | Documentation generator (`URTC-DOCS`) | program | 0.1.9 | - |
-| Shared protocol and code (`URTC-COMMON`) | library | 0.3.1 | 0.3.1 |
+| Shared protocol and code (`URTC-COMMON`) | library | 0.3.2 | 0.3.2 |
 
 Every project listed speaks the protocol version above; "Shared code" is the version of URTC-COMMON the project carries a checked copy of.
