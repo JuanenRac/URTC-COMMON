@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **An update after a rollback keeps the release that worked:** installing a newer release after one had failed its first start removed the release that was in use and kept the failed one, so the next rollback went back to it.
+
 - **Texts for a published file that cannot be read:** the catalogs of the flasher and the web studio have, in the eight languages, the message shown when a digest or manifest file is next to an image but cannot be read and the update is refused. The flasher also has the message for a backup that is shorter than the memory it was read from.
 
 - **A check or a download of an update cut in the middle is reported:** an incomplete answer ended the worker with an error nobody handled and the window stayed busy; it is now a network error like the others. A damaged `current.txt` or history of the updates no longer raises.
