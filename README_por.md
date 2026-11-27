@@ -19,7 +19,7 @@
 
 ---
 
-**Ponto de honestidade: o que funciona mesmo hoje:** este repositório contém uma especificação, geradores, vetores de teste e uma pequena biblioteca Python. Tudo é executado e testado em CI, mas até agora só a utilizam o URTC-FLASHER, o URTC-TESTER e o URTC-WEB-STUDIO (os identificadores, as cargas mágicas, os identificadores de hardware e os vetores partilhados, como cópias vigiadas por um ficheiro de bloqueio); o firmware e os transportes mantêm a sua própria cópia do protocolo até cada um migrar. Os testes que comparam a especificação com essas cópias leem o seu texto quando os repositórios estão clonados ao lado deste, e são ignorados quando não estão. Nada disto foi executado contra uma placa ou um adaptador CAN: os transportes são testados com simulações, e a especificação indica para cada identificador quais as implementações que o definem, de modo que as lacunas ficam visíveis em vez de se darem por resolvidas.
+**Ponto de honestidade: o que funciona mesmo hoje:** este repositório contém uma especificação, geradores, vetores de teste e uma pequena biblioteca Python. Tudo é executado e testado em CI, e URTC, URTC-FLASHER, URTC-TESTER, URTC-UPDATER, URTC-WEB-STUDIO, URTC-GATEWAY, URTC-SMART-RACK e URTC-VISION-TOOL levam cópias de partes dela, vigiadas por um ficheiro de bloqueio; o que um repositório não vai buscar aqui continua a escrever à mão. Os testes que comparam a especificação com essas cópias leem o seu texto quando os repositórios estão clonados ao lado deste, e são ignorados quando não estão. Nada disto foi executado contra uma placa ou um adaptador CAN: os transportes são testados com simulações, e a especificação indica para cada identificador quais as implementações que o definem, de modo que as lacunas ficam visíveis em vez de se darem por resolvidas.
 
 ---
 
@@ -167,7 +167,7 @@ URTC-COMMON/
 **Limites conhecidos hoje**
 
 * Nada disto foi executado numa placa nem num adaptador CAN: os transportes são testados com simulações, e a especificação diz, para cada identificador, que implementações o definem, pelo que as lacunas se veem.
-* O firmware e os transportes mantêm as suas próprias cópias do protocolo até cada um migrar; hoje só o URTC-FLASHER, o URTC-TESTER e o URTC-WEB-STUDIO usam este repositório.
+* Cada repositório leva apenas as partes de que precisa, como cópias bloqueadas; o que não leva continua a escrever à mão (ver docs/MIGRATION.md).
 * Os testes que comparam a especificação com os outros repositórios leem o seu texto quando estão clonados ao lado deste, e são ignorados caso contrário.
 
 **A seguir**

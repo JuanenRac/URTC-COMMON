@@ -19,7 +19,7 @@
 
 ---
 
-**Honesty check - what actually runs today:** this repository holds a specification, generators, test vectors and a small Python library. All of it runs and is tested in CI, but so far only URTC-FLASHER, URTC-TESTER and URTC-WEB-STUDIO use it (the identifiers, the magic payloads, the hardware ids and the shared vectors, as copies kept honest by a lock file); the firmware and the transports keep their own copies of the protocol until each one migrates. The tests that compare the specification with those copies read their text when the repositories are checked out next to this one, and skip when they are not. Nothing here has been run against a board or a CAN adapter: the transports are tested with fakes, and the specification says for every identifier which implementations define it, so the gaps are visible instead of assumed away.
+**Honesty check - what actually runs today:** this repository holds a specification, generators, test vectors and a small Python library. All of it runs and is tested in CI, and URTC, URTC-FLASHER, URTC-TESTER, URTC-UPDATER, URTC-WEB-STUDIO, URTC-GATEWAY, URTC-SMART-RACK and URTC-VISION-TOOL carry copies of parts of it, kept honest by a lock file; what a repository does not take from here it still writes by hand. The tests that compare the specification with those copies read their text when the repositories are checked out next to this one, and skip when they are not. Nothing here has been run against a board or a CAN adapter: the transports are tested with fakes, and the specification says for every identifier which implementations define it, so the gaps are visible instead of assumed away.
 
 ---
 
@@ -167,7 +167,7 @@ URTC-COMMON/
 **Known limits today**
 
 * Nothing here has run against a board or a CAN adapter: the transports are tested with fakes, and the specification says for every identifier which implementations define it, so the gaps are visible.
-* The firmware and the transports keep their own copies of the protocol until each one migrates; only URTC-FLASHER, URTC-TESTER and URTC-WEB-STUDIO use this repository today.
+* A repository takes only the parts it needs, as locked copies; what it does not take it still writes by hand (see docs/MIGRATION.md).
 * The tests that compare the specification with the other repositories read their text when those are checked out next to this one, and skip when they are not.
 
 **Next**

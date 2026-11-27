@@ -19,7 +19,7 @@
 
 ---
 
-**Point d'honnêteté : ce qui fonctionne réellement aujourd'hui :** ce dépôt contient une spécification, des générateurs, des vecteurs de test et une petite bibliothèque Python. Tout s'exécute et est testé en CI, mais jusqu'ici seuls URTC-FLASHER, URTC-TESTER et URTC-WEB-STUDIO l'utilisent (les identifiants, les charges magiques, les identifiants matériels et les vecteurs partagés, sous forme de copies surveillées par un fichier de verrouillage) ; le firmware et les transports gardent leur propre copie du protocole jusqu'à ce que chacun migre. Les tests qui comparent la spécification à ces copies lisent leur texte lorsque les dépôts sont clonés à côté de celui-ci, et sont ignorés sinon. Rien de tout cela n'a été exécuté face à une carte ou à un adaptateur CAN : les transports sont testés avec des simulations, et la spécification indique pour chaque identifiant quelles implémentations le définissent, de sorte que les lacunes sont visibles au lieu d'être tenues pour résolues.
+**Point d'honnêteté : ce qui fonctionne réellement aujourd'hui :** ce dépôt contient une spécification, des générateurs, des vecteurs de test et une petite bibliothèque Python. Tout s'exécute et est testé en CI, et URTC, URTC-FLASHER, URTC-TESTER, URTC-UPDATER, URTC-WEB-STUDIO, URTC-GATEWAY, URTC-SMART-RACK et URTC-VISION-TOOL portent des copies de certaines de ses parties, surveillées par un fichier de verrouillage ; ce qu'un dépôt ne prend pas ici, il l'écrit toujours à la main. Les tests qui comparent la spécification à ces copies lisent leur texte lorsque les dépôts sont clonés à côté de celui-ci, et sont ignorés sinon. Rien de tout cela n'a été exécuté face à une carte ou à un adaptateur CAN : les transports sont testés avec des simulations, et la spécification indique pour chaque identifiant quelles implémentations le définissent, de sorte que les lacunes sont visibles au lieu d'être tenues pour résolues.
 
 ---
 
@@ -167,7 +167,7 @@ URTC-COMMON/
 **Limites connues aujourd'hui**
 
 * Rien de tout cela n'a tourné sur une carte ni sur un adaptateur CAN : les transports sont testés avec des simulations, et la spécification indique pour chaque identifiant quelles implémentations le définissent, de sorte que les lacunes se voient.
-* Le firmware et les transports gardent leurs propres copies du protocole jusqu'à leur migration ; aujourd'hui seuls URTC-FLASHER, URTC-TESTER et URTC-WEB-STUDIO utilisent ce dépôt.
+* Chaque dépôt ne prend que les parties dont il a besoin, sous forme de copies verrouillées ; ce qu'il ne prend pas, il l'écrit toujours à la main (voir docs/MIGRATION.md).
 * Les tests qui comparent la spécification aux autres dépôts lisent leur texte quand ils sont clonés à côté de celui-ci, et sont ignorés sinon.
 
 **Ensuite**
