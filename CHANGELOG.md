@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **README facts checked against the code:** the bootloader side of the key rotation exists in URTC and is off by default, and the default virtual board does not check size, signature or version.
+
 - **The texts about a signing key of the flasher and the web studio are current:** their catalogs say that the current bootloaders install only an image with its signature record, and that a typed or configured HMAC key serves only a bootloader of the earlier generation. Eight languages.
 
 - **Two texts of the web studio for an off frame that did not go out:** the catalog of its language files has them in the eight languages.
